@@ -235,21 +235,21 @@ include /usr/share/cdbs/1/class/qmake.mk
 QMAKE=qmake-qt4
 CFLAGS=-O3
 CXXFLAGS=-O3'
-		if [ "${project}" != "pyalsavolume" -a "${project}" != "regexptest" ]
-		then
-			echo "${rules_py}" > rules
-			echo "${pyversions}" > pyversions
-		fi 
-		if [ "${project}" == "regexptest" ]
-		then
-			echo "${rules_qt}" > rules
-		fi
-		if [ "${project}" == "pyalsavolume" ]
-		then
-			echo "${rules_py}" > rules
-			echo "${pyav_prerem}" > prerm
-			echo "${pyversions}" > pyversions
-		fi
+	if [ "${project}" != "pyalsavolume" -a "${project}" != "regexptest" ]
+	then
+		echo "${rules_py}" > rules
+		echo "${pyversions}" > pyversions
+	fi 
+	if [ "${project}" == "regexptest" ]
+	then
+		echo "${rules_qt}" > rules
+	fi
+	if [ "${project}" == "pyalsavolume" ]
+	then
+		echo "${rules_py}" > rules
+		echo "${pyav_prerem}" > prerm
+		echo "${pyversions}" > pyversions
+	fi
 	echo "${changelog}" > changelog
 	echo "${compat}" > compat
 	echo "${control}" > control
@@ -279,7 +279,7 @@ build_erp ()
 	docfiles=""
 	dirs="usr/share/exaile/plugins/remote"
 	cd ${debdir}/debian
-	prepare_specs "py"
+	prepare_specs
 	cd ${debdir}
 	build_deb
 	cp -f ${builddir}/*.deb	${exitdir}/
@@ -305,7 +305,7 @@ build_etp ()
 	docfiles=""
 	dirs="usr/share/exaile/plugins/tunetopsi"
 	cd ${debdir}/debian
-	prepare_specs "py"
+	prepare_specs
 	cd ${debdir}
 	build_deb
 	cp -f ${builddir}/*.deb	${exitdir}/
@@ -337,7 +337,7 @@ usr/share/doc/pyalsavolume
 usr/share/applications
 '
 	cd ${debdir}/debian
-	prepare_specs "py2"
+	prepare_specs
 	cd ${debdir}
 	build_deb
 	cp -f ${builddir}/*.deb	${exitdir}/
@@ -369,7 +369,7 @@ usr/share/applications
 
 '
 	cd ${debdir}/debian
-	prepare_specs "py"
+	prepare_specs
 	cd ${debdir}
 	build_deb
 	cp -f ${builddir}/*.deb	${exitdir}/
@@ -399,7 +399,7 @@ usr/share/pysshclient
 usr/share/applications
 '
 	cd ${debdir}/debian
-	prepare_specs "py"
+	prepare_specs
 	cd ${debdir}
 	build_deb
 	cp -f ${builddir}/*.deb	${exitdir}/
@@ -424,7 +424,7 @@ build_rbremp ()
 	docfiles=""
 	dirs='usr/lib/rhythmbox/plugins/remote'
 	cd ${debdir}/debian
-	prepare_specs "py"
+	prepare_specs
 	cd ${debdir}
 	build_deb
 	cp -f ${builddir}/*.deb	${exitdir}/
@@ -450,13 +450,13 @@ build_rbresp ()
 	docfiles=""
 	dirs='usr/lib/rhythmbox/plugins/restore'
 	cd ${debdir}/debian
-	prepare_specs "py"
+	prepare_specs
 	cd ${debdir}
 	build_deb
 	cp -f ${builddir}/*.deb	${exitdir}/
 }
 
-build_rbresp ()
+build_rbtunp ()
 {
 	prepare_global
 	project="rb-tunetopsi-plugin"
@@ -476,7 +476,7 @@ build_rbresp ()
 	docfiles=""
 	dirs='usr/lib/rhythmbox/plugins/tunetopsi'
 	cd ${debdir}/debian
-	prepare_specs "py"
+	prepare_specs
 	cd ${debdir}
 	build_deb
 	cp -f ${builddir}/*.deb	${exitdir}/
@@ -507,7 +507,7 @@ usr/share/doc/regexptest
 usr/share/doc/regexptest/html
 usr/share/applications"
 	cd ${debdir}/debian
-	prepare_specs "qt"
+	prepare_specs
 	cd ${debdir}
 	$qconfcmd
 	./configure --prefix=/usr
