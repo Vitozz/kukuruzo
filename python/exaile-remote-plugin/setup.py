@@ -4,7 +4,7 @@ from distutils.core import setup
 from distutils.command.install_data import install_data
 
 setup(name='exaile-remote-plugin',
-      version='0.2.2',
+      version='0.2.1',
       description='Control Exaile via tray icons',
       long_description = "Control Exaile via tray icons",
       author='Vitaly Tonkacheyev',

@@ -1,0 +1,23 @@
+exaile-tunetopsi-plugin (0.0.6-1) unstable; urgency=low
+
+  * Changed tune file path in according with Psi+ >= 0.15.3937
+
+ -- Vitaly Tonkacheyev <thetvg@gmail.com>  Sat, 25 Jun 2011 16:00:00 +0200
+
+exaile-tunetopsi-plugin (0.0.5-1) unstable; urgency=low
+
+  * Changed package structure
+
+ -- Vitaly Tonkacheyev <thetvg@gmail.com>  Fri, 29 Oct 2010 12:53:00 +0200
+
+exaile-tunetopsi-plugin (0.0.4-1) unstable; urgency=low
+
+  * Changed get_track_info procedure
+
+ -- Vitaly Tonkacheyev <thetvg@gmail.com>  Fri, 18 May 2010 09:14:00 +0200
+
+exaile-remote-plugin (0.0.3-1) unstable; urgency=low
+
+  * Initial release
+
+ -- Vitaly Tonkacheyev <thetvg@gmail.com>  Wed, 16 May 2010 16:00:00 +0200
