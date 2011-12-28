@@ -1,4 +1,16 @@
 #!/bin/bash
+#
+# ---------README----------------------------------------------------------
+# To build debian packages with this script you need
+# to install packages: cdbs, debhelper, dpkg-dev, devscripts
+# just run command:
+# sudo apt-get install cdbs debhelper dpkg-dev devscripts
+# to build debian package of regexptest project you also need
+# to install packages: libqt4-dev, qconf 
+# just run command:
+# sudo apt-get install libqt4-dev qconf
+# -------------------------------------------------------------------------
+#
 homedir=$HOME
 srcdir=${homedir}/kukuruzorepo
 builddir=${srcdir}/build
