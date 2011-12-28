@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+  xmlns:android="http://schemas.android.com/apk/res/android">
+<item android:enabled="true" android:id="@+id/CountItem" android:visible="true" android:title="@string/countLabel" android:icon="@drawable/flag"></item>
+<item android:enabled="true" android:id="@+id/AboutItem" android:visible="true" android:title="@string/aboutLabel" android:icon="@drawable/light"></item>
+<item android:enabled="true" android:id="@+id/ExitItem" android:visible="true" android:title="@string/exitLabel" android:icon="@drawable/flash"></item>
+</menu>

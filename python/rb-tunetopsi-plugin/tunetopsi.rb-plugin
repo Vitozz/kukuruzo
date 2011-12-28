@@ -1,0 +1,10 @@
+[RB Plugin]
+Loader=python
+Module=tunetopsi
+IAge=1
+Name=Tune To Psi
+Description=Sends tune information to Psi or Psi+ jabber client
+Description[ru]=Отсылает данные о прослушиваемом треке Jabber-кленту Psi/Psi+
+Authors=Vitaly Tonkacheyev <thetvg@gmail.com>
+Copyright=Copyright © 2009 Vitaly Tonkacheyev
+Website=http://sites.google.com/site/thesomeprojects/

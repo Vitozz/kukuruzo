@@ -1,1 +1,22 @@
 This is the repo of my projects
+Map of Repository:
+/--
+    |
+     ---android--
+                              |
+                               ---interpolation
+                               ---regexptester
+     ---python--
+                             |
+                              ---exaile-remote-plugin
+                              ---exaile-tunetopsi-plugin
+                              ---pyalsavolume
+                              ---pypoweroff
+                              ---pysshclient
+                              ---rb-remote-plugin
+                              ---rb-restore-plugin
+                              ---rb-tunetopsi-plugin
+     ---qt--
+                 |
+                  ---regexptest
+     ---scripts

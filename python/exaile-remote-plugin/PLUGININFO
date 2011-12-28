@@ -1,0 +1,4 @@
+Version='0.2.1'
+Authors=['Vitaly Tonkacheyev <thetvg@gmail.com>']
+Name='Tray Controls'
+Description='Adds icons to tray to control Exaile'

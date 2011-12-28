@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">RegexpTester</string>
+	<string name="RegTextLabel">Введите исходный текст</string>
+	<string name="RegexpLabel">Введите регулярное выражение</string>
+	<string name="description">Простой тестер регулярных выражений</string>
+	<string name="CASE_INSENSITIVE">CASE_INSENSITIVE</string>
+	<string name="COMMENTS">COMMENTS</string>
+	<string name="MULTILINE">MULTILINE</string>
+	<string name="UNICODE_CASE">UNICODE_CASE</string>
+	<string name="UNIX_LINES">UNIX_LINES</string>
+	<string name="ButtText">Вычислить</string>
+	<string name="GroupsLabel">Выбор Группы</string>
+	<string name="DialogTitle"><b>Результат:</b></string>
+	<string name="Error01">Неверный номер группы:\n</string>
+	<string name="Error02">\nМаксимальный номер:\n</string>
+	<string name="ResultLabel">Результат:</string>
+	<string name="Error03"><b>Ошибка!</b></string>
+	<string name="AboutTitle"><b>О программе..</b></string>
+	<string name="AboutMessage">
+		Тестер регулярных выражений\n
+		<i>2010 © Виталий Тонкачеев</i>
+	</string>
+	<string name="countLabel">Вычислить</string>
+	<string name="aboutLabel">О программе..</string>
+	<string name="exitLabel">Выход</string>
+	<string name="matchName"><u>Совпадение#</u></string>
+</resources>

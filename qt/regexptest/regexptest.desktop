@@ -1,0 +1,12 @@
+[Desktop Entry]
+Encoding=UTF-8
+Icon=/usr/share/regexptest/icons/48x48.png
+Name=RegExp Tester
+Comment=Tool For Testing Regular Expressions
+Exec=regexptest
+Terminal=false
+Type=Application
+Categories=Development;
+StartupNotify=false
+
+Comment[ru]=Утилита тестирования регулярных выражений

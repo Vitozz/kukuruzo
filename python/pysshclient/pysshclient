@@ -1,0 +1,326 @@
+#!/usr/bin/env python
+#-*- coding: utf-8 -*-
+#pysshclient.py
+#Windows support added only for program development
+import sys, os
+try:
+    import pygtk
+    pygtk.require('2.0')
+except:
+    pass
+try:
+    import gtk
+    import gtk.glade
+    import gobject
+except:
+    sys.stderr.write('No Gtk Module Found\n')
+    sys.exit(1)
+
+if str(sys.platform) != 'win32':
+    import pexpect
+
+from pySSHClient.pyTrayIcon import StatusIcc
+from pySSHClient.Options import OptWork
+from pySSHClient.mycrypt import Coder
+
+class mainForm:
+    """SSHFS mount client with multiply connections support"""
+    def __init__(self):
+        #Read settings
+        self.Options = OptWork(self)
+        self.Options.GetSettings()
+        self.server_address = self.Options.settings.get("server")
+        self.remote_user = self.Options.settings.get("user")
+        self.password = self.Options.settings.get("password")
+        self.remote_path = self.Options.settings.get("remote_path")
+        self.mount_point = self.Options.settings.get("mount_point")
+        self.add_opts = self.Options.settings.get("compress")
+        self.port = self.Options.settings.get("port")
+        self.console = "Prorgamm Started...\nSettings Loaded...\n"
+        #Set variables
+        self.connected = False
+        self.selected_row = None
+        self.row_iter = None
+        self.old_mp = None
+        self.errors = False
+        #GUI
+        self.gladefile = '/usr/share/pysshclient/mainform.glade'
+        self.wTree = gtk.glade.XML(self.gladefile)
+        dic = {"on_serv_addr_changed": self.OnServAddr, "on_u_name_changed": self.OnUserName,
+                "on_u_passw_changed": self.OnUserPassw, "on_m_point_changed": self.OnMountPoint,
+                "on_filechooser_released": self.OnDirChoose, "on_opt_check_toggled": self.OnOptToggle,
+                "on_conn_btn_released": self.OnConnPress, "on_disconn_btn_released": self.OnDisconnPress,
+                "on_r_path_changed": self.OnRemotePath, 'on_mp_list_cursor_changed': self.RowSelect,
+                "on_spinbutton1_value_changed": self.onPortChange}
+        self.wTree.signal_autoconnect(dic)
+        #Get console object
+        self.console_out = self.wTree.get_widget('out_entry')
+        self.console_buffer = self.console_out.get_buffer()
+        #Set console background and foreground color
+        self.console_out.modify_text(gtk.STATE_NORMAL, gtk.gdk.Color(0,65535,0,0))
+        self.console_out.modify_base(gtk.STATE_NORMAL, gtk.gdk.Color(0))
+        #Get button objects
+        self.con_btn = self.wTree.get_widget('conn_btn')
+        self.discon_btn = self.wTree.get_widget('disconn_btn')
+        self.discon_btn.set_sensitive(False)
+        #Get Mount_List object
+        self.mp_list = self.wTree.get_widget('mp_list')
+        self.treestore = gtk.TreeStore(str)
+        self.column = gtk.TreeViewColumn('Mount Points', gtk.CellRendererText(), text=0)
+        self.column.set_resizable(True)
+        self.mp_list.append_column(self.column)
+        self.mp_list.set_model(self.treestore)
+        #Get mount point entry object
+        self.m_point_entry = self.wTree.get_widget('m_point')
+        #Get server entry object
+        self.serv_addr_entry = self.wTree.get_widget('serv_addr')
+        #Get user name entry object
+        self.u_name_entry = self.wTree.get_widget('u_name')
+        #Get password entry object
+        self.u_passw_entry = self.wTree.get_widget('u_passw')
+        #Get remote path entry object
+        self.r_path_entry = self.wTree.get_widget('r_path')
+        #Get port spin object
+        self.spin = self.wTree.get_widget('spinbutton1')
+        #Get CheckButton object
+        self.opt_check = self.wTree.get_widget('opt_check')
+        #Get main Form object
+        self.window = self.wTree.get_widget('client_window')
+        self.window.connect("destroy", self.onDestroy)
+        #Set icon variables
+        self.icon = "/usr/share/pysshclient/ssh_icon_24.png"
+        self.emblem = "/usr/share/pysshclient/ssh_icon.png"
+        #Set tray icon
+        self.TrayIcon = StatusIcc(self)
+        self.TrayIcon.settingsItem.set_sensitive(False)
+        #Apply Settings to main Form elements
+        self.m_point_entry.set_text(self.mount_point)
+        self.serv_addr_entry.set_text(self.server_address)
+        self.spin.set_value(self.port)
+        self.u_name_entry.set_text(self.remote_user)
+        self.u_passw_entry.set_text(self.password)
+        self.r_path_entry.set_text(self.remote_path)
+        if self.add_opts == 1:
+            self.opt_check.set_active(True)
+        elif self.add_opts == 0:
+            self.opt_check.set_active(False)
+        self.SetConsole(self.console)
+
+    def OnServAddr(self, widget):
+        self.server_address = widget.get_text()
+
+    def OnUserName(self, widget):
+        self.remote_user = widget.get_text()
+
+    def OnUserPassw(self, widget):
+        self.password = widget.get_text()
+
+    def OnRemotePath(self, widget):
+        self.remote_path = widget.get_text()
+
+    def SetConsole(self, text):
+        self.console_buffer.set_text(text)
+
+    def OnMountPoint(self, widget):
+        self.mount_point = widget.get_text()
+
+    def OnDirChoose(self, widget, line=""):
+        fl_dialog = gtk.FileChooserDialog("Open..",
+                                 None,
+                                 gtk.FILE_CHOOSER_ACTION_SELECT_FOLDER,
+                                 (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
+                                 gtk.STOCK_OPEN, gtk.RESPONSE_OK))
+        fl_dialog.set_default_response(gtk.RESPONSE_OK)
+        response = fl_dialog.run()
+        if response == gtk.RESPONSE_OK:
+            self.mount_point = fl_dialog.get_filename()
+            self.m_point_entry.set_text(self.mount_point)
+            self.console += "Sellected mount point: %s \n" % self.mount_point
+        elif response == gtk.RESPONSE_CANCEL:
+            self.console += "Mount point dialog - cancelled\n"
+        self.SetConsole(self.console)
+        fl_dialog.destroy()
+
+    def OnOptToggle(self, widget):
+        if widget.get_active():
+            self.add_opts = 1
+        else:
+            self.add_opts = 0
+
+    def OnConnPress(self, widget):
+        self.Connect(self.server_address, self.port, self.remote_user, self.password,
+                     self.add_opts, self.remote_path, self.mount_point)
+
+    def OnDisconnPress(self, widget):
+        if widget.get_property('sensitive'):
+            if self.selected_row:
+                self.Disconnect(self.selected_row)
+                self.delItem()
+                self.selected_row = None
+                self.row_iter = None
+                self.discon_btn.set_sensitive(False)
+                self.TrayIcon.settingsItem.set_sensitive(False)
+            else:
+                self.console += "Mount point not selected\n"
+                self.SetConsole(self.console)
+
+    def Connect(self, server, port, user, passwd, options, rem_path, mountpoint):
+        """SSHFS Remote connection"""
+        #Sets mounting command
+        command = "sshfs"
+        if options!=0:
+            command += " -C "
+        if port:
+            command += " -p %s" % str(port)
+        if user:
+            command += " "+ user + "@"
+        else:
+            self.console += "Set the remote user name!\n"
+            self.SetConsole(self.console)
+            self.errors = True
+        if server:
+            command += server + ":"
+        else:
+            self.console += "Set the remote server!\n"
+            self.SetConsole(self.console)
+            self.errors = True
+        if rem_path:
+            command += rem_path + " "
+        else:
+            self.console += "Set the remote path!\n"
+            self.SetConsole(self.console)
+            self.errors = True
+        if mountpoint:
+            if os.path.exists(mountpoint):
+                if not self.CheckMP(mountpoint):
+                    command += mountpoint
+                    self.errors = False
+                else:
+                    self.console += "Mounting to the same mount point not allowed!\n"
+                    self.SetConsole(self.console)
+                    self.errors = True
+            else:
+                self.console += "Mount point not exists! Select valid mount point.\n"
+                self.SetConsole(self.console)
+                self.errors = True
+        else:
+            self.errors = True
+            self.console += "Set the mount point!\n"
+            self.SetConsole(self.console)
+        #If no errors try to run command
+        if not self.errors:
+            if str(sys.platform) != "win32":
+                sshfs = pexpect.spawn( str( command ), env = {'SSH_ASKPASS':'/dev/null'} )
+                ssh_newkey = 'Are you sure you want to continue connecting'
+                i = sshfs.expect( [ssh_newkey, 'assword:', pexpect.EOF, pexpect.TIMEOUT] )
+                if i == 0:
+                    sshfs.sendline('yes')
+                    i = sshfs.expect([ssh_newkey,'assword:',pexpect.EOF])
+                if i == 1:
+                    #If no password ask for it
+                    password = passwd + "\n"
+                    sshfs.sendline( password )
+                    j = sshfs.expect( [pexpect.EOF, 'assword:'] )
+                    if j == 1:
+                        #Password incorrect, force the connection close
+                        self.console += "Password incorrect\n"
+                        sshfs.close(True)
+                    self.addItem(mountpoint)
+                    self.connected = True
+                    self.console += ("Connecting...\n" + command + "\n")
+                elif i == 2:
+                    #Any problem
+                    self.console += ("Error found: %s" % sshfs.before + "\n")
+                elif i == 3:
+                    #Timeout
+                    self.console += ("Timeout: %s" % sshfs.before + "\n")
+                self.console += sshfs.before
+            else:
+                self.addItem(mountpoint)
+                self.connected = True
+                self.console += ("Connecting...\n" + command + "\n")
+            self.SetConsole(self.console)
+
+
+    def Disconnect(self, mountpoint):
+        if mountpoint:
+            command = "fusermount -u " + mountpoint
+            self.console += ("Disconnected\n" + command+ "\n")
+            self.SetConsole(self.console)
+            self.doCommand(command)
+
+    def doCommand(self, command):
+        if str(sys.platform) != "win32":
+            os.system(command)
+        else:
+            self.console += "You are using windows\n"
+            self.SetConsole(self.console)
+
+    def addItem(self, itemtext):
+       self.treestore.append(None, ['%s'%itemtext])
+
+    def RowSelect(self, widget):
+        """Get mount_point_list selected item on select event"""
+        store, itera = widget.get_selection().get_selected()
+        self.selected_row = store. get_value(itera, 0)
+        self.row_iter = itera
+        self.discon_btn.set_sensitive(True)
+        self.TrayIcon.settingsItem.set_sensitive(True)
+
+    def onPortChange(self, widget):
+        self.port = int(widget.get_value())
+
+    def delItem(self):
+        if self.row_iter:
+            self.treestore.remove(self.row_iter)
+
+    def SaveSettings(self):
+        self.Options.SetSettings(self.server_address, self.port,
+                                     self.remote_user, self.remote_path,
+                                     self.password, self.mount_point,
+                                     self.add_opts)
+        self.Options.WriteConfig()
+
+    def CheckMP(self, MP):
+        """Check mount point existense"""
+        mplist = self.GetMP()
+        if mplist:
+            for item in mplist:
+                if MP == item:
+                    return True
+            return False
+        return False
+
+    def GetMP(self, itera=None):
+        """Get mount_point_list entries"""
+        mplist=[]
+        itera = self.treestore.get_iter_first()
+        if itera:
+            mplist.append(str(self.treestore.get_value(itera, 0)))
+            while itera:
+                itera = self.treestore.iter_next(itera)
+                if itera:
+                    mplist.append(str(self.treestore.get_value(itera, 0)))
+        else:
+            mplist = None
+        return mplist
+
+    def UnmountAll(self, mplist):
+        if mplist:
+            for item in mplist:
+                self.Disconnect(item)
+                print "Unmounting ", item
+
+    def onDestroy(self, widget):
+        #Unmounting mounted devices
+        self.UnmountAll(self.GetMP())
+        #Saving Settings
+        self.SaveSettings()
+        #Delete Tray Icon
+        del self.TrayIcon
+        #Close Program
+        gtk.main_quit()
+
+if __name__ == "__main__":
+    app = mainForm()
+    gtk.main()

@@ -1,0 +1,578 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=windows-1251">
+	<TITLE></TITLE>
+	<META NAME="GENERATOR" CONTENT="OpenOffice.org 3.2  (Win32)">
+	<META NAME="AUTHOR" CONTENT="Виталий Тонкачеев">
+	<META NAME="CREATED" CONTENT="20100816;14190500">
+	<META NAME="CHANGEDBY" CONTENT="Виталий Тонкачеев">
+	<META NAME="CHANGED" CONTENT="20100816;17152200">
+	<META NAME="Поле 1" CONTENT="">
+	<META NAME="Поле 2" CONTENT="">
+	<META NAME="Поле 3" CONTENT="">
+	<META NAME="Поле 4" CONTENT="">
+	<STYLE TYPE="text/css">
+	<!--
+		@page { margin-left: 2cm; margin-right: 1.2cm; margin-top: 2cm; margin-bottom: 2cm }
+		P { margin-bottom: 0.21cm }
+		P.western { font-family: "Times New Roman", serif }
+		TD P.western { font-family: "Times New Roman", serif }
+	-->
+	</STYLE>
+</HEAD>
+<BODY LANG="ru-RU" DIR="LTR">
+<P CLASS="western" STYLE="margin-top: 0.42cm; margin-bottom: 0.5cm; page-break-after: avoid">
+<FONT FACE="Times New Roman, serif"><FONT SIZE=4>Регулярные выражения</FONT></FONT></P>
+<P CLASS="western" STYLE="margin-bottom: 0cm"><BR>
+</P>
+<TABLE WIDTH=688 BORDER=1 BORDERCOLOR="#000000" CELLPADDING=4 CELLSPACING=0>
+	<COL WIDTH=105>
+	<COL WIDTH=565>
+	<TR VALIGN=TOP>
+		<TD WIDTH=105>
+			<P CLASS="western" ALIGN=CENTER STYLE="text-indent: -0.02cm"><BR>
+			</P>
+		</TD>
+		<TD WIDTH=565>
+			<P CLASS="western"><I><B>Символы, имеющие специальное значение в
+			записи регулярных выражений</B></I></P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=105>
+			<P CLASS="western" ALIGN=CENTER STYLE="text-indent: -0.02cm"><FONT SIZE=2>^</FONT></P>
+		</TD>
+		<TD WIDTH=565>
+			<P CLASS="western">Начало строки</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=105>
+			<P CLASS="western" ALIGN=CENTER STYLE="text-indent: -0.02cm"><FONT SIZE=2>.</FONT></P>
+		</TD>
+		<TD WIDTH=565>
+			<P CLASS="western">Любой символ влкючая \n</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=105>
+			<P CLASS="western" ALIGN=CENTER STYLE="text-indent: -0.02cm"><FONT SIZE=2>$</FONT></P>
+		</TD>
+		<TD WIDTH=565>
+			<P CLASS="western">Конец строки</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=105>
+			<P CLASS="western" ALIGN=CENTER STYLE="text-indent: -0.02cm"><FONT SIZE=2>*</FONT></P>
+		</TD>
+		<TD WIDTH=565>
+			<P CLASS="western">Повторение фрагмента нуль или более раз
+			(жадное)</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=105>
+			<P CLASS="western" ALIGN=CENTER STYLE="text-indent: -0.02cm"><FONT SIZE=2>+</FONT></P>
+		</TD>
+		<TD WIDTH=565>
+			<P CLASS="western">Повторение фрагмента один или более раз
+			(жадное)</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=105>
+			<P CLASS="western" ALIGN=CENTER STYLE="text-indent: -0.02cm"><FONT SIZE=2>?</FONT></P>
+		</TD>
+		<TD WIDTH=565>
+			<P CLASS="western">Отсутствие или присутствие предыдущего
+			фрагмента</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=105>
+			<P CLASS="western" ALIGN=CENTER STYLE="text-indent: -0.02cm"><FONT SIZE=2>{m,n}</FONT></P>
+		</TD>
+		<TD WIDTH=565>
+			<P CLASS="western">Повтор предыдущего фрагмента от m до n раз
+			включительно (жадное)</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=105>
+			<P CLASS="western" ALIGN=CENTER STYLE="text-indent: -0.02cm"><FONT SIZE=2>[...]</FONT></P>
+		</TD>
+		<TD WIDTH=565>
+			<P CLASS="western">Любой символ из набора в скобках Можно задавать
+			диапазоны символов с идущими подряд кодами, например: a-z 
+			</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=105>
+			<P CLASS="western" ALIGN=CENTER STYLE="text-indent: -0.02cm"><FONT SIZE=2>[^...]</FONT></P>
+		</TD>
+		<TD WIDTH=565>
+			<P CLASS="western">Любой символ не из набора в скобках</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=105>
+			<P CLASS="western" ALIGN=CENTER STYLE="text-indent: -0.02cm"><FONT SIZE=2>\</FONT></P>
+		</TD>
+		<TD WIDTH=565>
+			<P CLASS="western">Отменяет значение следующего за ней спецсимвола</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=105>
+			<P CLASS="western" ALIGN=CENTER STYLE="text-indent: -0.02cm"><FONT SIZE=2>|</FONT></P>
+		</TD>
+		<TD WIDTH=565>
+			<P CLASS="western">Фрагмент слева или справа</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=105>
+			<P CLASS="western" ALIGN=CENTER STYLE="text-indent: -0.02cm"><FONT SIZE=2>*?</FONT></P>
+		</TD>
+		<TD WIDTH=565>
+			<P CLASS="western">Повторение фрагмента нуль или более раз (не
+			жадное)</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=105>
+			<P CLASS="western" ALIGN=CENTER STYLE="text-indent: -0.02cm"><FONT SIZE=2>+?</FONT></P>
+		</TD>
+		<TD WIDTH=565>
+			<P CLASS="western">Повторение фрагметна один или более раз (не
+			жадное)</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=105>
+			<P CLASS="western" ALIGN=CENTER STYLE="text-indent: -0.02cm"><FONT SIZE=2>{m,n}?</FONT></P>
+		</TD>
+		<TD WIDTH=565>
+			<P CLASS="western">Повтор предыдущего фрагмента от m до n раз
+			включительно (не жадное)</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=105>
+			<P CLASS="western" ALIGN=CENTER STYLE="text-indent: -0.02cm"><BR>
+			</P>
+		</TD>
+		<TD WIDTH=565>
+			<P CLASS="western"><BR>
+			</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=105>
+			<P CLASS="western" ALIGN=CENTER STYLE="text-indent: -0.02cm"><FONT SIZE=2>(regexp)</FONT></P>
+		</TD>
+		<TD WIDTH=565>
+			<P CLASS="western">Обособляет регулярное выражение в скобках с
+			выделением в группу</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=105>
+			<P CLASS="western" ALIGN=CENTER STYLE="text-indent: -0.02cm"><FONT SIZE=2>(?:regexp)</FONT></P>
+		</TD>
+		<TD WIDTH=565>
+			<P CLASS="western">Обособляет регулярное выражение в скобках без
+			выделения в группу</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=105>
+			<P CLASS="western" ALIGN=CENTER STYLE="text-indent: -0.02cm"><FONT SIZE=2>(?=regexp)</FONT></P>
+		</TD>
+		<TD WIDTH=565>
+			<P CLASS="western">Взгляд вперед: строка должна соответствовать
+			заданному регулярному выражению, но дальнейшее сопоставление с
+			шаблоном начнется с того же места 
+			</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=105>
+			<P CLASS="western" ALIGN=CENTER STYLE="text-indent: -0.02cm"><FONT SIZE=2>(?!regexp)</FONT></P>
+		</TD>
+		<TD WIDTH=565>
+			<P CLASS="western">То же, но с отрицанием соответствия 
+			</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=105>
+			<P CLASS="western" ALIGN=CENTER STYLE="text-indent: -0.02cm"><FONT SIZE=2>(?&lt;=regexp)</FONT></P>
+		</TD>
+		<TD WIDTH=565>
+			<P CLASS="western">Взгляд назад: строка должна соответствовать,
+			если до этого момента соответствует регулярному выражению. Не
+			занимает места в строке, к которой применяется шаблон. Параметр
+			regexp должен быть фиксированной длины (то есть, без + и *) 
+			</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=105>
+			<P CLASS="western" ALIGN=CENTER STYLE="text-indent: -0.02cm"><FONT SIZE=2>(?&lt;!regexp)</FONT></P>
+		</TD>
+		<TD WIDTH=565>
+			<P CLASS="western">То же, но с отрицанием соответствия 
+			</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=105>
+			<P CLASS="western" ALIGN=CENTER STYLE="text-indent: -0.02cm"><FONT SIZE=2>(?P&lt;name&gt;regexp)</FONT></P>
+		</TD>
+		<TD WIDTH=565>
+			<P CLASS="western">Выделяет в группу с именем name</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=105>
+			<P CLASS="western" ALIGN=CENTER STYLE="text-indent: -0.02cm"><FONT SIZE=2>(?P=name)</FONT></P>
+		</TD>
+		<TD WIDTH=565>
+			<P CLASS="western">Точно соответствует выделенной ранее
+			именованной группе с именем имя 
+			</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=105>
+			<P CLASS="western" ALIGN=CENTER STYLE="text-indent: -0.02cm"><FONT SIZE=2>(?#regexp)</FONT></P>
+		</TD>
+		<TD WIDTH=565>
+			<P CLASS="western">Комментарий (игнорируется) 
+			</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=105>
+			<P CLASS="western" ALIGN=CENTER STYLE="text-indent: -0.02cm"><FONT SIZE=2>(?(name)re1|re2)</FONT></P>
+		</TD>
+		<TD WIDTH=565>
+			<P CLASS="western">Если группа с номером или именем name оказалась
+			определена, результатом будет сопоставление с re1, иначе - c re2.
+			Часть |re2 может отсутствовать 
+			</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=105>
+			<P CLASS="western" ALIGN=CENTER STYLE="text-indent: -0.02cm"><FONT SIZE=2>(?flag)</FONT></P>
+		</TD>
+		<TD WIDTH=565>
+			<P CLASS="western">Задает флаг для всего данного регулярного
+			выражения. Флаги необходимо задавать в начале шаблона</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=105>
+			<P CLASS="western" ALIGN=CENTER STYLE="text-indent: -0.02cm"><BR>
+			</P>
+		</TD>
+		<TD WIDTH=565>
+			<P CLASS="western"><I><B>Cпециальные последовательности,
+			использующие обратную косую черту</B></I></P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=105>
+			<P CLASS="western" ALIGN=CENTER STYLE="text-indent: -0.02cm"><FONT SIZE=2>\1
+			- \9</FONT></P>
+		</TD>
+		<TD WIDTH=565>
+			<P CLASS="western">Группа с указанным номером. Группы нумеруются,
+			начиная с 1</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=105>
+			<P CLASS="western" ALIGN=CENTER STYLE="text-indent: -0.02cm"><FONT SIZE=2>\A</FONT></P>
+		</TD>
+		<TD WIDTH=565>
+			<P CLASS="western">Промежуток перед началом всей строки (почти
+			аналогично ^) 
+			</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=105>
+			<P CLASS="western" ALIGN=CENTER STYLE="text-indent: -0.02cm"><FONT SIZE=2>\Z</FONT></P>
+		</TD>
+		<TD WIDTH=565>
+			<P CLASS="western">Промежуток перед концом всей строки (почти
+			аналогично $) 
+			</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=105>
+			<P CLASS="western" ALIGN=CENTER STYLE="text-indent: -0.02cm"><FONT SIZE=2>\b</FONT></P>
+		</TD>
+		<TD WIDTH=565>
+			<P CLASS="western">Промежуток между символами перед словом или
+			после него 
+			</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=105>
+			<P CLASS="western" ALIGN=CENTER STYLE="text-indent: -0.02cm"><FONT SIZE=2>\B</FONT></P>
+		</TD>
+		<TD WIDTH=565>
+			<P CLASS="western">Наоборот, не соответствует промежутку между
+			символами на границе слова 
+			</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=105>
+			<P CLASS="western" ALIGN=CENTER STYLE="text-indent: -0.02cm"><FONT SIZE=2>\d</FONT></P>
+		</TD>
+		<TD WIDTH=565>
+			<P CLASS="western">Цифра. Аналогично [0-9]</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=105>
+			<P CLASS="western" ALIGN=CENTER STYLE="text-indent: -0.02cm"><FONT SIZE=2>\s</FONT></P>
+		</TD>
+		<TD WIDTH=565>
+			<P CLASS="western">Любой пробельный символ. Аналогично
+			[\t\n\r\f\v] 
+			</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=105>
+			<P CLASS="western" ALIGN=CENTER STYLE="text-indent: -0.02cm"><FONT SIZE=2>\S</FONT></P>
+		</TD>
+		<TD WIDTH=565>
+			<P CLASS="western">Любой непробельный символ. Аналогично
+			[^\t\n\r\f\v]</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=105>
+			<P CLASS="western" ALIGN=CENTER STYLE="text-indent: -0.02cm"><FONT SIZE=2>\w</FONT></P>
+		</TD>
+		<TD WIDTH=565>
+			<P CLASS="western">Любая цифра или буква</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=105>
+			<P CLASS="western" ALIGN=CENTER STYLE="text-indent: -0.02cm"><FONT SIZE=2>\W</FONT></P>
+		</TD>
+		<TD WIDTH=565>
+			<P CLASS="western">Любой символ, не являющийся цифрой или буквой</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=105>
+			<P CLASS="western" ALIGN=CENTER STYLE="text-indent: -0.02cm"><FONT SIZE=2>\x</FONT></P>
+		</TD>
+		<TD WIDTH=565>
+			<P CLASS="western">Шестнадцатиричное число</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=105>
+			<P CLASS="western" ALIGN=CENTER STYLE="text-indent: -0.02cm"><FONT SIZE=2>\O</FONT></P>
+		</TD>
+		<TD WIDTH=565>
+			<P CLASS="western">Восьмиричное число</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=105>
+			<P CLASS="western" ALIGN=CENTER STYLE="text-indent: -0.02cm"><FONT SIZE=2>?()</FONT></P>
+		</TD>
+		<TD WIDTH=565>
+			<P CLASS="western">Соответствие [if then]</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=105>
+			<P CLASS="western" ALIGN=CENTER STYLE="text-indent: -0.02cm"><FONT SIZE=2>?()|</FONT></P>
+		</TD>
+		<TD WIDTH=565>
+			<P CLASS="western">Соответствие [if then else]</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=105>
+			<P CLASS="western" ALIGN=CENTER STYLE="text-indent: -0.02cm"><BR>
+			</P>
+		</TD>
+		<TD WIDTH=565>
+			<P CLASS="western"><I>Специальные символы</I></P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=105>
+			<P CLASS="western" ALIGN=CENTER STYLE="text-indent: -0.02cm"><FONT SIZE=2>\n</FONT></P>
+		</TD>
+		<TD WIDTH=565>
+			<P CLASS="western">Новая строка</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=105>
+			<P CLASS="western" ALIGN=CENTER STYLE="text-indent: -0.02cm"><FONT SIZE=2>\r</FONT></P>
+		</TD>
+		<TD WIDTH=565>
+			<P CLASS="western">Возврат каретки</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=105>
+			<P CLASS="western" ALIGN=CENTER STYLE="text-indent: -0.02cm"><FONT SIZE=2>\t</FONT></P>
+		</TD>
+		<TD WIDTH=565>
+			<P CLASS="western">Табуляция</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=105>
+			<P CLASS="western" ALIGN=CENTER STYLE="text-indent: -0.02cm"><FONT SIZE=2>\v</FONT></P>
+		</TD>
+		<TD WIDTH=565>
+			<P CLASS="western">Вертикальная табуляция</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=105>
+			<P CLASS="western" ALIGN=CENTER STYLE="text-indent: -0.02cm"><FONT SIZE=2>\f</FONT></P>
+		</TD>
+		<TD WIDTH=565>
+			<P CLASS="western">Заполнение формы</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=105>
+			<P CLASS="western" ALIGN=CENTER STYLE="text-indent: -0.02cm"><FONT SIZE=2>\xxx</FONT></P>
+		</TD>
+		<TD WIDTH=565>
+			<P CLASS="western">Восьмиричное число xxx</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=105>
+			<P CLASS="western" ALIGN=CENTER STYLE="text-indent: -0.02cm"><FONT SIZE=2>\xhh</FONT></P>
+		</TD>
+		<TD WIDTH=565>
+			<P CLASS="western">Шестнадцатиричное число hh</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=105>
+			<P CLASS="western" ALIGN=CENTER STYLE="text-indent: -0.02cm"><BR>
+			</P>
+		</TD>
+		<TD WIDTH=565>
+			<P CLASS="western"><I><B>Модификаторы и флаги</B></I></P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=105>
+			<P CLASS="western" ALIGN=CENTER STYLE="text-indent: -0.02cm"><FONT SIZE=2>g</FONT></P>
+		</TD>
+		<TD WIDTH=565>
+			<P CLASS="western">Общее соответствие</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=105>
+			<P CLASS="western" ALIGN=CENTER STYLE="text-indent: -0.02cm"><FONT SIZE=2>i</FONT></P>
+		</TD>
+		<TD WIDTH=565>
+			<P CLASS="western">Не зависит от регистра</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=105>
+			<P CLASS="western" ALIGN=CENTER STYLE="text-indent: -0.02cm"><FONT SIZE=2>m</FONT></P>
+		</TD>
+		<TD WIDTH=565>
+			<P CLASS="western">Мультистрочный</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=105>
+			<P CLASS="western" ALIGN=CENTER STYLE="text-indent: -0.02cm"><FONT SIZE=2>s</FONT></P>
+		</TD>
+		<TD WIDTH=565>
+			<P CLASS="western">Текст как одна строка</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=105>
+			<P CLASS="western" ALIGN=CENTER STYLE="text-indent: -0.02cm"><FONT SIZE=2>x</FONT></P>
+		</TD>
+		<TD WIDTH=565>
+			<P CLASS="western">Допуск пробелов и коментариев в выражении</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=105>
+			<P CLASS="western" ALIGN=CENTER STYLE="text-indent: -0.02cm"><FONT SIZE=2>e</FONT></P>
+		</TD>
+		<TD WIDTH=565>
+			<P CLASS="western">Замены оценки</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=105>
+			<P CLASS="western" ALIGN=CENTER STYLE="text-indent: -0.02cm"><FONT SIZE=2>U</FONT></P>
+		</TD>
+		<TD WIDTH=565>
+			<P CLASS="western">Не жадные выражения</P>
+		</TD>
+	</TR>
+</TABLE>
+<P CLASS="western" STYLE="text-indent: 1.26cm; margin-bottom: 0cm"><BR>
+</P>
+<P CLASS="western" STYLE="text-indent: 1.26cm; margin-bottom: 0cm"><B>Примеры
+регулярных выражений</B>:</P>
+<P CLASS="western" STYLE="text-indent: 1.26cm; margin-bottom: 0cm"><FONT COLOR="#0000ff">(</FONT><FONT COLOR="#0000ff"><SPAN LANG="en-US">[A-Za-z0-9-]+</SPAN></FONT><FONT COLOR="#0000ff">)</FONT>
+<SPAN LANG="en-US">- </SPAN><SPAN LANG="ru-RU">буквы, цифры и дефисы</SPAN></P>
+<P LANG="uk-UA" CLASS="western" STYLE="text-indent: 1.26cm; margin-bottom: 0cm">
+<FONT COLOR="#0000ff">(\</FONT><FONT COLOR="#0000ff"><SPAN LANG="en-US">d{1,2}\/\d{1,2}\/\d{4}</SPAN></FONT><FONT COLOR="#0000ff">)</FONT>
+&ndash; <SPAN LANG="ru-RU">дата в формате день/месяц/год</SPAN></P>
+<P LANG="uk-UA" CLASS="western" STYLE="text-indent: 1.26cm; margin-bottom: 0cm">
+<FONT COLOR="#0000ff"><SPAN LANG="ru-RU">(</SPAN></FONT><FONT COLOR="#0000ff"><SPAN LANG="en-US">[^\s]+(?=\.(jpg|gif|png))\.\2)</SPAN></FONT>
+&ndash; <SPAN LANG="ru-RU">изображение </SPAN><SPAN LANG="en-US">jpg,
+gif </SPAN><SPAN LANG="ru-RU">или </SPAN><SPAN LANG="en-US">png</SPAN></P>
+<P LANG="uk-UA" CLASS="western" STYLE="text-indent: 1.26cm; margin-bottom: 0cm">
+<FONT COLOR="#0000ff"><SPAN LANG="en-US">(^[1-9]{1}$^[1-4]{1}[0-9]{1}$^50$)</SPAN></FONT>
+<SPAN LANG="en-US">- </SPAN><SPAN LANG="ru-RU">любое число от 1 до 50
+включительно</SPAN></P>
+<P LANG="en-US" CLASS="western" STYLE="text-indent: 1.26cm; margin-bottom: 0cm">
+<FONT COLOR="#0000ff">(#?([A-Fa-f0-9]){3}(([A-Fa-f0-9]){3})?)</FONT>
+- <SPAN LANG="ru-RU">правильный 16-тиричный код цвета</SPAN></P>
+<P LANG="en-US" CLASS="western" STYLE="text-indent: 1.26cm; margin-bottom: 0cm">
+<FONT COLOR="#0000ff">((?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,15})</FONT>
+&ndash; <SPAN LANG="ru-RU">строка в которой встречаются хотя бы одна
+заглавная одна прописная буквы и хотя бы одна цифра (удобно для
+паролей)</SPAN></P>
+<P LANG="en-US" CLASS="western" STYLE="text-indent: 1.26cm; margin-bottom: 0cm">
+<FONT COLOR="#0000ff">(\w+@[a-zA-Z]+?\.[a-zA-Z]{2,6})</FONT> &ndash;
+<SPAN LANG="ru-RU">Адрес </SPAN>e-mail 
+</P>
+<P LANG="en-US" CLASS="western" STYLE="text-indent: 1.26cm; margin-bottom: 0cm">
+<FONT COLOR="#0000ff">(\&lt;(/?[^\&gt;]+)\&gt;)</FONT> <SPAN LANG="ru-RU">-
+</SPAN>HTML <SPAN LANG="ru-RU">теги.</SPAN></P>
+</BODY>
+</HTML>

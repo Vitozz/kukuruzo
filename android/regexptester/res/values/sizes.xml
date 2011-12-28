@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+<dimen name="ResultHeight">30dp</dimen>
+<dimen name="ResultWidth">300dp</dimen>
+<dimen name="GroupWidth">80dp</dimen>
+</resources>

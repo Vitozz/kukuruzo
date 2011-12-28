@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="TitleText">Enter the data for calculating</string>
+    <string name="app_name">Interpolation</string>
+
+<string name="X1Text">X1</string>
+<string name="X2Text">X2</string>
+<string name="XtrText">Xtr(X1:X2)</string>
+<string name="Y1Text">Y1</string>
+<string name="Y2Text">Y2</string>
+<string name="YrtText">Answer</string>
+<string name="ButtonText">Count!</string>
+<string name="def_value">0</string>
+<string name="description">Calculate a linear Interpolation and a linear Extrapolation</string>
+<string name="about_title">
+<b>About...</b>
+</string>
+<string name="about_text">
+Program for calculating a linear interpolation and linear extrapolation.\n\n
+<u>Copyright:\n</u>
+<i>2010 © Vitaly Tonkacheyev</i>
+</string>
+<string name="about_author">2010 © Vitaly Tonkacheyev</string>
+<string name="about_ok">OK</string>
+<string name="about_exit">Exit</string>
+<string name="is_counted">Result=</string>
+<string name="data_error">Error!\n|X1-X2|=0</string>
+<string name="count_title">Count!</string>
+</resources>
