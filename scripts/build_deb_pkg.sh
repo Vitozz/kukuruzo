@@ -56,12 +56,19 @@ check_dir ()
 
 get_src ()
 {
-	if [ -z "${srcdir}" ]
+	cd ${homedir}
+	git clone "git://github.com/Vitozz/kukuruzo.git"  ${srcdir}
+	cd ${srcdir}
+	git init
+	git pull
+}
+
+rm_all ()
+{
+	cd ${homedir}
+	if [ -d "${srcdir}" ]
 	then
-		git clone git://github.com/Vitozz/kukuruzo.git  ${srcdir}
-	else
-		cd ${srcdir}
-		git pull
+		rm -rf ${srcdir}
 	fi
 }
 
@@ -259,19 +266,23 @@ CXXFLAGS=-O3'
 }
 #
 
+prepare_sound_python ()
+{
+	section="sound"
+	arch="all"
+	builddep="cdbs, debhelper (>= 7), python-support (>= 0.6)"
+	addit="XB-Python-Version: \${python:Versions}"	
+}
+
 build_erp ()
 {
-	prepare_global
 	project="exaile-remote-plugin"
 	dirname="python/exaile-remote-plugin"
 	ver=`cat ${srcdir}/${dirname}/version.txt`
 	prepare_src ${dirname}
 	debdir=${builddir}/${project}-${ver}
 	cd ${debdir}
-	section="sound"
-	arch="all"
-	builddep="cdbs, debhelper (>= 7), python-support (>= 0.6)"
-	addit="XB-Python-Version: \${python:Versions}"
+	prepare_sound_python
 	depends="\${python:Depends}, python-gtk2, exaile (>=0.3.2.0)"
 	description="Control Exaile via tray icons"
 	descriptionlong='Control Exaile via tray icons.
@@ -287,17 +298,13 @@ build_erp ()
 
 build_etp ()
 {
-	prepare_global
 	project="exaile-tunetopsi-plugin"
 	dirname="python/exaile-tunetopsi-plugin"
 	ver=`cat ${srcdir}/${dirname}/version.txt`
 	prepare_src ${dirname}
 	debdir=${builddir}/${project}-${ver}
 	cd ${debdir}
-	section="sound"
-	arch="all"
-	builddep="cdbs, debhelper (>= 7), python-support (>= 0.6)"
-	addit="XB-Python-Version: \${python:Versions}"
+	prepare_sound_python
 	depends="\${python:Depends}, exaile"
 	description="Exaile Tune To Psi Plugin"
 	descriptionlong='Sends Current Track Information to Psi/Psi+ as Tune.
@@ -313,17 +320,13 @@ build_etp ()
 
 build_pyav ()
 {
-	prepare_global
 	project="pyalsavolume"
 	dirname="python/pyalsavolume"
 	ver=`cat ${srcdir}/${dirname}/version.txt`
 	prepare_src ${dirname}
 	debdir=${builddir}/${project}-${ver}
 	cd ${debdir}
-	section="sound"
-	arch="all"
-	builddep="cdbs, debhelper (>= 7), python-support (>= 0.6)"
-	addit="XB-Python-Version: \${python:Versions}"
+	prepare_sound_python
 	depends="\${python:Depends}, python-gtk2, python-glade2, python-gconf, python-alsaaudio (>=0.6)"
 	description="Tray ALSA volume changer"
 	descriptionlong=' Простая программа для изменения громкости звука одного из микшеров ALSA из системного трея.
@@ -345,7 +348,6 @@ usr/share/applications
 
 build_pypoff ()
 {
-	prepare_global
 	project="pypoweroff"
 	dirname="python/pypoweroff"
 	ver=`cat ${srcdir}/${dirname}/version.txt`
@@ -377,7 +379,6 @@ usr/share/applications
 
 build_pyssh ()
 {
-	prepare_global
 	project="pysshclient"
 	dirname="python/pysshclient"
 	ver=`cat ${srcdir}/${dirname}/version.txt`
@@ -407,17 +408,13 @@ usr/share/applications
 
 build_rbremp ()
 {
-	prepare_global
 	project="rb-remote-plugin"
 	dirname="python/rb-remote-plugin"
 	ver=`cat ${srcdir}/${dirname}/version.txt`
 	prepare_src ${dirname}
 	debdir=${builddir}/${project}-${ver}
 	cd ${debdir}
-	section="sound"
-	arch="all"
-	builddep="cdbs, debhelper (>= 7), python-support (>= 0.6)"
-	addit="XB-Python-Version: \${python:Versions}"
+	prepare_sound_python
 	depends="\${python:Depends}, \${misc:Depends}, python-gtk2, python-glade2, python-gconf, rhythmbox"
 	description="Control Rhythmbox via tray icons"
 	descriptionlong='Control Rhythmbox via tray icons'
@@ -432,17 +429,13 @@ build_rbremp ()
 
 build_rbresp ()
 {
-	prepare_global
 	project="rb-restore-plugin"
 	dirname="python/rb-restore-plugin"
 	ver=`cat ${srcdir}/${dirname}/version.txt`
 	prepare_src ${dirname}
 	debdir=${builddir}/${project}-${ver}
 	cd ${debdir}
-	section="sound"
-	arch="all"
-	builddep="cdbs, debhelper (>= 7), python-support (>= 0.6)"
-	addit="XB-Python-Version: \${python:Versions}"
+	prepare_sound_python
 	depends="\${python:Depends}, \${misc:Depends}, python-gtk2, python-glade2, python-gconf, rhythmbox"
 	description="Rhythmbox restore last item plugin"
 	descriptionlong='Восстанавливает последний воспроизводимый трек при запуске Rhythmbox.
@@ -458,17 +451,13 @@ build_rbresp ()
 
 build_rbtunp ()
 {
-	prepare_global
 	project="rb-tunetopsi-plugin"
 	dirname="python/rb-tunetopsi-plugin"
 	ver=`cat ${srcdir}/${dirname}/version.txt`
 	prepare_src ${dirname}
 	debdir=${builddir}/${project}-${ver}
 	cd ${debdir}
-	section="sound"
-	arch="all"
-	builddep="cdbs, debhelper (>= 7), python-support (>= 0.6)"
-	addit="XB-Python-Version: \${python:Versions}"
+	prepare_sound_python
 	depends="\${python:Depends}, \${misc:Depends}, python-gtk2, python-glade2, python-gconf, rhythmbox"
 	description="Rhythmbox tune to Psi plugin"
 	descriptionlong='Отсылает данные о прослушиваемом треке Jabber-кленту Psi/Psi+
@@ -484,7 +473,6 @@ build_rbtunp ()
 
 build_regext ()
 {
-	prepare_global
 	check_qconf
 	project="regexptest"
 	dirname="qt/regexptest"
@@ -546,11 +534,14 @@ choose_action ()
     "8" ) build_rbtunp;;
     "9" ) build_regext;;
     "0" ) quit;;
+    "ra" ) rm_all;;
   esac
 }
 
 cd ${home}
 clear
+check_dir ${srcdir}
+get_src
 while [ ${isloop} = 1 ]
 do
   print_menu
