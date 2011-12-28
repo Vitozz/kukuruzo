@@ -41,7 +41,7 @@ else
 	fi
 fi
 
-Maintainer="${username} <${username}@${hostname}>"
+Maintainer="Vitaly Tonkacheyev <thetvg@gmail.com>"
 
 check_dir ()
 {
@@ -56,7 +56,27 @@ check_dir ()
 
 get_src ()
 {
-	git clone git://github.com/Vitozz/kukuruzo.git  ${srcdir}
+	if [ -z "${srcdir}" ]
+	then
+		git clone git://github.com/Vitozz/kukuruzo.git  ${srcdir}
+	else
+		cd ${srcdir}
+		git pull
+	fi
+}
+
+check_qconf ()
+{
+	if [ -f "/usr/bin/qconf" -o -f "/usr/local/bin/qconf" ]
+	then
+		qconfcmd=qconf
+	fi
+	if [ -f "/usr/bin/qt-qconf" -o -f "/usr/local/bin/qt-qconf" ]
+	then
+		qconfcmd=qt-qconf
+	else
+		echo "Install Please qconf utility to continue"
+	fi
 }
 
 prepare_global ()
@@ -73,9 +93,9 @@ prepare_src ()
 	if [ ! -z "$1" ]
 	then
 		dirname="$1"
-		ver=`cat ${srcdir}/${dirname}/version.txt`
-		cp ${srcdir}/${dirname} ${builddir}/${dirname}-${ver}
-		workdir=${builddir}/${dirname}-${ver}
+		check_dir ${builddir}/${project}-${ver}
+		cp -rf ${srcdir}/${dirname}/* ${builddir}/${project}-${ver}/
+		workdir=${builddir}/${project}-${ver}
 		cd ${workdir}
 		check_dir ${workdir}/debian
 	fi
@@ -88,18 +108,18 @@ build_deb ()
 
 
 
-close ()
+quit ()
 {
 	isloop=0
 }
 #
 prepare_specs ()
 {
-changelog="${project} (${version}) unstable; urgency=low
+changelog="${project} (${ver}-1) unstable; urgency=low
 
   * new upsream release
 
- -- ${Maintainer} ${data}"
+ -- ${username} <${username}@gmail.com>  ${data}"
 
 compat="7"
 control="Source: ${project}
@@ -115,7 +135,7 @@ Architecture: ${arch}
 ${addit}
 Depends: ${depends}
 Description: ${description}
- descriptionlong
+ ${descriptionlong}
 "
 copyright="This package was debianized by:
 
@@ -214,49 +234,40 @@ include /usr/share/cdbs/1/class/qmake.mk
 # Add here any variable or target overrides you need.
 QMAKE=qmake-qt4
 CFLAGS=-O3
-CXXFLAGS=-O3
-'
-	if [ ! -z "$1" ]
-	then
-		type="$1"
-		if [ type -eq "py" ]
+CXXFLAGS=-O3'
+		if [ "${project}" != "pyalsavolume" -a "${project}" != "regexptest" ]
 		then
-			rules=${rules_py}
-		else 
-			if [ type -eq "qt" ]
-			then
-				rules=${rules_qt}
-			else
-				if [ type -eq "py2" ]
-				then
-					prerem=${pyav_prerem}
-				fi
-			fi
+			echo "${rules_py}" > rules
+			echo "${pyversions}" > pyversions
+		fi 
+		if [ "${project}" == "regexptest" ]
+		then
+			echo "${rules_qt}" > rules
 		fi
-	fi
+		if [ "${project}" == "pyalsavolume" ]
+		then
+			echo "${rules_py}" > rules
+			echo "${pyav_prerem}" > prerm
+			echo "${pyversions}" > pyversions
+		fi
 	echo "${changelog}" > changelog
 	echo "${compat}" > compat
 	echo "${control}" > control
 	echo "${copyright}" > copyright
 	echo "${docs}" > docs
-	if [ ! -z ${prerem} ]
-	then
-		echo ${prerem} > prerem
-	fi
-	echo "${pyversions}" > pyversions
-	echo "${pyversions}" > pyversions
-	echo "${rules}" > rules
-	echo "${dirs} > dirs
+	echo "${dirs}" > dirs
 }
 #
 
 build_erp ()
 {
-	dirname="exaile-remote-plugin"
-	prepare_src ${dirname}
-	debdir=${builddir}/${dirname}-${ver}
-	cd ${debdir}
+	prepare_global
 	project="exaile-remote-plugin"
+	dirname="python/exaile-remote-plugin"
+	ver=`cat ${srcdir}/${dirname}/version.txt`
+	prepare_src ${dirname}
+	debdir=${builddir}/${project}-${ver}
+	cd ${debdir}
 	section="sound"
 	arch="all"
 	builddep="cdbs, debhelper (>= 7), python-support (>= 0.6)"
@@ -270,8 +281,240 @@ build_erp ()
 	cd ${debdir}/debian
 	prepare_specs "py"
 	cd ${debdir}
-	build_deb	
+	build_deb
+	cp -f ${builddir}/*.deb	${exitdir}/
 }
+
+build_etp ()
+{
+	prepare_global
+	project="exaile-tunetopsi-plugin"
+	dirname="python/exaile-tunetopsi-plugin"
+	ver=`cat ${srcdir}/${dirname}/version.txt`
+	prepare_src ${dirname}
+	debdir=${builddir}/${project}-${ver}
+	cd ${debdir}
+	section="sound"
+	arch="all"
+	builddep="cdbs, debhelper (>= 7), python-support (>= 0.6)"
+	addit="XB-Python-Version: \${python:Versions}"
+	depends="\${python:Depends}, exaile"
+	description="Exaile Tune To Psi Plugin"
+	descriptionlong='Sends Current Track Information to Psi/Psi+ as Tune.
+ Отсылает данные о прослушиваемом треке jabber-клиенту Psi/Psi+.'
+	docfiles=""
+	dirs="usr/share/exaile/plugins/tunetopsi"
+	cd ${debdir}/debian
+	prepare_specs "py"
+	cd ${debdir}
+	build_deb
+	cp -f ${builddir}/*.deb	${exitdir}/
+}
+
+build_pyav ()
+{
+	prepare_global
+	project="pyalsavolume"
+	dirname="python/pyalsavolume"
+	ver=`cat ${srcdir}/${dirname}/version.txt`
+	prepare_src ${dirname}
+	debdir=${builddir}/${project}-${ver}
+	cd ${debdir}
+	section="sound"
+	arch="all"
+	builddep="cdbs, debhelper (>= 7), python-support (>= 0.6)"
+	addit="XB-Python-Version: \${python:Versions}"
+	depends="\${python:Depends}, python-gtk2, python-glade2, python-gconf, python-alsaaudio (>=0.6)"
+	description="Tray ALSA volume changer"
+	descriptionlong=' Простая программа для изменения громкости звука одного из микшеров ALSA из системного трея.
+ Simple programm to change the volume of one of the ALSA mixer from the system tray..'
+	docfiles="Readme"
+	dirs='usr/bin
+usr/share/pyalsavolume
+usr/share/pyalsavolume/icons
+usr/share/pyalsavolume/lang
+usr/share/doc/pyalsavolume
+usr/share/applications
+'
+	cd ${debdir}/debian
+	prepare_specs "py2"
+	cd ${debdir}
+	build_deb
+	cp -f ${builddir}/*.deb	${exitdir}/
+}
+
+build_pypoff ()
+{
+	prepare_global
+	project="pypoweroff"
+	dirname="python/pypoweroff"
+	ver=`cat ${srcdir}/${dirname}/version.txt`
+	prepare_src ${dirname}
+	debdir=${builddir}/${project}-${ver}
+	cd ${debdir}
+	section="misc"
+	arch="all"
+	builddep="cdbs, debhelper (>= 7), python-support (>= 0.6)"
+	addit="XB-Python-Version: \${python:Versions}"
+	depends="\${python:Depends}, \${misc:Depends}, python-gtk2, python-glade2, python-gconf"
+	description="Turn-Off Tool"
+	descriptionlong='pyPowerOff - запланированное выключение компьютера.'
+	docfiles=""
+	dirs='usr/bin
+usr/share/pypoweroff
+usr/share/pypoweroff/images
+usr/share/pypoweroff/glades
+usr/share/pypoweroff/lang
+usr/share/applications
+
+'
+	cd ${debdir}/debian
+	prepare_specs "py"
+	cd ${debdir}
+	build_deb
+	cp -f ${builddir}/*.deb	${exitdir}/
+}
+
+build_pyssh ()
+{
+	prepare_global
+	project="pysshclient"
+	dirname="python/pysshclient"
+	ver=`cat ${srcdir}/${dirname}/version.txt`
+	prepare_src ${dirname}
+	debdir=${builddir}/${project}-${ver}
+	cd ${debdir}
+	section="misc"
+	arch="all"
+	builddep="cdbs, debhelper (>= 7), python-support (>= 0.6)"
+	addit="XB-Python-Version: \${python:Versions}"
+	depends="\${python:Depends}, python-crypto, python-gtk2, python-glade2, python-pexpect, sshfs, openssh-client"
+	description="SSHFS Connection GUI"
+	descriptionlong='pysshfs - it"s a simple program, that provides a graphical interface to connect to a remote directory using SSHFS.
+	It is written on Python + PyGTK
+'
+	docfiles=""
+	dirs='usr/bin
+usr/share/pysshclient
+usr/share/applications
+'
+	cd ${debdir}/debian
+	prepare_specs "py"
+	cd ${debdir}
+	build_deb
+	cp -f ${builddir}/*.deb	${exitdir}/
+}
+
+build_rbremp ()
+{
+	prepare_global
+	project="rb-remote-plugin"
+	dirname="python/rb-remote-plugin"
+	ver=`cat ${srcdir}/${dirname}/version.txt`
+	prepare_src ${dirname}
+	debdir=${builddir}/${project}-${ver}
+	cd ${debdir}
+	section="sound"
+	arch="all"
+	builddep="cdbs, debhelper (>= 7), python-support (>= 0.6)"
+	addit="XB-Python-Version: \${python:Versions}"
+	depends="\${python:Depends}, \${misc:Depends}, python-gtk2, python-glade2, python-gconf, rhythmbox"
+	description="Control Rhythmbox via tray icons"
+	descriptionlong='Control Rhythmbox via tray icons'
+	docfiles=""
+	dirs='usr/lib/rhythmbox/plugins/remote'
+	cd ${debdir}/debian
+	prepare_specs "py"
+	cd ${debdir}
+	build_deb
+	cp -f ${builddir}/*.deb	${exitdir}/
+}
+
+build_rbresp ()
+{
+	prepare_global
+	project="rb-restore-plugin"
+	dirname="python/rb-restore-plugin"
+	ver=`cat ${srcdir}/${dirname}/version.txt`
+	prepare_src ${dirname}
+	debdir=${builddir}/${project}-${ver}
+	cd ${debdir}
+	section="sound"
+	arch="all"
+	builddep="cdbs, debhelper (>= 7), python-support (>= 0.6)"
+	addit="XB-Python-Version: \${python:Versions}"
+	depends="\${python:Depends}, \${misc:Depends}, python-gtk2, python-glade2, python-gconf, rhythmbox"
+	description="Rhythmbox restore last item plugin"
+	descriptionlong='Восстанавливает последний воспроизводимый трек при запуске Rhythmbox.
+ Restores the last played item when runing Rhythmbox.'
+	docfiles=""
+	dirs='usr/lib/rhythmbox/plugins/restore'
+	cd ${debdir}/debian
+	prepare_specs "py"
+	cd ${debdir}
+	build_deb
+	cp -f ${builddir}/*.deb	${exitdir}/
+}
+
+build_rbresp ()
+{
+	prepare_global
+	project="rb-tunetopsi-plugin"
+	dirname="python/rb-tunetopsi-plugin"
+	ver=`cat ${srcdir}/${dirname}/version.txt`
+	prepare_src ${dirname}
+	debdir=${builddir}/${project}-${ver}
+	cd ${debdir}
+	section="sound"
+	arch="all"
+	builddep="cdbs, debhelper (>= 7), python-support (>= 0.6)"
+	addit="XB-Python-Version: \${python:Versions}"
+	depends="\${python:Depends}, \${misc:Depends}, python-gtk2, python-glade2, python-gconf, rhythmbox"
+	description="Rhythmbox tune to Psi plugin"
+	descriptionlong='Отсылает данные о прослушиваемом треке Jabber-кленту Psi/Psi+
+ Sends tune information to Psi or Psi+ jabber client'
+	docfiles=""
+	dirs='usr/lib/rhythmbox/plugins/tunetopsi'
+	cd ${debdir}/debian
+	prepare_specs "py"
+	cd ${debdir}
+	build_deb
+	cp -f ${builddir}/*.deb	${exitdir}/
+}
+
+build_regext ()
+{
+	prepare_global
+	check_qconf
+	project="regexptest"
+	dirname="qt/regexptest"
+	ver=`cat ${srcdir}/${dirname}/version.txt`
+	prepare_src ${dirname}
+	debdir=${builddir}/${project}-${ver}
+	cd ${debdir}
+	section="x11"
+	arch="all"
+	builddep="debhelper (>= 7), cdbs, libqt4-dev, qconf"
+	addit="#"
+	depends="\${shlibs:Depends}, \${misc:Depends}, libc6 (>=2.7-1), libgcc1 (>=1:4.1.1), libqtcore4 (>=4.4.3), libqtgui4 (>=4.4.3), libstdc++6 (>=4.1.1), libx11-6, zlib1g (>=1:1.1.4)"
+	description="RegExp Tester"
+	descriptionlong='Simple tool written on Qt to test regular expressions'
+	docfiles=""
+	dirs="usr/bin
+usr/share/regexptest
+usr/share/regexptest/icons
+usr/share/doc/regexptest
+usr/share/doc/regexptest/html
+usr/share/applications"
+	cd ${debdir}/debian
+	prepare_specs "qt"
+	cd ${debdir}
+	$qconfcmd
+	./configure --prefix=/usr
+	build_deb
+	cp -f ${builddir}/*.deb	${exitdir}/
+}
+
 
 print_menu ()
 {
