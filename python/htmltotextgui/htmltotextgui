@@ -5,13 +5,13 @@ import pygtk
 pygtk.require('2.0')
 import gtk
 import gtk.glade
-import os, re, string, threading, thread, HTMLParser
-gtk.gdk.threads_init()
+import os, re, string, threading, HTMLParser
+
 try:
-    import chardet
     from chardet.universaldetector import UniversalDetector
 except:
     os.sys.stderr.write("Error! No Module python-chardet found.")
+    os.sys.exit(1)
 
 class MLStripper(HTMLParser.HTMLParser):
     def __init__(self):
@@ -22,6 +22,15 @@ class MLStripper(HTMLParser.HTMLParser):
     def get_fed_data(self):
         return ''.join(self.fed)
 
+class ConvertThread(threading.Thread):
+    """thread class"""
+    def __init__(self, parent):
+        super(ConvertThread,  self).__init__()
+        self.parent = parent
+
+    def run(self):
+        self.parent.WalkOn()
+
 class mainForm:
     def __init__(self):
         self.files = []
@@ -31,6 +40,7 @@ class mainForm:
         self.htmlencoding = ""
         self.job = None
         self.isError = False
+        self.ignoreErrors = False
         self.wasError = False
         self.tags = re.compile(r'<[^<]*?/?>', re.IGNORECASE)
         self.adtag = re.compile(r'<[^<]*?/?>|(?:&.*?;)', re.IGNORECASE)
@@ -40,17 +50,24 @@ class mainForm:
         self.filter.add_pattern("*.htm")
         if str(os.sys.platform) == 'win32':
             gladefile = 'main_win.glade'
+        elif  os.path.exists('/usr/share/htmltotextgui/main_win.glade') :
+            gladefile = '/usr/share/htmltotextgui/main_win.glade'
         else:
-            gladefile = '/usr/share/htmltotextgui/main.glade'
-        self.wTree = gtk.glade.XML(gladefile)
+            gladefile = os.environ['HOME']+'/.local/share/htmltotextgui/main_win.glade'
+        if os.path.exists(gladefile):
+            self.wTree = gtk.glade.XML(gladefile)
+        else:
+            os.sys.stderr.write('Error No %s file found' %gladefile)
+            os.sys.exit(1)
         dic = {"on_mainForm_destroy_event": self.OnDestroy, "on_mainForm_delete_event": self.OnDestroy,
                "on_filechooser_selection_changed": self.OnFile, "on_runit_pressed":self.OnRun,
                "on_charselect_changed": self.OnCharSelect,  "on_automat_toggled": self.OnAutomat,
-               "on_manual_toggled":self.OnManual, "on_htmlchar_changed": self.OnHtmlChar }
+               "on_manual_toggled":self.OnManual, "on_htmlchar_changed": self.OnHtmlChar, "on_ignorecheck_toggled": self.isErrorIgnore }
         self.wTree.signal_autoconnect(dic)
         self.mainForm = self.wTree.get_widget("mainForm")
         self.charselect = self.wTree.get_widget("charselect")
         self.htmlchar = self.wTree.get_widget("htmlchar")
+        self.ignorecheck = self.wTree.get_widget("ignorecheck")
         self.charselect.set_active(0)
         self.htmlchar.set_active(0)
         self.progress = self.wTree.get_widget("progress")
@@ -60,8 +77,9 @@ class mainForm:
         self.filechooser = self.wTree.get_widget("filechooser")
         self.filechooser.set_filter(self.filter)
         self.button = self.wTree.get_widget("runit")
-        self.sens_objects = (self.automat, self.manual, self.filechooser, self.charselect, self.button)
+        self.sens_objects = (self.automat, self.manual, self.filechooser, self.charselect, self.button,  self.ignorecheck)
         self.mainForm.show_all()
+        self.work = None
 
     def OnAutomat(self,  widget):
         if widget.get_active():
@@ -81,10 +99,8 @@ class mainForm:
         self.files = widget.get_filenames()
 
     def OnRun(self, widget):
-        for i in self.sens_objects:
-            if i != None:
-                i.set_sensitive(False)
-        self.WalkOn()
+        self.work = ConvertThread(self)
+        self.work.start()
 
     def OnCharSelect(self, widget):
         self.txtencoding = widget.get_active_text()
@@ -92,14 +108,61 @@ class mainForm:
     def OnDestroy(self, widget, event):
         gtk.main_quit()
         return True
-
+        
+    def isErrorIgnore(self, widget):
+        self.ignoreErrors = widget.get_active()
+        
+    def WalkOn(self):
+        self.setSensitive(False)
+        files = self.files
+        outencoding = self.txtencoding
+        encoding = ""
+        if files:
+            for item in files:
+                self.SetText(files.index(item), len(files), "Converting file %s..."%item)
+                if item != None:
+                    lines = []
+                    enc_lines = ""
+                    outtext = []
+                    lines = self.readFile(item)
+                    if not self.ismanual:
+                        encoding = self.Decode(lines)
+                        if encoding == 'MacCyrillic':
+                            encoding = 'windows-1251'
+                        print encoding
+                    else:
+                        encoding = self.htmlencoding
+                    if encoding != None:
+                        try:
+                            enc_lines = "".join(lines).decode(encoding)
+                        except Exception,  error:
+                            if str(os.sys.platform) != 'win32':
+                                os.sys.stderr.write(str(error))
+                            if not self.ignoreErrors:
+                                self.on_info("There was an Error when decoding file\n%s"%item)
+                            continue
+                    else:
+                        continue
+                    txtfile = self.GetFilename(item) + "txt"
+                    outtext = self.RemoveTAGS(enc_lines, item, outencoding)
+                    if self.isError:
+                        self.wasError = True
+                    if str(os.sys.platform) == 'win32':
+                        txtfile = txtfile.decode('UTF-8')
+                    self.writeFile(txtfile,  outtext)
+            self.SetText(1,1,"Job Finished!")
+            if self.wasError:
+                self.on_info("Job Finished With Errors")
+            else:
+                self.on_info("Job Finished")
+                
     def SetText(self, index, total, text):
         value = float(index)/float(total)
+        gtk.gdk.threads_enter()
         self.progress.set_fraction(value)
         self.progress.set_text(text)
-        while gtk.events_pending():
-            gtk.main_iteration()
-
+        gtk.gdk.threads_leave()
+        
 
     def RemoveTAGS(self, text, htmlfile, enc):
         try:
@@ -114,7 +177,8 @@ class mainForm:
             error = str(msg) + "\nin file:\n" + str(htmlfile)
             if str(os.sys.platform) != 'win32':
                 os.sys.stderr.write(str(error))
-            self.on_info("Ошибка модуля HTMLParser. Неверный тег\n%s\n\nТеги будут удалены при помощи регулярных выражений\nВ TXT файле возможен мусор"%error)
+            if not self.ignoreErrors:
+                self.on_info("Error in HTMLParser module. Wrong tag\n%s\n\nTags will be removed using regular expressions\nThere are rubbish possible in TXT file"%error)
             tmp4 = self.adtag.sub('',text)
             return self.RemoveEmptyLines(tmp4, enc)
 
@@ -132,47 +196,11 @@ class mainForm:
                         result.append((line+'\n').encode(enc))
         return result
 
-    def WalkOn(self):
-        for i in self.sens_objects:
-            if i != None:
-                i.set_sensitive(False)
-        files = self.files
-        outencoding = self.txtencoding
-        encoding = ""
-        if files:
-            for item in files:
-                if item != None:
-                    new_lines = []
-                    lines = []
-                    enc_lines = ""
-                    outtext = []
-                    lines = self.readFile(item)
-                    if not self.ismanual:
-                        encoding = self.Decode(lines)
-                        if encoding == 'MacCyrillic':
-                            encoding = 'windows-1251'
-                        print encoding
-                    else:
-                        encoding = self.htmlencoding
-                    enc_lines = "".join(lines).decode(encoding)
-                    self.SetText(files.index(item), len(files), "Converting file %s..."%item)
-                    txtfile = self.GetFilename(item) + "txt"
-                    outtext = self.RemoveTAGS(enc_lines, item, outencoding)
-                    if self.isError:
-                        self.wasError = True
-                    if str(os.sys.platform) == 'win32':
-                        txtfile = txtfile.decode('UTF-8')
-                    fl = open(txtfile, "w")
-                    fl.seek(0)
-                    fl.writelines(outtext)
-                    fl.close()
-                    self.done = True
-            if self.done:
-                self.SetText(1,1,"Job Finished!")
-                if self.wasError:
-                    self.on_info("Job Finished With Errors")
-                else:
-                    self.on_info("Job Finished")
+    def writeFile(self,  filename,  text):
+        fl = open(filename, "w")
+        fl.seek(0)
+        fl.writelines(text)
+        fl.close()
 
     def readFile(self, filename):
         result = []
@@ -187,16 +215,23 @@ class mainForm:
         return result
 
     def on_info(self, text):
+        gtk.gdk.threads_enter()
         md = gtk.MessageDialog(None,
             gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_INFO,
             gtk.BUTTONS_CLOSE, text)
         md.run()
         md.destroy()
-        if text == "Job Finished":
+        gtk.gdk.threads_leave()
+        if text == "Job Finished" or text == "Job Finished With Errors":
             self.SetText(0,1,"0%")
-            for i in self.sens_objects:
-                if i != None:
-                    i.set_sensitive(True)
+            self.setSensitive(True)
+                    
+    def setSensitive(self,  state):
+        for i in self.sens_objects:
+            if i != None:
+                gtk.gdk.threads_enter()
+                i.set_sensitive(state)
+                gtk.gdk.threads_leave()
 
     def GetFilename(self, htmlfile):
         if htmlfile:
@@ -210,18 +245,22 @@ class mainForm:
                 return ""
         else:
             return ""
-
+    
     def Decode(self, lines):
-        detector = UniversalDetector()
-        for line in lines:
-            detector.feed(line)
-            if detector.done: break
-        detector.close()
-        tmp = detector.result
-        result = tmp['encoding']
+        try:
+            detector = UniversalDetector()
+            for line in lines:
+                detector.feed(line)
+                if detector.done: break
+            detector.close()
+            tmp = detector.result
+            result = tmp['encoding']
+        except:
+            return None
         return result
 
 if __name__ == "__main__":
+    gtk.gdk.threads_init()
     app = mainForm()
     gtk.gdk.threads_enter()
     gtk.main()

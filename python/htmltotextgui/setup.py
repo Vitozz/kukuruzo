@@ -17,7 +17,7 @@ setup(name='htmltotextgui',
                     ('/usr/share/htmltotextgui', ['icon24.png']),
                     ('/usr/share/htmltotextgui', ['icon48.png']),
                     ('/usr/share/htmltotextgui', ['icon24.ico']),
-                    ('/usr/share/htmltotextgui', ['main.glade']),
+                    ('/usr/share/htmltotextgui', ['main_win.glade']),
                  ],
       )
                
