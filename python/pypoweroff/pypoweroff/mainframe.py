@@ -354,12 +354,18 @@ class mainFrame():
 
     def MakeAction(self, command):
         os.system(command)
+        if self.systype == 'windows':
+            gtk.main_quit()
 
     def Start(self, command_line):
-        tr1 = threading.Thread(None, self.MakeAction, name="t1", kwargs={"command": command_line})
-        tr1.start()
-        self.isclose = True;
-        gtk.main_quit()
+        if self.systype != 'windows':
+            tr1 = threading.Thread(None, self.MakeAction, name="t1", kwargs={"command": command_line})
+            tr1.start()
+            self.isclose = True;
+            gtk.main_quit()
+        else:
+            self.isclose = True;
+            self.MakeAction(command_line)
 
     def Stop(self):
         if self.runed:

@@ -13,18 +13,18 @@ opts = {
 setup(
     name = "pyPowerOff",
     description = ".Simple python powerroff program",
-    version = "1.2",
+    version = "1.2.2",
     author="Vitaly Tonkacheyev",
     author_email="thetvg@gmail.com",
     windows = [
-        {"script": "pyPowerOff.py",
+        {"script": "execute.py",
         "icon_resources": [(1, "images/poweroff.ico")]
         }
     ],
+    packages = ["pypoweroff"],
     options=opts,
     data_files=[("images", ["images/poweroff.png",
                 "images/poweroff.ico", "images/tb_icon.png"]),
-                "config.cfg", 
                 "COPYING",
                 ("glades", ["glades/powoff.glade"])
     ],
