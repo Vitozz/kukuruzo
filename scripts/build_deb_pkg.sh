@@ -527,7 +527,7 @@ build_html2text ()
 	arch="all"
 	builddep="cdbs, debhelper (>= 7), python-support (>= 0.6)"
 	addit="XB-Python-Version: \${python:Versions}"
-	depends="\${python:Depends}, python-gtk2, python-glade2"
+	depends="\${python:Depends}, python-gtk2, python-glade2, python-chardet"
 	description="HTML To TXT File Converter"
 	descriptionlong='Converts ebook-files from HTML to TXT format'
 	docfiles=""

@@ -16,6 +16,7 @@ setup(name='htmltotextgui',
       data_files=[('/usr/share/applications', ['htmltotextgui.desktop']),
                     ('/usr/share/htmltotextgui', ['icon24.png']),
                     ('/usr/share/htmltotextgui', ['icon48.png']),
+                    ('/usr/share/htmltotextgui', ['icon24.ico']),
                     ('/usr/share/htmltotextgui', ['main.glade']),
                  ],
       )
