@@ -1,0 +1,10 @@
+content tunetopsi  chrome/content/
+locale  tunetopsi  en-US  chrome/locale/en-US/
+locale  tunetopsi  ru-RU  chrome/locale/ru-RU/
+skin    tunetopsi  classic/1.0 chrome/skin/
+
+
+overlay chrome://songbird/content/xul/layoutWithBrowserOverlay.xul chrome://tunetopsi/content/scripts-overlay.xul
+
+
+

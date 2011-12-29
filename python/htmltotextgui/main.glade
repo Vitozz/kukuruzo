@@ -1,0 +1,242 @@
+<?xml version="1.0"?>
+<glade-interface>
+  <!-- interface-requires gtk+ 2.16 -->
+  <!-- interface-naming-policy project-wide -->
+  <widget class="GtkWindow" id="mainForm">
+    <property name="width_request">640</property>
+    <property name="height_request">600</property>
+    <property name="visible">True</property>
+    <property name="title" translatable="yes">HTML To TXT Converter</property>
+    <property name="resizable">False</property>
+    <property name="icon">icon24.ico</property>
+    <signal name="destroy_event" handler="on_mainForm_destroy_event"/>
+    <signal name="delete_event" handler="on_mainForm_delete_event"/>
+    <child>
+      <widget class="GtkVBox" id="vbox1">
+        <property name="visible">True</property>
+        <child>
+          <widget class="GtkLabel" id="label2">
+            <property name="visible">True</property>
+            <property name="label" translatable="yes">&#x412;&#x44B;&#x431;&#x435;&#x440;&#x438;&#x442;&#x435; &#x444;&#x430;&#x439;&#x43B;(&#x44B;) &#x444;&#x43E;&#x440;&#x43C;&#x430;&#x442;&#x430; *.html(*.htm) &#x434;&#x43B;&#x44F;
+&#x43F;&#x435;&#x440;&#x435;&#x43A;&#x43E;&#x434;&#x438;&#x440;&#x43E;&#x432;&#x430;&#x43D;&#x438;&#x44F; &#x438;&#x445; &#x432; &#x444;&#x43E;&#x440;&#x43C;&#x430;&#x442; *.txt</property>
+            <property name="justify">center</property>
+          </widget>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">False</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="GtkFileChooserWidget" id="filechooser">
+            <property name="visible">True</property>
+            <property name="orientation">vertical</property>
+            <property name="select_multiple">True</property>
+            <property name="show_hidden">True</property>
+            <signal name="selection_changed" handler="on_filechooser_selection_changed"/>
+          </widget>
+          <packing>
+            <property name="position">1</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="GtkLabel" id="label3">
+            <property name="visible">True</property>
+            <property name="label" translatable="yes">&#x412;&#x44B;&#x431;&#x435;&#x440;&#x438;&#x442;&#x435; &#x442;&#x438;&#x43F; &#x43E;&#x43F;&#x440;&#x435;&#x434;&#x435;&#x43B;&#x435;&#x43D;&#x438;&#x44F; &#x43A;&#x43E;&#x434;&#x438;&#x440;&#x43E;&#x432;&#x43A;&#x438; &#x444;&#x430;&#x439;&#x43B;&#x43E;&#x432;
+*.html(*.htm)</property>
+            <property name="justify">center</property>
+          </widget>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">False</property>
+            <property name="position">2</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="GtkVBox" id="vbox3">
+            <property name="visible">True</property>
+            <child>
+              <widget class="GtkHBox" id="hbox3">
+                <property name="visible">True</property>
+                <child>
+                  <widget class="GtkVButtonBox" id="vbuttonbox1">
+                    <property name="visible">True</property>
+                    <property name="layout_style">start</property>
+                    <child>
+                      <widget class="GtkRadioButton" id="automat">
+                        <property name="label" translatable="yes">&#x410;&#x432;&#x442;&#x43E;&#x43C;&#x430;&#x442;&#x438;&#x447;&#x435;&#x441;&#x43A;&#x438;</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">False</property>
+                        <property name="xalign">0</property>
+                        <property name="active">True</property>
+                        <property name="draw_indicator">True</property>
+                        <signal name="toggled" handler="on_automat_toggled"/>
+                      </widget>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">False</property>
+                        <property name="position">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="GtkRadioButton" id="manual">
+                        <property name="label" translatable="yes">&#x412;&#x440;&#x443;&#x447;&#x43D;&#x443;&#x44E;</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">False</property>
+                        <property name="xalign">0</property>
+                        <property name="draw_indicator">True</property>
+                        <property name="group">automat</property>
+                        <signal name="toggled" handler="on_manual_toggled"/>
+                      </widget>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">False</property>
+                        <property name="position">1</property>
+                      </packing>
+                    </child>
+                  </widget>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">False</property>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+              </widget>
+              <packing>
+                <property name="expand">False</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="GtkHBox" id="hbox4">
+                <property name="visible">True</property>
+                <child>
+                  <widget class="GtkLabel" id="label4">
+                    <property name="visible">True</property>
+                    <property name="label" translatable="yes">&#x41A;&#x43E;&#x434;&#x438;&#x440;&#x43E;&#x432;&#x43A;&#x430; &#x444;&#x430;&#x439;&#x43B;&#x43E;&#x432; *.html </property>
+                  </widget>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="GtkComboBox" id="htmlchar">
+                    <property name="visible">True</property>
+                    <property name="items" translatable="yes">UTF-8
+windows-1251
+windows-1250
+ASCII
+IBM866
+KOI8-R
+MacCyrillic</property>
+                    <signal name="changed" handler="on_htmlchar_changed"/>
+                  </widget>
+                  <packing>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+              </widget>
+              <packing>
+                <property name="position">1</property>
+              </packing>
+            </child>
+          </widget>
+          <packing>
+            <property name="expand">False</property>
+            <property name="position">3</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="GtkHBox" id="hbox1">
+            <property name="visible">True</property>
+            <child>
+              <widget class="GtkLabel" id="label1">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">&#x41A;&#x43E;&#x434;&#x438;&#x440;&#x43E;&#x432;&#x43A;&#x430; &#x444;&#x430;&#x439;&#x43B;&#x43E;&#x432; *.txt    </property>
+              </widget>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="GtkComboBox" id="charselect">
+                <property name="visible">True</property>
+                <property name="active">0</property>
+                <property name="items" translatable="yes">UTF-8
+windows-1251
+cp866</property>
+                <signal name="changed" handler="on_charselect_changed"/>
+              </widget>
+              <packing>
+                <property name="position">1</property>
+              </packing>
+            </child>
+          </widget>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">False</property>
+            <property name="position">4</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="GtkLabel" id="progress">
+            <property name="visible">True</property>
+          </widget>
+          <packing>
+            <property name="expand">False</property>
+            <property name="position">5</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="GtkHBox" id="hbox2">
+            <property name="visible">True</property>
+            <child>
+              <widget class="GtkAlignment" id="alignment2">
+                <property name="visible">True</property>
+                <child>
+                  <placeholder/>
+                </child>
+              </widget>
+              <packing>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="GtkButton" id="runit">
+                <property name="label" translatable="yes">&#x41A;&#x43E;&#x43D;&#x432;&#x435;&#x440;&#x442;&#x438;&#x440;&#x43E;&#x432;&#x430;&#x442;&#x44C;</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <signal name="pressed" handler="on_runit_pressed"/>
+              </widget>
+              <packing>
+                <property name="position">1</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="GtkAlignment" id="alignment1">
+                <property name="visible">True</property>
+                <child>
+                  <placeholder/>
+                </child>
+              </widget>
+              <packing>
+                <property name="position">2</property>
+              </packing>
+            </child>
+          </widget>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">False</property>
+            <property name="position">6</property>
+          </packing>
+        </child>
+      </widget>
+    </child>
+  </widget>
+</glade-interface>

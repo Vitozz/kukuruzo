@@ -515,6 +515,33 @@ usr/share/applications"
 	cp -f ${builddir}/*.deb	${exitdir}/
 }
 
+build_html2text ()
+{
+	project="htmltotextgui"
+	dirname="python/htmltotextgui"
+	ver=`cat ${srcdir}/${dirname}/version.txt`
+	prepare_src ${dirname}
+	debdir=${builddir}/${project}-${ver}
+	cd ${debdir}
+	section="misc"
+	arch="all"
+	builddep="cdbs, debhelper (>= 7), python-support (>= 0.6)"
+	addit="XB-Python-Version: \${python:Versions}"
+	depends="\${python:Depends}, python-gtk2, python-glade2"
+	description="HTML To TXT File Converter"
+	descriptionlong='Converts ebook-files from HTML to TXT format'
+	docfiles=""
+	dirs='usr/bin
+usr/share/htmltotextgui
+usr/share/applications
+'
+	cd ${debdir}/debian
+	prepare_specs
+	cd ${debdir}
+	build_deb
+	cp -f ${builddir}/*.deb	${exitdir}/
+}
+
 
 print_menu ()
 {
@@ -528,6 +555,7 @@ print_menu ()
 [7] - Build rb-restore-plugin debian package
 [8] - Build rb-tunetopsi-plugin debian package
 [9] - Build regexptest debian package
+[a] - Build html2text debian package
 [0] - Exit'
   echo "${menu_text}"
 }
@@ -545,6 +573,7 @@ choose_action ()
     "7" ) build_rbresp;;
     "8" ) build_rbtunp;;
     "9" ) build_regext;;
+    "a" ) build_html2text;;
     "0" ) quit;;
     "ra" ) rm_all;;
   esac

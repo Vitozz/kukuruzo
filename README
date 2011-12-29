@@ -6,10 +6,14 @@ Map of Repository:
                               |
                                ---interpolation
                                ---regexptester
+     ---other--
+                        |
+                         ---songbird_tunetopsi
      ---python--
                              |
                               ---exaile-remote-plugin
                               ---exaile-tunetopsi-plugin
+                              ---htmltotextgui
                               ---pyalsavolume
                               ---pypoweroff
                               ---pysshclient
