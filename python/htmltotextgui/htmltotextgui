@@ -5,6 +5,7 @@ import pygtk
 pygtk.require('2.0')
 import gtk
 import gtk.glade
+import gobject
 import os, re, string, threading, HTMLParser
 
 try:
@@ -29,7 +30,25 @@ class ConvertThread(threading.Thread):
         self.parent = parent
 
     def run(self):
-        self.parent.WalkOn()
+        if self.parent.WalkOn():
+            self.parent.JobFinished()
+
+class msgDialog(gtk.MessageDialog):
+    def __init__(self, parent, message):
+        gtk.MessageDialog.__init__(self, parent, gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
+                                gtk.MESSAGE_INFO, gtk.BUTTONS_OK, message)
+        self.set_default_response(gtk.RESPONSE_OK)
+        self.connect('response', self._handle_clicked)
+
+    def _handle_clicked(self, *args):
+        self.destroy()
+
+    def show_dialog(self):
+        gobject.timeout_add(0, self._do_show_dialog)
+
+    def _do_show_dialog(self):
+        self.show_all()
+        return False
 
 class mainForm:
     def __init__(self):
@@ -68,6 +87,7 @@ class mainForm:
         self.charselect = self.wTree.get_widget("charselect")
         self.htmlchar = self.wTree.get_widget("htmlchar")
         self.ignorecheck = self.wTree.get_widget("ignorecheck")
+        self.ignorecheck.set_active(1)
         self.charselect.set_active(0)
         self.htmlchar.set_active(0)
         self.progress = self.wTree.get_widget("progress")
@@ -80,6 +100,8 @@ class mainForm:
         self.sens_objects = (self.automat, self.manual, self.filechooser, self.charselect, self.button,  self.ignorecheck)
         self.mainForm.show_all()
         self.work = None
+        self.job_finished = False
+        self.dialog = None
 
     def OnAutomat(self,  widget):
         if widget.get_active():
@@ -99,6 +121,7 @@ class mainForm:
         self.files = widget.get_filenames()
 
     def OnRun(self, widget):
+        self.setSensitive(False)
         self.work = ConvertThread(self)
         self.work.start()
 
@@ -108,18 +131,19 @@ class mainForm:
     def OnDestroy(self, widget, event):
         gtk.main_quit()
         return True
-        
+
     def isErrorIgnore(self, widget):
         self.ignoreErrors = widget.get_active()
-        
+
     def WalkOn(self):
-        self.setSensitive(False)
         files = self.files
         outencoding = self.txtencoding
         encoding = ""
         if files:
             for item in files:
+                gtk.gdk.threads_enter()
                 self.SetText(files.index(item), len(files), "Converting file %s..."%item)
+                gtk.gdk.threads_leave()
                 if item != None:
                     lines = []
                     enc_lines = ""
@@ -139,7 +163,9 @@ class mainForm:
                             if str(os.sys.platform) != 'win32':
                                 os.sys.stderr.write(str(error))
                             if not self.ignoreErrors:
+                                gtk.gdk.threads_enter()
                                 self.on_info("There was an Error when decoding file\n%s"%item)
+                                gtk.gdk.threads_leave()
                             continue
                     else:
                         continue
@@ -150,19 +176,23 @@ class mainForm:
                     if str(os.sys.platform) == 'win32':
                         txtfile = txtfile.decode('UTF-8')
                     self.writeFile(txtfile,  outtext)
+            return True
+
+    def JobFinished(self):
             self.SetText(1,1,"Job Finished!")
+            self.job_finished = True
             if self.wasError:
                 self.on_info("Job Finished With Errors")
             else:
                 self.on_info("Job Finished")
-                
+            self.setSensitive(True)
+            self.job_finished = False
+
+
     def SetText(self, index, total, text):
         value = float(index)/float(total)
-        gtk.gdk.threads_enter()
         self.progress.set_fraction(value)
         self.progress.set_text(text)
-        gtk.gdk.threads_leave()
-        
 
     def RemoveTAGS(self, text, htmlfile, enc):
         try:
@@ -178,7 +208,9 @@ class mainForm:
             if str(os.sys.platform) != 'win32':
                 os.sys.stderr.write(str(error))
             if not self.ignoreErrors:
+                gtk.gdk.threads_enter()
                 self.on_info("Error in HTMLParser module. Wrong tag\n%s\n\nTags will be removed using regular expressions\nThere are rubbish possible in TXT file"%error)
+                gtk.gdk.threads_leave()
             tmp4 = self.adtag.sub('',text)
             return self.RemoveEmptyLines(tmp4, enc)
 
@@ -215,23 +247,16 @@ class mainForm:
         return result
 
     def on_info(self, text):
-        gtk.gdk.threads_enter()
-        md = gtk.MessageDialog(None,
-            gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_INFO,
-            gtk.BUTTONS_CLOSE, text)
-        md.run()
-        md.destroy()
-        gtk.gdk.threads_leave()
-        if text == "Job Finished" or text == "Job Finished With Errors":
-            self.SetText(0,1,"0%")
-            self.setSensitive(True)
-                    
+        if (self.mainForm):
+            self.dialog=msgDialog(self.mainForm, text)
+            self.dialog.show_dialog()
+            if self.job_finished:
+                self.SetText(0,100,"0%")
+
     def setSensitive(self,  state):
         for i in self.sens_objects:
             if i != None:
-                gtk.gdk.threads_enter()
                 i.set_sensitive(state)
-                gtk.gdk.threads_leave()
 
     def GetFilename(self, htmlfile):
         if htmlfile:
@@ -245,7 +270,7 @@ class mainForm:
                 return ""
         else:
             return ""
-    
+
     def Decode(self, lines):
         try:
             detector = UniversalDetector()
@@ -261,7 +286,7 @@ class mainForm:
 
 if __name__ == "__main__":
     gtk.gdk.threads_init()
-    app = mainForm()
     gtk.gdk.threads_enter()
+    app = mainForm()
     gtk.main()
     gtk.gdk.threads_leave()

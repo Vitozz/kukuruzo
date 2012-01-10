@@ -10,7 +10,7 @@ opts = {
     }
 
 setup(name='htmltotextgui',
-      version='0.1',
+      version='0.2',
       description='HTML To TXT File Converter',
       long_description = "Converts ebook-files from HTML to TXT format",
       author='Vitaly Tonkacheyev',
