@@ -14,6 +14,9 @@ except:
     os.sys.stderr.write("Error! No Module python-chardet found.")
     os.sys.exit(1)
 
+INFO=gtk.MESSAGE_INFO
+ERROR=gtk.MESSAGE_ERROR
+
 class MLStripper(HTMLParser.HTMLParser):
     def __init__(self):
         self.reset()
@@ -34,9 +37,9 @@ class ConvertThread(threading.Thread):
             self.parent.JobFinished()
 
 class msgDialog(gtk.MessageDialog):
-    def __init__(self, parent, message):
+    def __init__(self, parent, message, typeOf):
         gtk.MessageDialog.__init__(self, parent, gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
-                                gtk.MESSAGE_INFO, gtk.BUTTONS_OK, message)
+                                typeOf, gtk.BUTTONS_OK, message)
         self.set_default_response(gtk.RESPONSE_OK)
         self.connect('response', self._handle_clicked)
 
@@ -101,7 +104,6 @@ class mainForm:
         self.mainForm.show_all()
         self.work = None
         self.job_finished = False
-        self.dialog = None
 
     def OnAutomat(self,  widget):
         if widget.get_active():
@@ -164,7 +166,7 @@ class mainForm:
                                 os.sys.stderr.write(str(error))
                             if not self.ignoreErrors:
                                 gtk.gdk.threads_enter()
-                                self.on_info("There was an Error when decoding file\n%s"%item)
+                                self.on_info("There was an Error when decoding file\n%s"%item, ERROR)
                                 gtk.gdk.threads_leave()
                             continue
                     else:
@@ -182,9 +184,9 @@ class mainForm:
             self.SetText(1,1,"Job Finished!")
             self.job_finished = True
             if self.wasError:
-                self.on_info("Job Finished With Errors")
+                self.on_info("Job Finished With Errors", INFO)
             else:
-                self.on_info("Job Finished")
+                self.on_info("Job Finished", INFO)
             self.setSensitive(True)
             self.job_finished = False
 
@@ -209,7 +211,7 @@ class mainForm:
                 os.sys.stderr.write(str(error))
             if not self.ignoreErrors:
                 gtk.gdk.threads_enter()
-                self.on_info("Error in HTMLParser module. Wrong tag\n%s\n\nTags will be removed using regular expressions\nThere are rubbish possible in TXT file"%error)
+                self.on_info("Error in HTMLParser module. Wrong tag\n%s\n\nTags will be removed using regular expressions\nThere are rubbish possible in TXT file"%error, ERROR)
                 gtk.gdk.threads_leave()
             tmp4 = self.adtag.sub('',text)
             return self.RemoveEmptyLines(tmp4, enc)
@@ -246,10 +248,10 @@ class mainForm:
         f.close()
         return result
 
-    def on_info(self, text):
+    def on_info(self, text, typeOf):
         if (self.mainForm):
-            self.dialog=msgDialog(self.mainForm, text)
-            self.dialog.show_dialog()
+            dialog=msgDialog(self.mainForm, text, typeOf)
+            dialog.show_dialog()
             if self.job_finished:
                 self.SetText(0,100,"0%")
 
