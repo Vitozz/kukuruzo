@@ -90,7 +90,9 @@ class mainForm:
         self.htmlchar = self.builder.get_object("htmlchar")
         self.ignorecheck = self.builder.get_object("ignorecheck")
         self.ignorecheck.set_active(1)
+        self.charselect.set_entry_text_column(0)
         self.charselect.set_active(0)
+        self.htmlchar.set_entry_text_column(0)
         self.htmlchar.set_active(0)
         self.progress = self.builder.get_object("progress")
         self.automat = self.builder.get_object("automat")
@@ -115,7 +117,8 @@ class mainForm:
             self.ismanual = True
 
     def OnHtmlChar(self,  widget) :
-        self.htmlencoding = self.htmlchar.get_active_text()
+        self.htmlencoding = widget.get_active_text()
+        print (self.htmlencoding)
 
     def OnFile(self, widget):
         self.files = []
@@ -127,7 +130,8 @@ class mainForm:
         self.work.start()
 
     def OnCharSelect(self, widget):
-        self.txtencoding = self.charselect.get_active_text()
+        self.txtencoding = widget.get_active_text()
+        print (self.txtencoding)
 
     def OnDestroy(self, widget, event):
         Gtk.main_quit()
@@ -138,7 +142,7 @@ class mainForm:
 
     def WalkOn(self):
         files = self.files
-        outencoding = self.txtencoding
+        outencoding = self.charselect.get_active_text()
         encoding = ""
         if files:
             for item in files:
@@ -203,7 +207,7 @@ class mainForm:
             tmp3 = self.tags.sub('',  tmp2)
             self.isError = False
             return self.RemoveEmptyLines(tmp3, enc)
-        except html.parser.HTMLParseError as msg:
+        except HTMLParser.HTMLParseError as msg:
             self.isError = True
             error = str(msg) + "\nin file:\n" + str(htmlfile)
             if str(os.sys.platform) != 'win32':
@@ -229,8 +233,8 @@ class mainForm:
                         else:
                             result.append((line+'\n').encode(enc))
                     except Exception as  error:
-                            if str(os.sys.platform) != 'win32':
-                                os.sys.stderr.write(str(error)+"\n")
+                            #if str(os.sys.platform) != 'win32':
+                                #os.sys.stderr.write(str(error)+"\n")
                             if not self.ignoreErrors:
                                 Gdk.threads_enter()
                                 self.on_info("There was an Error %s"%str(error), ERROR)

@@ -33,6 +33,7 @@ decoding them into *.txt format</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="orientation">vertical</property>
+            <property name="select_multiple">True</property>
             <signal name="selection-changed" handler="on_filechooser_selection_changed" swapped="no"/>
           </object>
           <packing>
@@ -62,7 +63,6 @@ of source *.html(*.htm) files</property>
             <child>
               <object class="GtkRadioButton" id="automat">
                 <property name="label" translatable="yes">Automatically (may be slow)</property>
-                <property name="use_action_appearance">False</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">False</property>
@@ -81,7 +81,6 @@ of source *.html(*.htm) files</property>
             <child>
               <object class="GtkRadioButton" id="manual">
                 <property name="label" translatable="yes">Manually (may be incorrect)</property>
-                <property name="use_action_appearance">False</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">False</property>
@@ -128,6 +127,7 @@ of source *.html(*.htm) files</property>
                       <item translatable="yes">KOI8-R</item>
                       <item translatable="yes">MacCyrillic</item>
                     </items>
+                    <signal name="changed" handler="on_htmlchar_changed" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -168,6 +168,7 @@ of source *.html(*.htm) files</property>
                       <item translatable="yes">windows-1251</item>
                       <item translatable="yes">cp866</item>
                     </items>
+                    <signal name="changed" handler="on_charselect_changed" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -192,7 +193,6 @@ of source *.html(*.htm) files</property>
         <child>
           <object class="GtkCheckButton" id="ignorecheck">
             <property name="label" translatable="yes">Ignore error messages</property>
-            <property name="use_action_appearance">False</property>
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">False</property>
@@ -243,7 +243,6 @@ of source *.html(*.htm) files</property>
             <child>
               <object class="GtkButton" id="runit">
                 <property name="label" translatable="yes">Convert!</property>
-                <property name="use_action_appearance">False</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
