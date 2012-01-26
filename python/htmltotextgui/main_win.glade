@@ -1,44 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<glade-interface>
-  <!-- interface-requires gtk+ 2.16 -->
-  <!-- interface-naming-policy project-wide -->
-  <widget class="GtkWindow" id="mainForm">
+<interface>
+  <!-- interface-requires gtk+ 3.0 -->
+  <object class="GtkWindow" id="mainForm">
     <property name="width_request">640</property>
     <property name="height_request">600</property>
-    <property name="visible">True</property>
     <property name="can_focus">False</property>
     <property name="title" translatable="yes">HTML To TXT Converter</property>
-    <property name="resizable">False</property>
     <property name="icon">icon24.ico</property>
-    <signal name="destroy_event" handler="on_mainForm_destroy_event"/>
-    <signal name="delete_event" handler="on_mainForm_delete_event"/>
+    <signal name="destroy-event" handler="on_mainForm_destroy_event" swapped="no"/>
+    <signal name="delete-event" handler="on_mainForm_delete_event" swapped="no"/>
     <child>
-      <widget class="GtkVBox" id="vbox1">
+      <object class="GtkBox" id="vbox1">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
+        <property name="orientation">vertical</property>
         <child>
-          <widget class="GtkLabel" id="label2">
+          <object class="GtkLabel" id="label2">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <property name="xpad">5</property>
             <property name="label" translatable="yes">Select *.html(*.htm) file(s) to
 decoding them into *.txt format</property>
-            <property name="justify">center</property>
-          </widget>
+          </object>
           <packing>
             <property name="expand">False</property>
-            <property name="fill">False</property>
+            <property name="fill">True</property>
             <property name="position">0</property>
           </packing>
         </child>
         <child>
-          <widget class="GtkFileChooserWidget" id="filechooser">
+          <object class="GtkFileChooserWidget" id="filechooser">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="orientation">vertical</property>
-            <property name="select_multiple">True</property>
-            <property name="show_hidden">True</property>
-            <signal name="selection_changed" handler="on_filechooser_selection_changed"/>
-          </widget>
+            <signal name="selection-changed" handler="on_filechooser_selection_changed" swapped="no"/>
+          </object>
           <packing>
             <property name="expand">True</property>
             <property name="fill">True</property>
@@ -46,74 +42,36 @@ decoding them into *.txt format</property>
           </packing>
         </child>
         <child>
-          <widget class="GtkLabel" id="label3">
+          <object class="GtkLabel" id="label3">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="label" translatable="yes">Select the method for determining the encoding
 of source *.html(*.htm) files</property>
-            <property name="justify">center</property>
-          </widget>
+          </object>
           <packing>
             <property name="expand">False</property>
-            <property name="fill">False</property>
+            <property name="fill">True</property>
             <property name="position">2</property>
           </packing>
         </child>
         <child>
-          <widget class="GtkVBox" id="vbox3">
+          <object class="GtkBox" id="vbox3">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <property name="orientation">vertical</property>
             <child>
-              <widget class="GtkHBox" id="hbox3">
+              <object class="GtkRadioButton" id="automat">
+                <property name="label" translatable="yes">Automatically (may be slow)</property>
+                <property name="use_action_appearance">False</property>
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <child>
-                  <widget class="GtkVButtonBox" id="vbuttonbox1">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="layout_style">start</property>
-                    <child>
-                      <widget class="GtkRadioButton" id="automat">
-                        <property name="label" translatable="yes">Automatically (may be slow)</property>
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">False</property>
-                        <property name="xalign">0</property>
-                        <property name="active">True</property>
-                        <property name="draw_indicator">True</property>
-                        <signal name="toggled" handler="on_automat_toggled"/>
-                      </widget>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">False</property>
-                        <property name="position">0</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <widget class="GtkRadioButton" id="manual">
-                        <property name="label" translatable="yes">Manually (may be incorrect)</property>
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">False</property>
-                        <property name="xalign">0</property>
-                        <property name="draw_indicator">True</property>
-                        <property name="group">automat</property>
-                        <signal name="toggled" handler="on_manual_toggled"/>
-                      </widget>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">False</property>
-                        <property name="position">1</property>
-                      </packing>
-                    </child>
-                  </widget>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">False</property>
-                    <property name="position">0</property>
-                  </packing>
-                </child>
-              </widget>
+                <property name="can_focus">True</property>
+                <property name="receives_default">False</property>
+                <property name="use_action_appearance">False</property>
+                <property name="xalign">0</property>
+                <property name="active">True</property>
+                <property name="draw_indicator">True</property>
+                <signal name="toggled" handler="on_automat_toggled" swapped="no"/>
+              </object>
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">True</property>
@@ -121,16 +79,36 @@ of source *.html(*.htm) files</property>
               </packing>
             </child>
             <child>
-              <widget class="GtkHBox" id="hbox4">
+              <object class="GtkRadioButton" id="manual">
+                <property name="label" translatable="yes">Manually (may be incorrect)</property>
+                <property name="use_action_appearance">False</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">False</property>
+                <property name="use_action_appearance">False</property>
+                <property name="xalign">0</property>
+                <property name="active">True</property>
+                <property name="draw_indicator">True</property>
+                <property name="group">automat</property>
+                <signal name="toggled" handler="on_manual_toggled" swapped="no"/>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkBox" id="hbox1">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="homogeneous">True</property>
                 <child>
-                  <widget class="GtkLabel" id="label4">
+                  <object class="GtkLabel" id="label4">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="label" translatable="yes">*.html(*.htm) file encoding</property>
-                  </widget>
+                  </object>
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
@@ -138,72 +116,91 @@ of source *.html(*.htm) files</property>
                   </packing>
                 </child>
                 <child>
-                  <widget class="GtkComboBox" id="htmlchar">
+                  <object class="GtkComboBoxText" id="htmlchar">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="items" translatable="yes">UTF-8
-windows-1251
-windows-1250
-ASCII
-IBM866
-KOI8-R
-MacCyrillic</property>
-                    <signal name="changed" handler="on_htmlchar_changed"/>
-                  </widget>
+                    <items>
+                      <item translatable="yes">UTF-8</item>
+                      <item translatable="yes">windows-1251</item>
+                      <item translatable="yes">windows-1250</item>
+                      <item translatable="yes">ASCII</item>
+                      <item translatable="yes">IBM866</item>
+                      <item translatable="yes">KOI8-R</item>
+                      <item translatable="yes">MacCyrillic</item>
+                    </items>
+                  </object>
                   <packing>
-                    <property name="expand">True</property>
+                    <property name="expand">False</property>
                     <property name="fill">True</property>
                     <property name="position">1</property>
                   </packing>
                 </child>
-              </widget>
+              </object>
               <packing>
                 <property name="expand">True</property>
-                <property name="fill">True</property>
-                <property name="position">1</property>
+                <property name="fill">False</property>
+                <property name="position">2</property>
               </packing>
             </child>
-          </widget>
+            <child>
+              <object class="GtkBox" id="hbox2">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="homogeneous">True</property>
+                <child>
+                  <object class="GtkLabel" id="label1">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="label" translatable="yes">Output *.txt file(s) encoding</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkComboBoxText" id="charselect">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <items>
+                      <item translatable="yes">UTF-8</item>
+                      <item translatable="yes">windows-1251</item>
+                      <item translatable="yes">cp866</item>
+                    </items>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">False</property>
+                <property name="position">3</property>
+              </packing>
+            </child>
+          </object>
           <packing>
             <property name="expand">False</property>
-            <property name="fill">True</property>
+            <property name="fill">False</property>
             <property name="position">3</property>
           </packing>
         </child>
         <child>
-          <widget class="GtkHBox" id="hbox1">
+          <object class="GtkCheckButton" id="ignorecheck">
+            <property name="label" translatable="yes">Ignore error messages</property>
+            <property name="use_action_appearance">False</property>
             <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="homogeneous">True</property>
-            <child>
-              <widget class="GtkLabel" id="label1">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="label" translatable="yes">Output *.txt file(s) encoding</property>
-              </widget>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">False</property>
-                <property name="position">0</property>
-              </packing>
-            </child>
-            <child>
-              <widget class="GtkComboBox" id="charselect">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="active">0</property>
-                <property name="items" translatable="yes">UTF-8
-windows-1251
-cp866</property>
-                <signal name="changed" handler="on_charselect_changed"/>
-              </widget>
-              <packing>
-                <property name="expand">True</property>
-                <property name="fill">True</property>
-                <property name="position">1</property>
-              </packing>
-            </child>
-          </widget>
+            <property name="can_focus">True</property>
+            <property name="receives_default">False</property>
+            <property name="use_action_appearance">False</property>
+            <property name="xalign">0</property>
+            <property name="draw_indicator">True</property>
+            <signal name="toggled" handler="on_ignorecheck_toggled" swapped="no"/>
+          </object>
           <packing>
             <property name="expand">False</property>
             <property name="fill">False</property>
@@ -211,88 +208,76 @@ cp866</property>
           </packing>
         </child>
         <child>
-          <widget class="GtkProgressBar" id="progress">
+          <object class="GtkProgressBar" id="progress">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="show_text">True</property>
-            <property name="pulse_step">0.01</property>
-            <property name="adjustment">0 0 1 0 0 0</property>
-          </widget>
+            <signal name="destroy-event" handler="on_mainForm_destroy_event" swapped="no"/>
+            <signal name="delete-event" handler="on_mainForm_delete_event" swapped="no"/>
+          </object>
           <packing>
             <property name="expand">False</property>
-            <property name="fill">True</property>
+            <property name="fill">False</property>
             <property name="position">5</property>
           </packing>
         </child>
         <child>
-          <widget class="GtkCheckButton" id="ignorecheck">
-            <property name="label" translatable="yes">Ignore error messages</property>
-            <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="receives_default">False</property>
-            <property name="draw_indicator">True</property>
-            <signal name="toggled" handler="on_ignorecheck_toggled"/>
-          </widget>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">6</property>
-          </packing>
-        </child>
-        <child>
-          <widget class="GtkHBox" id="hbox2">
+          <object class="GtkBox" id="box1">
+            <property name="width_request">640</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <property name="homogeneous">True</property>
             <child>
-              <widget class="GtkAlignment" id="alignment2">
+              <object class="GtkAlignment" id="alignment1">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <child>
                   <placeholder/>
                 </child>
-              </widget>
+              </object>
               <packing>
-                <property name="expand">True</property>
+                <property name="expand">False</property>
                 <property name="fill">True</property>
                 <property name="position">0</property>
               </packing>
             </child>
             <child>
-              <widget class="GtkButton" id="runit">
+              <object class="GtkButton" id="runit">
                 <property name="label" translatable="yes">Convert!</property>
+                <property name="use_action_appearance">False</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
-                <signal name="pressed" handler="on_runit_pressed"/>
-              </widget>
+                <property name="use_action_appearance">False</property>
+                <signal name="pressed" handler="on_runit_pressed" swapped="no"/>
+              </object>
               <packing>
-                <property name="expand">True</property>
+                <property name="expand">False</property>
                 <property name="fill">True</property>
                 <property name="position">1</property>
               </packing>
             </child>
             <child>
-              <widget class="GtkAlignment" id="alignment1">
+              <object class="GtkAlignment" id="alignment2">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <child>
                   <placeholder/>
                 </child>
-              </widget>
+              </object>
               <packing>
-                <property name="expand">True</property>
+                <property name="expand">False</property>
                 <property name="fill">True</property>
                 <property name="position">2</property>
               </packing>
             </child>
-          </widget>
+          </object>
           <packing>
             <property name="expand">False</property>
             <property name="fill">False</property>
-            <property name="position">7</property>
+            <property name="position">6</property>
           </packing>
         </child>
-      </widget>
+      </object>
     </child>
-  </widget>
-</glade-interface>
+  </object>
+</interface>

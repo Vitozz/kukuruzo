@@ -4,7 +4,7 @@ from distutils.core import setup
 from distutils.command.install_data import install_data
 
 setup(name='htmltotextgui',
-      version='0.2',
+      version='0.3',
       description='HTML To TXT File Converter',
       long_description = "Converts ebook-files from HTML to TXT format",
       author='Vitaly Tonkacheyev',
