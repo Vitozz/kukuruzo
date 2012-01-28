@@ -5,7 +5,7 @@
     <em:id>{e0a94201-1648-4640-a6a6-43f8b0565d75}</em:id>
     <em:type>2</em:type>
     <em:name>TuneToPsi</em:name>
-    <em:version>0.0.2.0</em:version>
+    <em:version>0.0.4.0</em:version>
     <em:creator>Vitaly Tonkacheyev</em:creator>
     <em:description>Sends tune information to psi-plus jabber client</em:description>
     <em:iconURL>chrome://tunetopsi/skin/addon_icon.png</em:iconURL>
@@ -14,7 +14,7 @@
       <Description>
         <em:id>songbird@songbirdnest.com</em:id>
         <em:minVersion>1.7.0a</em:minVersion>
-        <em:maxVersion>1.8.*</em:maxVersion>
+        <em:maxVersion>1.11.*</em:maxVersion>
       </Description>
     </em:targetApplication>
   </Description>
