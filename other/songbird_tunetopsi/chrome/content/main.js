@@ -1,4 +1,3 @@
-
 // Make a namespace.
 if (typeof Tunetopsi == 'undefined') {
   var Tunetopsi = {};
@@ -107,6 +106,14 @@ Tunetopsi.Controller = {
                  tuneFile.write(tuneInfo);
                  break;  
              case Ci.sbIMediacoreEvent.STREAM_PAUSE:
+                 tuneInfo = "";
+                 tuneFile.write(tuneInfo);
+                 break;
+             case Ci.sbIMediacoreEvent.STREAM_END:
+                 tuneInfo = "";
+                 tuneFile.write(tuneInfo);
+                 break;
+             case Ci.sbIMediacoreEvent.STREAM_STOP:
                  tuneInfo = "";
                  tuneFile.write(tuneInfo);
                  break;
