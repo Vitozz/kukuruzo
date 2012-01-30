@@ -339,7 +339,7 @@ build_pyav ()
 	debdir=${builddir}/${project}-${ver}
 	cd ${debdir}
 	prepare_sound_python
-	depends="\${python:Depends}, python-gtk2, python-glade2, python-gconf, python-alsaaudio (>=0.6)"
+	depends="\${python:Depends}, libgtk-3, python-gobject (>=3.0.0), python-alsaaudio (>=0.6)"
 	description="Tray ALSA volume changer"
 	descriptionlong=' Простая программа для изменения громкости звука одного из микшеров ALSA из системного трея.
  Simple programm to change the volume of one of the ALSA mixer from the system tray..'
