@@ -31,7 +31,7 @@ class SettingsFrame:
         self.iconpath = os.environ["HOME"] + "/.pyalsavolume/icons"
         self.iconpack = "default"
         #Settings frame interfase
-        self.gladefile = 'pySettingsFrame.glade'
+        self.gladefile = '/usr/share/pyalsavolume/pySettingsFrame.glade'
         self.wTree = Gtk.Builder()
         self.wTree.add_from_file(self.gladefile)
         dic = {"on_ok_button_pressed": self.onOk, "on_cancel_button_pressed": self.onCancel,

@@ -39,8 +39,8 @@ class SliderFrame:
         self.cards = self.alsa.cards()
         #initialize interface
         self.gladefile = None
-        if (os.path.exists('pySliderFrame.glade')):
-            self.gladefile = 'pySliderFrame.glade' 
+        if (os.path.exists('/usr/share/pyalsavolume/pySliderFrame.glade')):
+            self.gladefile = '/usr/share/pyalsavolume/pySliderFrame.glade' 
         else:
             sys.stderr.write('No pySliderFrame.glade file found in /usr/share/pyalsavolume\n')
             sys.exit(1)
