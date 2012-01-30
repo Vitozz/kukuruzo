@@ -19,15 +19,10 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 import sys, os, threading
-try:
-    import pygtk
-    pygtk.require('2.0')
-    import gtk
-except:
-    sys.stderr.write('No Gtk Module Found in pyTrayIcon module\n')
-    sys.exit(1)
+from gi.repository import Gtk, GObject, Gdk, GdkPixbuf
+from gi.repository.Gdk import ScrollDirection
 
-from pySettingsFrame import SettingsFrame
+from .pySettingsFrame import SettingsFrame
 
 class StatusIcc:
     # activate callback
@@ -39,26 +34,28 @@ class StatusIcc:
         if button == 3:
             if data:
                 data.show_all()
-                data.popup(None, None, None, 3, time)
+                data.popup(None, None, None, None, button, time)
+                return True
+        return False
 
     def scroll_event(self, button, event, data=None):
         if self.parent.volume_slider.is_sensitive():
-            if event.direction == gtk.gdk.SCROLL_UP:
+            if event.direction == ScrollDirection.UP:
                 direction = 2
                 if self.parent.volume < 100:
                     self.parent.volume += direction
                 else:
                     self.parent.volume = 100
-            else:
+            elif event.direction == ScrollDirection.DOWN:
                 direction = -2
                 if self.parent.volume >= 0:
                     self.parent.volume += direction
                 else:
                     self.parent.volume = 0
             if self.parent.volume:
-                self.parent.volume_slider.set_value(self.parent.volume)
+                self.parent.volume_object.set_value(self.parent.volume)
             else:
-                print "Error#18: self.parent.volume variable not initialized in scroll_event function in pyTrayIcon module"
+                print ("Error#18: self.parent.volume variable not initialized in scroll_event function in pyTrayIcon module")
 
     def onLClick(self, widget, data=None):
         if self.parent.window.get_property('visible'):
@@ -76,7 +73,7 @@ class StatusIcc:
                 self.parent.onMute(True)
 
     def set_window_position(self):
-        staticon_geometry = self.staticon.get_geometry()[1]
+        staticon_geometry = self.staticon.get_geometry()[2]
         if staticon_geometry.y <= 200:
             y_coords = staticon_geometry.y + staticon_geometry.height+2
         else:
@@ -87,14 +84,14 @@ class StatusIcc:
         return (staticon_geometry.x - dx/2, y_coords)
 
     def onQuit(self, widget, data=None):
-        print "Saving settings..."
+        print ("Saving settings...")
         self.parent.SaveSettings()
         #Delete thread self.tr1
         if self.tr1:
             if self.tr1.isAlive():
                 self.tr1._Thread__stop()
                 del self.tr1
-        gtk.main_quit()
+        Gtk.main_quit()
 
     def onMixer(self, widget, data=None):
         if self.parent.ext_mixer:
@@ -113,7 +110,7 @@ class StatusIcc:
         sett_dialog.dialog.run()
 
     def onMute(self, widget, data=None):
-        if widget.active:
+        if widget.get_active():
             self.parent.onMute(True)
             self.SetIcon(0)
         else:
@@ -124,17 +121,17 @@ class StatusIcc:
         if self.parent:
             self.staticon.set_from_file(self.parent.anim.GetIcon(value))
         else:
-            print "Error#17: self.parent variable not initialized in SetIcon function in pyTrayIcon module"
+            print ("Error#17: self.parent variable not initialized in SetIcon function in pyTrayIcon module")
 
     def onAbout(self, widget, data=None):
-        about = gtk.AboutDialog()
+        about = Gtk.AboutDialog()
         about.set_program_name("pyAlsaVolume")
-        about.set_version("0.9.7")
+        about.set_version("0.9.8")
         about.set_copyright("2009(c) %s (thetvg@gmail.com)"%self.parent.lang.icon_dic.get("about_author"))
         about.set_comments(self.parent.lang.icon_dic.get("about_comments"))
         about.set_website("http://sites.google.com/site/thesomeprojects/")
         about.set_website_label(self.parent.lang.icon_dic.get("about_site_label"))
-        about.set_logo(gtk.gdk.pixbuf_new_from_file(self.parent.iconpack.get('logo')))
+        about.set_logo(GdkPixbuf.Pixbuf.new_from_file(self.parent.iconpack.get('logo')))
         about.run()
         about.destroy()
 
@@ -143,43 +140,43 @@ class StatusIcc:
         self.parent = parent
         self.tr1 = None
         # create a new Status Icon
-        self.staticon = gtk.StatusIcon()
+        self.staticon = Gtk.StatusIcon()
         #create Popup-menu
-        self.menu = gtk.Menu()
+        self.menu = Gtk.Menu()
         #Restore
-        self.restoreItem = gtk.ImageMenuItem(gtk.STOCK_GO_UP)
+        self.restoreItem = Gtk.ImageMenuItem.new_from_stock(Gtk.STOCK_GO_UP,  None)
         self.restoreItem.connect('activate', self.on_hide_resore)
         self.menu.append(self.restoreItem)
         self.restoreItem.set_label(self.parent.lang.icon_dic.get("restoreItem"))
-        separator1 = gtk.SeparatorMenuItem()
+        separator1 = Gtk.SeparatorMenuItem()
         self.menu.append(separator1)
         #Mixer
-        self.mixerItem = gtk.ImageMenuItem(gtk.STOCK_MEDIA_RECORD)
+        self.mixerItem = Gtk.ImageMenuItem.new_from_stock(Gtk.STOCK_MEDIA_RECORD,  None)
         self.mixerItem.connect('activate', self.onMixer)
         self.mixerItem.set_label(self.parent.lang.icon_dic.get("mixerItem"))
         self.menu.append(self.mixerItem)
         #Settings
-        self.settingsItem = gtk.ImageMenuItem(gtk.STOCK_PREFERENCES)
+        self.settingsItem = Gtk.ImageMenuItem.new_from_stock(Gtk.STOCK_PREFERENCES,  None)
         self.settingsItem.connect('activate', self.onSettings)
         self.menu.append(self.settingsItem)
         #Mute
-        self.muteItem = gtk.CheckMenuItem(self.parent.lang.icon_dic.get("muteItem"))
+        self.muteItem = Gtk.CheckMenuItem(self.parent.lang.icon_dic.get("muteItem"))
         self.muteItem.connect('toggled', self.onMute)
         self.menu.append(self.muteItem)
         self.muteItem.set_active(self.parent.checked)
-        separator2 = gtk.SeparatorMenuItem()
+        separator2 = Gtk.SeparatorMenuItem()
         self.menu.append(separator2)
         #About
-        self.aboutItem = gtk.ImageMenuItem(gtk.STOCK_ABOUT)
+        self.aboutItem = Gtk.ImageMenuItem.new_from_stock(Gtk.STOCK_ABOUT,  None)
         self.aboutItem.connect('activate', self.onAbout)
         self.menu.append(self.aboutItem)
         #Quit
-        self.quitItem = gtk.ImageMenuItem(gtk.STOCK_QUIT)
+        self.quitItem = Gtk.ImageMenuItem.new_from_stock(Gtk.STOCK_QUIT,  None)
         self.quitItem.connect('activate', self.onQuit, self.staticon)
         self.menu.append(self.quitItem)
         self.SetIcon(self.parent.volume)
         self.status_tooltip = self.parent.mixer_name + " - " + str(self.parent.volume) + r"%"
-        self.staticon.set_tooltip(self.status_tooltip)
+        self.staticon.set_tooltip_text(self.status_tooltip)
         self.staticon.connect('activate', self.onLClick)
         self.staticon.connect('scroll-event', self.scroll_event)
         self.staticon.connect('button-press-event', self.onbutton)

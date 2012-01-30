@@ -30,7 +30,7 @@ class Options:
         if not os.path.exists(self.cfgpath):
             tmpath = os.environ["HOME"] + "/.pyalsavolume"
             if not os.path.exists(tmpath):
-                os.mkdir(tmpath, 0775)
+                os.mkdir(tmpath, 0o775)
             f = open(self.cfgpath, "wb")
             f.write("[Main]\niconpack = default\nextmixer = gnome-alsamixer\ntabspos = 0\n\n[Alsa]\ncard = 0\nmixer = PCM\nvolume = 100\n")
             f.close()

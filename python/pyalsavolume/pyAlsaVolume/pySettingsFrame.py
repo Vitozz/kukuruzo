@@ -19,17 +19,7 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 import os,  re
-try:
-    import pygtk
-    pygtk.require('2.0')
-except:
-    pass
-try:
-    import gtk
-    import gtk.glade
-except:
-    os.sys.stderr.write('No Gtk Module Found in pySettingsFrame module\n')
-    os.sys.exit(1)
+from gi.repository import Gtk, GObject, Gdk
 
 class SettingsFrame:
     def __init__(self, parent):
@@ -41,57 +31,57 @@ class SettingsFrame:
         self.iconpath = os.environ["HOME"] + "/.pyalsavolume/icons"
         self.iconpack = "default"
         #Settings frame interfase
-        self.gladefile = '/usr/share/pyalsavolume/pySettingsFrame.glade'
-        self.wTree = gtk.glade.XML(self.gladefile)
-        dic = {"on_ok_button_pressed": self.onOk, "on_cancel_button_pressed": self.onCancel, "on_is_autorun_toggled": self.onAutorun}
-        self.wTree.signal_autoconnect(dic)
-        self.dialog = self.wTree.get_widget('settingsDialog')
-        self.dialog.connect("close", self.onClose)
+        self.gladefile = 'pySettingsFrame.glade'
+        self.wTree = Gtk.Builder()
+        self.wTree.add_from_file(self.gladefile)
+        dic = {"on_ok_button_pressed": self.onOk, "on_cancel_button_pressed": self.onCancel,
+                   "on_is_autorun_toggled": self.onAutorun,  "on_sndcardbox_changed" : self.onCardChange,
+                   "on_mixerBox_changed" :  self.onChange,  "settingsDialog_close_cb": self.onClose}
+        self.wTree.get_objects()
+        self.wTree.connect_signals(dic)
+        self.dialog = self.wTree.get_object('settingsDialog')
         self.dialog.connect("destroy", self.onClose)
-        self.mixerBox = self.wTree.get_widget('mixerBox')
-        self.cardBox = self.wTree.get_widget('sndcardbox')
-        self.switchtree = self.wTree.get_widget('switchtree')
-        self.extended_mixer = self.wTree.get_widget('ext_mixer')
-        self.is_autorun = self.wTree.get_widget('is_autorun')
-        self.iconpacks = self.wTree.get_widget('iconpacks')
-        self.tabspos = self.wTree.get_widget('tabspos')
+        self.mixerBox = self.wTree.get_object('mixerBox')
+        self.cardBox = self.wTree.get_object('sndcardbox')
+        self.switchtree = self.wTree.get_object('switchtree')
+        self.extended_mixer = self.wTree.get_object('ext_mixer')
+        self.is_autorun = self.wTree.get_object('is_autorun')
+        self.iconpacks = self.wTree.get_object('iconpacks')
+        self.tabspos = self.wTree.get_object('tabspos')
         #init the mixers combobox liststore
-        self.mixers = gtk.ListStore(str)
+        self.mixers = Gtk.ListStore(str)
         self.mixerBox.set_model(self.mixers)
-        cell = gtk.CellRendererText()
+        cell = Gtk.CellRendererText()
         self.mixerBox.pack_start(cell, True)
         self.mixerBox.add_attribute(cell, 'text', 0)
         #init the sound cards combobox liststore
-        self.sndcards = gtk.ListStore(str)
+        self.sndcards = Gtk.ListStore(str)
         self.cardBox.set_model(self.sndcards)
-        cell = gtk.CellRendererText()
+        cell = Gtk.CellRendererText()
         self.cardBox.pack_start(cell, True)
         self.cardBox.add_attribute(cell, 'text', 0)
         #append items to sound card combo-box
         self.append_items(self.sndcards, self.cards)
         #Switches
-        self.tree_store = gtk.TreeStore( str, bool )
+        self.tree_store = Gtk.TreeStore( str, bool )
         #self.AppendSwitches(self.tree_store)
         self.switchtree.set_model(self.tree_store)
-        self.renderer = gtk.CellRendererText()
+        self.renderer = Gtk.CellRendererText()
         self.renderer.set_property( 'editable', False )
-        self.renderer1 = gtk.CellRendererToggle()
+        self.renderer1 = Gtk.CellRendererToggle()
         self.renderer1.set_property('activatable', True)
         self.renderer1.connect( 'toggled', self.col1_toggled_cb, self.tree_store )
-        self.column0 = gtk.TreeViewColumn(self.parent.lang.settings_dic.get("column0"), self.renderer, text=0)
-        self.column1 = gtk.TreeViewColumn(self.parent.lang.settings_dic.get("column1"), self.renderer1 )
+        self.column0 = Gtk.TreeViewColumn(self.parent.lang.settings_dic.get("column0"), self.renderer, text=0)
+        self.column1 = Gtk.TreeViewColumn(self.parent.lang.settings_dic.get("column1"), self.renderer1 )
         self.column1.add_attribute( self.renderer1, "active", 1)
         self.switchtree.append_column( self.column0 )
         self.switchtree.append_column( self.column1 )
-        #Connecting combo-boxes signals
-        self.mixerBox.connect("changed", self.onChange)
-        self.cardBox.connect("changed", self.onCardChange)
         self.curr_item = None
         #get_iconpacks
         self.iconlist = self.getIconList()
-        self.icons_store = gtk.ListStore( str )
+        self.icons_store = Gtk.ListStore( str )
         self.iconpacks.set_model(self.icons_store)
-        textrender = gtk.CellRendererText()
+        textrender = Gtk.CellRendererText()
         self.iconpacks.pack_start(textrender, True)
         self.iconpacks.add_attribute(textrender, 'text', 0)
         self.append_items(self.icons_store, self.iconlist)
@@ -116,7 +106,7 @@ class SettingsFrame:
                 if item:
                     model.append( None, (item, None) )
         else:
-            print 'Error#10: % card has no switches in pySettingsFrame module' % self.parent.cards[self.card]
+            print ('Error#10: % card has no switches in pySettingsFrame module' % self.parent.cards[self.card])
 
     def col1_toggled_cb(self, cell, path, model):
         model[path][1] = not model[path][1]
@@ -129,7 +119,7 @@ class SettingsFrame:
                     tmp_mixer = self.parent.SetTempMixer(self.parent.switches[int(path)], self.card)
                     tmp_mixer.setrec(0)
                 except:
-                    print 'Error#08: "%s" maybe a multiswitch. Impossible to identify the switch in pySettingsFrame module' % self.parent.switches[int(path)]
+                    print ('Error#08: "%s" maybe a multiswitch. Impossible to identify the switch in pySettingsFrame module' % self.parent.switches[int(path)])
         else:
             try:
                 tmp_mixer = self.parent.SetTempMixer(self.parent.switches[int(path)], self.card)
@@ -139,20 +129,20 @@ class SettingsFrame:
                     tmp_mixer = self.parent.SetTempMixer(self.parent.switches[int(path)], self.card)
                     tmp_mixer.setrec(1)
                 except:
-                    print 'Error#09: "%s" maybe a multiswitch. Impossible to identify the switch in pySettingsFrame module' % self.parent.switches[int(path)]
+                    print ('Error#09: "%s" maybe a multiswitch. Impossible to identify the switch in pySettingsFrame module' % self.parent.switches[int(path)])
         return
 
     def set_switches(self, switch, setting):
         if self.tree_store:
             self.tree_store.set_value(self.tree_store.get_iter(switch), 1, setting)
         else:
-            print "Error#11: self.tree_store object not initialized in set_switches function in pySettingsFrame module"
+            print ("Error#11: self.tree_store object not initialized in set_switches function in pySettingsFrame module")
 
     def clear_text(self, widget):
         if widget:
             widget.clear()
         else:
-            print "Error#12: widget variable not initialized in  clear_text function in pySettingsFrame module"
+            print ("Error#12: widget variable not initialized in  clear_text function in pySettingsFrame module")
 
     def append_items(self, widget, itemlist):
         if widget:
@@ -161,9 +151,9 @@ class SettingsFrame:
                     if item:
                         widget.append(['%s'%item])
             else:
-                print  "Error#13:  itemlist variable not initialized in append_items function in pySettingsFrame module"
+                print ("Error#13:  itemlist variable not initialized in append_items function in pySettingsFrame module")
         else:
-            print  "Error#14:  widget variable not initialized in append_items function in pySettingsFrame module"
+            print ("Error#14:  widget variable not initialized in append_items function in pySettingsFrame module")
 
     def onOk(self, widget):
         self.parent.tabpos = int(self.tabspos.get_active())
@@ -227,9 +217,9 @@ class SettingsFrame:
                             else:
                                 self.set_switches(switches.index(switch), 1)
                         except:
-                            print 'Error#15: "%s" maybe a multiswitch. Impossible to identify the switch in pySettingsFrame module' % switch
+                            print ('Error#15: "%s" maybe a multiswitch. Impossible to identify the switch in pySettingsFrame module' % switch)
         else:
-            print  "Error#16:  switches variable not initialized in InitSwitches function in pySettingsFrame module"
+            print  ("Error#16:  switches variable not initialized in InitSwitches function in pySettingsFrame module")
 
     def GetSaved(self, parent):
         if parent.mixer.mixer():
@@ -291,7 +281,7 @@ class SettingsFrame:
         result = []
         result.append("default")
         if not os.path.exists(self.iconpath):
-            os.mkdir(self.iconpath, 0775)
+            os.mkdir(self.iconpath, 0o775)
         icofiles = os.listdir(self.iconpath)
         if icofiles:
             for icon in icofiles:
@@ -312,9 +302,9 @@ class SettingsFrame:
             self.iconpack = model[index][0]
 
     def setDlgLocale(self):
-        labels = [ self.wTree.get_widget("label1"), self.wTree.get_widget("label2"), self.wTree.get_widget("label3"),
-                    self.wTree.get_widget("label4"), self.wTree.get_widget("label5"), self.wTree.get_widget("label6"),
-                    self.wTree.get_widget("label7"), self.wTree.get_widget("label8") ]
+        labels = [ self.wTree.get_object("label1"), self.wTree.get_object("label2"), self.wTree.get_object("label3"),
+                    self.wTree.get_object("label4"), self.wTree.get_object("label5"), self.wTree.get_object("label6"),
+                    self.wTree.get_object("label7"), self.wTree.get_object("label8") ]
         i = 1
         for label in labels:
             label.set_text(self.parent.lang.settings_dic.get("label%d"%i))
@@ -326,8 +316,8 @@ class SettingsFrame:
         self.tabspos.set_label(self.parent.lang.settings_dic.get("tabspos"))
 
     def onTabPos(self,  widget):
-        tabwidget = self.wTree.get_widget('tabwidget')
+        tabwidget = self.wTree.get_object('tabwidget')
         if widget.get_active():
-            tabwidget.set_tab_pos(gtk.POS_TOP)
+            tabwidget.set_tab_pos(Gtk.PositionType.TOP)
         else:
-            tabwidget.set_tab_pos(gtk.POS_LEFT)
+            tabwidget.set_tab_pos(Gtk.PositionType.LEFT)

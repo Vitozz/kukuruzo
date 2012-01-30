@@ -2,6 +2,7 @@
 # -*- mode: python; coding: koi8-r -*-
 #
 # (c) Vitaly Tonkacheyev, 2010
+# Now using Python3 and Gtk+3
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -19,19 +20,14 @@
 
 import os
 import threading, thread
-try:
-    import pygtk
-    pygtk.require('2.0')
-    import gtk
-except:
-    sys.stderr.write("Error#001: No Gtk Module Found in pyAlsaVolume module\n")
-    sys.exit(1)
+from gi.repository import Gtk, GObject, Gdk, GLib
 
 from pyAlsaVolume.pySliderFrame import SliderFrame
   
 if __name__ == "__main__":
-    gtk.gdk.threads_init()
-    gtk.gdk.threads_enter()
+    GLib.threads_init()
+    Gdk.threads_init()
+    Gdk.threads_enter()
     app = SliderFrame()
-    gtk.main()
-    gtk.gdk.threads_leave()
+    Gtk.main()
+    Gdk.threads_leave()

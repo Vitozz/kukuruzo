@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<glade-interface>
-  <!-- interface-requires gtk+ 2.16 -->
-  <!-- interface-naming-policy project-wide -->
-  <widget class="GtkWindow" id="volumeFrame">
+<interface>
+  <requires lib="gtk+" version="2.16"/>
+  <object class="GtkAdjustment" id="volume">
+    <property name="upper">100</property>
+    <property name="step_increment">1</property>
+    <property name="page_increment">10</property>
+  </object>
+  <object class="GtkWindow" id="volumeFrame">
     <property name="can_focus">True</property>
     <property name="has_focus">True</property>
     <property name="resizable">False</property>
@@ -10,60 +14,66 @@
     <property name="type_hint">dropdown-menu</property>
     <property name="skip_taskbar_hint">True</property>
     <property name="decorated">False</property>
-    <signal name="destroy_event" handler="on_volumeFrame_destroy_event"/>
+    <signal name="destroy-event" handler="on_volumeFrame_destroy_event" swapped="no"/>
     <child>
-      <widget class="GtkFrame" id="frame1">
+      <object class="GtkFrame" id="frame1">
         <property name="visible">True</property>
+        <property name="can_focus">False</property>
         <property name="label_xalign">0</property>
         <property name="label_yalign">0</property>
         <property name="shadow_type">out</property>
         <child>
-          <widget class="GtkAlignment" id="alignment1">
+          <object class="GtkAlignment" id="alignment1">
             <property name="visible">True</property>
+            <property name="can_focus">False</property>
             <child>
-              <widget class="GtkVBox" id="vbox1">
+              <object class="GtkVBox" id="vbox1">
                 <property name="visible">True</property>
+                <property name="can_focus">False</property>
                 <child>
-                  <widget class="GtkVScale" id="volume_slider">
+                  <object class="GtkVScale" id="volume_slider">
                     <property name="height_request">120</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="has_tooltip">True</property>
-                    <property name="adjustment">0 0 100 1 0 0</property>
+                    <property name="adjustment">volume</property>
                     <property name="inverted">True</property>
                     <property name="show_fill_level">True</property>
                     <property name="fill_level">100</property>
                     <property name="digits">0</property>
-                    <signal name="value_changed" handler="on_volume_slider_value_changed"/>
-                  </widget>
+                    <signal name="value-changed" handler="on_volume_slider_value_changed" swapped="no"/>
+                  </object>
                   <packing>
+                    <property name="expand">True</property>
+                    <property name="fill">True</property>
                     <property name="position">0</property>
                   </packing>
                 </child>
                 <child>
-                  <widget class="GtkFixed" id="fixed2">
+                  <object class="GtkFixed" id="fixed2">
                     <property name="height_request">10</property>
                     <property name="visible">True</property>
-                  </widget>
+                    <property name="can_focus">False</property>
+                  </object>
                   <packing>
+                    <property name="expand">True</property>
+                    <property name="fill">True</property>
                     <property name="position">1</property>
                   </packing>
                 </child>
-              </widget>
+              </object>
             </child>
-          </widget>
+          </object>
         </child>
-        <child>
-          <widget class="GtkLabel" id="label1">
+        <child type="label">
+          <object class="GtkLabel" id="label1">
             <property name="sensitive">False</property>
+            <property name="can_focus">False</property>
             <property name="yalign">0</property>
             <property name="use_markup">True</property>
-          </widget>
-          <packing>
-            <property name="type">label_item</property>
-          </packing>
+          </object>
         </child>
-      </widget>
+      </object>
     </child>
-  </widget>
-</glade-interface>
+  </object>
+</interface>

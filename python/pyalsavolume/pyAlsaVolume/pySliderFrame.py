@@ -19,17 +19,7 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 import os,  sys,  tarfile
-try:
-    import pygtk
-    pygtk.require('2.0')
-except:
-    pass
-try:
-    import gtk
-    import gtk.glade
-except:
-    sys.stderr.write('No Gtk Module Found in pySliderFrame module\n')
-    sys.exit(1)
+from gi.repository import Gtk, Gdk
 
 try:
     import alsaaudio
@@ -37,10 +27,10 @@ except:
     sys.stderr.write('No python-alsaaudio module found in pySliderFrame module\n')
     sys.exit(1)
 
-from pyOptions import Options
-from pyTrayIcon import StatusIcc
-from animate import Animate
-from pyLocalize import Locales
+from .pyOptions import Options
+from .pyTrayIcon import StatusIcc
+from .animate import Animate
+from .pyLocalize import Locales
 
 class SliderFrame:
     def __init__(self):
@@ -49,17 +39,20 @@ class SliderFrame:
         self.cards = self.alsa.cards()
         #initialize interface
         self.gladefile = None
-        if (os.path.exists('/usr/share/pyalsavolume/pySliderFrame.glade')):
-            self.gladefile = '/usr/share/pyalsavolume/pySliderFrame.glade' 
+        if (os.path.exists('pySliderFrame.glade')):
+            self.gladefile = 'pySliderFrame.glade' 
         else:
             sys.stderr.write('No pySliderFrame.glade file found in /usr/share/pyalsavolume\n')
             sys.exit(1)
-        self.wTree = gtk.glade.XML(self.gladefile)
-        dic = {"on_volume_slider_value_changed": self.onVolumeChange}
-        self.wTree.signal_autoconnect(dic)
-        self.window = self.wTree.get_widget('volumeFrame')
+        self.wTree = Gtk.Builder()
+        self.wTree.add_from_file(self.gladefile)
+        dic = {"on_volume_slider_value_changed": self.onVolumeChange, "on_volumeFrame_destroy_event": self.onDestroy}
+        self.wTree.get_objects()
+        self.wTree.connect_signals(dic)
+        self.window = self.wTree.get_object('volumeFrame')
+        self.volume_object = self.wTree.get_object('volume')
         self.window.connect("destroy", self.onDestroy)
-        self.volume_slider = self.wTree.get_widget('volume_slider')
+        self.volume_slider = self.wTree.get_object('volume_slider')
         self.window.connect("focus-out-event", self.hideInactive)
         self.lang = Locales()
         self.volume_slider.set_tooltip_text(self.lang.slider_dic.get('slider'))
@@ -104,7 +97,7 @@ class SliderFrame:
         self.trayicon = None
         self.trayicon = StatusIcc(self)
         #apply settings to tray icon objects
-        self.volume_slider.set_value(self.volume)
+        self.volume_object.set_value(self.volume)
         if self.volume:
             self.PushVolume(self.volume)
 
@@ -148,7 +141,7 @@ class SliderFrame:
         if (mixer and result):
             return mixer, result
         else:
-            print  'Error#01: Impossible to get mixer for "%s" card in pySliderFrame module' % self.cards[self.card]
+            print ('Error#01: Impossible to get mixer for "%s" card in pySliderFrame module' % self.cards[self.card])
             return None, None
 
     def GroupMixers(self, mixer_id):
@@ -168,7 +161,7 @@ class SliderFrame:
                         self.valid_mixers.append(mixer)
                     ind+= 1
         else:
-            print 'Error#02: mixer_id variable is empty in GroupMixers function in pySliderFrame module'
+            print ('Error#02: mixer_id variable is empty in GroupMixers function in pySliderFrame module')
 
     def SetTempMixer(self,  control,  cardindex):
         return self.alsa.Mixer(control,  cardindex)
@@ -185,7 +178,7 @@ class SliderFrame:
                         self.mixer_id.append(len(self.SetTempMixer(mixer,  self.card).switchcap()))
             self.GroupMixers(self.mixer_id)
         else:
-            print 'Error#03: self.mixers variable is empty in getValidMixers function in pySliderFrame module'
+            print ('Error#03: self.mixers variable is empty in getValidMixers function in pySliderFrame module')
 
     def GetInitVolume(self, key):
         if self.mixer:
@@ -195,7 +188,7 @@ class SliderFrame:
                 result = self.mixer.getvolume()[0]
             return result
         else:
-            print 'Error#04: self.mixer variable is empty in GetInitVolume function in pySliderFrame module'
+            print ('Error#04: self.mixer variable is empty in GetInitVolume function in pySliderFrame module')
 
     def onVolumeChange(self, widget):
         self.volume = int(widget.get_value())
@@ -218,8 +211,8 @@ class SliderFrame:
 
     def SetTrayTip(self):
         if self.trayicon:
-            self.trayicon.status_tooltip = self.lang.icon_dic.get("icon_tooltip") +": "+ self.alsa.cards()[self.card] + "\n"+  self.mixer.mixer() + " - " + str(self.volume) + r"%"
-            self.trayicon.staticon.set_tooltip(self.trayicon.status_tooltip)
+            self.trayicon.status_tooltip = str(self.lang.icon_dic.get("icon_tooltip")) +": "+ str(self.alsa.cards()[self.card]) + "\n"+  str(self.mixer.mixer()) + " - " + str(self.volume) + r"%"
+            self.trayicon.staticon.set_tooltip_text(self.trayicon.status_tooltip)
             self.trayicon.SetIcon(self.volume)
 
     def SetMixer(self, mixer):
@@ -236,23 +229,23 @@ class SliderFrame:
         #get mixer type
         self.mixer_type = self.getMixerType(self.mixer)
         #apply existed mixer parms
-        if self.mixer_type == ([0L, 0L], 'mute'):
+        if self.mixer_type == ([0, 0], 'mute'):
             self.volume = self.mixer.getvolume()[0]
-            self.volume_slider.set_value(self.volume)
+            self.volume_object.set_value(self.volume)
             self.trayicon.muteItem.set_active(False)
-        elif self.mixer_type == ([1L, 1L], 'rec'):
+        elif self.mixer_type == ([1, 1], 'rec'):
             self.volume = self.mixer.getvolume()[0]
-            self.volume_slider.set_value(self.volume)
+            self.volume_object.set_value(self.volume)
             self.trayicon.muteItem.set_active(False)
         else:
             if self.mixer.mixer() in self.multi_mixers:
                 self.volume = self.mixer.getvolume()[0]
                 if self.volume > 0:
                     self.trayicon.muteItem.set_active(False)
-                    self.volume_slider.set_value(self.volume)
+                    self.volume_object.set_value(self.volume)
                 else:
                     self.trayicon.muteItem.set_active(True)
-                    self.volume_slider.set_value(0)
+                    self.volume_object.set_value(0)
             else:
                 self.volume = self.mixer.getvolume()[0]
                 if self.volume > 0:
@@ -270,15 +263,15 @@ class SliderFrame:
                 mute = mixer.getmute()
                 return mute, 'mute'
             except:
-                print 'Error#07: Mixer "%s" maybe has a multipy mute(rec) switches in pySliderFrame module' % mixer.mixer()
+                print ('Error#07: Mixer "%s" maybe has a multipy mute(rec) switches in pySliderFrame module' % mixer.mixer())
                 return None
 
     def onMute(self, state):
         self.checked = state
         if self.trayicon:
             self.trayicon.muteItem.set_active(state)
-            self.trayicon.status_tooltip = self.mixer_name + " - " + self.lang.icon_dic.get("icon_tooltip_mute")
-            self.trayicon.staticon.set_tooltip(self.trayicon.status_tooltip)
+            self.trayicon.status_tooltip = str(self.mixer_name) + " - " + str(self.lang.icon_dic.get("icon_tooltip_mute"))
+            self.trayicon.staticon.set_tooltip_text(self.trayicon.status_tooltip)
             if not self.checked:
                 try:
                     if self.getMixerType(self.mixer)[1] == 'mute':
@@ -300,7 +293,7 @@ class SliderFrame:
                 self.volume_slider.set_sensitive(False)
 
     def hideInactive(self, widget, event):
-        if event.type == gtk.gdk.FOCUS_CHANGE:
+        if event.type == Gdk.EventType.FOCUS_CHANGE:
             self.window.hide()
 
     def SaveSettings(self):
@@ -353,7 +346,7 @@ class SliderFrame:
         if tarfile.is_tarfile(pack_name):
             tar = tarfile.open(pack_name,  "r:gz")
             if not os.path.exists(self.tmp_dir):
-                os.mkdir(self.tmp_dir, 0775)
+                os.mkdir(self.tmp_dir, 0o775)
             else:
                 os.chdir(self.tmp_dir)
                 os.system('rm -f *.png')
@@ -363,5 +356,5 @@ class SliderFrame:
 
     def onDestroy(self, widget):
         self.SaveSettings()
-        gtk.main_quit()
+        Gtk.main_quit()
 
