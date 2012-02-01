@@ -2,33 +2,30 @@
 #-*- coding: utf-8 -*-
 #pysshclient.py
 #Windows support added only for program development
-import sys, os
+import os
 try:
-    import pygtk
-    pygtk.require('2.0')
-except:
-    pass
-try:
-    import gtk
-    import gtk.glade
-    import gobject
-except:
-    sys.stderr.write('No Gtk Module Found\n')
-    sys.exit(1)
+    from gi.repository import Gtk
+    from gi.repository.Gdk import RGBA
+except Exception, error:
+    os.sys.stderr.write("Error importing Gtk modules %s" %error)
+    os.sys.exit(1)
 
-if str(sys.platform) != 'win32':
+if str(os.sys.platform) != 'win32':
     import pexpect
 
 from pySSHClient.pyTrayIcon import StatusIcc
 from pySSHClient.Options import OptWork
 from pySSHClient.mycrypt import Coder
+from pySSHClient.reswork import loadResFile
 
 class mainForm:
     """SSHFS mount client with multiply connections support"""
     def __init__(self):
+        _name="pysshclient"
         #Read settings
         self.Options = OptWork(self)
         self.Options.GetSettings()
+        self.loader = loadResFile()
         self.server_address = self.Options.settings.get("server")
         self.remote_user = self.Options.settings.get("user")
         self.password = self.Options.settings.get("password")
@@ -44,52 +41,51 @@ class mainForm:
         self.old_mp = None
         self.errors = False
         #GUI
-        self.gladefile = '/usr/share/pysshclient/mainform.glade'
-        self.wTree = gtk.glade.XML(self.gladefile)
-        dic = {"on_serv_addr_changed": self.OnServAddr, "on_u_name_changed": self.OnUserName,
-                "on_u_passw_changed": self.OnUserPassw, "on_m_point_changed": self.OnMountPoint,
-                "on_filechooser_released": self.OnDirChoose, "on_opt_check_toggled": self.OnOptToggle,
-                "on_conn_btn_released": self.OnConnPress, "on_disconn_btn_released": self.OnDisconnPress,
-                "on_r_path_changed": self.OnRemotePath, 'on_mp_list_cursor_changed': self.RowSelect,
-                "on_spinbutton1_value_changed": self.onPortChange}
-        self.wTree.signal_autoconnect(dic)
+        self.gladefile = self.loader.get(_name,"mainform.glade")
+        self.wTree = Gtk.Builder()
+        self.wTree.add_from_file(self.gladefile)
+        dic = {"address_changed": self.OnServAddr, "username_changed": self.OnUserName,
+                "password_changed": self.OnUserPassw, "mountpoint_changed": self.OnMountPoint,
+                "filechooser_pressed": self.OnDirChoose, "compress_traffic_toggled": self.OnOptToggle,
+                "connect_pressed": self.OnConnPress, "disconnect_pressed": self.OnDisconnPress,
+                "path_changed": self.OnRemotePath, "list_cursor_changed": self.RowSelect,
+                "port_changed": self.onPortChange, "list_row_activated":self.selectionChanged}
+        self.wTree.get_objects()
+        self.wTree.connect_signals(dic)
+        self.window = self.wTree.get_object('client_window')
         #Get console object
-        self.console_out = self.wTree.get_widget('out_entry')
+        self.console_out = self.wTree.get_object('out_entry')
         self.console_buffer = self.console_out.get_buffer()
         #Set console background and foreground color
-        self.console_out.modify_text(gtk.STATE_NORMAL, gtk.gdk.Color(0,65535,0,0))
-        self.console_out.modify_base(gtk.STATE_NORMAL, gtk.gdk.Color(0))
+        self.console_out.override_color(Gtk.StateType.NORMAL, RGBA(1, 0, 0, 1))
+        self.console_out.override_background_color(Gtk.StateType.NORMAL, RGBA(0, 0, 0, 1))
         #Get button objects
-        self.con_btn = self.wTree.get_widget('conn_btn')
-        self.discon_btn = self.wTree.get_widget('disconn_btn')
+        self.con_btn = self.wTree.get_object('conn_btn')
+        self.discon_btn = self.wTree.get_object('disconn_btn')
         self.discon_btn.set_sensitive(False)
         #Get Mount_List object
-        self.mp_list = self.wTree.get_widget('mp_list')
-        self.treestore = gtk.TreeStore(str)
-        self.column = gtk.TreeViewColumn('Mount Points', gtk.CellRendererText(), text=0)
-        self.column.set_resizable(True)
-        self.mp_list.append_column(self.column)
-        self.mp_list.set_model(self.treestore)
+        self.mp_list = self.wTree.get_object('mp_list')
+        self.treestore = self.wTree.get_object('mp_store')
         #Get mount point entry object
-        self.m_point_entry = self.wTree.get_widget('m_point')
+        self.m_point_entry = self.wTree.get_object('m_point')
         #Get server entry object
-        self.serv_addr_entry = self.wTree.get_widget('serv_addr')
+        self.serv_addr_entry = self.wTree.get_object('serv_addr')
         #Get user name entry object
-        self.u_name_entry = self.wTree.get_widget('u_name')
+        self.u_name_entry = self.wTree.get_object('u_name')
         #Get password entry object
-        self.u_passw_entry = self.wTree.get_widget('u_passw')
+        self.u_passw_entry = self.wTree.get_object('u_passw')
         #Get remote path entry object
-        self.r_path_entry = self.wTree.get_widget('r_path')
+        self.r_path_entry = self.wTree.get_object('r_path')
         #Get port spin object
-        self.spin = self.wTree.get_widget('spinbutton1')
+        self.spin = self.wTree.get_object('port_spin')
         #Get CheckButton object
-        self.opt_check = self.wTree.get_widget('opt_check')
+        self.opt_check = self.wTree.get_object('opt_check')
         #Get main Form object
-        self.window = self.wTree.get_widget('client_window')
+        self.window = self.wTree.get_object('client_window')
         self.window.connect("destroy", self.onDestroy)
         #Set icon variables
-        self.icon = "/usr/share/pysshclient/ssh_icon_24.png"
-        self.emblem = "/usr/share/pysshclient/ssh_icon.png"
+        self.icon = self.loader.get(_name, "ssh_icon_24.png")
+        self.emblem = self.loader.get(_name, "ssh_icon.png")
         #Set tray icon
         self.TrayIcon = StatusIcc(self)
         self.TrayIcon.settingsItem.set_sensitive(False)
@@ -105,6 +101,7 @@ class mainForm:
         elif self.add_opts == 0:
             self.opt_check.set_active(False)
         self.SetConsole(self.console)
+        self.window.show_all()
 
     def OnServAddr(self, widget):
         self.server_address = widget.get_text()
@@ -125,18 +122,18 @@ class mainForm:
         self.mount_point = widget.get_text()
 
     def OnDirChoose(self, widget, line=""):
-        fl_dialog = gtk.FileChooserDialog("Open..",
+        fl_dialog = Gtk.FileChooserDialog("Open..",
                                  None,
-                                 gtk.FILE_CHOOSER_ACTION_SELECT_FOLDER,
-                                 (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
-                                 gtk.STOCK_OPEN, gtk.RESPONSE_OK))
-        fl_dialog.set_default_response(gtk.RESPONSE_OK)
+                                 Gtk.FileChooserAction.SELECT_FOLDER,
+                                 (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
+                                 Gtk.STOCK_OPEN, Gtk.ResponseType.OK))
+        fl_dialog.set_default_response(Gtk.ResponseType.OK)
         response = fl_dialog.run()
-        if response == gtk.RESPONSE_OK:
+        if response == Gtk.ResponseType.OK:
             self.mount_point = fl_dialog.get_filename()
             self.m_point_entry.set_text(self.mount_point)
             self.console += "Sellected mount point: %s \n" % self.mount_point
-        elif response == gtk.RESPONSE_CANCEL:
+        elif response == Gtk.ResponseType.CANCEL:
             self.console += "Mount point dialog - cancelled\n"
         self.SetConsole(self.console)
         fl_dialog.destroy()
@@ -209,7 +206,7 @@ class mainForm:
             self.SetConsole(self.console)
         #If no errors try to run command
         if not self.errors:
-            if str(sys.platform) != "win32":
+            if str(os.sys.platform) != "win32":
                 sshfs = pexpect.spawn( str( command ), env = {'SSH_ASKPASS':'/dev/null'} )
                 ssh_newkey = 'Are you sure you want to continue connecting'
                 i = sshfs.expect( [ssh_newkey, 'assword:', pexpect.EOF, pexpect.TIMEOUT] )
@@ -250,7 +247,7 @@ class mainForm:
             self.doCommand(command)
 
     def doCommand(self, command):
-        if str(sys.platform) != "win32":
+        if str(os.sys.platform) != "win32":
             os.system(command)
         else:
             self.console += "You are using windows\n"
@@ -259,6 +256,9 @@ class mainForm:
     def addItem(self, itemtext):
        self.treestore.append(None, ['%s'%itemtext])
 
+    def selectionChanged(self, widget):
+        pass
+
     def RowSelect(self, widget):
         """Get mount_point_list selected item on select event"""
         store, itera = widget.get_selection().get_selected()
@@ -266,6 +266,7 @@ class mainForm:
         self.row_iter = itera
         self.discon_btn.set_sensitive(True)
         self.TrayIcon.settingsItem.set_sensitive(True)
+        pass
 
     def onPortChange(self, widget):
         self.port = int(widget.get_value())
@@ -273,6 +274,7 @@ class mainForm:
     def delItem(self):
         if self.row_iter:
             self.treestore.remove(self.row_iter)
+        pass
 
     def SaveSettings(self):
         self.Options.SetSettings(self.server_address, self.port,
@@ -309,18 +311,14 @@ class mainForm:
         if mplist:
             for item in mplist:
                 self.Disconnect(item)
-                print "Unmounting ", item
+                print ("Unmounting ", item)
 
     def onDestroy(self, widget):
-        #Unmounting mounted devices
         self.UnmountAll(self.GetMP())
-        #Saving Settings
         self.SaveSettings()
-        #Delete Tray Icon
         del self.TrayIcon
-        #Close Program
-        gtk.main_quit()
+        Gtk.main_quit()
 
 if __name__ == "__main__":
     app = mainForm()
-    gtk.main()
+    Gtk.main()

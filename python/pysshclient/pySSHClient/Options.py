@@ -14,7 +14,7 @@ class OptWork:
             self.confdir = os.environ['HOME'] + "/.pysshclient"
             if not os.path.exists(self.confpath):
                 if not os.path.exists(self.confdir):
-                    os.mkdir(self.confdir, 0775)
+                    os.mkdir(self.confdir, 0o775)
                 f = open(self.confpath, "wb")
                 sod = "[Main]\nserver=RemoteServer\nport=22\nuser=RemoteUser\nremote_path=RemotePath\nmount_point=MountPoint\ncompress=0"
                 f.write(sod)

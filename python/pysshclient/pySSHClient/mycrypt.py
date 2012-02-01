@@ -5,11 +5,11 @@ try:
     import hashlib
     from Crypto.Cipher import DES3
 except:
-    print "Can't Load Module 'Crypto'. Please check you have installed one."
+    print ("Can't Load Module 'Crypto'. Please check you have installed one.")
 try:
     import pickle
 except:
-    print "Can't Load Module 'pickle'. Please check you have installed one."
+    print ("Can't Load Module 'pickle'. Please check you have installed one.")
 
 class Coder:
     """Module encryption by method RC5. To encrypt you need to create a hash key
