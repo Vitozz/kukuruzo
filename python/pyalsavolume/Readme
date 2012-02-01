@@ -123,3 +123,7 @@ v.0.9.4
 - добавлена функция автоматической смены локали программы (3 языка по-умолчанию Английский, Русский, Украинский)
 
 - added auto-locale switch (3 default languages en, ru ,ua)
+
+v.0.9.8
+- интерфейс программы теперь использует Gtk+3
+- program interface now using Gtk+3 engine

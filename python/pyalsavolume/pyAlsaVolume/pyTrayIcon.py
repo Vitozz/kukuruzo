@@ -19,7 +19,7 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 import sys, os, threading
-from gi.repository import Gtk, GObject, Gdk, GdkPixbuf
+from gi.repository import Gtk, GdkPixbuf
 from gi.repository.Gdk import ScrollDirection
 
 from .pySettingsFrame import SettingsFrame

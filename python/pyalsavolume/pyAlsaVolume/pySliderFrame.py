@@ -19,7 +19,8 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 import os,  sys,  tarfile
-from gi.repository import Gtk, Gdk
+from gi.repository import Gtk
+from gi.repository.Gdk import EventType
 
 try:
     import alsaaudio
@@ -31,18 +32,19 @@ from .pyOptions import Options
 from .pyTrayIcon import StatusIcc
 from .animate import Animate
 from .pyLocalize import Locales
+from .reswork import loadResFile
 
 class SliderFrame:
     def __init__(self):
+        self._name = "pyalsavolume"
         #find aviable sound cards
         self.alsa = alsaaudio
         self.cards = self.alsa.cards()
         #initialize interface
-        self.gladefile = None
-        if (os.path.exists('/usr/share/pyalsavolume/pySliderFrame.glade')):
-            self.gladefile = '/usr/share/pyalsavolume/pySliderFrame.glade' 
-        else:
-            sys.stderr.write('No pySliderFrame.glade file found in /usr/share/pyalsavolume\n')
+        self.loader = loadResFile()
+        self.gladefile = self.loader.get(self._name, "pySliderFrame.glade")
+        if (not os.path.exists(self.gladefile)):
+            sys.stderr.write('No pySliderFrame.glade file found\n')
             sys.exit(1)
         self.wTree = Gtk.Builder()
         self.wTree.add_from_file(self.gladefile)
@@ -293,7 +295,7 @@ class SliderFrame:
                 self.volume_slider.set_sensitive(False)
 
     def hideInactive(self, widget, event):
-        if event.type == Gdk.EventType.FOCUS_CHANGE:
+        if event.type == EventType.FOCUS_CHANGE:
             self.window.hide()
 
     def SaveSettings(self):
@@ -321,13 +323,13 @@ class SliderFrame:
     def SetIconPack(self,  name):
         if name == "default":
             self.iconpack_name = name
-            self.iconpack['logo'] = '/usr/share/pyalsavolume/icons/volume.png'
-            self.iconpack['icon0'] = '/usr/share/pyalsavolume/icons/tb_icon0.png'
-            self.iconpack['icon20'] = '/usr/share/pyalsavolume/icons/tb_icon20.png'
-            self.iconpack['icon40'] = '/usr/share/pyalsavolume/icons/tb_icon40.png'
-            self.iconpack['icon60'] = '/usr/share/pyalsavolume/icons/tb_icon60.png'
-            self.iconpack['icon80'] = '/usr/share/pyalsavolume/icons/tb_icon80.png'
-            self.iconpack['icon100'] = '/usr/share/pyalsavolume/icons/tb_icon100.png'
+            self.iconpack['logo'] = self.loader.get(self._name, 'icons/volume.png')
+            self.iconpack['icon0'] = self.loader.get(self._name, 'icons/tb_icon0.png')
+            self.iconpack['icon20'] = self.loader.get(self._name, 'icons/tb_icon20.png')
+            self.iconpack['icon40'] = self.loader.get(self._name, 'icons/tb_icon40.png')
+            self.iconpack['icon60'] = self.loader.get(self._name, 'icons/tb_icon60.png')
+            self.iconpack['icon80'] = self.loader.get(self._name, 'icons/tb_icon80.png')
+            self.iconpack['icon100'] = self.loader.get(self._name, 'icons/tb_icon100.png')
         elif name:
             self.iconpack_name = name
             self.readPack(self.iconpath + name)

@@ -4,7 +4,7 @@ from distutils.core import setup
 from distutils.command.install_data import install_data
 
 setup(name='pyalsavolume',
-      version='0.9.8',
+      version='0.9.9',
       description='Tray ALSA volume changer',
       long_description = "Simple programm to change the volume of one of the ALSA mixer from the system tray",
       author='Vitaly Tonkacheyev',

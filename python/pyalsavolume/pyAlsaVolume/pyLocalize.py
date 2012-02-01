@@ -20,6 +20,7 @@
 
 import os,  locale
 from ConfigParser import ConfigParser
+from .reswork import loadResFile
 
 class Locales:
     def __init__(self):
@@ -31,13 +32,14 @@ class Locales:
         self.icon_dic = {"about_comments": "", "about_site_label": "", "about_author": "",
                         "restoreItem": "", "mixerItem": "", "muteItem": "", "icon_tooltip_mute": "", "icon_tooltip": ""}
         self.CP = ConfigParser()
+        self.loader = loadResFile()
         curr_locale = locale.getlocale()[0][0:2]
-        self.localepath = os.environ["HOME"] + "/.pyalsavolume/lang/"+"%s.lng"%curr_locale
+        self.localepath = self.loader.get("pyalsavolume", "lang/"+"%s.lng"%curr_locale)
         if not os.path.exists(self.localepath):
-            if os.path.exists("/usr/share/pyalsavolume/lang/"+"%s.lng"%curr_locale):
-               self.localepath =  "/usr/share/pyalsavolume/lang/"+"%s.lng"%curr_locale
+            if os.path.exists(self.loader.get("pyalsavolume", "lang/en.lng")):
+               self.localepath =  "/usr/share/pyalsavolume/lang/en.lng"
             else:
-                self.localepath =  "/usr/share/pyalsavolume/lang/en.lng"
+               os.sys.stderr.write("Path %s not exists" %self.localepath)               
         homepath = os.environ["HOME"] + "/.pyalsavolume"
         if not os.path.exists(homepath):
             os.mkdir(homepath, 0o775)
