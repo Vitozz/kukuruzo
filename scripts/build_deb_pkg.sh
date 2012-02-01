@@ -401,7 +401,7 @@ build_pyssh ()
 	arch="all"
 	builddep="cdbs, debhelper (>= 7), python-support (>= 0.6)"
 	addit="XB-Python-Version: \${python:Versions}"
-	depends="\${python:Depends}, python-crypto, python-gtk2, python-glade2, python-pexpect, sshfs, openssh-client"
+	depends="\${python:Depends}, python-crypto, libgtk-3-0, python-gobject (>=3.0.0), python-pexpect, sshfs, openssh-client"
 	description="SSHFS Connection GUI"
 	descriptionlong='pysshfs - it"s a simple program, that provides a graphical interface to connect to a remote directory using SSHFS.
 	It is written on Python + PyGTK
