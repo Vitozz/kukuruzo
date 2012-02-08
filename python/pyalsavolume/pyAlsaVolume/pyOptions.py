@@ -26,9 +26,9 @@ class Options:
     def __init__(self):
         self.settings = {'volume': None, 'mixer': None, 'card': 0,'extmixer': None, 'iconpack': None}
         self.CP = ConfigParser()
-        self.cfgpath = os.environ["HOME"] + "/.pyalsavolume/config.cfg"
+        self.cfgpath = os.environ["HOME"] + "/.config/pyalsavolume/config.cfg"
         if not os.path.exists(self.cfgpath):
-            tmpath = os.environ["HOME"] + "/.pyalsavolume"
+            tmpath = os.environ["HOME"] + "/.config/pyalsavolume"
             if not os.path.exists(tmpath):
                 os.mkdir(tmpath, 0o775)
             f = open(self.cfgpath, "wb")

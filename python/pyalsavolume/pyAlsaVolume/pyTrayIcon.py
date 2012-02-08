@@ -126,7 +126,7 @@ class StatusIcc:
     def onAbout(self, widget, data=None):
         about = Gtk.AboutDialog()
         about.set_program_name("pyAlsaVolume")
-        about.set_version("0.9.9")
+        about.set_version("0.9.10")
         about.set_copyright("2009(c) %s (thetvg@gmail.com)"%self.parent.lang.icon_dic.get("about_author"))
         about.set_comments(self.parent.lang.icon_dic.get("about_comments"))
         about.set_website("http://sites.google.com/site/thesomeprojects/")

@@ -4,7 +4,6 @@
   <object class="GtkWindow" id="client_window">
     <property name="can_focus">False</property>
     <property name="title" translatable="yes">Sshfs connection client</property>
-    <property name="resizable">False</property>
     <property name="icon">ssh_icon_24.png</property>
     <child>
       <object class="GtkBox" id="box1">
@@ -63,7 +62,9 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="invisible_char">●</property>
-                    <signal name="value-changed" handler="port_changed" swapped="no"/>
+                    <property name="adjustment">port_adjust</property>
+                    <property name="climb_rate">1</property>
+                    <property name="numeric">True</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -177,7 +178,6 @@
                 <child>
                   <object class="GtkButton" id="filechooser">
                     <property name="label">gtk-open</property>
-                    <property name="use_action_appearance">False</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
@@ -194,7 +194,6 @@
                 <child>
                   <object class="GtkCheckButton" id="opt_check">
                     <property name="label" translatable="yes">Compress traffic</property>
-                    <property name="use_action_appearance">False</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">False</property>
@@ -302,7 +301,6 @@
             <child>
               <object class="GtkButton" id="conn_btn">
                 <property name="label">gtk-connect</property>
-                <property name="use_action_appearance">False</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
@@ -319,7 +317,6 @@
             <child>
               <object class="GtkButton" id="disconn_btn">
                 <property name="label">gtk-disconnect</property>
-                <property name="use_action_appearance">False</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
@@ -344,4 +341,10 @@
     </child>
   </object>
   <object class="GtkListStore" id="mp_store"/>
+  <object class="GtkAdjustment" id="port_adjust">
+    <property name="upper">255</property>
+    <property name="step_increment">1</property>
+    <property name="page_increment">10</property>
+    <signal name="value-changed" handler="port_changed" swapped="no"/>
+  </object>
 </interface>

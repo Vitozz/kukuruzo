@@ -72,8 +72,8 @@ class SliderFrame:
         self.multi_mixers = []
         self.mixer_type = None
         self.iconpack = {'logo':  '',  'icon0': '',  'icon20': '',  'icon40': '',  'icon60': '',  'icon80': '',  'icon100': ''}
-        self.iconpath = os.environ["HOME"] + "/.pyalsavolume/icons/"
-        self.tmp_dir = os.environ["HOME"] + "/.pyalsavolume/icons/.tmp"
+        self.iconpath = os.environ["HOME"] + "/.local/share/pyalsavolume/icons/"
+        self.tmp_dir = os.environ["HOME"] + "/.cache/pyalsavolume"
         self.iconpack_name = self.opts.settings.get('iconpack')
         self.anim = None
         self.SetIconPack(self.iconpack_name)

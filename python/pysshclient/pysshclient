@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 #-*- coding: utf-8 -*-
 #pysshclient.py
-#Windows support added only for program development
 import os
 try:
     from gi.repository import Gtk
@@ -10,8 +9,7 @@ except Exception, error:
     os.sys.stderr.write("Error importing Gtk modules %s" %error)
     os.sys.exit(1)
 
-if str(os.sys.platform) != 'win32':
-    import pexpect
+import pexpect
 
 from pySSHClient.pyTrayIcon import StatusIcc
 from pySSHClient.Options import OptWork
@@ -206,37 +204,32 @@ class mainForm:
             self.SetConsole(self.console)
         #If no errors try to run command
         if not self.errors:
-            if str(os.sys.platform) != "win32":
-                sshfs = pexpect.spawn( str( command ), env = {'SSH_ASKPASS':'/dev/null'} )
-                ssh_newkey = 'Are you sure you want to continue connecting'
-                i = sshfs.expect( [ssh_newkey, 'assword:', pexpect.EOF, pexpect.TIMEOUT] )
-                if i == 0:
-                    sshfs.sendline('yes')
-                    i = sshfs.expect([ssh_newkey,'assword:',pexpect.EOF])
-                if i == 1:
-                    #If no password ask for it
-                    password = passwd + "\n"
-                    sshfs.sendline( password )
-                    j = sshfs.expect( [pexpect.EOF, 'assword:'] )
-                    if j == 1:
-                        #Password incorrect, force the connection close
-                        self.console += "Password incorrect\n"
-                        sshfs.close(True)
-                    self.addItem(mountpoint)
-                    self.connected = True
-                    self.console += ("Connecting...\n" + command + "\n")
-                elif i == 2:
-                    #Any problem
-                    self.console += ("Error found: %s" % sshfs.before + "\n")
-                elif i == 3:
-                    #Timeout
-                    self.console += ("Timeout: %s" % sshfs.before + "\n")
-                self.console += sshfs.before
-            else:
+            sshfs = pexpect.spawn( str( command ), env = {'SSH_ASKPASS':'/dev/null'} )
+            ssh_newkey = 'Are you sure you want to continue connecting'
+            i = sshfs.expect( [ssh_newkey, 'assword:', pexpect.EOF, pexpect.TIMEOUT] )
+            if i == 0:
+                sshfs.sendline('yes')
+                i = sshfs.expect([ssh_newkey,'assword:',pexpect.EOF])
+            if i == 1:
+                #If no password ask for it
+                password = passwd + "\n"
+                sshfs.sendline( password )
+                j = sshfs.expect( [pexpect.EOF, 'assword:'] )
+                if j == 1:
+                    #Password incorrect, force the connection close
+                    self.console += "Password incorrect\n"
+                    sshfs.close(True)
                 self.addItem(mountpoint)
                 self.connected = True
                 self.console += ("Connecting...\n" + command + "\n")
-            self.SetConsole(self.console)
+            elif i == 2:
+                #Any problem
+                self.console += ("Error found: %s" % sshfs.before + "\n")
+            elif i == 3:
+                #Timeout
+                self.console += ("Timeout: %s" % sshfs.before + "\n")
+            self.console += sshfs.before
+        self.SetConsole(self.console)
 
 
     def Disconnect(self, mountpoint):

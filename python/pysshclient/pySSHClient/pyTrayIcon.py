@@ -38,7 +38,7 @@ class StatusIcc:
     def onAbout(self, widget, data=None):
         about = Gtk.AboutDialog()
         about.set_program_name("pySSHFSClient")
-        about.set_version("0.4")
+        about.set_version("0.5")
         about.set_copyright("Vitaly Tonkacheyev (thetvg@gmail.com)")
         about.set_comments("Simple GUI program to connect \nto remote folders using SSHFS")
         about.set_website("http://sites.google.com/site/thesomeprojects/")

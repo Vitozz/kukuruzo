@@ -40,10 +40,10 @@ class Locales:
                self.localepath =  "/usr/share/pyalsavolume/lang/en.lng"
             else:
                os.sys.stderr.write("Path %s not exists" %self.localepath)               
-        homepath = os.environ["HOME"] + "/.pyalsavolume"
+        homepath = os.environ["HOME"] + "/.local/share/pyalsavolume"
         if not os.path.exists(homepath):
             os.mkdir(homepath, 0o775)
-        langpath = os.environ["HOME"] + "/.pyalsavolume/lang"
+        langpath = os.environ["HOME"] + "/.local/share/pyalsavolume/lang"
         if not os.path.exists(langpath):
             os.mkdir(langpath, 0o775)
         if self.localepath:

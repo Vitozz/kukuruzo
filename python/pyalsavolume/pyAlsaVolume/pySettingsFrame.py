@@ -28,7 +28,7 @@ class SettingsFrame:
         self.card = self.parent.card
         self.cards = self.parent.cards
         self.items = []
-        self.iconpath = os.environ["HOME"] + "/.pyalsavolume/icons"
+        self.iconpath = os.environ["HOME"] + "/.local/share/pyalsavolume/icons"
         self.iconpack = "default"
         #Settings frame interfase
         self.gladefile = self.parent.loader.get(self.parent._name, 'pySettingsFrame.glade')
