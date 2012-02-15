@@ -19,7 +19,7 @@ column1 = Status
 tabspos = Place tabs horizontally
 
 [TrayIcon]
-aboutcomments = Simple program to change one of the ALSA mixers volume
+aboutcomments = Сhanges one of the ALSA mixers volume
 aboutsitelabel = Program Website
 aboutauthor = Vitaly Tonkacheyev
 restoreItem = Restore

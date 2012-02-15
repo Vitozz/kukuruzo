@@ -1,3 +1,9 @@
+pyalsavolume (0.9.11-1ubuntu1) oneric; urgency=low
+
+  * some language-files fixes
+
+ -- Vitaly Tonkacheyev <thetvg@gmail.com>  Wed, 15 Feb 2012 17:30:00 +0200
+
 pyalsavolume (0.9.8-1ubuntu1) oneric; urgency=low
 
   * now using Gtk+3 engine

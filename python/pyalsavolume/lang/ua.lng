@@ -19,7 +19,7 @@ column1 = Стан
 tabspos = Вкладки горизонтально
 
 [TrayIcon]
-aboutcomments = Проста програма зміни гучності одного з мікшерів ALSA
+aboutcomments = Зміна гучності одного з мікшерів ALSA
 aboutsitelabel = Веб-сторінка
 aboutauthor = Віталий Тонкачеєв
 restoreItem = Показати
