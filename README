@@ -13,10 +13,6 @@ Map of Repository:
                              |
                               ---exaile-remote-plugin
                               ---exaile-tunetopsi-plugin
-                              ---htmltotextgui
-                              ---pyalsavolume
-                              ---pypoweroff
-                              ---pysshclient
                               ---rb-remote-plugin
                               ---rb-restore-plugin
                               ---rb-tunetopsi-plugin
