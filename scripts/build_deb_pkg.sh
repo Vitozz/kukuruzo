@@ -29,6 +29,9 @@ builddep=""
 docfiles=""
 dirs=""
 
+CWDIR=`pwd`
+echo "Current workdir ${CWDIR}"
+
 if [ ! -z $USERNAME ]
 then
 	username=$USERNAME
@@ -55,24 +58,21 @@ fi
 
 Maintainer="Vitaly Tonkacheyev <thetvg@gmail.com>"
 
-check_dir ()
+run_resloader ()
 {
 	if [ ! -z "$1" ]
 	then
-		if [ ! -d "$1" ]
+		cmd=$1
+		if [ -f "${CWDIR}/resloader.sh" ]
 		then
-			mkdir "$1"
+			cd ${CWDIR}
+			. ./resloader.sh
+			$cmd
+		else
+			echo "No resloder.sh file found. Please download it with this script in the same dir"
+			quit
 		fi
 	fi
-}
-
-get_src ()
-{
-	cd ${homedir}
-	git clone "git://github.com/Vitozz/kukuruzo.git"  ${srcdir}
-	cd ${srcdir}
-	git init
-	git pull
 }
 
 rm_all ()
@@ -98,34 +98,10 @@ check_qconf ()
 	fi
 }
 
-prepare_global ()
-{
-	check_dir ${srcdir}
-	get_src
-}
-
-prepare_src ()
-{
-	check_dir ${builddir}
-	rm -rf ${builddir}/*
-	check_dir ${exitdir}
-	if [ ! -z "$1" ]
-	then
-		dirname="$1"
-		check_dir ${builddir}/${project}-${ver}
-		cp -rf ${srcdir}/${dirname}/* ${builddir}/${project}-${ver}/
-		workdir=${builddir}/${project}-${ver}
-		cd ${workdir}
-		check_dir ${workdir}/debian
-	fi
-}
-
 build_deb ()
 {
 	dpkg-buildpackage -rfakeroot
 }
-
-
 
 quit ()
 {
@@ -291,8 +267,10 @@ build_erp ()
 	project="exaile-remote-plugin"
 	dirname="python/exaile-remote-plugin"
 	ver=`cat ${srcdir}/${dirname}/version.txt`
-	prepare_src ${dirname}
 	debdir=${builddir}/${project}-${ver}
+	run_resloader "set_workdir ${project}-${ver}"
+	run_resloader "prepare_src ${dirname}"
+	run_resloader "check_dir ${debdir}/debian"
 	cd ${debdir}
 	prepare_sound_python
 	depends="\${python:Depends}, python-gtk2, exaile (>=0.3.2.0)"
@@ -313,8 +291,10 @@ build_etp ()
 	project="exaile-tunetopsi-plugin"
 	dirname="python/exaile-tunetopsi-plugin"
 	ver=`cat ${srcdir}/${dirname}/version.txt`
-	prepare_src ${dirname}
 	debdir=${builddir}/${project}-${ver}
+	run_resloader "set_workdir ${project}-${ver}"
+	run_resloader "prepare_src ${dirname}"
+	run_resloader "check_dir ${debdir}/debian"
 	cd ${debdir}
 	prepare_sound_python
 	depends="\${python:Depends}, exaile"
@@ -332,11 +312,14 @@ build_etp ()
 
 build_pyav ()
 {
+	run_resloader get_pyav
 	project="pyalsavolume"
-	dirname="python/pyalsavolume"
+	dirname="pyalsavolume"
 	ver=`cat ${srcdir}/${dirname}/version.txt`
-	prepare_src ${dirname}
 	debdir=${builddir}/${project}-${ver}
+	run_resloader "set_workdir ${project}-${ver}"
+	run_resloader "prepare_src ${dirname}"
+	run_resloader "check_dir ${debdir}/debian"
 	cd ${debdir}
 	prepare_sound_python
 	depends="\${python:Depends}, libgtk-3-0, python-gobject (>=3.0.0), python-alsaaudio (>=0.6)"
@@ -360,11 +343,14 @@ usr/share/applications
 
 build_pypoff ()
 {
+	run_resloader get_pypoff
 	project="pypoweroff"
-	dirname="python/pypoweroff"
+	dirname="pypoweroff/1.3"
 	ver=`cat ${srcdir}/${dirname}/version.txt`
-	prepare_src ${dirname}
 	debdir=${builddir}/${project}-${ver}
+	run_resloader "set_workdir ${project}-${ver}"
+	run_resloader "prepare_src ${dirname}"
+	run_resloader "check_dir ${debdir}/debian"
 	cd ${debdir}
 	section="misc"
 	arch="all"
@@ -391,11 +377,14 @@ usr/share/applications
 
 build_pyssh ()
 {
+	run_resloader get_pyssh
 	project="pysshclient"
-	dirname="python/pysshclient"
+	dirname="pysshclient"
 	ver=`cat ${srcdir}/${dirname}/version.txt`
-	prepare_src ${dirname}
 	debdir=${builddir}/${project}-${ver}
+	run_resloader "set_workdir ${project}-${ver}"
+	run_resloader "prepare_src ${dirname}"
+	run_resloader "check_dir ${debdir}/debian"
 	cd ${debdir}
 	section="misc"
 	arch="all"
@@ -423,8 +412,10 @@ build_rbremp ()
 	project="rb-remote-plugin"
 	dirname="python/rb-remote-plugin"
 	ver=`cat ${srcdir}/${dirname}/version.txt`
-	prepare_src ${dirname}
 	debdir=${builddir}/${project}-${ver}
+	run_resloader "set_workdir ${project}-${ver}"
+	run_resloader "prepare_src ${dirname}"
+	run_resloader "check_dir ${debdir}/debian"
 	cd ${debdir}
 	prepare_sound_python
 	depends="\${python:Depends}, \${misc:Depends}, python-gtk2, python-glade2, python-gconf, rhythmbox"
@@ -444,8 +435,10 @@ build_rbresp ()
 	project="rb-restore-plugin"
 	dirname="python/rb-restore-plugin"
 	ver=`cat ${srcdir}/${dirname}/version.txt`
-	prepare_src ${dirname}
 	debdir=${builddir}/${project}-${ver}
+	run_resloader "set_workdir ${project}-${ver}"
+	run_resloader "prepare_src ${dirname}"
+	run_resloader "check_dir ${debdir}/debian"
 	cd ${debdir}
 	prepare_sound_python
 	depends="\${python:Depends}, \${misc:Depends}, python-gtk2, python-glade2, python-gconf, rhythmbox"
@@ -466,8 +459,10 @@ build_rbtunp ()
 	project="rb-tunetopsi-plugin"
 	dirname="python/rb-tunetopsi-plugin"
 	ver=`cat ${srcdir}/${dirname}/version.txt`
-	prepare_src ${dirname}
 	debdir=${builddir}/${project}-${ver}
+	run_resloader "set_workdir ${project}-${ver}"
+	run_resloader "prepare_src ${dirname}"
+	run_resloader "check_dir ${debdir}/debian"
 	cd ${debdir}
 	prepare_sound_python
 	depends="\${python:Depends}, \${misc:Depends}, python-gtk2, python-glade2, python-gconf, rhythmbox"
@@ -489,8 +484,10 @@ build_regext ()
 	project="regexptest"
 	dirname="qt/regexptest"
 	ver=`cat ${srcdir}/${dirname}/version.txt`
-	prepare_src ${dirname}
 	debdir=${builddir}/${project}-${ver}
+	run_resloader "set_workdir ${project}-${ver}"
+	run_resloader "prepare_src ${dirname}"
+	run_resloader "check_dir ${debdir}/debian"
 	cd ${debdir}
 	section="x11"
 	arch="all"
@@ -517,11 +514,14 @@ usr/share/applications"
 
 build_html2text ()
 {
+	run_resloader get_html2text
 	project="htmltotextgui"
 	dirname="python/htmltotextgui"
 	ver=`cat ${srcdir}/${dirname}/version.txt`
-	prepare_src ${dirname}
 	debdir=${builddir}/${project}-${ver}
+	run_resloader "set_workdir ${project}-${ver}"
+	run_resloader "prepare_src ${dirname}"
+	run_resloader "check_dir ${debdir}/debian"
 	cd ${debdir}
 	section="misc"
 	arch="all"
@@ -579,10 +579,10 @@ choose_action ()
   esac
 }
 
-cd ${home}
 clear
-check_dir ${srcdir}
-get_src
+run_resloader "check_dir ${srcdir}"
+run_resloader "check_dir ${builddir}"
+run_resloader get_src
 while [ ${isloop} = 1 ]
 do
   print_menu

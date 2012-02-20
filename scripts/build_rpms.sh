@@ -60,25 +60,26 @@ fi
 
 Maintainer="Vitaly Tonkacheyev <thetvg@gmail.com>"
 
-check_dir ()
+CWDIR=`pwd`
+echo "Current workdir ${CWDIR}"
+
+run_resloader ()
 {
 	if [ ! -z "$1" ]
 	then
-		if [ ! -d "$1" ]
+		cmd=$1
+		if [ -f "${CWDIR}/resloader.sh" ]
 		then
-			mkdir "$1"
+			cd ${CWDIR}
+			. ./resloader.sh
+			$cmd
+		else
+			echo "No resloder.sh file found. Please download it with this script in the same dir"
+			quit
 		fi
 	fi
 }
 
-get_src ()
-{
-	cd ${homedir}
-	git clone "git://github.com/Vitozz/kukuruzo.git"  ${srcdir}
-	cd ${srcdir}
-	git init
-	git pull
-}
 
 rm_all ()
 {
@@ -105,22 +106,22 @@ check_qconf ()
 
 prepare_global ()
 {
-	check_dir ${srcdir}
-	get_src
+	run_resloader "check_dir ${srcdir}"
+	run_resloader get_src
 }
 
 prepare_src ()
 {
-	check_dir ${rpmdir}
-        check_dir ${specfiles}
-        check_dir ${srcfiles}
-        check_dir ${builddir}
-        check_dir ${exitdir}
+	run_resloader "check_dir ${rpmdir}"
+        run_resloader "check_dir ${specfiles}"
+        run_resloader "check_dir ${srcfiles}"
+        run_resloader "check_dir ${builddir}"
+        run_resloader "check_dir ${exitdir}"
         rm -rf ${builddir}/*
 	if [ ! -z "$1" ]
 	then
 		dirname="$1"
-		check_dir ${builddir}/${project}-${ver}
+		run_resloader "check_dir ${builddir}/${project}-${ver}"
 		cp -rf ${srcdir}/${dirname}/* ${builddir}/${project}-${ver}/
 		workdir=${builddir}/${project}-${ver}
                 cd ${builddir}
@@ -129,13 +130,6 @@ prepare_src ()
                 cp -rf ${builddir}/${package_name} ${srcfiles}/
 	fi
 }
-
-build_deb ()
-{
-	dpkg-buildpackage -rfakeroot
-}
-
-
 
 quit ()
 {
@@ -230,8 +224,9 @@ build_etp ()
 
 build_pyav ()
 {
+	run_resloader get_pyav
 	project="pyalsavolume"
-	dirname="python/pyalsavolume"
+	dirname="pyalsavolume"
 	ver=`cat ${srcdir}/${dirname}/version.txt`
 	prepare_src ${dirname}
 	prepare_sound_python
@@ -247,8 +242,9 @@ build_pyav ()
 
 build_pypoff ()
 {
+	run_resloader get_pypoff
 	project="pypoweroff"
-	dirname="python/pypoweroff"
+	dirname="pypoweroff/1.3"
 	ver=`cat ${srcdir}/${dirname}/version.txt`
 	prepare_src ${dirname}
 	section="Applications/System"
@@ -266,8 +262,9 @@ build_pypoff ()
 
 build_pyssh ()
 {
+	run_resloader get_pyssh
 	project="pysshclient"
-	dirname="python/pysshclient"
+	dirname="pysshclient"
 	ver=`cat ${srcdir}/${dirname}/version.txt`
 	prepare_src ${dirname}
 	section="Applications/Communications"
@@ -400,8 +397,9 @@ mkdir -p %{buildroot}/usr/share/%{name}/icons
 
 build_html2text ()
 {
+	run_resloader get_html2text
 	project="htmltotextgui"
-	dirname="python/htmltotextgui"
+	dirname="htmltotextgui"
 	ver=`cat ${srcdir}/${dirname}/version.txt`
 	prepare_src ${dirname}
 	section="Applications/Utility"
@@ -456,8 +454,8 @@ choose_action ()
 
 cd ${home}
 clear
-check_dir ${srcdir}
-get_src
+run_resloader "check_dir ${srcdir}"
+run_resloader get_src
 while [ ${isloop} = 1 ]
 do
   print_menu
