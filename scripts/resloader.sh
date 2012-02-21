@@ -1,8 +1,8 @@
 #!/bin/bash
-homedir=$HOME
-srcdir=${homedir}/kukuruzorepo
-builddir=${srcdir}/build
-exitdir=${srcdir}/debians
+#homedir=$HOME
+#srcdir=${homedir}/kukuruzorepo
+#builddir=${srcdir}/build
+#exitdir=${srcdir}/debians
 
 check_dir ()
 {

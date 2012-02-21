@@ -98,6 +98,17 @@ check_qconf ()
 	fi
 }
 
+prepare_src ()
+{
+	if [ ! -z "$1"]
+	then
+		directory="$1"
+		run_resloader "set_workdir ${project}-${ver}"
+		run_resloader "prepare_src ${directory}"
+		run_resloader "check_dir ${debdir}/debian"
+	fi
+}
+
 build_deb ()
 {
 	dpkg-buildpackage -rfakeroot
@@ -268,9 +279,7 @@ build_erp ()
 	dirname="python/exaile-remote-plugin"
 	ver=`cat ${srcdir}/${dirname}/version.txt`
 	debdir=${builddir}/${project}-${ver}
-	run_resloader "set_workdir ${project}-${ver}"
-	run_resloader "prepare_src ${dirname}"
-	run_resloader "check_dir ${debdir}/debian"
+	prepare_src
 	cd ${debdir}
 	prepare_sound_python
 	depends="\${python:Depends}, python-gtk2, exaile (>=0.3.2.0)"
@@ -292,9 +301,7 @@ build_etp ()
 	dirname="python/exaile-tunetopsi-plugin"
 	ver=`cat ${srcdir}/${dirname}/version.txt`
 	debdir=${builddir}/${project}-${ver}
-	run_resloader "set_workdir ${project}-${ver}"
-	run_resloader "prepare_src ${dirname}"
-	run_resloader "check_dir ${debdir}/debian"
+	prepare_src
 	cd ${debdir}
 	prepare_sound_python
 	depends="\${python:Depends}, exaile"
@@ -317,9 +324,7 @@ build_pyav ()
 	dirname="pyalsavolume"
 	ver=`cat ${srcdir}/${dirname}/version.txt`
 	debdir=${builddir}/${project}-${ver}
-	run_resloader "set_workdir ${project}-${ver}"
-	run_resloader "prepare_src ${dirname}"
-	run_resloader "check_dir ${debdir}/debian"
+	prepare_src
 	cd ${debdir}
 	prepare_sound_python
 	depends="\${python:Depends}, libgtk-3-0, python-gobject (>=3.0.0), python-alsaaudio (>=0.6)"
@@ -345,18 +350,14 @@ build_pypoff ()
 {
 	run_resloader get_pypoff
 	project="pypoweroff"
-	dirname="pypoweroff/1.3"
 	ver=`cat ${srcdir}/${dirname}/version.txt`
 	debdir=${builddir}/${project}-${ver}
-	run_resloader "set_workdir ${project}-${ver}"
-	run_resloader "prepare_src ${dirname}"
-	run_resloader "check_dir ${debdir}/debian"
+	prepare_src
 	cd ${debdir}
 	section="misc"
 	arch="all"
 	builddep="cdbs, debhelper (>= 7), python-support (>= 0.6)"
 	addit="XB-Python-Version: \${python:Versions}"
-	depends="\${python:Depends}, \${misc:Depends}, python-gtk2, python-glade2, python-gconf"
 	description="Turn-Off Tool"
 	descriptionlong='pyPowerOff - запланированное выключение компьютера.'
 	docfiles=""
@@ -382,9 +383,7 @@ build_pyssh ()
 	dirname="pysshclient"
 	ver=`cat ${srcdir}/${dirname}/version.txt`
 	debdir=${builddir}/${project}-${ver}
-	run_resloader "set_workdir ${project}-${ver}"
-	run_resloader "prepare_src ${dirname}"
-	run_resloader "check_dir ${debdir}/debian"
+	prepare_src
 	cd ${debdir}
 	section="misc"
 	arch="all"
@@ -413,9 +412,7 @@ build_rbremp ()
 	dirname="python/rb-remote-plugin"
 	ver=`cat ${srcdir}/${dirname}/version.txt`
 	debdir=${builddir}/${project}-${ver}
-	run_resloader "set_workdir ${project}-${ver}"
-	run_resloader "prepare_src ${dirname}"
-	run_resloader "check_dir ${debdir}/debian"
+	prepare_src
 	cd ${debdir}
 	prepare_sound_python
 	depends="\${python:Depends}, \${misc:Depends}, python-gtk2, python-glade2, python-gconf, rhythmbox"
@@ -436,9 +433,7 @@ build_rbresp ()
 	dirname="python/rb-restore-plugin"
 	ver=`cat ${srcdir}/${dirname}/version.txt`
 	debdir=${builddir}/${project}-${ver}
-	run_resloader "set_workdir ${project}-${ver}"
-	run_resloader "prepare_src ${dirname}"
-	run_resloader "check_dir ${debdir}/debian"
+	prepare_src
 	cd ${debdir}
 	prepare_sound_python
 	depends="\${python:Depends}, \${misc:Depends}, python-gtk2, python-glade2, python-gconf, rhythmbox"
@@ -460,9 +455,7 @@ build_rbtunp ()
 	dirname="python/rb-tunetopsi-plugin"
 	ver=`cat ${srcdir}/${dirname}/version.txt`
 	debdir=${builddir}/${project}-${ver}
-	run_resloader "set_workdir ${project}-${ver}"
-	run_resloader "prepare_src ${dirname}"
-	run_resloader "check_dir ${debdir}/debian"
+	prepare_src
 	cd ${debdir}
 	prepare_sound_python
 	depends="\${python:Depends}, \${misc:Depends}, python-gtk2, python-glade2, python-gconf, rhythmbox"
@@ -485,9 +478,7 @@ build_regext ()
 	dirname="qt/regexptest"
 	ver=`cat ${srcdir}/${dirname}/version.txt`
 	debdir=${builddir}/${project}-${ver}
-	run_resloader "set_workdir ${project}-${ver}"
-	run_resloader "prepare_src ${dirname}"
-	run_resloader "check_dir ${debdir}/debian"
+	prepare_src
 	cd ${debdir}
 	section="x11"
 	arch="all"
@@ -519,9 +510,7 @@ build_html2text ()
 	dirname="python/htmltotextgui"
 	ver=`cat ${srcdir}/${dirname}/version.txt`
 	debdir=${builddir}/${project}-${ver}
-	run_resloader "set_workdir ${project}-${ver}"
-	run_resloader "prepare_src ${dirname}"
-	run_resloader "check_dir ${debdir}/debian"
+	prepare_src
 	cd ${debdir}
 	section="misc"
 	arch="all"
@@ -549,7 +538,8 @@ print_menu ()
 [1] - Build exaile-remote-plugin debian package
 [2] - Build exaile-tunetopsi-plugin debian package
 [3] - Build pyalsavolume debian package
-[4] - Build pypoweroff debian package
+[4] - Build pypoweroff 1.3.x debian package
+[41] - Build pypoweroff 1.2.x debian package
 [5] - Build pysshclient debian package
 [6] - Build rb-remote-plugin debian package
 [7] - Build rb-restore-plugin debian package
@@ -562,21 +552,26 @@ print_menu ()
 
 choose_action ()
 {
-  read vibor
-  case ${vibor} in
-    "1" ) build_erp;;
-    "2" ) build_etp;;
-    "3" ) build_pyav;;
-    "4" ) build_pypoff;;
-    "5" ) build_pyssh;;
-    "6" ) build_rbremp;;
-    "7" ) build_rbresp;;
-    "8" ) build_rbtunp;;
-    "9" ) build_regext;;
-    "a" ) build_html2text;;
-    "0" ) quit;;
-    "ra" ) rm_all;;
-  esac
+	read vibor
+	case ${vibor} in
+		"1" ) build_erp;;
+		"2" ) build_etp;;
+		"3" ) build_pyav;;
+		"4" ) dirname="pypoweroff/1.3"
+			depends="\${python:Depends}, \${misc:Depends}, libgtk-3-0, python-gobject (>=3.0.0)"
+			build_pypoff;;
+		"41" ) dirname="pypoweroff/1.2"
+			depends="\${python:Depends}, \${misc:Depends}, python-gtk2, python-glade2"
+			build_pypoff;;
+		"5" ) build_pyssh;;
+		"6" ) build_rbremp;;
+		"7" ) build_rbresp;;
+		"8" ) build_rbtunp;;
+		"9" ) build_regext;;
+		"a" ) build_html2text;;
+		"0" ) quit;;
+		"ra" ) rm_all;;
+	esac
 }
 
 clear

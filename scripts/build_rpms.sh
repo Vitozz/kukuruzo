@@ -1,16 +1,5 @@
 #!/bin/bash
 #
-# ---------README----------------------------------------------------------
-# To build debian packages with this script you need
-# to install packages: cdbs, debhelper, dpkg-dev, devscripts
-# just run command:
-# sudo apt-get install cdbs debhelper dpkg-dev devscripts
-# to build debian package of regexptest project you also need
-# to install packages: libqt4-dev, qconf 
-# just run command:
-# sudo apt-get install libqt4-dev qconf
-# -------------------------------------------------------------------------
-#
 homedir=$HOME
 srcdir=${homedir}/kukuruzorepo
 builddir=${srcdir}/build
@@ -110,6 +99,15 @@ prepare_global ()
 	run_resloader get_src
 }
 
+prepare_tarball ()
+{
+	if [ ! -z "$1" ]
+	then
+		pkg_name="$1"
+		tar -pczf ${package_name} ${project}-${ver}
+	fi
+}
+
 prepare_src ()
 {
 	run_resloader "check_dir ${rpmdir}"
@@ -122,12 +120,10 @@ prepare_src ()
 	then
 		dirname="$1"
 		run_resloader "check_dir ${builddir}/${project}-${ver}"
-		cp -rf ${srcdir}/${dirname}/* ${builddir}/${project}-${ver}/
-		workdir=${builddir}/${project}-${ver}
+		run_resloader "prepare_src ${dirname}"
                 cd ${builddir}
-                package_name=${project}-${ver}.tar.gz
-                tar -pczf ${package_name} ${project}-${ver}
-                cp -rf ${builddir}/${package_name} ${srcfiles}/
+                prepare_tarball ${project}-${ver}.tar.gz
+                cp -rf ${builddir}/${project}-${ver}.tar.gz ${srcfiles}/
 	fi
 }
 
@@ -244,15 +240,13 @@ build_pypoff ()
 {
 	run_resloader get_pypoff
 	project="pypoweroff"
-	dirname="pypoweroff/1.3"
 	ver=`cat ${srcdir}/${dirname}/version.txt`
 	prepare_src ${dirname}
 	section="Applications/System"
 	arch="noarch"
 	builddep="python-devel, python-setuptools"
-	depends="python >= 2.6, python-gtk >= 2.0, python-gconf"
 	description="Turn-Off Tool"
-	descriptionlong='pyPowerOff - запланированное выключение компьютера.'
+	descriptionlong='pyPowerOff - simple sheduled PC shutdown / reboot tool.'
         addit="%doc COPYING"
 	prepare_specs
 	rpmbuild -ba ${specfiles}/${project}.spec
@@ -422,7 +416,8 @@ print_menu ()
 [1] - Build exaile-remote-plugin OpenSUSE RPM package
 [2] - Build exaile-tunetopsi-plugin OpenSUSE RPM package
 [3] - Build pyalsavolume OpenSUSE RPM package
-[4] - Build pypoweroff OpenSUSE RPM package
+[4] - Build pypoweroff 1.3.x OpenSUSE RPM package
+[41] - Build pypoweroff 1.2.x OpenSUSE RPM package
 [5] - Build pysshclient OpenSUSE RPM package
 [6] - Build rb-remote-plugin OpenSUSE RPM package
 [7] - Build rb-restore-plugin OpenSUSE RPM package
@@ -435,21 +430,26 @@ print_menu ()
 
 choose_action ()
 {
-  read vibor
-  case ${vibor} in
-    "1" ) build_erp;;
-    "2" ) build_etp;;
-    "3" ) build_pyav;;
-    "4" ) build_pypoff;;
-    "5" ) build_pyssh;;
-    "6" ) build_rbremp;;
-    "7" ) build_rbresp;;
-    "8" ) build_rbtunp;;
-    "9" ) build_regext;;
-    "a" ) build_html2text;;
-    "0" ) quit;;
-    "ra" ) rm_all;;
-  esac
+	read vibor
+	case ${vibor} in
+		"1" ) build_erp;;
+		"2" ) build_etp;;
+		"3" ) build_pyav;;
+		"4" ) dirname="pypoweroff/1.3"
+			depends="python >= 2.6, libgtk-3-0, python-gobject >= 3.0.0"
+			build_pypoff;;
+		"41" ) dirname="pypoweroff/1.2"
+			depends="python >= 2.6, python-gtk >= 2.0"
+			build_pypoff;;
+		"5" ) build_pyssh;;
+		"6" ) build_rbremp;;
+		"7" ) build_rbresp;;
+		"8" ) build_rbtunp;;
+		"9" ) build_regext;;
+		"a" ) build_html2text;;
+		"0" ) quit;;
+		"ra" ) rm_all;;
+	esac
 }
 
 cd ${home}
