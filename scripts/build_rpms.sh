@@ -103,12 +103,12 @@ prepare_tarball ()
 {
 	if [ ! -z "$1" ]
 	then
-		pkg_name="$1"
-		tar -pczf ${package_name} ${project}-${ver}
+		echo "Creating tarball archive"
+		tar -pczf "$1" "${project}-${ver}"
 	fi
 }
 
-prepare_src ()
+prepare ()
 {
 	run_resloader "check_dir ${rpmdir}"
         run_resloader "check_dir ${specfiles}"
@@ -118,10 +118,10 @@ prepare_src ()
         rm -rf ${builddir}/*
 	if [ ! -z "$1" ]
 	then
-		dirname="$1"
-		run_resloader "check_dir ${builddir}/${project}-${ver}"
-		run_resloader "prepare_src ${dirname}"
+		run_resloader "set_workdir ${project}-${ver}"
+		run_resloader "prepare_src $1"
                 cd ${builddir}
+		run_resloader "check_dir ${project}-${ver}"
                 prepare_tarball ${project}-${ver}.tar.gz
                 cp -rf ${builddir}/${project}-${ver}.tar.gz ${srcfiles}/
 	fi
@@ -189,7 +189,7 @@ build_erp ()
 	project="exaile-remote-plugin"
 	dirname="python/exaile-remote-plugin"
 	ver=`cat ${srcdir}/${dirname}/version.txt`
-	prepare_src ${dirname}
+	prepare ${dirname}
 	prepare_sound_python
 	depends="python >= 2.6, python-gtk >= 2.0, exaile >= 0.3.2.0"
 	description="Control Exaile via tray icons"
@@ -206,7 +206,7 @@ build_etp ()
 	project="exaile-tunetopsi-plugin"
 	dirname="python/exaile-tunetopsi-plugin"
 	ver=`cat ${srcdir}/${dirname}/version.txt`
-	prepare_src ${dirname}
+	prepare ${dirname}
 	prepare_sound_python
 	depends="python >= 2.6, exaile"
 	description="Exaile Tune To Psi Plugin"
@@ -224,7 +224,7 @@ build_pyav ()
 	project="pyalsavolume"
 	dirname="pyalsavolume"
 	ver=`cat ${srcdir}/${dirname}/version.txt`
-	prepare_src ${dirname}
+	prepare ${dirname}
 	prepare_sound_python
 	depends="python >= 2.6, libgtk-3-0, python-gobject >= 3.0.0, pyalsaaudio >= 0.6"
 	description="Tray ALSA volume changer"
@@ -241,7 +241,7 @@ build_pypoff ()
 	run_resloader get_pypoff
 	project="pypoweroff"
 	ver=`cat ${srcdir}/${dirname}/version.txt`
-	prepare_src ${dirname}
+	prepare ${dirname}
 	section="Applications/System"
 	arch="noarch"
 	builddep="python-devel, python-setuptools"
@@ -260,7 +260,7 @@ build_pyssh ()
 	project="pysshclient"
 	dirname="pysshclient"
 	ver=`cat ${srcdir}/${dirname}/version.txt`
-	prepare_src ${dirname}
+	prepare ${dirname}
 	section="Applications/Communications"
 	arch="noarch"
 	builddep="python-devel, python-setuptools"
@@ -280,7 +280,7 @@ build_rbremp ()
 	project="rb-remote-plugin"
 	dirname="python/rb-remote-plugin"
 	ver=`cat ${srcdir}/${dirname}/version.txt`
-	prepare_src ${dirname}
+	prepare ${dirname}
 	prepare_sound_python
 	depends="python >= 2.6, python-gtk >= 2.0, python-gconf, rhythmbox"
 	description="Control Rhythmbox via tray icons"
@@ -297,7 +297,7 @@ build_rbresp ()
 	project="rb-restore-plugin"
 	dirname="python/rb-restore-plugin"
 	ver=`cat ${srcdir}/${dirname}/version.txt`
-	prepare_src ${dirname}
+	prepare ${dirname}
 	prepare_sound_python
 	depends="python >= 2.6, python-gtk >= 2.0, python-gconf, rhythmbox"
 	description="Rhythmbox restore last item plugin"
@@ -315,7 +315,7 @@ build_rbtunp ()
 	project="rb-tunetopsi-plugin"
 	dirname="python/rb-tunetopsi-plugin"
 	ver=`cat ${srcdir}/${dirname}/version.txt`
-	prepare_src ${dirname}
+	prepare ${dirname}
 	prepare_sound_python
 	depends="python >= 2.6, python-gtk >= 2.0, python-gconf, rhythmbox"
 	description="Rhythmbox tune to Psi plugin"
@@ -334,7 +334,7 @@ build_regext ()
 	project="regexptest"
 	dirname="qt/regexptest"
 	ver=`cat ${srcdir}/${dirname}/version.txt`
-	prepare_src ${dirname}
+	prepare ${dirname}
         regspecfile="Summary: RegExp Tester
 Name: regexptest
 Version: ${ver}
@@ -395,7 +395,7 @@ build_html2text ()
 	project="htmltotextgui"
 	dirname="htmltotextgui"
 	ver=`cat ${srcdir}/${dirname}/version.txt`
-	prepare_src ${dirname}
+	prepare ${dirname}
 	section="Applications/Utility"
 	arch="noarch"
 	builddep="python-devel, python-setuptools"
@@ -435,10 +435,12 @@ choose_action ()
 		"1" ) build_erp;;
 		"2" ) build_etp;;
 		"3" ) build_pyav;;
-		"4" ) dirname="pypoweroff/1.3"
+		"4" ) echo "Building PyPowerOff-1.3"
+			dirname="pypoweroff/1.3"
 			depends="python >= 2.6, libgtk-3-0, python-gobject >= 3.0.0"
 			build_pypoff;;
-		"41" ) dirname="pypoweroff/1.2"
+		"41" ) echo "Building PyPowerOff-1.2"
+			dirname="pypoweroff/1.2"
 			depends="python >= 2.6, python-gtk >= 2.0"
 			build_pypoff;;
 		"5" ) build_pyssh;;
