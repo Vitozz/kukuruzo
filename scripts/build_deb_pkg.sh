@@ -98,15 +98,11 @@ check_qconf ()
 	fi
 }
 
-prepare_src ()
+prepare ()
 {
-	if [ ! -z "$1"]
-	then
-		directory="$1"
-		run_resloader "set_workdir ${project}-${ver}"
-		run_resloader "prepare_src ${directory}"
-		run_resloader "check_dir ${debdir}/debian"
-	fi
+	run_resloader "set_workdir ${project}-${ver}"
+	run_resloader "prepare_src ${dirname}"
+	run_resloader "check_dir ${debdir}/debian"
 }
 
 build_deb ()
@@ -279,7 +275,7 @@ build_erp ()
 	dirname="python/exaile-remote-plugin"
 	ver=`cat ${srcdir}/${dirname}/version.txt`
 	debdir=${builddir}/${project}-${ver}
-	prepare_src
+	prepare
 	cd ${debdir}
 	prepare_sound_python
 	depends="\${python:Depends}, python-gtk2, exaile (>=0.3.2.0)"
@@ -301,7 +297,7 @@ build_etp ()
 	dirname="python/exaile-tunetopsi-plugin"
 	ver=`cat ${srcdir}/${dirname}/version.txt`
 	debdir=${builddir}/${project}-${ver}
-	prepare_src
+	prepare
 	cd ${debdir}
 	prepare_sound_python
 	depends="\${python:Depends}, exaile"
@@ -324,7 +320,7 @@ build_pyav ()
 	dirname="pyalsavolume"
 	ver=`cat ${srcdir}/${dirname}/version.txt`
 	debdir=${builddir}/${project}-${ver}
-	prepare_src
+	prepare
 	cd ${debdir}
 	prepare_sound_python
 	depends="\${python:Depends}, libgtk-3-0, python-gobject (>=3.0.0), python-alsaaudio (>=0.6)"
@@ -352,7 +348,7 @@ build_pypoff ()
 	project="pypoweroff"
 	ver=`cat ${srcdir}/${dirname}/version.txt`
 	debdir=${builddir}/${project}-${ver}
-	prepare_src
+	prepare
 	cd ${debdir}
 	section="misc"
 	arch="all"
@@ -383,7 +379,7 @@ build_pyssh ()
 	dirname="pysshclient"
 	ver=`cat ${srcdir}/${dirname}/version.txt`
 	debdir=${builddir}/${project}-${ver}
-	prepare_src
+	prepare
 	cd ${debdir}
 	section="misc"
 	arch="all"
@@ -412,7 +408,7 @@ build_rbremp ()
 	dirname="python/rb-remote-plugin"
 	ver=`cat ${srcdir}/${dirname}/version.txt`
 	debdir=${builddir}/${project}-${ver}
-	prepare_src
+	prepare
 	cd ${debdir}
 	prepare_sound_python
 	depends="\${python:Depends}, \${misc:Depends}, python-gtk2, python-glade2, python-gconf, rhythmbox"
@@ -433,7 +429,7 @@ build_rbresp ()
 	dirname="python/rb-restore-plugin"
 	ver=`cat ${srcdir}/${dirname}/version.txt`
 	debdir=${builddir}/${project}-${ver}
-	prepare_src
+	prepare
 	cd ${debdir}
 	prepare_sound_python
 	depends="\${python:Depends}, \${misc:Depends}, python-gtk2, python-glade2, python-gconf, rhythmbox"
@@ -478,7 +474,7 @@ build_regext ()
 	dirname="qt/regexptest"
 	ver=`cat ${srcdir}/${dirname}/version.txt`
 	debdir=${builddir}/${project}-${ver}
-	prepare_src
+	prepare
 	cd ${debdir}
 	section="x11"
 	arch="all"
@@ -510,7 +506,7 @@ build_html2text ()
 	dirname="python/htmltotextgui"
 	ver=`cat ${srcdir}/${dirname}/version.txt`
 	debdir=${builddir}/${project}-${ver}
-	prepare_src
+	prepare
 	cd ${debdir}
 	section="misc"
 	arch="all"
@@ -557,10 +553,12 @@ choose_action ()
 		"1" ) build_erp;;
 		"2" ) build_etp;;
 		"3" ) build_pyav;;
-		"4" ) dirname="pypoweroff/1.3"
+		"4" ) echo "Building PyPowerOff 1.3"
 			depends="\${python:Depends}, \${misc:Depends}, libgtk-3-0, python-gobject (>=3.0.0)"
+			dirname="pypoweroff/1.3"
 			build_pypoff;;
-		"41" ) dirname="pypoweroff/1.2"
+		"41" ) echo "Building PyPowerOff 1.3"
+			dirname="pypoweroff/1.2"
 			depends="\${python:Depends}, \${misc:Depends}, python-gtk2, python-glade2"
 			build_pypoff;;
 		"5" ) build_pyssh;;
