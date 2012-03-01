@@ -350,6 +350,10 @@ build_pypoff ()
 	debdir=${builddir}/${project}-${ver}
 	prepare
 	cd ${debdir}
+	if [ "${version}" == "1.2" ]
+	then
+		patch -p1 < 3_to_2.patch
+	fi
 	section="misc"
 	arch="all"
 	builddep="cdbs, debhelper (>= 7), python-support (>= 0.6)"
@@ -556,10 +560,12 @@ choose_action ()
 		"4" ) echo "Building PyPowerOff 1.3"
 			depends="\${python:Depends}, \${misc:Depends}, libgtk-3-0, python-gobject (>=3.0.0)"
 			dirname="pypoweroff"
+			version="1.3"
 			build_pypoff;;
 		"41" ) echo "Building PyPowerOff 1.3"
 			dirname="pypoweroff"
 			depends="\${python:Depends}, \${misc:Depends}, python-gtk2, python-glade2"
+			version="1.2"
 			build_pypoff;;
 		"5" ) build_pyssh;;
 		"6" ) build_rbremp;;
