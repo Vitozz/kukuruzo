@@ -249,6 +249,11 @@ build_pypoff ()
 	descriptionlong='pyPowerOff - simple sheduled PC shutdown / reboot tool.'
         addit="%doc COPYING"
 	prepare_specs
+	cd ${builddir}/${project}-${ver}
+	if [ "${version}" == "1.2" ]
+	then
+		patch -p1 < 3_to_2.patch
+	fi
 	rpmbuild -ba ${specfiles}/${project}.spec
 	cp -f ${rpms}/n*/*.rpm	${exitdir}/
         cp -f ${srpms}/*.rpm	${exitdir}/
@@ -438,10 +443,12 @@ choose_action ()
 		"4" ) echo "Building PyPowerOff-1.3"
 			dirname="pypoweroff"
 			depends="python >= 2.6, libgtk-3-0, python-gobject >= 3.0.0"
+			version="1.3"
 			build_pypoff;;
 		"41" ) echo "Building PyPowerOff-1.2"
 			dirname="pypoweroff"
 			depends="python >= 2.6, python-gtk >= 2.0"
+			version="1.2"
 			build_pypoff;;
 		"5" ) build_pyssh;;
 		"6" ) build_rbremp;;
