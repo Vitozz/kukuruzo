@@ -436,11 +436,11 @@ choose_action ()
 		"2" ) build_etp;;
 		"3" ) build_pyav;;
 		"4" ) echo "Building PyPowerOff-1.3"
-			dirname="pypoweroff/1.3"
+			dirname="pypoweroff"
 			depends="python >= 2.6, libgtk-3-0, python-gobject >= 3.0.0"
 			build_pypoff;;
 		"41" ) echo "Building PyPowerOff-1.2"
-			dirname="pypoweroff/1.2"
+			dirname="pypoweroff"
 			depends="python >= 2.6, python-gtk >= 2.0"
 			build_pypoff;;
 		"5" ) build_pyssh;;

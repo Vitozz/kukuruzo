@@ -555,10 +555,10 @@ choose_action ()
 		"3" ) build_pyav;;
 		"4" ) echo "Building PyPowerOff 1.3"
 			depends="\${python:Depends}, \${misc:Depends}, libgtk-3-0, python-gobject (>=3.0.0)"
-			dirname="pypoweroff/1.3"
+			dirname="pypoweroff"
 			build_pypoff;;
 		"41" ) echo "Building PyPowerOff 1.3"
-			dirname="pypoweroff/1.2"
+			dirname="pypoweroff"
 			depends="\${python:Depends}, \${misc:Depends}, python-gtk2, python-glade2"
 			build_pypoff;;
 		"5" ) build_pyssh;;
