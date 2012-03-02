@@ -122,6 +122,10 @@ prepare ()
 		run_resloader "prepare_src $1"
                 cd ${builddir}
 		run_resloader "check_dir ${project}-${ver}"
+		if [ "${project}" == "pypoweroff" ] && [ "${ver}" \< "1.3" ]
+		then
+			patch -d ${project}-${ver} -p1 < ${project}-${ver}/3_to_2.patch
+		fi
                 prepare_tarball ${project}-${ver}.tar.gz
                 cp -rf ${builddir}/${project}-${ver}.tar.gz ${srcfiles}/
 	fi
@@ -238,7 +242,6 @@ build_pyav ()
 
 build_pypoff ()
 {
-	run_resloader get_pypoff
 	project="pypoweroff"
 	if [ "${version}" == "1.2" ]
 	then
@@ -246,6 +249,7 @@ build_pypoff ()
 	else
 		ver=`cat ${srcdir}/${dirname}/version.txt`
 	fi
+        run_resloader get_pypoff
 	prepare ${dirname}
 	section="Applications/System"
 	arch="noarch"
@@ -254,11 +258,6 @@ build_pypoff ()
 	descriptionlong='pyPowerOff - simple sheduled PC shutdown / reboot tool.'
         addit="%doc COPYING"
 	prepare_specs
-	cd ${builddir}/${project}-${ver}
-	if [ "${version}" == "1.2" ]
-	then
-		patch -p1 < 3_to_2.patch
-	fi
 	rpmbuild -ba ${specfiles}/${project}.spec
 	cp -f ${rpms}/n*/*.rpm	${exitdir}/
         cp -f ${srpms}/*.rpm	${exitdir}/
