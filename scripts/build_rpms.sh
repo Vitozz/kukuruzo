@@ -240,7 +240,12 @@ build_pypoff ()
 {
 	run_resloader get_pypoff
 	project="pypoweroff"
-	ver=`cat ${srcdir}/${dirname}/version.txt`
+	if [ "${version}" == "1.2" ]
+	then
+		ver=`cat ${srcdir}/${dirname}/version1.2.txt`
+	else
+		ver=`cat ${srcdir}/${dirname}/version.txt`
+	fi
 	prepare ${dirname}
 	section="Applications/System"
 	arch="noarch"
