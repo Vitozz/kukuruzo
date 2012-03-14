@@ -496,7 +496,7 @@ build_regext ()
 	prepare
 	cd ${debdir}
 	section="x11"
-	arch="all"
+	arch="any"
 	builddep="debhelper (>= 7), cdbs, libqt4-dev, qconf"
 	addit="#"
 	depends="\${shlibs:Depends}, \${misc:Depends}, libc6 (>=2.7-1), libgcc1 (>=1:4.1.1), libqtcore4 (>=4.4.3), libqtgui4 (>=4.4.3), libstdc++6 (>=4.1.1), libx11-6, zlib1g (>=1:1.1.4)"
