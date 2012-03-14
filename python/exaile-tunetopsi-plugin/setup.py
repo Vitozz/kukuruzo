@@ -2,9 +2,17 @@
 
 from distutils.core import setup
 from distutils.command.install_data import install_data
+import os
+
+def get_version ():
+      f = open("version.txt", "r")
+      f.seek(0)
+      lines = f.read()
+      f.close()
+      return "".join(lines).split("\n")[0]
 
 setup(name='exaile-tunetopsi-plugin',
-      version='0.0.6',
+      version=get_version(),
       description='Exaile Tune To Psi Plugin',
       long_description = "Sends Current Track Information to Psi/Psi+ as Tune.",
       author='Vitaly Tonkacheyev',

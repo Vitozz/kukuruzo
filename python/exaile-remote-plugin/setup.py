@@ -2,9 +2,17 @@
 
 from distutils.core import setup
 from distutils.command.install_data import install_data
+import os
+
+def get_version ():
+      f = open("version.txt", "r")
+      f.seek(0)
+      lines = f.read()
+      f.close()
+      return "".join(lines).split("\n")[0]
 
 setup(name='exaile-remote-plugin',
-      version='0.2.1',
+      version=get_version(),
       description='Control Exaile via tray icons',
       long_description = "Control Exaile via tray icons",
       author='Vitaly Tonkacheyev',

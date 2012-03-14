@@ -2,9 +2,17 @@
 
 from distutils.core import setup
 from distutils.command.install_data import install_data
+import os
+
+def get_version ():
+      f = open("version.txt", "r")
+      f.seek(0)
+      lines = f.read()
+      f.close()
+      return "".join(lines).split("\n")[0]
 
 setup(name='rb-remote-plugin',
-      version='0.3',
+      version=get_version(),
       description='Rhythmbox remote plugin',
       long_description = "Adds icons to tray to control player",
       author='Vitaly Tonkacheyev',
