@@ -84,6 +84,16 @@ rm_all ()
 	fi
 }
 
+get_all ()
+{
+	cd ${homedir}
+	run_resloader get_src
+	run_resloader get_pyav
+	run_resloader get_pypoff
+	run_resloader get_pyssh
+	run_resloader get_html2text
+}
+
 check_qconf ()
 {
 	if [ -f "/usr/bin/qconf" -o -f "/usr/local/bin/qconf" ]
@@ -580,13 +590,14 @@ choose_action ()
 		"a" ) build_html2text;;
 		"0" ) quit;;
 		"ra" ) rm_all;;
+		"ga" ) get_all
 	esac
 }
 
 clear
+run_resloader get_src
 run_resloader "check_dir ${srcdir}"
 run_resloader "check_dir ${builddir}"
-run_resloader get_src
 while [ ${isloop} = 1 ]
 do
   print_menu
