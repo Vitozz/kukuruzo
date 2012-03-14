@@ -470,7 +470,7 @@ build_rbtunp ()
 	dirname="python/rb-tunetopsi-plugin"
 	ver=`cat ${srcdir}/${dirname}/version.txt`
 	debdir=${builddir}/${project}-${ver}
-	prepare_src
+	prepare
 	cd ${debdir}
 	prepare_sound_python
 	depends="\${python:Depends}, \${misc:Depends}, python-gtk2, python-glade2, python-gconf, rhythmbox"
@@ -522,7 +522,7 @@ build_html2text ()
 {
 	run_resloader get_html2text
 	project="htmltotextgui"
-	dirname="python/htmltotextgui"
+	dirname="htmltotextgui"
 	ver=`cat ${srcdir}/${dirname}/version.txt`
 	debdir=${builddir}/${project}-${ver}
 	prepare
