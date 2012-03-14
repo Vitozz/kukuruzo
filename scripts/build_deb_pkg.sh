@@ -590,7 +590,7 @@ choose_action ()
 		"a" ) build_html2text;;
 		"0" ) quit;;
 		"ra" ) rm_all;;
-		"ga" ) get_all
+		"ga" ) get_all;;
 	esac
 }
 
