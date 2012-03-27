@@ -26,4 +26,6 @@
 	<string name="aboutLabel">About..</string>
 	<string name="exitLabel">Exit</string>
 	<string name="matchName"><u>Match#</u></string>
+	<string name="tab1Name">Regular Expression</string>
+	<string name="tab2Name">Options</string>
 </resources>

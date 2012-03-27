@@ -2,7 +2,7 @@
 <manifest
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	package="com.android.regexptester"
-	android:versionName="1.4"
+	android:versionName="1.5"
 	android:versionCode="1"
 	android:installLocation="auto">
     <uses-sdk android:targetSdkVersion="10" android:minSdkVersion="10"/>

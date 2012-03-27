@@ -25,4 +25,6 @@
 	<string name="aboutLabel">О программе..</string>
 	<string name="exitLabel">Выход</string>
 	<string name="matchName"><u>Совпадение#</u></string>
+	<string name="tab1Name">Регулярное выражение</string>
+	<string name="tab2Name">Опции</string>
 </resources>

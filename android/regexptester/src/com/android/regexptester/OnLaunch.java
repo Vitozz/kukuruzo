@@ -18,6 +18,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.CheckBox;
 import android.widget.Spinner;
+import android.widget.TabHost;
 
 public class OnLaunch extends Activity {
 	private SharedPreferences preferences;
@@ -51,6 +52,12 @@ public class OnLaunch extends Activity {
 		isuni = (CheckBox) findViewById(R.id.isUnicode);
 		isunix = (CheckBox) findViewById(R.id.isUnix);
 		spin = (Spinner) findViewById(R.id.groups);
+		//setup tabhost
+		TabHost tab_host = (TabHost) findViewById(R.id.mytabhost);
+		tab_host.setup();
+		tab_host.addTab(tab_host.newTabSpec("tab1").setContent(R.id.tab1).setIndicator(getString(R.string.tab1Name)));
+		tab_host.addTab(tab_host.newTabSpec("tab2").setContent(R.id.tab2).setIndicator(getString(R.string.tab2Name)));
+		//
 		String numers[] = new String[MAX];
 		for(int i=MIN; i<MAX; i++){
 			numers[i]= Integer.toString(i);
