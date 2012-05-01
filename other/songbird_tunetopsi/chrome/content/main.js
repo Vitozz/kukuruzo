@@ -53,11 +53,11 @@ Tunetopsi.Controller = {
     }
     var path = "";
     if(systype.get()=="C:"){
-        var userProfile = userEnvironment.get("USERPROFILE");
-        path = userProfile+"\\PsiData\\tune";
+        var userProfile = userEnvironment.get("LOCALAPPDATA");
+        path = userProfile+"\\Psi+\\tune";
     }else if(systype.get()=="/"){
         var userProfile = userEnvironment.get("HOME");
-        path = userProfile+"/.psi/tune";
+        path = userProfile+"/.cache/Psi+/tune";
     }
     var tuneFile = {
         write : function (data) {
