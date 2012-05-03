@@ -13,6 +13,7 @@ Map of Repository:
                              |
                               ---exaile-remote-plugin
                               ---exaile-tunetopsi-plugin
+                              ---pyinterpol
                               ---rb-remote-plugin
                               ---rb-restore-plugin
                               ---rb-tunetopsi-plugin
