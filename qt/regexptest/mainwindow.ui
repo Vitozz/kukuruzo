@@ -233,7 +233,7 @@
        <item row="2" column="4">
         <widget class="QCheckBox" name="unquotebox">
          <property name="text">
-          <string>Quote(Qt Style)</string>
+          <string>Double escape(Qt Style)</string>
          </property>
         </widget>
        </item>
