@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>516</width>
+    <width>566</width>
     <height>695</height>
    </rect>
   </property>
@@ -230,6 +230,52 @@
          </property>
         </widget>
        </item>
+       <item row="2" column="4">
+        <widget class="QCheckBox" name="unquotebox">
+         <property name="text">
+          <string>Quote(Qt Style)</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <spacer name="horizontalSpacer_10">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="2" column="3">
+        <spacer name="horizontalSpacer_15">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="2" column="5">
+        <spacer name="horizontalSpacer_16">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
       </layout>
      </widget>
     </item>
@@ -358,8 +404,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>516</width>
-     <height>20</height>
+     <width>566</width>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
