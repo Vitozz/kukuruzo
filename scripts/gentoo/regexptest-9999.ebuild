@@ -18,8 +18,8 @@ EGIT_REPO_URI="git://github.com/Vitozz/kukuruzo.git"
 SLOT="0"
 KEYWORDS="~amd64 ~x86 ~amd64-linux ~x86-linux"
 LICENSE="GPL-3"
-S="${EGIT_SOURCEDIR}/qt/regexptest"
 
 src_prepare() {
-	qconf
+	S="${EGIT_SOURCEDIR}/qt/regexptest"
+	qconf "${S}/regexptest.qc"
 }
