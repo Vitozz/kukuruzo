@@ -16,7 +16,7 @@
 	<string name="Error02">\nМаксимальный номер:\n</string>
 	<string name="ResultLabel">Результат:</string>
 	<string name="Error03"><b>Ошибка!</b></string>
-	<string name="AboutTitle"><b>О программе..</b></string>
+	<string name="AboutTitle">О программе..</string>
 	<string name="AboutMessage">
 		Тестер регулярных выражений\n
 		<i>2010 © Виталий Тонкачеев</i>
