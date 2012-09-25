@@ -17,7 +17,7 @@
 	<string name="Error02">\nMaximum group number:\n</string>
 	<string name="ResultLabel">Result:</string>
 	<string name="Error03"><b>Error!</b></string>
-	<string name="AboutTitle"><b>About..</b></string>
+	<string name="AboutTitle">About..</string>
 	<string name="AboutMessage">
 		Regular Expressions Tester\n
 		<i>2010 © Vitaly Tonkacheyev</i>
