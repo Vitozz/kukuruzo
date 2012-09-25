@@ -13,9 +13,7 @@
 <string name="YrtText">Результат</string>
 <string name="ButtonText">Расчёт!</string>
 <string name="description">Расчет линечной интерполяции и линейной экстраполяции</string><string name="count_title">Расчёт!</string>
-<string name="about_title">
-<b>О программе...</b>
-</string>
+<string name="about_title">О программе..</string>
 <string name="about_text">Программа расчета линейной интерполяции и линейной экстраполяции.\n\n
 <u>Авторские права:\n</u>
 <i>2010 © Виталий Тонкачеев</i>
