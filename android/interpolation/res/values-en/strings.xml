@@ -12,9 +12,7 @@
 <string name="ButtonText">Count!</string>
 <string name="def_value">0</string>
 <string name="description">Calculate a linear Interpolation and a linear Extrapolation</string>
-<string name="about_title">
-<b>About...</b>
-</string>
+<string name="about_title">About..</string>
 <string name="about_text">
 Program for calculating a linear interpolation and linear extrapolation.\n\n
 <u>Copyright:\n</u>
