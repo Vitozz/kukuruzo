@@ -1,110 +1,150 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    >
+    android:layout_height="match_parent"
+    android:baselineAligned="false"
+    android:orientation="horizontal" >
 
-<TextView 
-	android:id="@+id/Zagolovok" 
-	android:text="@string/TitleText" 
-	style="@style/title_style">
-</TextView>
-<TableLayout 
-	android:id="@+id/TableLayout01" 
-	android:layout_width="fill_parent" 
-	android:stretchColumns="1"
-	android:layout_height="wrap_content">
-	<TableRow 
-		android:id="@+id/XTextRow" 
-		style="@style/table_row">
-		<TextView 
-			android:id="@+id/X1Text" 
-			android:text="@string/X1Text"
-			style="@style/text_view">
-		</TextView>
-		<TextView 
-			android:id="@+id/XtrText" 
-			android:text="@string/XtrText"
-			style="@style/text_view">
-		</TextView>
-		<TextView 
-			android:id="@+id/X2Text" 
-			android:text="@string/X2Text"
-			style="@style/text_view">
-		</TextView>
-	</TableRow>
-	<TableRow 
-		android:id="@+id/XVarsRow" 
-		style="@style/table_row">
-		<EditText 
-			android:id="@+id/X1" 
-			android:nextFocusDown="@+id/Xtr" 
-			style="@style/edit_cell">
-		</EditText>
-		<EditText 
-			android:id="@+id/Xtr" 
-			android:nextFocusDown="@+id/X2" 
-			style="@style/edit_cell">
-		</EditText>
-		<EditText 
-			android:id="@+id/X2" 
-			android:nextFocusDown="@+id/Y1"
-			style="@style/edit_cell">
-		</EditText>
-	</TableRow>
-	<TableRow 
-		android:id="@+id/YTextRow" 
-		style="@style/table_row">
-		<TextView 
-			android:id="@+id/Y1Text" 
-			android:text="@string/Y1Text"
-			style="@style/text_view">
-		</TextView>
-		<TextView 
-			android:id="@+id/OtvetText" 
-			android:text="@string/YrtText"
-			style="@style/text_view">
-		</TextView>
-		<TextView 
-			android:id="@+id/Y2Text" 
-			android:text="@string/Y2Text"
-			style="@style/text_view">
-		</TextView>
-	</TableRow>
-	<TableRow 
-		android:id="@+id/YVarsRow" 
-		style="@style/table_row">
-		<EditText 
-			android:id="@+id/Y1" 
-			android:nextFocusDown="@+id/Y2"
-			style="@style/edit_cell">
-		</EditText>
-		<EditText 
-			android:id="@+id/Answ"
-			style="@style/answer_cell">
-		</EditText>
-		<EditText 
-			android:id="@+id/Y2" 
-			style="@style/edit_cell">
-		</EditText>
-	</TableRow>
-	<LinearLayout 
-		android:id="@+id/Buttons" 
-		android:layout_height="wrap_content" 
-		android:layout_width="fill_parent" 
-		android:paddingTop="20dip" 
-		android:paddingBottom="@dimen/std_padding" 
-		android:orientation="vertical">
-		<Button 
-			android:id="@+id/Button01" 
-			android:layout_height="wrap_content" 
-			android:text="@string/ButtonText" 
-			android:layout_width="wrap_content" 
-			android:layout_gravity="center" 
-			android:gravity="center" 
-			android:minWidth="@dimen/edit_width">
-		</Button>
-	</LinearLayout>
-</TableLayout>
+    <TableLayout
+        android:layout_width="fill_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical" >
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/Zagolovok"
+                style="@style/title_style"
+                android:gravity="center_horizontal"
+                android:text="@string/TitleText" />
+
+        </LinearLayout>
+
+        <TableRow
+            android:id="@+id/XTextRow"
+            style="@style/table_row"
+            android:layout_width="fill_parent"
+            android:layout_height="match_parent"
+            android:baselineAligned="false"
+            android:gravity="center" >
+
+            <TextView
+                android:id="@+id/X1Text"
+                style="@style/text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:layout_gravity="center_horizontal"
+                android:gravity="center_horizontal"
+                android:text="@string/X1Text" />
+
+            <TextView
+                android:id="@+id/XtrText"
+                style="@style/text_view"
+                android:layout_height="fill_parent"
+                android:layout_gravity="center_horizontal"
+                android:text="@string/XtrText" />
+
+            <TextView
+                android:id="@+id/X2Text"
+                style="@style/text_view"
+                android:layout_height="fill_parent"
+                android:layout_gravity="center_horizontal"
+                android:text="@string/X2Text" />
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/XVarsRow"
+            style="@style/table_row"
+            android:layout_width="fill_parent"
+            android:gravity="center_horizontal" >
+
+            <EditText
+                android:id="@+id/X1"
+                style="@style/edit_cell"
+                android:inputType="numberDecimal"
+                android:nextFocusDown="@+id/Xtr" />
+
+            <EditText
+                android:id="@+id/Xtr"
+                style="@style/edit_cell"
+                android:inputType="numberDecimal"
+                android:nextFocusDown="@+id/X2" />
+
+            <EditText
+                android:id="@+id/X2"
+                style="@style/edit_cell"
+                android:inputType="numberDecimal"
+                android:nextFocusDown="@+id/Y1" />
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/YTextRow"
+            style="@style/table_row"
+            android:layout_width="fill_parent"
+            android:gravity="center_horizontal" >
+
+            <TextView
+                android:id="@+id/Y1Text"
+                style="@style/text_view"
+                android:text="@string/Y1Text" />
+
+            <TextView
+                android:id="@+id/OtvetText"
+                style="@style/text_view"
+                android:text="@string/YrtText" />
+
+            <TextView
+                android:id="@+id/Y2Text"
+                style="@style/text_view"
+                android:text="@string/Y2Text" />
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/YVarsRow"
+            style="@style/table_row"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal" >
+
+            <EditText
+                android:id="@+id/Y1"
+                style="@style/edit_cell"
+                android:inputType="numberDecimal"
+                android:nextFocusDown="@+id/Y2" />
+
+            <EditText
+                android:id="@+id/Answ"
+                style="@style/answer_cell"
+                android:layout_width="wrap_content"
+                android:inputType="numberDecimal" />
+
+            <EditText
+                android:id="@+id/Y2"
+                style="@style/edit_cell"
+                android:inputType="numberDecimal" />
+        </TableRow>
+
+        <LinearLayout
+            android:id="@+id/Buttons"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="@dimen/std_padding"
+            android:paddingTop="20dip" >
+
+            <Button
+                android:id="@+id/Button01"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:minWidth="@dimen/edit_width"
+                android:text="@string/ButtonText" />
+        </LinearLayout>
+
+    </TableLayout>
+
 </LinearLayout>
