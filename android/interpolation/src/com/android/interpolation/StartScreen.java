@@ -112,7 +112,7 @@ public class StartScreen extends Activity implements OnClickListener{
 				Float.parseFloat(y1edit.getText().toString()),
 				Float.parseFloat(y2edit.getText().toString())
 		};
-		yTedit.setText(String.valueOf(getCalcMethod(data)));
+		yTedit.setText(String.valueOf(Interpolate(data)));
 	}
 	private void getToast(String text){
 		Context context = getApplicationContext();
@@ -122,52 +122,8 @@ public class StartScreen extends Activity implements OnClickListener{
 		toast.setGravity(Gravity.CENTER, 0, 0);
 		toast.show();
 	}
-	private float getCalcMethod(float[] args){
-		if (args[2] < args[1] && args[2] > args[0]) {
-			return Interpolate(args);
-		}
-		else if (args[2] > args[1] || args[2] < args[0]) {
-			return Extrapolate(args);		
-		}
-		return 0;		
-	}
 	private float Interpolate(float[] args){
-		float answer = 0;
-		float tg = 0;
-		if(Math.abs(args[0]-args[1])>0){
-			tg = Math.abs(args[3]-args[4])/Math.abs(args[0]-args[1]);
-		}else{
-			getToast(getString(R.string.data_error));
-			return 0;
-		}
-		float c = args[2] - Math.min(args[0], args[1]);
-		float d = c*tg;
-		answer = Math.min(args[3], args[4]) + d;
-		getToast(getString(R.string.is_counted) + String.valueOf(answer));
-		return answer;
-	}
-	private float Extrapolate(float[] args){
-		float answer = 0;
-		float tg = 0;
-		if(Math.abs(args[0]-args[1])>0){
-			tg = Math.abs(args[3]-args[4])/Math.abs(args[0]-args[1]);
-		}else{
-			getToast(getString(R.string.data_error));
-			return 0;
-		}
-		if(args[2] > Math.max(args[0], args[1])){
-			float c = args[2] - Math.max(args[0], args[1]);
-			float d = c*tg;
-			answer = (args[4] > args[3]) ? 
-					(Math.max(args[3], args[4]) + d) : 
-						(Math.min(args[3], args[4]) - d);
-		}else if(args[2] < Math.min(args[0], args[1])){
-			float c = Math.min(args[0], args[1]) - args[2];
-			float d = c*tg;
-			answer = (args[4] > args[3]) ? 
-					(Math.min(args[3], args[4]) - d) : 
-						(Math.max(args[3], args[4]) + d);
-		}
+		float answer = ((args[2]-args[0])*(args[4]-args[3])/(args[1]-args[0])+args[3]);
 		getToast(getString(R.string.is_counted) + String.valueOf(answer));
 		return answer;
 	}
