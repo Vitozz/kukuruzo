@@ -92,6 +92,7 @@ get_all ()
 	run_resloader get_pypoff
 	run_resloader get_pyssh
 	run_resloader get_html2text
+	run_resloader get_avolume
 }
 
 check_qconf ()
@@ -247,12 +248,13 @@ include /usr/share/cdbs/1/class/qmake.mk
 QMAKE=qmake-qt4
 CFLAGS=-O3
 CXXFLAGS=-O3'
+
 	if [ "${project}" != "pyalsavolume" -a "${project}" != "regexptest" ]
 	then
 		echo "${rules_py}" > rules
 		echo "${pyversions}" > pyversions
 	fi 
-	if [ "${project}" == "regexptest" ]
+	if [ "${project}" == "regexptest" -o "${project}" == "alsavolume" ]
 	then
 		echo "${rules_qt}" > rules
 	fi
@@ -518,6 +520,36 @@ usr/share/applications"
 	cp -f ${builddir}/*.deb	${exitdir}/
 }
 
+build_avolume ()
+{
+	run_resloader get_avolume
+	project="alsavolume"
+	dirname="cppAlsaVolume"
+	ver=`cat ${srcdir}/${dirname}/version.txt`
+	debdir=${builddir}/${project}-${ver}
+	prepare
+	cd ${debdir}
+	section="sound"
+	arch="any"
+	builddep="debhelper (>= 7), cdbs, libqt4-dev, libgtkmm-3.0-dev, libasound2-dev"
+	addit="#"
+	depends="\${shlibs:Depends}, \${misc:Depends}, libgtkmm-3.0-1, libasound2, libc6 (>=2.7-1), libgcc1 (>=1:4.1.1), libstdc++6 (>=4.1.1), libx11-6, zlib1g (>=1:1.1.4)"
+	description="Tray ALSA volume changer"
+	descriptionlong='Simple programm to change the volume of one of the ALSA mixer from the system tray.'
+	docfiles=""
+	dirs="usr/bin
+usr/share/alsavolume
+usr/share/alsavolume/icons
+usr/share/alsavolume/gladefiles
+usr/share/applications"
+	cd ${debdir}/debian
+	prepare_specs
+	cd ${debdir}
+	qmake
+	build_deb
+	cp -f ${builddir}/*.deb	${exitdir}/
+}
+
 build_html2text ()
 {
 	run_resloader get_html2text
@@ -561,6 +593,7 @@ print_menu ()
 [8] - Build rb-tunetopsi-plugin debian package
 [9] - Build regexptest debian package
 [a] - Build html2text debian package
+[b] - Build alsavolume debian package
 [0] - Exit'
   echo "${menu_text}"
 }
@@ -588,6 +621,7 @@ choose_action ()
 		"8" ) build_rbtunp;;
 		"9" ) build_regext;;
 		"a" ) build_html2text;;
+		"b" ) build_avolume;;
 		"0" ) quit;;
 		"ra" ) rm_all;;
 		"ga" ) get_all;;

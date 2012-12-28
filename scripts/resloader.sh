@@ -105,6 +105,22 @@ get_html2text ()
 	fi
 }
 
+get_avolume ()
+{
+	tmp_dir="${srcdir}/cppAlsaVolume"
+	check_dir ${tmp_dir}
+	if [ -d "${tmp_dir}/.git" ]
+	then
+		update_git ${tmp_dir}
+	else
+		git clone "git://github.com/Vitozz/cppAlsaVolume.git"  ${tmp_dir}
+		cd ${tmp_dir}
+		git init
+		git pull
+		cd ${srcdir}
+	fi
+}
+
 prepare_src ()
 {
 	check_dir ${builddir}
