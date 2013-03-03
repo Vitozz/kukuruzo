@@ -6,7 +6,7 @@ EAPI=4
 inherit qt4-r2 git-2
 
 DEPEND="
-	x11-libs/qt-gui
+	dev-qt/qtgui
 	sys-devel/qconf
 "
 RDEPEND="${DEPEND}"
