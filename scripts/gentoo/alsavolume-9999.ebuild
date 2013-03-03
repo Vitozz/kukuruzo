@@ -10,7 +10,7 @@ DEPEND="
 "
 RDEPEND="
 	${DEPEND}
-	x11-libs/qt-core
+	dev-qt/qtcore
 "
 DESCRIPTION="Tray ALSA volume changer written using gtkmm library"
 HOMEPAGE="http://sites.google.com/site/thesomeprojects/"
