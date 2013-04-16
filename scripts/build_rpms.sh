@@ -418,6 +418,67 @@ build_html2text ()
         cp -f ${srpms}/*.rpm	${exitdir}/
 }
 
+build_avolume ()
+{
+	project="alsavolume"
+	dirname="cppAlsaVolume"
+	run_resloader get_avolume
+	ver=`cat ${srcdir}/${dirname}/version.txt`
+	prepare ${dirname}
+        regspecfile="Summary: AlsaVolume
+Name: alsavolume
+Version: ${ver}
+Release: 1
+License: GPL-2
+Group: Applications/Multimedia
+URL: http://sites.google.com/site/thesomeprojects/main-1
+Source0: %{name}-%{version}.tar.gz
+BuildRequires: gcc-c++, zlib-devel, gtkmm3-devel
+%{!?_without_freedesktop:BuildRequires: desktop-file-utils}
+
+BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-build
+
+%description
+Simple tool written using gtkmm-3 library to set the levels of alsa mixers
+
+%prep
+%setup
+
+%build
+qmake
+make  
+
+%install
+[ \"%{buildroot}\" != \"/\"] && rm -rf %{buildroot}
+
+%{__make} install INSTALL_ROOT=\"%{buildroot}\"
+
+mkdir -p %{buildroot}/usr/bin
+mkdir -p %{buildroot}/usr/share/%{name}
+mkdir -p %{buildroot}/usr/share/applications
+mkdir -p %{buildroot}/usr/share/%{name}/icons
+mkdir -p %{buildroot}/usr/share/%{name}/gladefiles
+
+%{__install} -c -m 755 icons/tb_icon*.png %{buildroot}/usr/share/%{name}/icons/
+%{__install} -c -m 755 icons/volume*.png %{buildroot}/usr/share/%{name}/icons/
+%{__install} -c -m 755 gladefiles/* %{buildroot}/usr/share/%{name}/gladefiles/
+%{__install} -c -m 755 %{name} %{buildroot}/usr/bin/
+%{__install} -c -m 755 %{name}.desktop %{buildroot}/usr/share/applications
+
+%clean
+[ \"%{buildroot}\" != \"/\" ] && rm -rf %{buildroot}
+
+%files
+%defattr(-, root, root, 0755)
+%{_bindir}/%{name}
+%{_datadir}/%{name}/icons/
+%{_datadir}/%{name}/gladefiles/
+%{_datadir}/applications/"
+        echo "${regspecfile}" > ${specfiles}/"alsavolume.spec"
+	rpmbuild -ba ${specfiles}/"alsavolume.spec"
+	cp -f ${rpms}/i*/*.rpm	${exitdir}/
+        cp -f ${srpms}/*.rpm	${exitdir}/
+}
 
 print_menu ()
 {
@@ -433,6 +494,7 @@ print_menu ()
 [8] - Build rb-tunetopsi-plugin OpenSUSE RPM package
 [9] - Build regexptest OpenSUSE RPM package
 [a] - Build html2text OpenSUSE RPM package
+[b] - Build alsavolume OpenSUSE RPM package
 [0] - Exit'
   echo "${menu_text}"
 }
@@ -460,6 +522,7 @@ choose_action ()
 		"8" ) build_rbtunp;;
 		"9" ) build_regext;;
 		"a" ) build_html2text;;
+		"b" ) build_avolume;;
 		"0" ) quit;;
 		"ra" ) rm_all;;
 	esac
