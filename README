@@ -17,6 +17,7 @@ Map of Repository:
                               ---rb-remote-plugin
                               ---rb-restore-plugin
                               ---rb-tunetopsi-plugin
+                              ---screensaverdisable
      ---qt--
                  |
                   ---regexptest
