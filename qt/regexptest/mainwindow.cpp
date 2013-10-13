@@ -36,6 +36,8 @@ MainWindow::MainWindow(QWidget *parent) :
 {
 	ui->setupUi(this);
 	ui->label->setReadOnly(true);
+	connect(ui->actionE_xit, SIGNAL(triggered()), SLOT(on_actionE_xit_triggered()));
+	connect(ui->actionOnline_Help, SIGNAL(triggered()), SLOT(on_actionOnline_Help_triggered()));
 	readSettings();
 }
 
@@ -159,7 +161,7 @@ QList <QStringList> MainWindow::CheckExpression(const QString &regexp, const QSt
 }
 
 
-void MainWindow::on_actionOnline_Help_activated()
+void MainWindow::on_actionOnline_Help_triggered()
 {
 	RunOnlineHelp();
 }
@@ -339,4 +341,9 @@ void MainWindow::on_unquotebox_toggled(bool checked)
 	else {
 		ui->RegExp->setText(unquoteText(originRegExpText_));
 	}
+}
+
+void MainWindow::on_actionE_xit_triggered()
+{
+	close();
 }

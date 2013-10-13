@@ -45,7 +45,8 @@ private slots:
 	void on_openFile_clicked();
 	void on_spinBox_valueChanged(int );
 	void on_runit_clicked();
-	void on_actionOnline_Help_activated();
+	void on_actionOnline_Help_triggered();
+	void on_actionE_xit_triggered();
 	void on_inputText_textChanged();
 	void on_fileName_textChanged(QString );
 	void on_iswildcardunix_toggled(bool checked);
