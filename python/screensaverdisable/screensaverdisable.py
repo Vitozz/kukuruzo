@@ -23,19 +23,21 @@ class StatusIcc:
 			self.actItem.set_active(not self.enabled)
 
 	def onQuit(self, widget, data=None):
-		if self.enabled:
-			command = "xdg-screensaver resume %s"%self.xid
-			os.system(command)
+		self.disableScreensaver(self.enabled)
 		Gtk.main_quit()
 
 	def Activate(self):
 		command = ""
-		if self.enabled:
+		self.disableScreensaver(self.enabled)
+		self.SetIcon()
+
+	def disableScreensaver(self, active):
+		command = ""
+		if active:
 			command = "xdg-screensaver suspend %s"%self.xid
 		else:
 			command = "xdg-screensaver resume %s"%self.xid
 		os.system(command)
-		self.SetIcon()
 
 	def onActivate(self, widget, data=None):
 		if self.actItem.get_active():
