@@ -3,7 +3,7 @@ from xl import event
 import os, string
 
 TUNE_TO_PSI = None
-PSI_TUNE_PATH = [os.environ["HOME"] + "/.psi",  os.environ["HOME"] + "/.cache/Psi+",  os.environ["HOME"] + "/.cache/Psi"]
+PSI_TUNE_PATH = [os.environ["HOME"] + "/.psi",  os.environ["HOME"] + "/.cache/psi+",  os.environ["HOME"] + "/.cache/psi"]
 
 def enable(exaile):
     if (exaile.loading):

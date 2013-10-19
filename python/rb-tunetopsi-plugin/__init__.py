@@ -173,6 +173,6 @@ class IMTunePlugin (rb.Plugin):
 
   def write_tune(self, tunestring):
     """Writes tune information into tunefile"""
-    psi_pathes=[os.environ["HOME"] + "/.psi",  os.environ["HOME"] + "/.cache/Psi+",  os.environ["HOME"] + "/.cache/Psi"]
+    psi_pathes=[os.environ["HOME"] + "/.psi",  os.environ["HOME"] + "/.cache/psi+",  os.environ["HOME"] + "/.cache/psi"]
     for path in psi_pathes:
         self.to_file(tunestring, path)
