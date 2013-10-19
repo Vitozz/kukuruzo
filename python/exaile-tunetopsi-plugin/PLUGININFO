@@ -1,4 +1,4 @@
-Version='0.0.6'
+Version='0.0.7'
 Authors=['Vitaly Tonkacheyev <thetvg@gmail.com>']
 Name='Tune To Psi'
 Description='Sends Current Track Information to Psi/Psi+ as Tune'
