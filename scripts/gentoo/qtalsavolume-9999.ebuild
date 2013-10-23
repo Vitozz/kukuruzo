@@ -12,7 +12,7 @@ RDEPEND="
 	${DEPEND}
 	dev-qt/qtcore
 "
-DESCRIPTION="Tray ALSA volume changer written using gtkmm library"
+DESCRIPTION="Tray ALSA volume changer written using Qt library"
 HOMEPAGE="http://sites.google.com/site/thesomeprojects/"
 EGIT_REPO_URI="git://github.com/Vitozz/kukuruzo.git"
 
@@ -22,5 +22,4 @@ LICENSE="GPL-3"
 
 src_prepare() {
 	S="${EGIT_SOURCEDIR}/qt/qtalsavolume"
-	qmake
 }
