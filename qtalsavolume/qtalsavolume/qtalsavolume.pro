@@ -3,6 +3,7 @@
 # Project created by QtCreator 2013-10-22T17:06:27
 #
 #-------------------------------------------------
+include(conf.pri)
 
 QT       += core gui
 
