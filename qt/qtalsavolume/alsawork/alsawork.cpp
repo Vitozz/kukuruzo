@@ -1,6 +1,6 @@
 /*
  * alsawork.cpp
- * Copyright (C) 2012 Vitaly Tonkacheyev
+ * Copyright (C) 2013 Vitaly Tonkacheyev
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -22,6 +22,8 @@
 #include "volumemixers.h"
 #include "alsawork.h"
 #include <stdexcept>
+
+//#include <QDebug>
 
 const double ZERO = 0.0;
 
@@ -288,7 +290,7 @@ void AlsaWork::updateMixers(int cardIndex)
 	for (snd_mixer_elem_t *element = snd_mixer_first_elem(handle);
 	     element;
 	     element = snd_mixer_elem_next(element)) {
-		QPair<QString, bool> sCap;
+		switcher sCap;
 		snd_mixer_selem_get_id(element, smid);
 		name = snd_mixer_selem_id_get_name(smid);
 		snd_mixer_selem_channel_id_t channel = checkMixerChannels(element);
@@ -308,6 +310,7 @@ void AlsaWork::updateMixers(int cardIndex)
 		    || snd_mixer_selem_has_capture_switch_exclusive(element)){
 			int value = 0;
 			checkError(snd_mixer_selem_get_capture_switch(element, channel, &value));
+			//qDebug() << "CP "<< name;
 			sCap = switcher(name, bool(value));
 			switches_->pushBack(CAPTURE, sCap);
 		}
@@ -315,12 +318,14 @@ void AlsaWork::updateMixers(int cardIndex)
 		    || snd_mixer_selem_has_playback_switch_joined(element)){
 			int value = 0;
 			checkError(snd_mixer_selem_get_playback_switch(element, channel, &value));
+			//qDebug() << "PL "<< name;
 			sCap = switcher(name, bool(value));
 			switches_->pushBack(PLAYBACK, sCap);
 		}
 		if (snd_mixer_selem_is_enumerated(element)) {
 			uint value = 0;
 			checkError(snd_mixer_selem_get_enum_item(element, channel, &value));
+			//qDebug() << "EN "<< name;
 			sCap = switcher(name, bool(value));
 			switches_->pushBack(ENUM, sCap);
 		}

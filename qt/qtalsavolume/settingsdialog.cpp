@@ -1,3 +1,23 @@
+/*
+ * settingsgialog.cpp
+ * Copyright (C) 2013 Vitaly Tonkacheyev
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ */
+
 #include "settingsdialog.h"
 #include "ui_settingsdialog.h"
 
@@ -13,10 +33,17 @@ ui(new Ui::SettingsDialog)
 	playbacks_ = new QListWidget(this);
 	captures_ = new QListWidget(this);
 	enums_ = new QListWidget(this);
+	QLabel *l1 = new QLabel(tr("Playback Switches"),this);
+	QLabel *l2 = new QLabel(tr("Capture Switches"),this);
+	QLabel *l3 = new QLabel(tr("Enum Switches"),this);
+	ui->verticalLayout_3->addWidget(l1);
 	ui->verticalLayout_3->addWidget(playbacks_);
+	ui->verticalLayout_3->addWidget(l2);
 	ui->verticalLayout_3->addWidget(captures_);
+	ui->verticalLayout_3->addWidget(l3);
 	ui->verticalLayout_3->addWidget(enums_);
 	ui->tabWidget->setCurrentIndex(0);
+	itemsAdded_ = false;
 	connect(playbacks_, SIGNAL(itemChanged(QListWidgetItem*)), this, SLOT(onPBAction(QListWidgetItem*)));
 	connect(captures_, SIGNAL(itemChanged(QListWidgetItem*)), this, SLOT(onCPAction(QListWidgetItem*)));
 	connect(enums_, SIGNAL(itemChanged(QListWidgetItem*)), this, SLOT(onENAction(QListWidgetItem*)));
@@ -98,7 +125,9 @@ void SettingsDialog::onCancel()
 
 void SettingsDialog::onAutorun(bool toggle)
 {
-	emit autorunChanged(toggle);
+	if (itemsAdded_) {
+		emit autorunChanged(toggle);
+	}
 }
 
 void SettingsDialog::closeEvent(QCloseEvent *)
@@ -108,6 +137,7 @@ void SettingsDialog::closeEvent(QCloseEvent *)
 
 void SettingsDialog::setPlaybackChecks(QList<switcher> pbList)
 {
+	itemsAdded_ = false;
 	if (playbacks_->count() > 0) {
 		playbacks_->clear();
 	}
@@ -123,10 +153,12 @@ void SettingsDialog::setPlaybackChecks(QList<switcher> pbList)
 		playbacks_->addItem(cb);
 	}
 	playbacks_->show();
+	itemsAdded_ = true;
 }
 
 void SettingsDialog::setCaptureChecks(QList<switcher> cList)
 {
+	itemsAdded_ = false;
 	if (captures_->count() > 0 ){
 		captures_->clear();
 	}
@@ -142,10 +174,12 @@ void SettingsDialog::setCaptureChecks(QList<switcher> cList)
 		captures_->addItem(cb);
 	}
 	captures_->show();
+	itemsAdded_ = true;
 }
 
 void SettingsDialog::setEnumChecks(QList<switcher> eList)
 {
+	itemsAdded_ = false;
 	if (enums_->count() > 0 ){
 		enums_->clear();
 	}
@@ -161,25 +195,39 @@ void SettingsDialog::setEnumChecks(QList<switcher> eList)
 		enums_->addItem(cb);
 	}
 	enums_->show();
+	itemsAdded_ = true;
+}
+
+void SettingsDialog::setAutorun(bool isAutorun)
+{
+	itemsAdded_ = false;
+	ui->isAutorun->setChecked(isAutorun);
+	itemsAdded_ = true;
 }
 
 void SettingsDialog::onPBAction(QListWidgetItem *item)
 {
-	QString name = item->text();
-	Qt::CheckState checked = item->checkState();
-	emit playChanged(name, (checked == Qt::Checked));
+	if (itemsAdded_) {
+		QString name = item->text();
+		Qt::CheckState checked = item->checkState();
+		emit playChanged(name, (checked == Qt::Checked));
+	}
 }
 
 void SettingsDialog::onCPAction(QListWidgetItem *item)
 {
-	QString name = item->text();
-	Qt::CheckState checked = item->checkState();
-	emit captChanged(name, (checked == Qt::Checked));
+	if (itemsAdded_) {
+		QString name = item->text();
+		Qt::CheckState checked = item->checkState();
+		emit captChanged(name, (checked == Qt::Checked));
+	}
 }
 
 void SettingsDialog::onENAction(QListWidgetItem *item)
 {
-	QString name = item->text();
-	Qt::CheckState checked = item->checkState();
-	emit enumChanged(name, (checked == Qt::Checked));
+	if (itemsAdded_) {
+		QString name = item->text();
+		Qt::CheckState checked = item->checkState();
+		emit enumChanged(name, (checked == Qt::Checked));
+	}
 }

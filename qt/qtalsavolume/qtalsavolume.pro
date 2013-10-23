@@ -29,10 +29,10 @@ HEADERS  += popupwindow.h \
 	    settingsdialog.h
 
 FORMS    += \
-    settingsdialog.ui
+	    settingsdialog.ui
 
 RESOURCES += \
-    icons.qrc
+	    icons.qrc
 
 unix{
 	target.path = $$BINDIR

@@ -1,6 +1,6 @@
 /*
  * mixerswitches.cpp
- * Copyright (C) 2012 Vitaly Tonkacheyev
+ * Copyright (C) 2013 Vitaly Tonkacheyev
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -26,17 +26,23 @@ MixerSwitches::MixerSwitches()
 
 void MixerSwitches::setCaptureSwitchList(const QList<switcher> &list)
 {
-	captureSwitchList_.append(list);
+	foreach(switcher item, list){
+		captureSwitchList_.push_back(item);
+	}
 }
 
 void MixerSwitches::setPlaybackSwitchList(const QList<switcher> &list)
 {
-	playbackSwitchList_.append(list);
+	foreach(switcher item, list){
+		playbackSwitchList_.push_back(item);
+	}
 }
 
 void MixerSwitches::setEnumSwitchList(const QList<switcher> &list)
 {
-	enumSwitchList_.append(list);
+	foreach(switcher item, list){
+		enumSwitchList_.push_back(item);
+	}
 }
 
 void MixerSwitches::pushBack(SwitchType sType, switcher &item)
@@ -58,16 +64,19 @@ void MixerSwitches::clear(SwitchType sType)
 {
 	switch (sType) {
 	case PLAYBACK:
-		if (!playbackSwitchList_.isEmpty())
+		if (!playbackSwitchList_.isEmpty()) {
 			playbackSwitchList_.clear();
+		}
 		break;
 	case CAPTURE:
-		if (!captureSwitchList_.isEmpty())
+		if (!captureSwitchList_.isEmpty()) {
 			captureSwitchList_.clear();
+		}
 		break;
 	case ENUM:
-		if (!enumSwitchList_.isEmpty())
+		if (!enumSwitchList_.isEmpty()) {
 			enumSwitchList_.clear();
+		}
 		break;
 	}
 }

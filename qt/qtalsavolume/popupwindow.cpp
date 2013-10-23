@@ -1,16 +1,47 @@
+/*
+ * popupwindow.cpp
+ * Copyright (C) 2013 Vitaly Tonkacheyev
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ */
+
 #include "popupwindow.h"
 
 #include <QtGui>
 #include <QDesktopWidget>
-#include <QDebug>
 
 #define CARD_INDEX "Main/card"
 #define MIXER_NAME "Main/mixer"
+
+static const QString fName = QDir::home().absolutePath() + "/.config/autostart/qtalsavolume.desktop";
+static const QString dFile = "[Desktop Entry]\n"
+			     "Encoding=UTF-8\n"
+			     "Name=QtAlsaVolume\n"
+			     "Exec=qtalsavolume\n"
+			     "Version=" +
+			     qApp->applicationVersion() +
+			     "\n"
+			     "Type=Application\n"
+			     "Comment=Changes the volume of ALSA from the system tray\n";
 
 PopupWindow::PopupWindow()
 {
 	setWindowIcon(QIcon(":/images/icons/volume_ico.png"));
 	alsaWork_ = new AlsaWork();
+	isAutoun_ = false;
 	createActions();
 	createTrayMenu();
 	trayIcon_ = new QSystemTrayIcon(this);
@@ -20,21 +51,21 @@ PopupWindow::PopupWindow()
 	volumeSlider_ = new QSlider(Qt::Vertical, this);
 	volumeSlider_->setMaximum(100);
 	volumeSlider_->setMinimum(0);
-	volumeSlider_->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Minimum);
-	volumeSlider_->setGeometry(volumeSlider_->x(), volumeSlider_->y(), 200, volumeSlider_->width());
+	volumeSlider_->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 	mainLayout->addWidget(volumeSlider_);
 	setLayout(mainLayout);
-	setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
+	this->setMinimumHeight(120);
+	setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
 	setWindowFlags(Qt::FramelessWindowHint);
 	setMouseTracking(true);
 	//
-	setts_ = new QSettings(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
+	QSettings setts_;
 	cardList_ = alsaWork_->getCardsList();
-	cardIndex_ = setts_->value(CARD_INDEX, 0).toInt();
+	cardIndex_ = setts_.value(CARD_INDEX, 0).toInt();
 	cardIndex_ = cardList_.size() >= cardIndex_ ? cardIndex_ : 0;
 	mixerList_ = alsaWork_->getVolumeMixers(cardIndex_);
 	QString mixer = mixerList_.contains("Master") ? "Master" : mixerList_.at(0);
-	mixerName_ = setts_->value(MIXER_NAME, mixer).toString();
+	mixerName_ = setts_.value(MIXER_NAME, mixer).toString();
 	cardName_ = alsaWork_->getCardName(cardIndex_);
 	volumeValue_ = alsaWork_->getAlsaVolume(cardIndex_, mixerName_);
 	isMuted_ = !alsaWork_->getMute(cardIndex_, mixerName_);
@@ -46,6 +77,7 @@ PopupWindow::PopupWindow()
 	settingsDialog_->setCurrentCard(cardName_);
 	settingsDialog_->setMixers(mixerList_);
 	settingsDialog_->setCurrentMixer(mixerName_);
+	//
 	settingsDialog_->connectSignals();
 	connect(settingsDialog_, SIGNAL(soundCardChanged(QString)), this, SLOT(onCardChanged(QString)));
 	connect(settingsDialog_, SIGNAL(mixerChanged(QString)), this, SLOT(onMixerChanged(QString)));
@@ -53,11 +85,13 @@ PopupWindow::PopupWindow()
 	connect(settingsDialog_, SIGNAL(captChanged(QString,bool)), this, SLOT(onCapture(QString,bool)));
 	connect(settingsDialog_, SIGNAL(enumChanged(QString,bool)), this, SLOT(onEnum(QString,bool)));
 	connect(settingsDialog_, SIGNAL(autorunChanged(bool)), this, SLOT(onAutorun(bool)));
+	createDesktopFile();
+	readDesktopFile();
+	//
 	mute_->setChecked(isMuted_);
 	volumeSlider_->setValue(volumeValue_);
 	setIconToolTip(volumeValue_);
 	setTrayIcon(volumeValue_);
-	qDebug() << setts_->allKeys();
 	connect(trayIcon_, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, SLOT(iconActivated(QSystemTrayIcon::ActivationReason)));
 	connect(volumeSlider_, SIGNAL(valueChanged(int)), this, SLOT(onSlider(int)));
 	trayIcon_->installEventFilter(this);
@@ -76,7 +110,6 @@ PopupWindow::~PopupWindow()
 	delete trayIcon_;
 	delete volumeSlider_;
 	delete settingsDialog_;
-	delete setts_;
 }
 
 void PopupWindow::createActions()
@@ -112,29 +145,32 @@ void PopupWindow::createTrayMenu()
 
 void PopupWindow::onQuit()
 {
-	exit(0);
+	close();
 }
 
 void PopupWindow::onAbout()
 {
-	QMessageBox::about(this, "About QtAlsaVolume", "Tray Alsa Volume Changer written using Qt\n\n2013 (c) Vitaly Tonkacheyev (thetvg@gmail.com)\n\nversion: 0.0.1");
+	QString title = QString(tr("About QtAlsaVolume"));
+	QString msg = QString(tr("Tray Alsa Volume Changer written using Qt\n\n2013 (c) Vitaly Tonkacheyev (thetvg@gmail.com)\n\nversion: 0.0.1"));
+	QMessageBox::about(this, title, msg);
 }
 
 void PopupWindow::showPopup()
 {
 	if (!this->isVisible()) {
 		const int screenHeight = qApp->desktop()->availableGeometry().height();
+		const int screenTop = qApp->desktop()->availableGeometry().top();
 		QPoint point;
 		const int iconLeft = trayIcon_->geometry().left();
 		const int iconWidth = trayIcon_->geometry().width();
 		const int iconTop = trayIcon_->geometry().top();
-		const int windowWidth = this->width();
-		const int windowHeight = this->height();
+		const int windowWidth = minimumWidth();
+		const int windowHeight = minimumHeight();
 		int position = iconTop > screenHeight/2 ? BOTTOM : TOP;
 		point.setX(iconLeft + iconWidth/2 - windowWidth/2);
 		switch (position) {
 		case TOP:
-			point.setY(windowHeight + 2);
+			point.setY(screenTop + 2);
 			break;
 		case BOTTOM:
 			point.setY(screenHeight - windowHeight -2);
@@ -185,6 +221,7 @@ void PopupWindow::showSettings()
 	settingsDialog_->setPlaybackChecks(playBackItems_);
 	settingsDialog_->setCaptureChecks(captureItems_);
 	settingsDialog_->setEnumChecks(enumItems_);
+	readDesktopFile();
 	settingsDialog_->showNormal();
 }
 
@@ -197,8 +234,10 @@ void PopupWindow::onMute(bool isToggled)
 
 void PopupWindow::closeEvent(QCloseEvent *)
 {
-	setts_->setValue(CARD_INDEX, cardIndex_);
-	setts_->setValue(MIXER_NAME, mixerName_);
+	QSettings setts_;
+	setts_.setValue(CARD_INDEX, cardIndex_);
+	setts_.setValue(MIXER_NAME, mixerName_);
+	qApp->quit();
 }
 
 bool PopupWindow::eventFilter(QObject *object, QEvent *event)
@@ -209,8 +248,10 @@ bool PopupWindow::eventFilter(QObject *object, QEvent *event)
 			int degs = wheelEvent->delta()/8;
 			int steps = degs/15;
 			setVolume(steps);
+			return true;
 		}
 	}
+	return false;
 }
 
 void PopupWindow::mouseMoveEvent(QMouseEvent *event)
@@ -219,7 +260,7 @@ void PopupWindow::mouseMoveEvent(QMouseEvent *event)
 	const int top_ = this->geometry().top();
 	const int left_ = this->geometry().left();
 	const int right_ = this->geometry().right();
-	if (point.x() < left_ || point.x() > right_ || point.y() < top_ && this->isVisible()) {
+	if ((point.x() < left_ || point.x() > right_ || point.y() < top_) && this->isVisible()) {
 		this->hide();
 	}
 }
@@ -313,5 +354,30 @@ void PopupWindow::onEnum(const QString &name, bool isIt)
 
 void PopupWindow::onAutorun(bool isIt)
 {
-//
+	if (isAutoun_ != isIt) {
+		isAutoun_ = isIt;
+		createDesktopFile();
+	}
+}
+
+void PopupWindow::createDesktopFile()
+{
+	QDir home = QDir::home();
+	if (!home.exists(".config/autostart")) {
+		home.mkpath(".config/autostart");
+	}
+	QFile f(fName);
+	if (f.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate)) {
+		f.write(dFile.trimmed().toUtf8());
+		f.write(QString("\nHidden=%1").arg(isAutoun_ ? "false\n" : "true\n").toUtf8());
+	}
+}
+
+void PopupWindow::readDesktopFile()
+{
+	QFile desktop(fName);
+	if (desktop.open(QIODevice::ReadOnly))
+	{
+		settingsDialog_->setAutorun(QString(desktop.readAll()).contains(QRegExp("\\bhidden\\s*=\\s*false", Qt::CaseInsensitive)));
+	}
 }
