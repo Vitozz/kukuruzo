@@ -21,6 +21,6 @@ KEYWORDS="~amd64 ~x86 ~amd64-linux ~x86-linux"
 LICENSE="GPL-3"
 
 src_prepare() {
-	S="${EGIT_SOURCEDIR}/qtalsavolume"
+	S="${EGIT_SOURCEDIR}/qt/qtalsavolume"
 	qmake
 }
