@@ -34,14 +34,23 @@ FORMS    += \
 RESOURCES += \
 	    icons.qrc
 
+DATADIR = /usr/share/qtalsavolume
+
+LANG_PATH = languages
+TRANSLATIONS = $$LANG_PATH/qtalsavolume_en.ts \
+	       $$LANG_PATH/qtalsavolume_ru.ts \
+	       $$LANG_PATH/qtalsavolume_uk.ts
+
 unix{
 	target.path = $$BINDIR
 	INSTALLS += target
 	dt.path = $$PREFIX/share/applications/
 	dt.files = qtalsavolume.desktop
-	res.path = $$PREFIX/share/qtalsavolume/
+	res.path = $$DATADIR/
 	res.files = icons.qrc
-	icon.path = $$PREFIX/share/qtalsavolume/icons/
+	translations.path = $$DATADIR/languages
+	translations.extra = lrelease qtalvavolume.pro && cp -f $$LANG_PATH/languages/qtalsavolume_*.qm  $(INSTALL_ROOT)$$translations.path
+	icon.path = $$DATADIR/icons/
 	icon.files = icons/tb_icon0.png \
 		     icons/tb_icon20.png \
 		     icons/tb_icon40.png \
@@ -51,5 +60,6 @@ unix{
 		     icons/volume_ico.png
 	INSTALLS += dt \
 		    res \
+		    translations \
 		    icon
 }

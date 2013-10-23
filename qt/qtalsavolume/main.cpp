@@ -20,6 +20,7 @@
 
 #include "popupwindow.h"
 #include <QApplication>
+#include <QTranslator>
 #include <QtGui>
 
 #define APP_NAME "qtalsavolume"
@@ -32,6 +33,20 @@ int main(int argc, char *argv[])
 	a.setOrganizationName(APP_ORG);
 	a.setApplicationVersion(APP_VERSION);
 	a.setApplicationName(APP_NAME);
+	QTranslator translator;
+	QStringList localeDirs;
+	localeDirs << QString("%1/languages").arg(QDir::currentPath());
+	localeDirs << QString(qApp->applicationDirPath() + "/languages");
+	localeDirs << QString("/usr/share/qtalsavolume/languages");
+	localeDirs << QString("/usr/local/share/qtalsavolume/languages");
+	localeDirs << QString(QDir::home().absolutePath() + "/.local/share/qtalsavolume/languages");
+	QString langFile = qApp->applicationName();
+	foreach(QString dir, localeDirs){
+		if (translator.load(QLocale::system(),langFile, "_", dir )) {
+			qApp->installTranslator(&translator);
+			break;
+		}
+	}
 	if (!QSystemTrayIcon::isSystemTrayAvailable()) {
 		QMessageBox::critical(0, QObject::tr("Systray"), QObject::tr("System tray not detected"));
 		return 1;
