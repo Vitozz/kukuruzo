@@ -25,6 +25,7 @@
 
 #define CARD_INDEX "Main/card"
 #define MIXER_NAME "Main/mixer"
+#define ISAUTO "Main/autorun"
 
 static const QString fName = QDir::home().absolutePath() + "/.config/autostart/qtalsavolume.desktop";
 static const QString dFile = "[Desktop Entry]\n"
@@ -41,7 +42,6 @@ PopupWindow::PopupWindow()
 {
 	setWindowIcon(QIcon(":/images/icons/volume_ico.png"));
 	alsaWork_ = new AlsaWork();
-	isAutoun_ = false;
 	createActions();
 	createTrayMenu();
 	trayIcon_ = new QSystemTrayIcon(this);
@@ -85,8 +85,8 @@ PopupWindow::PopupWindow()
 	connect(settingsDialog_, SIGNAL(captChanged(QString,bool)), this, SLOT(onCapture(QString,bool)));
 	connect(settingsDialog_, SIGNAL(enumChanged(QString,bool)), this, SLOT(onEnum(QString,bool)));
 	connect(settingsDialog_, SIGNAL(autorunChanged(bool)), this, SLOT(onAutorun(bool)));
+	isAutorun_ = setts_.value(ISAUTO, false).toBool();
 	createDesktopFile();
-	readDesktopFile();
 	//
 	mute_->setChecked(isMuted_);
 	volumeSlider_->setValue(volumeValue_);
@@ -237,6 +237,7 @@ void PopupWindow::closeEvent(QCloseEvent *)
 	QSettings setts_;
 	setts_.setValue(CARD_INDEX, cardIndex_);
 	setts_.setValue(MIXER_NAME, mixerName_);
+	setts_.setValue(ISAUTO, isAutorun_);
 	qApp->quit();
 }
 
@@ -354,8 +355,11 @@ void PopupWindow::onEnum(const QString &name, bool isIt)
 
 void PopupWindow::onAutorun(bool isIt)
 {
-	if (isAutoun_ != isIt) {
-		isAutoun_ = isIt;
+	if (isAutorun_ != isIt) {
+		isAutorun_ = isIt;
+		QSettings setts;
+		setts.setValue(ISAUTO, isAutorun_);
+		setts.sync();
 		createDesktopFile();
 	}
 }
@@ -369,7 +373,7 @@ void PopupWindow::createDesktopFile()
 	QFile f(fName);
 	if (f.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate)) {
 		f.write(dFile.trimmed().toUtf8());
-		f.write(QString("\nHidden=%1").arg(isAutoun_ ? "false\n" : "true\n").toUtf8());
+		f.write(QString("\nHidden=%1").arg(isAutorun_ ? "false\n" : "true\n").toUtf8());
 	}
 }
 

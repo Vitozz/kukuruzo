@@ -103,7 +103,7 @@ private:
 	QList<switcher> enumItems_;
 	int volumeValue_;
 	bool isMuted_;
-	bool isAutoun_;
+	bool isAutorun_;
 };
 
 #endif // POPUPWINDOW_H
