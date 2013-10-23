@@ -1,0 +1,11 @@
+<RCC>
+    <qresource prefix="/images">
+        <file>icons/tb_icon0.png</file>
+        <file>icons/tb_icon20.png</file>
+        <file>icons/tb_icon40.png</file>
+        <file>icons/tb_icon60.png</file>
+        <file>icons/tb_icon80.png</file>
+        <file>icons/tb_icon100.png</file>
+        <file>icons/volume_ico.png</file>
+    </qresource>
+</RCC>
