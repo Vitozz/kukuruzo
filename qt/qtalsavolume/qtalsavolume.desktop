@@ -1,0 +1,11 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=QtAlsaVolume
+Comment=Changes the volume of ALSA from the system tray
+Exec=qtalsavolume
+Terminal=false
+Type=Application
+Categories=Audio;AudioVideo;
+StartupNotify=false
+
+Comment[ru]=Регулятор громкости ALSA
