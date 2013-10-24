@@ -29,8 +29,6 @@
 #define MIXER_NAME "Main/mixer"
 #define ISAUTO "Main/autorun"
 #define ICOSTYLE "Main/style"
-#define DARK "dark"
-#define LIGHT "light"
 
 #include <QPair>
 

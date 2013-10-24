@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
 	localeDirs << QString("/usr/local/share/qtalsavolume/languages");
 	localeDirs << QString(QDir::home().absolutePath() + "/.local/share/qtalsavolume/languages");
 	QString langFile = qApp->applicationName();
-	foreach(QString dir, localeDirs){
+	foreach(const QString &dir, localeDirs){
 		if (translator.load(QLocale::system(),langFile, "_", dir )) {
 			qApp->installTranslator(&translator);
 			break;

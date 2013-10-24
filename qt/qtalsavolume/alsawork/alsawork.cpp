@@ -109,10 +109,10 @@ void AlsaWork::updateMixerList(int cardIndex)
 		mixerList_.clear();
 	QStringList plist = volumeMixers_->playback();
 	QStringList clist = volumeMixers_->capture();
-	foreach (QString item, plist) {
+	foreach (const QString &item, plist) {
 		mixerList_.push_back(item);
 	}
-	foreach (QString item, clist) {
+	foreach (const QString &item, clist) {
 		mixerList_.push_back(item);
 	}
 }

@@ -73,6 +73,7 @@ private:
 	void updateSwitches();
 	void createDesktopFile();
 	void readDesktopFile();
+	QString getResPath(const QString &fileName);
 
 private:
 	AlsaWork *alsaWork_;

@@ -190,34 +190,35 @@ void PopupWindow::setTrayIcon(int value)
 {
 	QString pathPrefix;
 	if (isLightStyle_) {
-		pathPrefix = ":/images/icons/" + QString(LIGHT) + "/";
+		pathPrefix = "icons/light/";
 	}
 	else {
-		pathPrefix = ":/images/icons/" + QString(DARK) + "/";
+		pathPrefix = "icons/dark/";
 	}
-	QString iconPath = "tb_icon100.png";
+	QString pathSuffix = "tb_icon100.png";
 	if (value <= 0) {
-		iconPath = "tb_icon0.png";
+		pathSuffix = "tb_icon0.png";
 	}
 	if (value >0 && (value < 40)) {
-		iconPath = "tb_icon20.png";
+		pathSuffix = "tb_icon20.png";
 	}
 	if (value >=40 && (value < 60)) {
-		iconPath = "tb_icon40.png";
+		pathSuffix = "tb_icon40.png";
 	}
 	if (value >=60 && (value < 80)) {
-		iconPath = "tb_icon60.png";
+		pathSuffix = "tb_icon60.png";
 	}
 	if (value >=80 && (value < 100)) {
-		iconPath = "tb_icon80.png";
+		pathSuffix = "tb_icon80.png";
 	}
 	if (value >= 100) {
-		iconPath = "tb_icon100.png";
+		pathSuffix = "tb_icon100.png";
 	}
 	if (isMuted_) {
-		iconPath = "tb_icon0.png";
+		pathSuffix = "tb_icon0.png";
 	}
-	trayIcon_->setIcon(QIcon(pathPrefix + iconPath));
+	QString fullPath = getResPath(pathPrefix + pathSuffix);
+	trayIcon_->setIcon(QIcon(fullPath));
 }
 
 void PopupWindow::showSettings()
@@ -399,4 +400,21 @@ void PopupWindow::onStyleChanged(bool isLight)
 {
 	isLightStyle_ = isLight;
 	setTrayIcon(volumeValue_);
+}
+
+QString PopupWindow::getResPath(const QString &fileName)
+{
+	QStringList resDirs;
+	resDirs << QString(QDir::currentPath());
+	resDirs << QString(qApp->applicationDirPath());
+	resDirs << QString("/usr/share/qtalsavolume");
+	resDirs << QString("/usr/local/share/qtalsavolume");
+	resDirs << QString(QDir::home().absolutePath() + "/.local/share/qtalsavolume");
+	foreach(const QString &dir, resDirs){
+		QString fullName = dir + "/" + fileName;
+		if (QFile::exists(fullName)) {
+			return fullName;
+		}
+	}
+	return QString();
 }
