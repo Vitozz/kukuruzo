@@ -33,6 +33,7 @@ class AlsaWork
 {
 public:
 	AlsaWork();
+	AlsaWork(AlsaWork const &);
 	~AlsaWork();
 	void setAlsaVolume(int cardId, const QString &mixer, int volume);
 	int getAlsaVolume(int cardId, const QString& mixer);
