@@ -550,6 +550,35 @@ usr/share/applications"
 	cp -f ${builddir}/*.deb	${exitdir}/
 }
 
+build_qtavolume ()
+{
+	project="qtalsavolume"
+	dirname="qt/qtalsavolume"
+	ver=`cat ${srcdir}/${dirname}/version.txt`
+	debdir=${builddir}/${project}-${ver}
+	prepare
+	cd ${debdir}
+	section="sound"
+	arch="any"
+	builddep="debhelper (>= 7), cdbs, libqt4-dev, libasound2-dev"
+	addit="#"
+	depends="\${shlibs:Depends}, \${misc:Depends}, libasound2, libc6 (>=2.7-1), libgcc1 (>=1:4.1.1), libstdc++6 (>=4.1.1), libx11-6, zlib1g (>=1:1.1.4)"
+	description="Tray ALSA volume changer"
+	descriptionlong='Simple programm to change the volume of one of the ALSA mixer from the system tray.'
+	docfiles=""
+	dirs="usr/bin
+usr/share/qtalsavolume
+usr/share/qtalsavolume/icons
+usr/share/qtalsavolume/languages
+usr/share/applications"
+	cd ${debdir}/debian
+	prepare_specs
+	cd ${debdir}
+	qmake
+	build_deb
+	cp -f ${builddir}/*.deb	${exitdir}/
+}
+
 build_html2text ()
 {
 	run_resloader get_html2text
@@ -594,6 +623,7 @@ print_menu ()
 [9] - Build regexptest debian package
 [a] - Build html2text debian package
 [b] - Build alsavolume debian package
+[c] - Build qtalsavolume debian package
 [0] - Exit'
   echo "${menu_text}"
 }
@@ -622,6 +652,7 @@ choose_action ()
 		"9" ) build_regext;;
 		"a" ) build_html2text;;
 		"b" ) build_avolume;;
+		"c" ) build qtavolume;;
 		"0" ) quit;;
 		"ra" ) rm_all;;
 		"ga" ) get_all;;
