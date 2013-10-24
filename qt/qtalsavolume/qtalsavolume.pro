@@ -49,21 +49,27 @@ unix{
 	dt.files = qtalsavolume.desktop
 	translations.path = $$DATADIR/languages
 	translations.extra = lrelease qtalvavolume.pro && cp -f $$LANG_PATH/qtalsavolume_*.qm  $(INSTALL_ROOT)$$translations.path
-	icon.path = $$DATADIR/icons/
-	icon.files = icons/light/tb_icon0.png \
-		     icons/light/tb_icon20.png \
-		     icons/light/tb_icon40.png \
-		     icons/light/tb_icon60.png \
-		     icons/light/tb_icon80.png \
-		     icons/light/tb_icon100.png \
-		     icons/dark/tb_icon0.png \
-		     icons/dark/tb_icon20.png \
-		     icons/dark/tb_icon40.png \
-		     icons/dark/tb_icon60.png \
-		     icons/dark/tb_icon80.png \
-		     icons/dark/tb_icon100.png \
+	icon1.path = $$DATADIR/icons
+	icon1.files = \
 		     icons/volume_ico.png
+	licons.path = $$DATADIR/icons/light
+	licons.files = icons/light/tb_icon0.png \
+		       icons/light/tb_icon20.png \
+		       icons/light/tb_icon40.png \
+		       icons/light/tb_icon60.png \
+		       icons/light/tb_icon80.png \
+		       icons/light/tb_icon100.png
+	dicons.path = $$DATADIR/icons/dark
+	dicons.files = icons/dark/tb_icon0.png \
+		       icons/dark/tb_icon20.png \
+		       icons/dark/tb_icon40.png \
+		       icons/dark/tb_icon60.png \
+		       icons/dark/tb_icon80.png \
+		       icons/dark/tb_icon100.png
+
 	INSTALLS += dt \
 		    translations \
-		    icon
+		    icon1 \
+		    licons \
+		    dicons
 }
