@@ -569,6 +569,8 @@ build_qtavolume ()
 	dirs="usr/bin
 usr/share/qtalsavolume
 usr/share/qtalsavolume/icons
+usr/share/qtalsavolume/icons/light
+usr/share/qtalsavolume/icons/dark
 usr/share/qtalsavolume/languages
 usr/share/applications"
 	cd ${debdir}/debian
