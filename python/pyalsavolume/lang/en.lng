@@ -1,0 +1,29 @@
+[SliderFrame]
+slider = Change volume
+
+[SettingsFrame]
+label1 = Mixers
+label2 = Switchers
+label3 = Sound Card
+label4 = Mixer
+label5 = External Mixer Command
+label6 = Options
+label7 = Icons
+label8 = Select Icon Package
+isautorun = Autorun program on logon
+iconpacks = Icon Packages
+switchtree = On/Off the switch
+dialogName = Settings
+column0 = Name of Switch
+column1 = Status
+tabspos = Place tabs horizontally
+
+[TrayIcon]
+aboutcomments = Сhanges one of the ALSA mixers volume
+aboutsitelabel = Program Website
+aboutauthor = Vitaly Tonkacheyev
+restoreItem = Restore
+mixerItem = Mixer
+muteItem = Mute
+icontooltipmute = Muted
+icontooltip = Sound Card

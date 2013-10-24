@@ -1,0 +1,29 @@
+[SliderFrame]
+slider = Змінити гучність
+
+[SettingsFrame]
+label1 = Мікшери
+label2 = Перемикачі
+label3 = Звукова карта
+label4 = Мікшер
+label5 = Зовнішній мікшер(команда)
+label6 = Опції
+label7 = Іконки
+label8 = Виберіть пакет іконок
+isautorun = Автозапуск при старті системи
+iconpacks = Пакети іконок
+switchtree = Вм./Вимк перемикач
+dialogName = Налаштування
+column0 = Перемикач
+column1 = Стан
+tabspos = Вкладки горизонтально
+
+[TrayIcon]
+aboutcomments = Зміна гучності одного з мікшерів ALSA
+aboutsitelabel = Веб-сторінка
+aboutauthor = Віталий Тонкачеєв
+restoreItem = Показати
+mixerItem = Мікшер
+muteItem = Без звуку
+icontooltipmute = Без звуку
+icontooltip = Карта
