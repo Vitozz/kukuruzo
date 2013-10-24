@@ -27,8 +27,6 @@
 #include <iostream>
 #include <vector>
 
-typedef QPair<QString, bool> switcher;
-
 class QStringList;
 
 class AlsaWork

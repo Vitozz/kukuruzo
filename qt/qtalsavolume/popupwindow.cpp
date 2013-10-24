@@ -23,10 +23,7 @@
 #include <QtGui>
 #include <QDesktopWidget>
 
-#define CARD_INDEX "Main/card"
-#define MIXER_NAME "Main/mixer"
-#define ISAUTO "Main/autorun"
-
+static const QString autoStartPath = "/.config/autostart";
 static const QString fName = QDir::home().absolutePath() + "/.config/autostart/qtalsavolume.desktop";
 static const QString dFile = "[Desktop Entry]\n"
 			     "Encoding=UTF-8\n"
@@ -78,6 +75,8 @@ PopupWindow::PopupWindow()
 	settingsDialog_->setMixers(mixerList_);
 	settingsDialog_->setCurrentMixer(mixerName_);
 	//
+	isLightStyle_ = setts_.value(ICOSTYLE, true).toBool();
+	settingsDialog_->setIconStyle(isLightStyle_);
 	settingsDialog_->connectSignals();
 	connect(settingsDialog_, SIGNAL(soundCardChanged(QString)), this, SLOT(onCardChanged(QString)));
 	connect(settingsDialog_, SIGNAL(mixerChanged(QString)), this, SLOT(onMixerChanged(QString)));
@@ -85,6 +84,7 @@ PopupWindow::PopupWindow()
 	connect(settingsDialog_, SIGNAL(captChanged(QString,bool)), this, SLOT(onCapture(QString,bool)));
 	connect(settingsDialog_, SIGNAL(enumChanged(QString,bool)), this, SLOT(onEnum(QString,bool)));
 	connect(settingsDialog_, SIGNAL(autorunChanged(bool)), this, SLOT(onAutorun(bool)));
+	connect(settingsDialog_,SIGNAL(styleChanged(bool)), this, SLOT(onStyleChanged(bool)));
 	isAutorun_ = setts_.value(ISAUTO, false).toBool();
 	createDesktopFile();
 	//
@@ -151,7 +151,7 @@ void PopupWindow::onQuit()
 void PopupWindow::onAbout()
 {
 	QString title = QString(tr("About QtAlsaVolume"));
-	QString msg = QString(tr("Tray Alsa Volume Changer written using Qt\n\n2013 (c) Vitaly Tonkacheyev (thetvg@gmail.com)\n\nversion: 0.0.1"));
+	QString msg = QString(tr("Tray Alsa Volume Changer written using Qt\n\n2013 (c) Vitaly Tonkacheyev (thetvg@gmail.com)\n\nversion: %1")).arg(APP_VERSION);
 	QMessageBox::about(this, title, msg);
 }
 
@@ -188,33 +188,41 @@ void PopupWindow::showPopup()
 
 void PopupWindow::setTrayIcon(int value)
 {
-	QString iconPath = ":/images/icons/tb_icon100.png";
+	QString pathPrefix;
+	if (isLightStyle_) {
+		pathPrefix = ":/images/icons/" + QString(LIGHT) + "/";
+	}
+	else {
+		pathPrefix = ":/images/icons/" + QString(DARK) + "/";
+	}
+	QString iconPath = "tb_icon100.png";
 	if (value <= 0) {
-		iconPath = ":/images/icons/tb_icon0.png";
+		iconPath = "tb_icon0.png";
 	}
 	if (value >0 && (value < 40)) {
-		iconPath = ":/images/icons/tb_icon20.png";
+		iconPath = "tb_icon20.png";
 	}
 	if (value >=40 && (value < 60)) {
-		iconPath = ":/images/icons/tb_icon40.png";
+		iconPath = "tb_icon40.png";
 	}
 	if (value >=60 && (value < 80)) {
-		iconPath = ":/images/icons/tb_icon60.png";
+		iconPath = "tb_icon60.png";
 	}
 	if (value >=80 && (value < 100)) {
-		iconPath = ":/images/icons/tb_icon80.png";
+		iconPath = "tb_icon80.png";
 	}
 	if (value >= 100) {
-		iconPath = ":/images/icons/tb_icon100.png";
+		iconPath = "tb_icon100.png";
 	}
 	if (isMuted_) {
-		iconPath = ":/images/icons/tb_icon0.png";
+		iconPath = "tb_icon0.png";
 	}
-	trayIcon_->setIcon(QIcon(iconPath));
+	trayIcon_->setIcon(QIcon(pathPrefix + iconPath));
 }
 
 void PopupWindow::showSettings()
 {
+	settingsDialog_->setIconStyle(isLightStyle_);
 	settingsDialog_->setCurrentCard(cardName_);
 	settingsDialog_->setCurrentMixer(mixerName_);
 	updateSwitches();
@@ -238,6 +246,7 @@ void PopupWindow::closeEvent(QCloseEvent *)
 	setts_.setValue(CARD_INDEX, cardIndex_);
 	setts_.setValue(MIXER_NAME, mixerName_);
 	setts_.setValue(ISAUTO, isAutorun_);
+	setts_.setValue(ICOSTYLE, isLightStyle_);
 	qApp->quit();
 }
 
@@ -384,4 +393,10 @@ void PopupWindow::readDesktopFile()
 	{
 		settingsDialog_->setAutorun(QString(desktop.readAll()).contains(QRegExp("\\bhidden\\s*=\\s*false", Qt::CaseInsensitive)));
 	}
+}
+
+void PopupWindow::onStyleChanged(bool isLight)
+{
+	isLightStyle_ = isLight;
+	setTrayIcon(volumeValue_);
 }

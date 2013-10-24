@@ -26,7 +26,8 @@ HEADERS  += popupwindow.h \
 	    alsawork/alsawork.h \
 	    alsawork/mixerswitches.h \
 	    alsawork/volumemixers.h \
-	    settingsdialog.h
+	    settingsdialog.h \
+	    defines.h
 
 FORMS    += \
 	    settingsdialog.ui
@@ -46,20 +47,23 @@ unix{
 	INSTALLS += target
 	dt.path = $$PREFIX/share/applications/
 	dt.files = qtalsavolume.desktop
-	res.path = $$DATADIR/
-	res.files = icons.qrc
 	translations.path = $$DATADIR/languages
 	translations.extra = lrelease qtalvavolume.pro && cp -f $$LANG_PATH/qtalsavolume_*.qm  $(INSTALL_ROOT)$$translations.path
 	icon.path = $$DATADIR/icons/
-	icon.files = icons/tb_icon0.png \
-		     icons/tb_icon20.png \
-		     icons/tb_icon40.png \
-		     icons/tb_icon60.png \
-		     icons/tb_icon80.png \
-		     icons/tb_icon100.png \
+	icon.files = icons/light/tb_icon0.png \
+		     icons/light/tb_icon20.png \
+		     icons/light/tb_icon40.png \
+		     icons/light/tb_icon60.png \
+		     icons/light/tb_icon80.png \
+		     icons/light/tb_icon100.png \
+		     icons/dark/tb_icon0.png \
+		     icons/dark/tb_icon20.png \
+		     icons/dark/tb_icon40.png \
+		     icons/dark/tb_icon60.png \
+		     icons/dark/tb_icon80.png \
+		     icons/dark/tb_icon100.png \
 		     icons/volume_ico.png
 	INSTALLS += dt \
-		    res \
 		    translations \
 		    icon
 }

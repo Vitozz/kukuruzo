@@ -19,13 +19,11 @@
  */
 
 #include "popupwindow.h"
+#include "defines.h"
+
 #include <QApplication>
 #include <QTranslator>
 #include <QtGui>
-
-#define APP_NAME "qtalsavolume"
-#define APP_ORG "thesomeprojects"
-#define APP_VERSION "0.0.1"
 
 int main(int argc, char *argv[])
 {

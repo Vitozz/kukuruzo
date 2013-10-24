@@ -23,8 +23,6 @@
 #include "alsawork.h"
 #include <stdexcept>
 
-//#include <QDebug>
-
 const double ZERO = 0.0;
 
 AlsaWork::AlsaWork()
@@ -310,7 +308,6 @@ void AlsaWork::updateMixers(int cardIndex)
 		    || snd_mixer_selem_has_capture_switch_exclusive(element)){
 			int value = 0;
 			checkError(snd_mixer_selem_get_capture_switch(element, channel, &value));
-			//qDebug() << "CP "<< name;
 			sCap = switcher(name, bool(value));
 			switches_->pushBack(CAPTURE, sCap);
 		}
@@ -318,14 +315,12 @@ void AlsaWork::updateMixers(int cardIndex)
 		    || snd_mixer_selem_has_playback_switch_joined(element)){
 			int value = 0;
 			checkError(snd_mixer_selem_get_playback_switch(element, channel, &value));
-			//qDebug() << "PL "<< name;
 			sCap = switcher(name, bool(value));
 			switches_->pushBack(PLAYBACK, sCap);
 		}
 		if (snd_mixer_selem_is_enumerated(element)) {
 			uint value = 0;
 			checkError(snd_mixer_selem_get_enum_item(element, channel, &value));
-			//qDebug() << "EN "<< name;
 			sCap = switcher(name, bool(value));
 			switches_->pushBack(ENUM, sCap);
 		}

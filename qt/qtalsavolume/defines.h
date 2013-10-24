@@ -1,5 +1,5 @@
 /*
- * mixerswitches.h
+ * defines.h
  * Copyright (C) 2013 Vitaly Tonkacheyev
  *
  * This program is free software; you can redistribute it and/or
@@ -18,33 +18,35 @@
  *
  */
 
-#ifndef MIXERSWITCHES_H
-#define MIXERSWITCHES_H
+#ifndef DEFINES_H
+#define DEFINES_H
 
-#include "defines.h"
+#define APP_NAME "qtalsavolume"
+#define APP_ORG "thesomeprojects"
+#define APP_VERSION "0.0.2"
 
-#include <QList>
+#define CARD_INDEX "Main/card"
+#define MIXER_NAME "Main/mixer"
+#define ISAUTO "Main/autorun"
+#define ICOSTYLE "Main/style"
+#define DARK "dark"
+#define LIGHT "light"
+
 #include <QPair>
-#include <QString>
 
-class MixerSwitches
-{
-public:
-	MixerSwitches();
-	void pushBack(SwitchType sType, QPair<QString, bool> &item);
-	void setCaptureSwitchList(const QList<switcher> &list);
-	void setPlaybackSwitchList(const QList<switcher> &list);
-	void setEnumSwitchList(const QList<switcher> &list);
-	void clear(SwitchType sType);
-	QList<switcher> &captureSwitchList();
-	QList<switcher> &playbackSwitchList();
-	QList<switcher> &enumSwitchList();
-	bool isEmpty();
+typedef QPair<QString, bool> switcher;
 
-private:
-	QList<switcher> captureSwitchList_;
-	QList<switcher> playbackSwitchList_;
-	QList<switcher> enumSwitchList_;
+enum Position {
+	BOTTOM = 0,
+	TOP = 1,
+	LEFT = 2,
+	RIGHT = 3
 };
 
-#endif // MIXERSWITCHES_H
+enum SwitchType {
+	PLAYBACK = 0,
+	CAPTURE = 1,
+	ENUM = 2
+};
+
+#endif // DEFINES_H

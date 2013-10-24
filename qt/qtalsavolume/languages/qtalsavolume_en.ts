@@ -39,25 +39,37 @@
 
 2013 (c) Vitaly Tonkacheyev (thetvg@gmail.com)
 
-version: 0.0.1</source>
+version: %1</source>
         <translation>Tray Alsa Volume Changer written using Qt
+
+2013 (c) Vitaly Tonkacheyev (thetvg@gmail.com)
+
+version: %1</translation>
+    </message>
+    <message>
+        <source>Tray Alsa Volume Changer written using Qt
+
+2013 (c) Vitaly Tonkacheyev (thetvg@gmail.com)
+
+version: 0.0.1</source>
+        <translation type="obsolete">Tray Alsa Volume Changer written using Qt
 
 2013 (c) Vitaly Tonkacheyev (thetvg@gmail.com)
 
 version: 0.0.1</translation>
     </message>
     <message>
-        <location filename="../popupwindow.cpp" line="290"/>
+        <location filename="../popupwindow.cpp" line="300"/>
         <source>Card: </source>
         <translation>Card: </translation>
     </message>
     <message>
-        <location filename="../popupwindow.cpp" line="290"/>
+        <location filename="../popupwindow.cpp" line="300"/>
         <source>Mixer: </source>
         <translation>Mixer: </translation>
     </message>
     <message>
-        <location filename="../popupwindow.cpp" line="290"/>
+        <location filename="../popupwindow.cpp" line="300"/>
         <source>Volume: </source>
         <translation>Volume: </translation>
     </message>
@@ -65,12 +77,12 @@ version: 0.0.1</translation>
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../main.cpp" line="54"/>
+        <location filename="../main.cpp" line="49"/>
         <source>Systray</source>
         <translation>Systray</translation>
     </message>
     <message>
-        <location filename="../main.cpp" line="54"/>
+        <location filename="../main.cpp" line="49"/>
         <source>System tray not detected</source>
         <translation>System tray not detected</translation>
     </message>
@@ -93,17 +105,52 @@ version: 0.0.1</translation>
         <translation>Sound Cards</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.ui" line="60"/>
+        <location filename="../settingsdialog.ui" line="57"/>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select Sound Card&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select Sound Card&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+        <location filename="../settingsdialog.ui" line="64"/>
         <source>Mixers</source>
         <translation>Mixers</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.ui" line="73"/>
+        <location filename="../settingsdialog.ui" line="74"/>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select Mixer&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select Mixer&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+        <location filename="../settingsdialog.ui" line="81"/>
         <source>Autorun program on system start</source>
         <translation>Autorun program on system start</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.ui" line="94"/>
+        <location filename="../settingsdialog.ui" line="88"/>
+        <source>Icon Style</source>
+        <translation>Icon Style</translation>
+    </message>
+    <message>
+        <location filename="../settingsdialog.ui" line="100"/>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Light style of tray icon&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Light style of tray icon&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+        <location filename="../settingsdialog.ui" line="103"/>
+        <source>Light Style</source>
+        <translation>Light Style</translation>
+    </message>
+    <message>
+        <location filename="../settingsdialog.ui" line="113"/>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Dark style of tray icon&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Dark style of tray icon&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+        <location filename="../settingsdialog.ui" line="116"/>
+        <source>Dark Style</source>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Dark style of tray icon&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+        <location filename="../settingsdialog.ui" line="140"/>
         <source>Switchers</source>
         <translation>Switchers</translation>
     </message>

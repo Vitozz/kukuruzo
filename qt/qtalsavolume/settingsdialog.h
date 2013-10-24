@@ -21,9 +21,8 @@
 #ifndef SETTINGSDIALOG_H
 #define SETTINGSDIALOG_H
 
+#include "defines.h"
 #include <QDialog>
-
-typedef QPair<QString, bool> switcher;
 
 class QListWidget;
 class QListWidgetItem;
@@ -48,6 +47,7 @@ public:
 	void setPlaybackChecks(QList<switcher> pbList);
 	void setCaptureChecks(QList<switcher> cList);
 	void setEnumChecks(QList<switcher> eList);
+	void setIconStyle(bool isLight);
 
 protected:
 	void closeEvent(QCloseEvent *);
@@ -61,6 +61,8 @@ protected slots:
 	void onPBAction(QListWidgetItem *item);
 	void onCPAction(QListWidgetItem *item);
 	void onENAction(QListWidgetItem *item);
+	void onDarkStyle(bool toggled);
+	void onLightStyle(bool toggled);
 signals:
 	void soundCardChanged(const QString &card);
 	void mixerChanged(const QString &mixer);
@@ -68,6 +70,7 @@ signals:
 	void playChanged(const QString &check, bool isIt);
 	void captChanged(const QString &check, bool isIt);
 	void enumChanged(const QString &check, bool isIt);
+	void styleChanged(bool isLight);
 
 private:
 	Ui::SettingsDialog *ui;

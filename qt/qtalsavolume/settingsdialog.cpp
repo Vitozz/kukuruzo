@@ -44,9 +44,6 @@ ui(new Ui::SettingsDialog)
 	ui->verticalLayout_3->addWidget(enums_);
 	ui->tabWidget->setCurrentIndex(0);
 	itemsAdded_ = false;
-	connect(playbacks_, SIGNAL(itemChanged(QListWidgetItem*)), this, SLOT(onPBAction(QListWidgetItem*)));
-	connect(captures_, SIGNAL(itemChanged(QListWidgetItem*)), this, SLOT(onCPAction(QListWidgetItem*)));
-	connect(enums_, SIGNAL(itemChanged(QListWidgetItem*)), this, SLOT(onENAction(QListWidgetItem*)));
 }
 
 SettingsDialog::~SettingsDialog()
@@ -80,6 +77,11 @@ void SettingsDialog::setMixers(QStringList mixers)
 
 void SettingsDialog::connectSignals()
 {
+	connect(playbacks_, SIGNAL(itemChanged(QListWidgetItem*)), this, SLOT(onPBAction(QListWidgetItem*)));
+	connect(captures_, SIGNAL(itemChanged(QListWidgetItem*)), this, SLOT(onCPAction(QListWidgetItem*)));
+	connect(enums_, SIGNAL(itemChanged(QListWidgetItem*)), this, SLOT(onENAction(QListWidgetItem*)));
+	connect(ui->darkRadio, SIGNAL(toggled(bool)), this, SLOT(onDarkStyle(bool)));
+	connect(ui->lightRadio, SIGNAL(toggled(bool)), this, SLOT(onLightStyle(bool)));
 	connect(ui->cardBox, SIGNAL(currentIndexChanged(QString)), this, SLOT(onSoundCard(QString)));
 	connect(ui->mixerBox, SIGNAL(currentIndexChanged(QString)), this, SLOT(onMixer(QString)));
 	connect(ui->isAutorun, SIGNAL(toggled(bool)), this, SLOT(onAutorun(bool)));
@@ -229,5 +231,29 @@ void SettingsDialog::onENAction(QListWidgetItem *item)
 		QString name = item->text();
 		Qt::CheckState checked = item->checkState();
 		emit enumChanged(name, (checked == Qt::Checked));
+	}
+}
+
+void SettingsDialog::onDarkStyle(bool toggled)
+{
+	if (toggled) {
+		emit styleChanged(false);
+	}
+}
+
+void SettingsDialog::onLightStyle(bool toggled)
+{
+	if (toggled) {
+		emit styleChanged(true);
+	}
+}
+
+void SettingsDialog::setIconStyle(bool isLight)
+{
+	if (isLight) {
+		ui->lightRadio->setChecked(true);
+	}
+	else {
+		ui->darkRadio->setChecked(true);
 	}
 }

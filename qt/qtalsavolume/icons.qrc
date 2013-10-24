@@ -1,11 +1,17 @@
 <RCC>
     <qresource prefix="/images">
-        <file>icons/tb_icon0.png</file>
-        <file>icons/tb_icon20.png</file>
-        <file>icons/tb_icon40.png</file>
-        <file>icons/tb_icon60.png</file>
-        <file>icons/tb_icon80.png</file>
-        <file>icons/tb_icon100.png</file>
+        <file>icons/light/tb_icon0.png</file>
+        <file>icons/light/tb_icon20.png</file>
+        <file>icons/light/tb_icon40.png</file>
+        <file>icons/light/tb_icon60.png</file>
+        <file>icons/light/tb_icon80.png</file>
+        <file>icons/light/tb_icon100.png</file>
         <file>icons/volume_ico.png</file>
+        <file>icons/dark/tb_icon0.png</file>
+        <file>icons/dark/tb_icon20.png</file>
+        <file>icons/dark/tb_icon40.png</file>
+        <file>icons/dark/tb_icon60.png</file>
+        <file>icons/dark/tb_icon80.png</file>
+        <file>icons/dark/tb_icon100.png</file>
     </qresource>
 </RCC>

@@ -27,21 +27,13 @@
 
 #include "alsawork/alsawork.h"
 #include "settingsdialog.h"
+#include "defines.h"
 
 class QAction;
 class QMenu;
 class QSlider;
 class QSettings;
 class MixerSwitches;
-
-typedef QPair<QString, bool> switcher;
-
-enum Position {
-	BOTTOM = 0,
-	TOP = 1,
-	LEFT = 2,
-	RIGHT = 3
-};
 
 class PopupWindow : public QDialog
 {
@@ -70,6 +62,7 @@ protected slots:
 	void onCapture(const QString &name, bool isIt);
 	void onEnum(const QString &name, bool isIt);
 	void onAutorun(bool isIt);
+	void onStyleChanged(bool isLight);
 
 private:
 	void setTrayIcon(int value);
@@ -104,6 +97,7 @@ private:
 	int volumeValue_;
 	bool isMuted_;
 	bool isAutorun_;
+	bool isLightStyle_;
 };
 
 #endif // POPUPWINDOW_H
