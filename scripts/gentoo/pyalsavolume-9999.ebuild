@@ -15,11 +15,15 @@ DEPEND="
 RDEPEND="${DEPEND}"
 DESCRIPTION="Tray ALSA volume changer written on Python"
 HOMEPAGE="http://sites.google.com/site/thesomeprojects/"
-EGIT_REPO_URI="git://github.com/Vitozz/pyalsavolume.git"
+EGIT_REPO_URI="git://github.com/Vitozz/kukuruzo.git"
 
 SLOT="0"
 KEYWORDS="~amd64 ~x86 ~amd64-linux ~x86-linux"
 LICENSE="GPL-3"
+
+src_prepare() {
+	S="${EGIT_SOURCEDIR}/python/pyalsavolume"
+}
 
 src_compile() {
 	distutils_src_compile
