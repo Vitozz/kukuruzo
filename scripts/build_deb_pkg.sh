@@ -254,7 +254,7 @@ CXXFLAGS=-O3'
 		echo "${rules_py}" > rules
 		echo "${pyversions}" > pyversions
 	fi 
-	if [ "${project}" == "regexptest" -o "${project}" == "alsavolume" ]
+	if [ "${project}" == "regexptest" -o "${project}" == "alsavolume" -o "${project}" == "qtalsavolume" ]
 	then
 		echo "${rules_qt}" > rules
 	fi
