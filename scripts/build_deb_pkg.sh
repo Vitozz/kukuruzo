@@ -652,7 +652,7 @@ choose_action ()
 		"9" ) build_regext;;
 		"a" ) build_html2text;;
 		"b" ) build_avolume;;
-		"c" ) build qtavolume;;
+		"c" ) build_qtavolume;;
 		"0" ) quit;;
 		"ra" ) rm_all;;
 		"ga" ) get_all;;
