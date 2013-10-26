@@ -26,7 +26,7 @@ unix {
 	INSTALLS += target
 	df.path = $$DATADIR/applications/
 	df.files = regexptest.desktop
-	translations.path = $$DATADIR/langs
+	translations.path = $$DATADIR/regexptest/langs
 	translations.extra = lrelease regexptest.pro && cp -f $$LANG_PATH/regexptest_*.qm  $(INSTALL_ROOT)$$translations.path
 	icon.path =$$DATADIR/regexptest/icons
 	icon.files = icons/72x72.png
