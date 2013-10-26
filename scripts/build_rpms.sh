@@ -364,8 +364,7 @@ Simple tool written on Qt to test regular expressions
 %setup
 
 %build
-qconf
-./configure --prefix=\"%{_prefix}\" --bindir=\"%{_bindir}\" --qtdir=$QTDIR
+qmake
 %{__make} %{?_smp_mflags}  
 
 %install
@@ -377,8 +376,10 @@ mkdir -p %{buildroot}/usr/bin
 mkdir -p %{buildroot}/usr/share/%{name}
 mkdir -p %{buildroot}/usr/share/applications
 mkdir -p %{buildroot}/usr/share/%{name}/icons
+mkdir -p %{buildroot}/usr/share/%{name}/langs
 
 %{__install} -c -m 755 icons/* %{buildroot}/usr/share/%{name}/icons/
+%{__install} -c -m 755 langs/*.qm %{buildroot}/usr/share/%{name}/langs/
 %{__install} -c -m 755 %{name} %{buildroot}/usr/bin/
 %{__install} -c -m 755 %{name}.desktop %{buildroot}/usr/share/applications
 
@@ -390,6 +391,7 @@ mkdir -p %{buildroot}/usr/share/%{name}/icons
 %doc docs/regexp_help.html
 %{_bindir}/%{name}
 %{_datadir}/%{name}/icons/
+%{_datadir}/%{name}/langs/
 %{_datadir}/doc/%{name}/html/regexp_help.html
 %{_datadir}/applications/"
         echo "${regspecfile}" > ${specfiles}/"regexptest.spec"

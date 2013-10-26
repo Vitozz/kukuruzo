@@ -508,14 +508,14 @@ build_regext ()
 	dirs="usr/bin
 usr/share/regexptest
 usr/share/regexptest/icons
+usr/share/regexptest/langs
 usr/share/doc/regexptest
 usr/share/doc/regexptest/html
 usr/share/applications"
 	cd ${debdir}/debian
 	prepare_specs
 	cd ${debdir}
-	$qconfcmd
-	./configure --prefix=/usr
+	qmake
 	build_deb
 	cp -f ${builddir}/*.deb	${exitdir}/
 }
