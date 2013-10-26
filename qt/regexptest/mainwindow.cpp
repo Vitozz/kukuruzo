@@ -26,8 +26,7 @@
 #define ISEXACT_OPT "isexact"
 #define ISMINIMAL_OPT "isminimal"
 
-static const int CHECK_ALL = 1;
-static const int CHECK_POS = 2;
+
 
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -77,10 +76,13 @@ void MainWindow::readSettings(){
 		ui->RegExp->setText(regExpText_);
 	}
 	if(!fileName_.isEmpty()){
-		ui->fileName->setText(fileName_);
-		inputText_ = LoadTextFile(fileName_);
-		ui->inputText->setPlainText(inputText_);
-		dir_ = getDirName(fileName_) + "/";
+		if (QFile::exists(fileName_)) {
+			ui->fileName->setText(fileName_);
+			inputText_ = LoadTextFile(fileName_);
+			ui->inputText->setPlainText(inputText_);
+			QFileInfo fi(fileName_);
+			dir_ = fi.absolutePath();
+		}
 	}
 	else{
 		if(!inputText_.isEmpty()&&(!inputText_.isNull())){
@@ -124,15 +126,15 @@ QString MainWindow::GetRegexpList(const QList<QStringList> &matches, const int &
 	QString result;
 	if(!matches.isEmpty()){
 		foreach(QStringList group, matches) {
-			result += QString("<u><a style=\"color:red\">Match # </a>") + "<b>"+ QString::number(matches.indexOf(group)+1) + "</b></u><br>";
+			result += tr("<u><a style=\"color:red\">Match # </a>") + "<b>"+ QString::number(matches.indexOf(group)+1) + "</b></u><br>";
 			if(parm == CHECK_ALL){
 				for(int i=0; i<group.length();i++){
-					result += QString("<a style=\"color:blue\">Group # </a>")+ "<b>"+QString::number(i)+ ": </b>"+"<i>" + Qt::escape(group[i]) + "</i><br>";
+					result += tr("<a style=\"color:blue\">Group # </a>")+ "<b>"+QString::number(i)+ ": </b>"+"<i>" + Qt::escape(group[i]) + "</i><br>";
 				}
 			}
 			else if(parm == CHECK_POS) {
 				if(pos < group.length()) {
-					result += QString("<a style=\"color:blue\">Group # </a>")+ "<b>"+ QString::number(pos)+ ": </b>"+"<i>" + Qt::escape(group[pos]) + "</i><br>";
+					result += tr("<a style=\"color:blue\">Group # </a>")+ "<b>"+ QString::number(pos)+ ": </b>"+"<i>" + Qt::escape(group[pos]) + "</i><br>";
 				}
 			}
 		}
@@ -184,19 +186,19 @@ QString MainWindow::LoadTextFile(const QString &filename){
 void MainWindow::RunOnlineHelp()
 {
 	QString helpdir;
-#ifdef Q_OS_WIN32
-	helpdir = qApp->applicationDirPath() + "/docs";
-#endif
-#ifdef Q_OS_LINUX
-	helpdir = "/usr/share/doc/regexptest/html";
-	QDir folder(helpdir);
-	if (!folder.exists()) {
-		helpdir = QString::fromStdString(getenv("HOME")) + "/.local/share/doc/regexptest/html";
-		if (!folder.cd(helpdir)) {
-			helpdir = "/" + qApp->applicationDirPath() + "/docs";
+	QStringList dirs;
+	dirs << "/usr/share/doc/regexptest/html";
+	dirs << "/usr/local/share/doc/regexptest/html";
+	dirs << "/usr/share/doc/regexptest/html";
+	dirs << QDir::homePath() + "/.local/share/doc/regexptest/html";
+	dirs << qApp->applicationDirPath() + "/docs";
+	foreach (QString item, dirs) {
+		QDir _dir(item);
+		if (_dir.exists()) {
+			helpdir = item;
+			break;
 		}
 	}
-#endif
 	if (!QDesktopServices::openUrl(QUrl("file://"+helpdir+ "/regexp_help.html",QUrl::TolerantMode))){
 		QMessageBox::warning(this,"Error","Unable to open regexp_help.html");
 	}
@@ -264,23 +266,17 @@ void MainWindow::on_spinBox_valueChanged(int value)
 
 void MainWindow::on_openFile_clicked()
 {
-#ifdef Q_OS_WIN32
-	if(dir_.isEmpty()||dir_.isNull()){
-		dir_ = "C:/";
+	if(dir_.isEmpty() || dir_.isNull()) {
+		dir_ = QDir::homePath();
 	}
-#endif
-#ifdef Q_OS_LINUX
-	if(dir_.isEmpty()||dir_.isNull()){
-		dir_ = "/";
-	}
-#endif
 	QString str_fileName = QFileDialog::getOpenFileName(this,
 							    tr("Open File..."),
 							    dir_,
 							    tr("All Files (*);;Text Files (*.txt)"));
 	if (!str_fileName.isEmpty())
 	{
-		dir_ = getDirName(str_fileName)+ "/";
+		QFileInfo fi(str_fileName);
+		dir_ = fi.absolutePath();
 		ui->fileName->setText(str_fileName);
 		ui->inputText->setPlainText(LoadTextFile(str_fileName));
 

@@ -2,11 +2,17 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QRegExp>
+
+class QRegExp;
 
 namespace Ui {
 class MainWindow;
 }
+
+enum checkType {
+	CHECK_ALL = 1,
+	CHECK_POS = 2
+};
 
 class MainWindow : public QMainWindow {
 	Q_OBJECT
