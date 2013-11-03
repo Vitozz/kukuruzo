@@ -32,6 +32,7 @@
 class QAction;
 class QMenu;
 class QSlider;
+class QLabel;
 class QSettings;
 class MixerSwitches;
 
@@ -85,6 +86,7 @@ private:
 	QMenu *trayMenu_;
 	QSystemTrayIcon *trayIcon_;
 	QSlider *volumeSlider_;
+	QLabel *volumeLabel_;
 	SettingsDialog *settingsDialog_;
 	QString mixerName_;
 	int cardIndex_;

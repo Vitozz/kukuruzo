@@ -23,7 +23,7 @@
 #include <QtGui>
 #include <QDesktopWidget>
 
-static const QString autoStartPath = "/.config/autostart";
+static const QString autoStartPath = ".config/autostart";
 static const QString fName = QDir::home().absolutePath() + "/.config/autostart/qtalsavolume.desktop";
 static const QString dFile = "[Desktop Entry]\n"
 			     "Encoding=UTF-8\n"
@@ -39,23 +39,31 @@ PopupWindow::PopupWindow()
 {
 	setWindowIcon(QIcon(":/images/icons/volume_ico.png"));
 	alsaWork_ = new AlsaWork();
+	//Start of tray icon initialization
 	createActions();
 	createTrayMenu();
 	trayIcon_ = new QSystemTrayIcon(this);
 	trayIcon_->setContextMenu(trayMenu_);
-	//
+	//Adding QLabel and QSlider to PopupWindow
 	QVBoxLayout *mainLayout = new QVBoxLayout;
 	volumeSlider_ = new QSlider(Qt::Vertical, this);
-	volumeSlider_->setMaximum(100);
-	volumeSlider_->setMinimum(0);
-	volumeSlider_->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+	volumeSlider_->setRange(0,100);
+	volumeSlider_->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
+	volumeLabel_ = new QLabel(this);
+	volumeLabel_->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+	QFont font = volumeLabel_->font();
+	font.setBold(true);
+	volumeLabel_->setFont(font);
+	mainLayout->addWidget(volumeLabel_);
 	mainLayout->addWidget(volumeSlider_);
+	mainLayout->setContentsMargins(0,4,0,4);
+	mainLayout->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
 	setLayout(mainLayout);
-	this->setMinimumHeight(120);
-	setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+	setMinimumHeight(140);
+	setMinimumWidth(30);
 	setWindowFlags(Qt::FramelessWindowHint);
 	setMouseTracking(true);
-	//
+	//Reading settings and alsa variables
 	QSettings setts_;
 	cardList_ = alsaWork_->getCardsList();
 	cardIndex_ = setts_.value(CARD_INDEX, 0).toInt();
@@ -68,16 +76,17 @@ PopupWindow::PopupWindow()
 	isMuted_ = !alsaWork_->getMute(cardIndex_, mixerName_);
 	switchList_ = alsaWork_->getSwitchList(cardIndex_);
 	updateSwitches();
-	//
+	isLightStyle_ = setts_.value(ICOSTYLE, true).toBool();
+	isAutorun_ = setts_.value(ISAUTO, false).toBool();
+	//Creating settings dialog
 	settingsDialog_ = new SettingsDialog(this);
 	settingsDialog_->setSoundCards(cardList_);
 	settingsDialog_->setCurrentCard(cardName_);
 	settingsDialog_->setMixers(mixerList_);
 	settingsDialog_->setCurrentMixer(mixerName_);
 	//
-	isLightStyle_ = setts_.value(ICOSTYLE, true).toBool();
 	settingsDialog_->setIconStyle(isLightStyle_);
-	settingsDialog_->connectSignals();
+	settingsDialog_->connectSignals(); //connecting settingsDialog_ internal signals
 	connect(settingsDialog_, SIGNAL(soundCardChanged(QString)), this, SLOT(onCardChanged(QString)));
 	connect(settingsDialog_, SIGNAL(mixerChanged(QString)), this, SLOT(onMixerChanged(QString)));
 	connect(settingsDialog_, SIGNAL(playChanged(QString,bool)), this, SLOT(onPlayback(QString,bool)));
@@ -85,11 +94,12 @@ PopupWindow::PopupWindow()
 	connect(settingsDialog_, SIGNAL(enumChanged(QString,bool)), this, SLOT(onEnum(QString,bool)));
 	connect(settingsDialog_, SIGNAL(autorunChanged(bool)), this, SLOT(onAutorun(bool)));
 	connect(settingsDialog_,SIGNAL(styleChanged(bool)), this, SLOT(onStyleChanged(bool)));
-	isAutorun_ = setts_.value(ISAUTO, false).toBool();
-	createDesktopFile();
 	//
+	createDesktopFile();
+	//Finish of tray icon initialization
 	mute_->setChecked(isMuted_);
 	volumeSlider_->setValue(volumeValue_);
+	volumeLabel_->setText(QString::number(volumeValue_));
 	setIconToolTip(volumeValue_);
 	setTrayIcon(volumeValue_);
 	connect(trayIcon_, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, SLOT(iconActivated(QSystemTrayIcon::ActivationReason)));
@@ -109,6 +119,7 @@ PopupWindow::~PopupWindow()
 	delete trayMenu_;
 	delete trayIcon_;
 	delete volumeSlider_;
+	delete volumeLabel_;
 	delete settingsDialog_;
 }
 
@@ -292,6 +303,7 @@ void PopupWindow::onSlider(int value)
 {
 	alsaWork_->setAlsaVolume(cardIndex_, mixerName_, value);
 	volumeValue_ = value;
+	volumeLabel_->setText(QString::number(value));
 	setTrayIcon(value);
 	setIconToolTip(value);
 }
@@ -377,8 +389,8 @@ void PopupWindow::onAutorun(bool isIt)
 void PopupWindow::createDesktopFile()
 {
 	QDir home = QDir::home();
-	if (!home.exists(".config/autostart")) {
-		home.mkpath(".config/autostart");
+	if (!home.exists(autoStartPath)) {
+		home.mkpath(autoStartPath);
 	}
 	QFile f(fName);
 	if (f.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate)) {
