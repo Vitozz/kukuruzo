@@ -22,6 +22,7 @@
 #include "defines.h"
 
 #include <QApplication>
+#include <QSharedMemory>
 #include <QTranslator>
 #include <QtGui>
 
@@ -53,5 +54,15 @@ int main(int argc, char *argv[])
 	PopupWindow w;
 	w.show();
 	w.hide();
-	return a.exec();
+	QSharedMemory sharedMemory;
+	sharedMemory.setKey("QtAlsaVolume");
+	if (sharedMemory.attach()) {
+		return 0;
+	}
+	if (!sharedMemory.create(1)) {
+		return 0;
+	}
+	else{
+		return a.exec();
+	}
 }
