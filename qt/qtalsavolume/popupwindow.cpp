@@ -68,7 +68,20 @@ PopupWindow::PopupWindow()
 	cardList_ = alsaWork_->getCardsList();
 	cardIndex_ = setts_.value(CARD_INDEX, 0).toInt();
 	cardIndex_ = cardList_.size() >= cardIndex_ ? cardIndex_ : 0;
-	mixerList_ = alsaWork_->getVolumeMixers(cardIndex_);
+	QStringList mixers = alsaWork_->getVolumeMixers(cardIndex_);
+	if (mixers.isEmpty()) { //check card for empty mixerlist
+		for (int index = 0; index < cardList_.size(); ++index) {
+			mixers = alsaWork_->getVolumeMixers(index);
+			if (index != cardIndex_ && !mixers.isEmpty()) {
+				mixerList_ = mixers;
+				cardIndex_ = index;
+				break;
+			}
+		}
+	}
+	else {
+		mixerList_ = mixers;
+	}
 	QString mixer = mixerList_.contains("Master") ? "Master" : mixerList_.at(0);
 	mixerName_ = setts_.value(MIXER_NAME, mixer).toString();
 	cardName_ = alsaWork_->getCardName(cardIndex_);
