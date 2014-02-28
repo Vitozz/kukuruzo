@@ -531,9 +531,9 @@ build_avolume ()
 	cd ${debdir}
 	section="sound"
 	arch="any"
-	builddep="debhelper (>= 7), cdbs, libqt4-dev, libgtkmm-3.0-dev, libasound2-dev, libarchive-dev"
+	builddep="debhelper (>= 7), cdbs, libqt4-dev, libgtkmm-3.0-dev, libasound2-dev"
 	addit="#"
-	depends="\${shlibs:Depends}, \${misc:Depends}, libgtkmm-3.0-1, libasound2, libc6 (>=2.7-1), libgcc1 (>=1:4.1.1), libstdc++6 (>=4.1.1), libx11-6, zlib1g (>=1:1.1.4), libarchive12"
+	depends="\${shlibs:Depends}, \${misc:Depends}, libgtkmm-3.0-1, libasound2, libc6 (>=2.7-1), libgcc1 (>=1:4.1.1), libstdc++6 (>=4.1.1), libx11-6, zlib1g (>=1:1.1.4)"
 	description="Tray ALSA volume changer"
 	descriptionlong='Simple programm to change the volume of one of the ALSA mixer from the system tray.'
 	docfiles=""
