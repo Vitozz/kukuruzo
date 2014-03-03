@@ -3,7 +3,7 @@
 
 EAPI=4
 
-inherit qt4-r2 git-2
+inherit cmake-utils git-2
 DEPEND="
 	dev-qt/qtgui
 	media-libs/alsa-lib

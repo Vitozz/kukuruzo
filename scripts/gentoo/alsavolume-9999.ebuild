@@ -3,14 +3,13 @@
 
 EAPI=4
 
-inherit qt4-r2 git-2
+inherit cmake-utils git-2
 DEPEND="
 	>=dev-cpp/gtkmm-3.0
 	media-libs/alsa-lib
 "
 RDEPEND="
 	${DEPEND}
-	dev-qt/qtcore
 "
 DESCRIPTION="Tray ALSA volume changer written using gtkmm library"
 HOMEPAGE="http://sites.google.com/site/thesomeprojects/"

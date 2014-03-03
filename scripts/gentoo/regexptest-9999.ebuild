@@ -3,13 +3,15 @@
 
 EAPI=4
 
-inherit qt4-r2 git-2
+inherit cmake-utils git-2
 
 DEPEND="
 	dev-qt/qtgui
-	sys-devel/qconf
 "
-RDEPEND="${DEPEND}"
+RDEPEND="
+	${DEPEND}
+	dev-qt/qtcore
+"
 
 DESCRIPTION="Simple tool written on Qt to test regular expressions"
 HOMEPAGE="http://sites.google.com/site/thesomeprojects/"
@@ -21,5 +23,4 @@ LICENSE="GPL-3"
 
 src_prepare() {
 	S="${EGIT_SOURCEDIR}/qt/regexptest"
-	qconf "${S}/regexptest.qc"
 }
