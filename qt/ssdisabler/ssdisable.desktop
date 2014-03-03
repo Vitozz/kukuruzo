@@ -1,0 +1,10 @@
+[Desktop Entry]
+Encoding=UTF-8
+Icon=/usr/share/ssdisable/icons/icon.png
+Name=SSDisable
+Comment=Disable and enable xdg-screenshot from systray
+Exec=ssdisable
+Terminal=false
+Type=Application
+Categories=Application;Utility;
+StartupNotify=false

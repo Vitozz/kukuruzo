@@ -1,0 +1,6 @@
+This is a simple application to block xdg-screensaver from systray.
+
+Application written on Qt4
+
+Installation:
+- read INSTALL file

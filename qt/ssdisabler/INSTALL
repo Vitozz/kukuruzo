@@ -1,0 +1,31 @@
+Build dependencies:
+
+- libqt4-dev
+
+Howto build application:
+
+if You have Qt installed:
+
+$ cd src
+
+$ qmake
+
+$ make
+
+$ make install
+
+if You have cmake installed:
+
+$ mkdir build
+
+$ cd build
+
+$ cmake ..
+
+You can use
+$ cmake -DCMAKE_INSTALL_PREFIX=/dir ..
+to set install prefix to /dir
+
+$ make
+
+$ make install
