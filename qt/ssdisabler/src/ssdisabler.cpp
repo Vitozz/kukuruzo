@@ -109,11 +109,11 @@ void SSDisabler::iconActivated_(QSystemTrayIcon::ActivationReason reason)
 void SSDisabler::changeTrayIcon()
 {
 	if (suspended_) {
-		trayIcon_->setIcon(QIcon::fromTheme("call-stop"));
+		trayIcon_->setIcon(QIcon(":/icons/tray_icon_disabled.png"));
 		trayIcon_->setToolTip(tr("Screensaver disabled"));
 	}
 	else {
-		trayIcon_->setIcon(QIcon::fromTheme("call-start"));
+		trayIcon_->setIcon(QIcon(":/icons/tray_icon_enabled.png"));
 		trayIcon_->setToolTip(tr("Screensaver enabled"));
 	}
 }

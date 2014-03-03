@@ -23,7 +23,7 @@ set ( RESOURCES
 )
 QT4_ADD_RESOURCES( RSCS ${RESOURCES} )
 
-set ( TRS_PATH language )
+set ( TRS_PATH langs )
 
 set ( TRANSLATIONS
 	${PROJECT_NAME}_en.ts

@@ -19,11 +19,13 @@ int main(int argc, char *argv[])
 	a.setApplicationName(APP_NAME);
 	QTranslator translator;
 	QStringList localeDirs;
-	localeDirs << QString("%1/languages").arg(QDir::currentPath());
-	localeDirs << QString(qApp->applicationDirPath() + "/languages");
-	localeDirs << QString("/usr/share/ssdisable/languages");
-	localeDirs << QString("/usr/local/share/ssdisable/languages");
-	localeDirs << QString(QDir::home().absolutePath() + "/.local/share/ssdisable/languages");
+	localeDirs << QString(QDir::currentPath());
+	localeDirs << QString("%1/langs").arg(QDir::currentPath());
+	localeDirs << QString("../share/%1/langs").arg(APP_NAME);
+	localeDirs << QString(qApp->applicationDirPath() + "/langs");
+	localeDirs << QString("/usr/share/ssdisable/langs");
+	localeDirs << QString("/usr/local/share/ssdisable/langs");
+	localeDirs << QString(QDir::home().absolutePath() + "/.local/share/ssdisable/langs");
 	QString langFile = qApp->applicationName();
 	foreach(const QString &dir, localeDirs){
 		if (translator.load(QLocale::system(),langFile, "_", dir )) {
