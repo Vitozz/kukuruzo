@@ -18,6 +18,7 @@ int main(int argc, char *argv[])
 	QStringList localeDirs;
 	localeDirs << QString("%1/langs").arg(QDir::currentPath());
 	localeDirs << QString(qApp->applicationDirPath() + "/langs");
+	localeDirs << QString("../share/%1/langs").arg(APPNAME);
 	localeDirs << QString("/usr/share/%1/langs").arg(QString(APPNAME));
 	localeDirs << QString("/usr/local/share/%1/langs").arg(QString(APPNAME));
 	localeDirs << QString(QDir::home().absolutePath() + "/.local/share/%1/langs").arg(QString(APPNAME));
