@@ -24,6 +24,7 @@ from PyQt4 import Qt
 class FileManager:
 	def __init__(self, parent=None):
 		self.regex = re.compile(r'\|(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})\|\d\|\w+\|[^|]+\|[^|]+', re.IGNORECASE)
+		self.regex1 = re.compile(r'\|\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\|\d\|(\w+)\|[^|]+\|[^|]+', re.IGNORECASE)
 		self.parent = parent
 
 	def readFile(self, fileName):
@@ -55,7 +56,6 @@ class FileManager:
 			f.close()
 		except Exception as error:
 			self.parent.showInfo(Qt.QString(str(error).decode('UTF-8')))
-			self.parent.isErrors = True
 		return result
 
 	def writeFile(self, fileName, text):
@@ -67,7 +67,6 @@ class FileManager:
 			return True
 		except Exception as  error:
 			self.parent.showInfo(Qt.QString(str(error).decode('UTF-8')))
-			self.parent.isErrors = True
 			return False
 
 	def convert_date(self, data):
@@ -76,21 +75,46 @@ class FileManager:
 
 	def merge_files(self, files):
 		result = []
-		for hfile in files:
-			if hfile:
-				for line in hfile:
-					if line and not(line in result):
-						result.append(line)
+		if files:
+			for hfile in files:
+				if hfile:
+					for line in hfile:
+						if line:
+							if not(line in result):
+								result.append(line)
 		return result
 
 	def sortList(self, ilist):
+		sortedList = []
 		if ilist:
-			return sorted(ilist, key=lambda x: x[1])
+			sortedList = sorted(ilist, key=lambda x: x[1])
+			sdlist = self.subsDuplicates(sortedList)
+			if sdlist != sortedList:
+				return sdlist
+		return sortedList
+
+	def subsDuplicates(self, ilist):
+		nextIndex = 0
+		slist = ilist
+		listlen = len(slist)
+		for index in xrange(listlen):
+			currLine = slist[index]
+			nextIndex = index + 1
+			if nextIndex < listlen:
+				nextLine = slist[nextIndex]
+				if currLine[0] == nextLine[0]:
+					matchI = self.regex1.match(nextLine[1])
+					if matchI:
+						if str(matchI.group(1)) == 'to':
+							slist[index] = nextLine
+							slist[nextIndex] = currLine
+		return slist
 
 	def formatExitFile(self, ilist):
 		result = []
 		for line in ilist:
-			if line and line[1]:
-				result.append(line[1].decode('UTF-8'))
+			if line:
+				if line[1]:
+					result.append(line[1].decode('UTF-8'))
 		return result
 

@@ -34,9 +34,7 @@ class MainWindow(QtGui.QMainWindow):
 		else:
 			self.envPath=self.homeDir + '/.local/share/psi+'
 		self.fm = filework.FileManager(self)
-		self.files=[]
 		self.readed=False
-		self.isErrors=False
 		#
 		self.setWindowTitle("Psi/Psi+ history merger")
 		self.setWindowIcon(QtGui.QIcon("icon32.png"))
@@ -81,32 +79,28 @@ class MainWindow(QtGui.QMainWindow):
 		for filename in filenames:
 			if filename:
 				self.listV.addItem(filename)
-		if self.listV.count()>0 and not self.isErrors:
+		if self.listV.count()>0:
 			self.readed = True
 			self.btnSave.setEnabled(True)
 			self.btnClean.setEnabled(True)
 
 	def saveData(self):
-		files = []
-		self.files = []
-		if self.readed and not self.isErrors:
-			for index in xrange(self.listV.count()):
-				item = self.listV.item(index).text()
-				if item:
-					files.append(item)
-			for f in files:
-				if f:
-					self.files.append(self.fm.readFile(str(f)))
-			if len(self.files) > 0:
-				sortf = self.fm.sortList(self.fm.merge_files(self.files))
-				text = self.fm.formatExitFile(sortf)
-				sfileName = str(self.textEdit.text())
-				if sfileName:
+		if self.readed:
+			sfileName = str(self.textEdit.text())
+			if sfileName:
+				files = []
+				for index in xrange(self.listV.count()):
+					item = self.listV.item(index).text()
+					if item:
+						files.append(self.fm.readFile(str(item)))
+				if len(files) > 0:
+					sortf = self.fm.sortList(self.fm.merge_files(files))
+					text = self.fm.formatExitFile(sortf)
 					if self.fm.writeFile(sfileName, "".join(text)):
 						self.clearList()
 						self.showInfo("File sucessfully saved")
-				else:
-					self.showInfo("Savefile name not set!")
+			else:
+				self.showInfo("Savefile name not set!")
 
 
 	def chooseFile(self):
@@ -122,6 +116,7 @@ class MainWindow(QtGui.QMainWindow):
 			self.listV.clear()
 			self.btnSave.setEnabled(False)
 			self.btnClean.setEnabled(False)
+			self.readed = False
 
 	def onExit(self):
 		QtGui.QApplication.quit()
