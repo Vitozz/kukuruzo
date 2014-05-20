@@ -57,6 +57,7 @@ class MainWindow(QtGui.QMainWindow):
 		self.btnFN = QtGui.QPushButton("Choose")
 		self.connect(self.btnFN, QtCore.SIGNAL('clicked()'), self.chooseFile)
 		self.listV = QtGui.QListWidget()
+		self.connect(self.listV, QtCore.SIGNAL("itemDoubleClicked(QListWidgetItem *)"), self.getListItem)
 		self.label = QtGui.QLabel('Savefile name')
 		self.textEdit = QtGui.QLineEdit()
 		self.main_layout.addWidget(self.listV)
@@ -75,6 +76,8 @@ class MainWindow(QtGui.QMainWindow):
 		self.btnClean.setEnabled(False)
 
 	def showDialog(self):
+		if self.readed:
+			self.envPath = ""
 		filenames=QtGui.QFileDialog.getOpenFileNames(parent=self, caption='Open files', directory=self.envPath, filter="History files (*.history)", options=QtGui.QFileDialog.DontUseNativeDialog|QtGui.QFileDialog.DontResolveSymlinks)
 		for filename in filenames:
 			if filename:
@@ -96,7 +99,7 @@ class MainWindow(QtGui.QMainWindow):
 				if len(files) > 0:
 					sortf = self.fm.sortList(self.fm.merge_files(files))
 					text = self.fm.formatExitFile(sortf)
-					if self.fm.writeFile(sfileName, "".join(text)):
+					if self.fm.writeFile(sfileName, text):
 						self.clearList()
 						self.showInfo("File sucessfully saved")
 			else:
@@ -117,6 +120,11 @@ class MainWindow(QtGui.QMainWindow):
 			self.btnSave.setEnabled(False)
 			self.btnClean.setEnabled(False)
 			self.readed = False
+
+	def getListItem(self, item):
+		fpath=item.text()
+		if fpath:
+			self.textEdit.setText(fpath)
 
 	def onExit(self):
 		QtGui.QApplication.quit()

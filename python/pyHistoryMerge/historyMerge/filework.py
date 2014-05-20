@@ -23,7 +23,7 @@ from PyQt4 import Qt
 
 class FileManager:
 	def __init__(self, parent=None):
-		self.regex = re.compile(r'\|(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})\|\d\|\w+\|[^|]+\|[^|]+', re.IGNORECASE)
+		self.regex = re.compile(r'\|(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})\|\d\|\w+\|[^|]+\|.+', re.IGNORECASE)
 		self.regex1 = re.compile(r'\|\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\|\d\|(\w+)\|[^|]+\|[^|]+', re.IGNORECASE)
 		self.parent = parent
 
@@ -62,7 +62,8 @@ class FileManager:
 		try:
 			fl = codecs.open(fileName, "w", "UTF-8")
 			fl.seek(0)
-			fl.write(text)
+			for line in text:
+				fl.write(line + "\n")
 			fl.close()
 			return True
 		except Exception as  error:
