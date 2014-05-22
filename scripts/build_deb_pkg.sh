@@ -609,6 +609,33 @@ usr/share/applications
 	cp -f ${builddir}/*.deb	${exitdir}/
 }
 
+build_hismerger ()
+{
+	project="psi-history-merger"
+	dirname="python/pyHistoryMerge"
+	ver=`cat ${srcdir}/${dirname}/version.txt`
+	debdir=${builddir}/${project}-${ver}
+	prepare
+	cd ${debdir}
+	section="misc"
+	arch="all"
+	builddep="cdbs, debhelper (>= 7), python-support (>= 0.6), pyqt4-dev-tools"
+	addit="XB-Python-Version: \${python:Versions}"
+	depends="\${python:Depends}, python-qt4, python-sip"
+	description="Psi/Psi+ History files merger"
+	descriptionlong='Merges history files of Psi/Psi+ jabber clients'
+	docfiles=""
+	dirs='usr/bin
+usr/share/psihismerger
+usr/share/applications
+'
+	cd ${debdir}/debian
+	prepare_specs
+	cd ${debdir}
+	build_deb
+	cp -f ${builddir}/*.deb	${exitdir}/
+}
+
 
 print_menu ()
 {
@@ -626,6 +653,7 @@ print_menu ()
 [a] - Build html2text debian package
 [b] - Build alsavolume debian package
 [c] - Build qtalsavolume debian package
+[d] - Build psi-history-merger debian package
 [0] - Exit'
   echo "${menu_text}"
 }
@@ -655,6 +683,7 @@ choose_action ()
 		"a" ) build_html2text;;
 		"b" ) build_avolume;;
 		"c" ) build_qtavolume;;
+		"d" ) build_hismerger;;
 		"0" ) quit;;
 		"ra" ) rm_all;;
 		"ga" ) get_all;;

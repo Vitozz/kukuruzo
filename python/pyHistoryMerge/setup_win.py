@@ -9,7 +9,7 @@ opts = {
         }
     }
 
-setup(name='htmltotextgui',
+setup(name='psi-history-merger',
       version='0.1',
       description='Psi/Psi+ history merger',
       long_description = "Merges history file of Psi/Psi+ jabber client",

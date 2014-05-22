@@ -22,6 +22,7 @@ import os
 from PyQt4 import QtCore, QtGui
 
 import filework
+import reswork
 
 class MainWindow(QtGui.QMainWindow):
 	def __init__(self, parent=None):
@@ -37,7 +38,9 @@ class MainWindow(QtGui.QMainWindow):
 		self.readed=False
 		#
 		self.setWindowTitle("Psi/Psi+ history merger")
-		self.setWindowIcon(QtGui.QIcon("icon32.png"))
+		self.resloader = reswork.loadResFile()
+		iconname = self.resloader.get("psihismerger", "icon32.png")
+		self.setWindowIcon(QtGui.QIcon(iconname))
 		#
 		self.main_widget = QtGui.QWidget()
 		self.setCentralWidget(self.main_widget)
