@@ -422,7 +422,7 @@ build_html2text ()
 
 build_hismerger (){
 	project="psi-history-merger"
-	dirname="htmltotextgui"
+	dirname="python/pyHistoryMerge"
 	ver=`cat ${srcdir}/${dirname}/version.txt`
 	prepare ${dirname}
 	section="Applications/Utility"
@@ -612,7 +612,7 @@ choose_action ()
 		"a" ) build_html2text;;
 		"b" ) build_avolume;;
 		"c" ) build_qtavolume;;
-		"c" ) build_hismerger;;
+		"d" ) build_hismerger;;
 		"0" ) quit;;
 		"ra" ) rm_all;;
 	esac
