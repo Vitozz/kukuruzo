@@ -420,6 +420,24 @@ build_html2text ()
         cp -f ${srpms}/*.rpm	${exitdir}/
 }
 
+build_hismerger (){
+	project="psi-history-merger"
+	dirname="htmltotextgui"
+	ver=`cat ${srcdir}/${dirname}/version.txt`
+	prepare ${dirname}
+	section="Applications/Utility"
+	arch="noarch"
+	builddep="python-devel, python-setuptools, python-qt4-devel"
+	depends="python >= 2.7, python-qt4, python-sip"
+	description="Psi/Psi+ history merger"
+	descriptionlong='Merges history file of Psi/Psi+ jabber client'
+        addit=""
+	prepare_specs
+	rpmbuild -ba ${specfiles}/${project}.spec
+	cp -f ${rpms}/n*/*.rpm	${exitdir}/
+        cp -f ${srpms}/*.rpm	${exitdir}/
+}
+
 build_avolume ()
 {
 	project="alsavolume"
@@ -564,6 +582,7 @@ print_menu ()
 [a] - Build html2text OpenSUSE RPM package
 [b] - Build alsavolume OpenSUSE RPM package
 [c] - Build qtalsavolume OpenSUSE RPM package
+[d] - Build psi-history-merger OpenSUSE RPM package
 [0] - Exit'
   echo "${menu_text}"
 }
@@ -593,6 +612,7 @@ choose_action ()
 		"a" ) build_html2text;;
 		"b" ) build_avolume;;
 		"c" ) build_qtavolume;;
+		"c" ) build_hismerger;;
 		"0" ) quit;;
 		"ra" ) rm_all;;
 	esac
