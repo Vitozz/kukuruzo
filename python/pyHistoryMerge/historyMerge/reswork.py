@@ -25,19 +25,28 @@ class loadResFile:
 		pass
 
 	def get(self, project, fname):
-		print(os.getcwd())
-		plist = ("/usr/share", "/usr/local/share", str(os.environ['HOME']) + "/.local/share", str(os.getcwd()))
-		for path in plist:
-			if path:
-				try:
-					tmp_path = os.path.join(path, project, fname)
-					if os.path.exists(tmp_path):
-						return str(tmp_path)
-					else:
-						tmp_path = os.path.join(path, fname)
+
+		if str(os.sys.platform) == 'win32':
+			plist = ()
+			try:
+				tmp_path = os.path.join(str(os.getcwd()).decode('UTF-8'), fname)
+				if os.path.exists(tmp_path):
+					return str(tmp_path)
+			except Exception, error:
+				os.sys.stderr.write("Error when getting path %s" %error)
+		else:
+			plist = ("/usr/share", "/usr/local/share", str(os.environ['HOME']) + "/.local/share", str(os.getcwd()))
+			for path in plist:
+				if path:
+					try:
+						tmp_path = os.path.join(path, project, fname)
 						if os.path.exists(tmp_path):
 							return str(tmp_path)
-				except Exception, error:
-					os.sys.stderr.write("Error when getting path %s" %error)
+						else:
+							tmp_path = os.path.join(path, fname)
+							if os.path.exists(tmp_path):
+								return str(tmp_path)
+					except Exception, error:
+						os.sys.stderr.write("Error when getting path %s" %error)
 		return ""
 
