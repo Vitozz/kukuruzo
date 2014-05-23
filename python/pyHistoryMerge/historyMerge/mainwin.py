@@ -21,48 +21,47 @@ import os
 
 from PyQt4 import QtCore, QtGui
 
-import filework
-import reswork
+from filework import FileManager
+from reswork import loadResFile
 
 class MainWindow(QtGui.QMainWindow):
+
 	def __init__(self, parent=None):
 		QtGui.QMainWindow.__init__(self, parent)
-		self.homeDir=os.getenv('HOME')
+		self.homeDir=None
 		self.envPath=None
 		if str(os.sys.platform) == 'win32':
 			self.homeDir=os.getenv('APPDATA')
-			self.envPath=self.homeDir + '\psi+'
 		else:
-			self.envPath=self.homeDir + '/.local/share/psi+'
-		self.fm = filework.FileManager(self)
+			self.homeDir=os.path.join(os.getenv('HOME'),'.local/share')
+		try:
+			self.envPath=os.path.join(self.homeDir,'psi+')
+		except:
+			self.envPath=self.homeDir
+		self.fm = FileManager()
 		self.readed=False
-		#
+		#init window
 		self.setWindowTitle("Psi/Psi+ history merger")
-		self.resloader = reswork.loadResFile()
-		iconname = self.resloader.get("psihismerger", "icon32.png")
+		self.resloader = loadResFile()
+		iconname = self.resloader.get('psihismerger', 'icon32.png')
 		self.setWindowIcon(QtGui.QIcon(iconname))
-		#
+		#Adding widgets
 		self.main_widget = QtGui.QWidget()
 		self.setCentralWidget(self.main_widget)
+		self.btnOpen = QtGui.QPushButton("Add")
+		self.btnClean = QtGui.QPushButton("Clear")
+		self.btnQuit = QtGui.QPushButton("Exit")
+		self.btnSave = QtGui.QPushButton("Save")
+		self.btnFN = QtGui.QPushButton("Choose")
+		self.label = QtGui.QLabel('Savefile name')
+		self.listV = QtGui.QListWidget()
+		self.textEdit = QtGui.QLineEdit()
+		self.backupCheckBox = QtGui.QCheckBox('Backup output file')
+		#setup layouts
 		self.main_layout = QtGui.QVBoxLayout()
 		self.main_widget.setLayout(self.main_layout)
 		self.buttons_layout = QtGui.QHBoxLayout()
 		self.hlayout2 = QtGui.QHBoxLayout()
-		#
-		self.btnOpen = QtGui.QPushButton("Add")
-		self.connect(self.btnOpen, QtCore.SIGNAL('clicked()'), self.showDialog)
-		self.btnClean = QtGui.QPushButton("Clear")
-		self.connect(self.btnClean, QtCore.SIGNAL('clicked()'), self.clearList)
-		self.btnQuit = QtGui.QPushButton("Exit")
-		self.connect(self.btnQuit, QtCore.SIGNAL('clicked()'), self.onExit)
-		self.btnSave = QtGui.QPushButton("Save")
-		self.connect(self.btnSave, QtCore.SIGNAL('clicked()'), self.saveData)
-		self.btnFN = QtGui.QPushButton("Choose")
-		self.connect(self.btnFN, QtCore.SIGNAL('clicked()'), self.chooseFile)
-		self.listV = QtGui.QListWidget()
-		self.connect(self.listV, QtCore.SIGNAL("itemDoubleClicked(QListWidgetItem *)"), self.getListItem)
-		self.label = QtGui.QLabel('Savefile name')
-		self.textEdit = QtGui.QLineEdit()
 		self.main_layout.addWidget(self.listV)
 		self.hlayout3 =QtGui.QHBoxLayout()
 		self.main_layout.addLayout(self.hlayout3)
@@ -72,11 +71,21 @@ class MainWindow(QtGui.QMainWindow):
 		self.main_layout.addLayout(self.hlayout2)
 		self.hlayout2.addWidget(self.textEdit)
 		self.hlayout2.addWidget(self.btnFN)
+		self.main_layout.addWidget(self.backupCheckBox)
 		self.main_layout.addLayout(self.buttons_layout)
 		self.buttons_layout.addWidget(self.btnSave)
 		self.buttons_layout.addWidget(self.btnQuit)
-		self.btnSave.setEnabled(False)
-		self.btnClean.setEnabled(False)
+		#connect signals
+		self.fm.showinfo.connect(self.showInfo)
+		self.btnOpen.clicked.connect(self.showDialog)
+		self.btnClean.clicked.connect(self.clearList)
+		self.btnQuit.clicked.connect(self.onExit)
+		self.btnSave.clicked.connect(self.saveData)
+		self.btnFN.clicked.connect(self.chooseFile)
+		self.listV.itemDoubleClicked.connect(self.getListItem)
+		self.backupCheckBox.stateChanged.connect(self.backupStateChanged)
+		#disabling some buttons
+		self.enableButtons(False)
 
 	def showDialog(self):
 		if self.readed:
@@ -87,8 +96,8 @@ class MainWindow(QtGui.QMainWindow):
 				self.listV.addItem(filename)
 		if self.listV.count()>0:
 			self.readed = True
-			self.btnSave.setEnabled(True)
-			self.btnClean.setEnabled(True)
+			self.enableButtons(self.readed)
+
 
 	def saveData(self):
 		if self.readed:
@@ -100,8 +109,7 @@ class MainWindow(QtGui.QMainWindow):
 					if item:
 						files.append(self.fm.readFile(str(item)))
 				if len(files) > 0:
-					sortf = self.fm.sortList(self.fm.merge_files(files))
-					text = self.fm.formatExitFile(sortf)
+					text = self.fm.formatExitFile(files)
 					if self.fm.writeFile(sfileName, text):
 						self.clearList()
 						self.showInfo("File sucessfully saved")
@@ -120,14 +128,23 @@ class MainWindow(QtGui.QMainWindow):
 	def clearList(self):
 		if self.listV.count() >0 :
 			self.listV.clear()
-			self.btnSave.setEnabled(False)
-			self.btnClean.setEnabled(False)
 			self.readed = False
+			self.enableButtons(self.readed)
+
+	def enableButtons(self, state):
+		self.btnSave.setEnabled(state)
+		self.btnClean.setEnabled(state)
 
 	def getListItem(self, item):
 		fpath=item.text()
 		if fpath:
 			self.textEdit.setText(fpath)
+
+	def backupStateChanged(self, state):
+		if state == QtCore.Qt.Checked:
+			self.fm.setIsBackup(True)
+		else:
+			self.fm.setIsBackup(False)
 
 	def onExit(self):
 		QtGui.QApplication.quit()

@@ -19,13 +19,16 @@
 
 import os, re, time, codecs
 
-from PyQt4 import Qt
+from PyQt4.QtCore import QObject, QString, pyqtSignal
 
-class FileManager:
-	def __init__(self, parent=None):
-		self.regex = re.compile(r'\|(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})\|\d\|\w+\|[^|]+\|.+', re.IGNORECASE)
-		self.regex1 = re.compile(r'\|\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\|\d\|(\w+)\|[^|]+\|[^|]+', re.IGNORECASE)
-		self.parent = parent
+class FileManager(QObject):
+
+	showinfo = pyqtSignal(str)
+
+	def __init__(self):
+		super(FileManager, self).__init__()
+		self.regex = re.compile(r'\|(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})\|\d\|(\w+)\|[^|]+\|.+', re.IGNORECASE)
+		self.isBackup = False
 
 	def readFile(self, fileName):
 		result = []
@@ -36,39 +39,61 @@ class FileManager:
 				mode="rb"
 			else:
 				mode="r"
-			f = open(fileName, mode)
-			f.seek(0)
-			for line in f.readlines():
-				if line:
-					item = []
-					matchObj = self.regex.match(line)
-					if matchObj:
-						Y = int(matchObj.group(1))
-						M = int(matchObj.group(2))
-						D = int(matchObj.group(3))
-						H = int(matchObj.group(4))
-						M = int(matchObj.group(5))
-						S = int(matchObj.group(6))
-						u_time = self.convert_date([Y,M,D,H,M,S,-1,-1,-1])
-						item.append(u_time)
-						item.append(matchObj.group())
-						result.append(item)
-			f.close()
+			if os.access(fileName, os.F_OK|os.R_OK):
+				f = open(fileName, mode)
+				f.seek(0)
+				for line in f.readlines():
+					if line:
+						item = []
+						matchObj = self.regex.match(line)
+						if matchObj:
+							Y = int(matchObj.group(1))
+							M = int(matchObj.group(2))
+							D = int(matchObj.group(3))
+							H = int(matchObj.group(4))
+							M = int(matchObj.group(5))
+							S = int(matchObj.group(6))
+							u_time = self.convert_date([Y,M,D,H,M,S,-1,-1,-1])
+							item.append(u_time)
+							item.append(matchObj.group())
+							result.append(item)
+				f.close()
+			else:
+				msg="You have no permissions to read file %s"%fileName
+				self.showinfo.emit(QString(str(msg).decode('UTF-8')))
 		except Exception as error:
-			self.parent.showInfo(Qt.QString(str(error).decode('UTF-8')))
+			self.showinfo.emit(QString(str(error).decode('UTF-8')))
 		return result
 
 	def writeFile(self, fileName, text):
 		try:
-			fl = codecs.open(fileName, "w", "UTF-8")
-			fl.seek(0)
-			for line in text:
-				fl.write(line + "\n")
-			fl.close()
-			return True
+			dirname=os.path.dirname(fileName)
+			if os.access(dirname, os.F_OK|os.W_OK):
+				self.backupFile(fileName)
+				fl = codecs.open(fileName, "w", "UTF-8")
+				fl.seek(0)
+				for line in text:
+					fl.write(line + "\n")
+				fl.close()
+				return True
+			elif os.access(dirname, os.F_OK|os.R_OK):
+				msg='Error! Read-only directory %s'%dirname
+				self.showinfo.emit(QString(str(msg).decode('UTF-8')))
+			else:
+				msg='Error! You have no permissions to write into %s'%dirname
+				self.showinfo.emit(QString(str(msg).decode('UTF-8')))
 		except Exception as  error:
-			self.parent.showInfo(Qt.QString(str(error).decode('UTF-8')))
+			self.showinfo.emit(QString(str(error).decode('UTF-8')))
 			return False
+
+	def backupFile(self, fileName):
+		if self.isBackup:
+			if os.access(fileName, os.F_OK|os.W_OK):
+				newname=fileName+'.bak'
+				os.rename(fileName, newname)
+			else:
+				msg='Error! You have no write permissions to %s'%fileName
+				self.showinfo.emit(QString(str(msg).decode('UTF-8')))
 
 	def convert_date(self, data):
 		unix_time = time.mktime(data)
@@ -104,18 +129,22 @@ class FileManager:
 			if nextIndex < listlen:
 				nextLine = slist[nextIndex]
 				if currLine[0] == nextLine[0]:
-					matchI = self.regex1.match(nextLine[1])
+					matchI = self.regex.match(nextLine[1])
 					if matchI:
-						if str(matchI.group(1)) == 'to':
+						if str(matchI.group(7)) == 'to':
 							slist[index] = nextLine
 							slist[nextIndex] = currLine
 		return slist
 
 	def formatExitFile(self, ilist):
 		result = []
-		for line in ilist:
-			if line:
-				if line[1]:
-					result.append(line[1].decode('UTF-8'))
+		sortf = self.sortList(self.merge_files(ilist))
+		if sortf:
+			for line in sortf:
+				if line:
+					if line[1]:
+						result.append(line[1].decode('UTF-8'))
 		return result
 
+	def setIsBackup(self, state):
+		self.isBackup = state

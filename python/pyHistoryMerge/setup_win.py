@@ -1,7 +1,14 @@
 #!/usr/bin/env python
 from distutils.core import setup
 import py2exe
-import glob
+import glob, os
+
+def get_version ():
+      f = open("version.txt", "rb")
+      f.seek(0)
+      lines = f.read()
+      f.close()
+      return "".join(lines).split("\n")[0]
 
 opts = {
     "py2exe": {
@@ -10,7 +17,7 @@ opts = {
     }
 
 setup(name='psi-history-merger',
-      version='0.1',
+      version=get_version(),
       description='Psi/Psi+ history merger',
       long_description = "Merges history file of Psi/Psi+ jabber client",
       author='Vitaly Tonkacheyev',
@@ -25,4 +32,4 @@ setup(name='psi-history-merger',
       ],
       options=opts,
       )
-               
+
