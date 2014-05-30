@@ -11,8 +11,11 @@ Map of Repository:
                          ---songbird_tunetopsi
      ---python--
                              |
+                              ---cplugins_script
                               ---exaile-remote-plugin
                               ---exaile-tunetopsi-plugin
+                              ---pyalsavolume
+                              ---pyHistoryMerge
                               ---pyinterpol
                               ---rb-remote-plugin
                               ---rb-restore-plugin
@@ -20,5 +23,9 @@ Map of Repository:
                               ---screensaverdisable
      ---qt--
                  |
+                  ---qtalsavolume
                   ---regexptest
-     ---scripts
+                  ---ssdisabler
+     ---scripts--
+                 |
+                  ---gentoo
