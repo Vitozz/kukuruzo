@@ -12,22 +12,35 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = qtalsavolume
 TEMPLATE = app
 
+#CONFIG += pulseaudio
+
 CONFIG += link_pkgconfig
 PKGCONFIG += alsa
 
+pulseaudio {
+	DEFINES += USE_PULSE
+	PKGCONFIG += libpulse
+	SOURCES += pulsework/pulsework.cpp \
+		   pulsework/pulsecore.cpp \
+		   pulsework/pulsedevice.cpp
+	HEADERS += pulsework/pulsework.h \
+		   pulsework/pulsecore.h \
+		   pulsework/pulsedevice.h
+}
+
 SOURCES += main.cpp\
 	   popupwindow.cpp \
+	   settingsdialog.cpp \
 	   alsawork/alsawork.cpp \
 	   alsawork/mixerswitches.cpp \
-	   alsawork/volumemixers.cpp \
-	   settingsdialog.cpp
+	   alsawork/volumemixers.cpp
 
-HEADERS  += popupwindow.h \
+HEADERS  += settingsdialog.h \
+	    defines.h \
+	    popupwindow.h \
 	    alsawork/alsawork.h \
 	    alsawork/mixerswitches.h \
-	    alsawork/volumemixers.h \
-	    settingsdialog.h \
-	    defines.h
+	    alsawork/volumemixers.h
 
 FORMS    += \
 	    settingsdialog.ui

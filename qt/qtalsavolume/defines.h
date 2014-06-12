@@ -23,12 +23,14 @@
 
 #define APP_NAME "qtalsavolume"
 #define APP_ORG "thesomeprojects"
-#define APP_VERSION "0.0.4"
+#define APP_VERSION "0.0.5"
 
 #define CARD_INDEX "Main/card"
 #define MIXER_NAME "Main/mixer"
 #define ISAUTO "Main/autorun"
 #define ICOSTYLE "Main/style"
+#define LAST_SINK "Pulse/sink"
+#define PULSE "Main/pulse"
 
 #include <QPair>
 

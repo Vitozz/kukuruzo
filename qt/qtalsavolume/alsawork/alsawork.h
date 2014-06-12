@@ -42,7 +42,7 @@ public:
 	QStringList &getVolumeMixers(int cardIndex);
 	MixerSwitches &getSwitchList(int cardIndex);
 	void setSwitch(int cardId, const QString& mixer, int id, bool enabled);
-	void setMute(int cardId, const QString& mixer, bool enabled);
+	void setMute(int cardId, const QString& mixer, bool mute);
 	bool getMute(int cardId, const QString& mixer);
 private:
 	bool checkCardId(int cardId);

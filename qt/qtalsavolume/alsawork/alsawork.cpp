@@ -155,20 +155,21 @@ void AlsaWork::setSwitch(int cardId, const QString &mixer, int id, bool enabled)
 	checkError(snd_mixer_close(handle));
 }
 
-void AlsaWork::setMute(int cardId, const QString &mixer, bool enabled)
+void AlsaWork::setMute(int cardId, const QString &mixer, bool mute)
 {
+	int enable = int(mute);
 	if (mixerList_.contains(mixer)) {
 		snd_mixer_t *handle = getMixerHanlde(cardId);
 		snd_mixer_elem_t* elem = initMixerElement(handle, mixer.toUtf8().data());
 		if (snd_mixer_selem_has_playback_switch(elem)
 		   || snd_mixer_selem_has_playback_switch_joined(elem)) {
-			checkError(snd_mixer_selem_set_playback_switch_all(elem, int(enabled)));
+			checkError(snd_mixer_selem_set_playback_switch_all(elem, enable));
 		}
 		if (snd_mixer_selem_has_capture_switch(elem)
 		    || snd_mixer_selem_has_common_switch(elem)
 		    || snd_mixer_selem_has_capture_switch_joined(elem)
 		    || snd_mixer_selem_has_capture_switch_exclusive(elem)) {
-			checkError(snd_mixer_selem_set_capture_switch_all(elem, int(enabled)));
+			checkError(snd_mixer_selem_set_capture_switch_all(elem, enable));
 		}
 		checkError(snd_mixer_close(handle));
 	}

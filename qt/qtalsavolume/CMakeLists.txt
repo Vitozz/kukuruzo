@@ -2,12 +2,13 @@ set (PROJECT qtalsavolume )
 cmake_minimum_required( VERSION 2.6 )
 add_definitions ( -Wall )
 
+set (USE_PULSE NO CACHE BOOL "Set pulseaudio usage" )
+
 find_package ( Qt4 REQUIRED )
 include ( ${QT_USE_FILE} )
 
 find_package ( PkgConfig REQUIRED )
 pkg_check_modules ( ALSA REQUIRED alsa )
-
 link_directories ( ${ALSA_LIBRARY_DIRS} )
 include_directories (
 	${CMAKE_SOURCE_DIR}
@@ -18,11 +19,29 @@ include_directories (
 	${QT_QTGUI_INCLUDE_DIR}
 	${ALSA_INCLUDE_DIRS}
 )
+if (USE_PULSE)
+	pkg_check_modules ( PULSE REQUIRED libpulse )
+	link_directories ( ${PULSE_LIBRARY_DIRS} )
+	include_directories (${PULSE_INCLUDE_DIRS})
+	add_definitions ( -DUSE_PULSE )
+	set ( pulse_HEADERS
+		pulsework/pulsework.cpp
+		pulsework/pulsecore.cpp
+		pulsework/pulsedevice.cpp
+	)
+	set ( pulse_SOURCES
+		pulsework/pulsework.cpp
+		pulsework/pulsecore.cpp
+		pulsework/pulsedevice.cpp
+	)
+endif (USE_PULSE)
+
 set ( HEADERS
 	alsawork/alsawork.h
 	alsawork/mixerswitches.h
 	alsawork/volumemixers.h
 	defines.h
+	${pulse_HEADERS}
 )
 
 set ( CPP_FILES
@@ -32,6 +51,7 @@ set ( CPP_FILES
 	alsawork/mixerswitches.cpp
 	alsawork/volumemixers.cpp
 	settingsdialog.cpp
+	${pulse_SOURCES}
 )
 
 set ( UI_FILES
@@ -81,6 +101,17 @@ set ( MOC_FILES
 QT4_WRAP_CPP(MOCS ${MOC_FILES})
 
 add_executable ( ${PROJECT} ${CPP_FILES} ${UIS} ${RSCS} ${TRS} ${MOCS} )
+if (USE_PULSE)
+target_link_libraries (
+	${PROJECT}
+	${QT_QTCORE_LIBRARY}
+	${QT_QTGUI_LIBRARY}
+	${QT_QTCORE_LIBRARY}
+	${QT_QTGUI_LIBRARY}
+	${ALSA_LIBRARIES}
+	${PULSE_LIBRARIES}
+)
+else (USE_PULSE)
 target_link_libraries (
 	${PROJECT}
 	${QT_QTCORE_LIBRARY}
@@ -89,6 +120,7 @@ target_link_libraries (
 	${QT_QTGUI_LIBRARY}
 	${ALSA_LIBRARIES}
 )
+endif (USE_PULSE)
 INSTALL ( TARGETS ${PROJECT} RUNTIME DESTINATION bin )
 INSTALL ( FILES ${DESKTOP_FILES} DESTINATION ${APPDIR_PATH} )
 INSTALL ( FILES ${ICON_FILES} DESTINATION ${DATADIR_PATH}/${PROJECT}/icons )

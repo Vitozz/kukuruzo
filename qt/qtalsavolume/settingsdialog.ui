@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>332</width>
-    <height>368</height>
+    <height>395</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -105,6 +105,13 @@
            </property>
            <property name="toolTip">
             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select Mixer&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="usePulseaudio">
+           <property name="text">
+            <string>Pulseaudio</string>
            </property>
           </widget>
          </item>

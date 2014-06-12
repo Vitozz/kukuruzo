@@ -44,6 +44,9 @@ ui(new Ui::SettingsDialog)
 	ui->verticalLayout_3->addWidget(enums_);
 	ui->tabWidget->setCurrentIndex(0);
 	itemsAdded_ = false;
+#ifndef USE_PULSE
+	ui->usePulseaudio->setEnabled(false);
+#endif
 }
 
 SettingsDialog::~SettingsDialog()
@@ -85,6 +88,9 @@ void SettingsDialog::connectSignals()
 	connect(ui->cardBox, SIGNAL(currentIndexChanged(QString)), this, SLOT(onSoundCard(QString)));
 	connect(ui->mixerBox, SIGNAL(currentIndexChanged(QString)), this, SLOT(onMixer(QString)));
 	connect(ui->isAutorun, SIGNAL(toggled(bool)), this, SLOT(onAutorun(bool)));
+#ifdef USE_PULSE
+	connect(ui->usePulseaudio, SIGNAL(toggled(bool)), this, SLOT(onPulseSoundSystem(bool)));
+#endif
 }
 
 void SettingsDialog::onSoundCard(const QString &changed)
@@ -256,4 +262,26 @@ void SettingsDialog::setIconStyle(bool isLight)
 	else {
 		ui->darkRadio->setChecked(true);
 	}
+}
+
+void SettingsDialog::onPulseSoundSystem(bool toggled)
+{
+	emit soundSystemChanged(toggled);
+}
+
+void SettingsDialog::setUsePulse(bool isPulse)
+{
+#ifdef USE_PULSE
+	ui->usePulseaudio->setChecked(isPulse);
+#else
+	Q_UNUSED(isPulse)
+#endif
+}
+
+void SettingsDialog::hideAlsaElements(bool isHide)
+{
+	ui->mixerBox->setEnabled(!isHide);
+	playbacks_->setEnabled(!isHide);
+	captures_->setEnabled(!isHide);
+	enums_->setEnabled(!isHide);
 }

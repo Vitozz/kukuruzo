@@ -2,6 +2,7 @@ Build Deps:
 
 - Qt4
 - alsa/asoundlib (libasound2-dev package in Ubuntu)
+- Pulseaudio (libpulse) to build With Pulseaudio support
 
 Howto build application:
 
@@ -23,6 +24,20 @@ $ cmake ..
 
 You can use
 $ cmake -DCMAKE_INSTALL_PREFIX=/dir ..
+to set install prefix to /dir
+
+$ make
+
+$ make install
+
+To build with pulseaudio support:
+
+Using qmake:
+- uncomment CONFIG+=pulseaudio in qtalsavolume.pro
+- make as allways
+
+Using cmake:
+$ cmake -DCMAKE_INSTALL_PREFIX=/dir -DUSE_PULSE ..
 to set install prefix to /dir
 
 $ make

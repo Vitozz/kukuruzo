@@ -24,8 +24,10 @@
 #include <QSystemTrayIcon>
 #include <QDialog>
 
-
 #include "alsawork/alsawork.h"
+#ifdef USE_PULSE
+#include "pulsework/pulsework.h"
+#endif
 #include "settingsdialog.h"
 #include "defines.h"
 
@@ -57,13 +59,14 @@ protected slots:
 	void onAbout();
 	void onQuit();
 	void onSlider(int value);
-	void onMixerChanged(const QString &mixer);
 	void onCardChanged(const QString &card);
+	void onAutorun(bool isIt);
+	void onStyleChanged(bool isLight);
+	void onMixerChanged(const QString &mixer);
 	void onPlayback(const QString &name, bool isIt);
 	void onCapture(const QString &name, bool isIt);
 	void onEnum(const QString &name, bool isIt);
-	void onAutorun(bool isIt);
-	void onStyleChanged(bool isLight);
+	void onSoundSystem(bool isIt);
 
 private:
 	void setTrayIcon(int value);
@@ -71,13 +74,23 @@ private:
 	void createTrayMenu();
 	void setVolume(int value);
 	void setIconToolTip(int value);
-	void updateSwitches();
 	void createDesktopFile();
 	void readDesktopFile();
 	QString getResPath(const QString &fileName);
+	void updateSwitches();
 
 private:
 	AlsaWork *alsaWork_;
+#ifdef USE_PULSE
+	PulseWork * pulse_;
+#endif
+	QString mixerName_;
+	int cardIndex_;
+	QStringList mixerList_;
+	MixerSwitches switchList_;
+	QList<switcher> playBackItems_;
+	QList<switcher> captureItems_;
+	QList<switcher> enumItems_;
 	QAction *restore_;
 	QAction *settings_;
 	QAction *mute_;
@@ -88,19 +101,15 @@ private:
 	QSlider *volumeSlider_;
 	QLabel *volumeLabel_;
 	SettingsDialog *settingsDialog_;
-	QString mixerName_;
-	int cardIndex_;
 	QString cardName_;
 	QStringList cardList_;
-	QStringList mixerList_;
-	MixerSwitches switchList_;
-	QList<switcher> playBackItems_;
-	QList<switcher> captureItems_;
-	QList<switcher> enumItems_;
+	QString pulseCardName_;
+	QStringList pulseCardList_;
 	int volumeValue_;
 	bool isMuted_;
 	bool isAutorun_;
 	bool isLightStyle_;
+	bool isPulse_;
 };
 
 #endif // POPUPWINDOW_H

@@ -22,6 +22,7 @@
 
 #include <QtGui>
 #include <QDesktopWidget>
+#include <QDebug>
 
 static const QString autoStartPath = ".config/autostart";
 static const QString fName = QDir::home().absolutePath() + "/.config/autostart/qtalsavolume.desktop";
@@ -38,7 +39,6 @@ static const QString dFile = "[Desktop Entry]\n"
 PopupWindow::PopupWindow()
 {
 	setWindowIcon(QIcon(":/images/icons/volume_ico.png"));
-	alsaWork_ = new AlsaWork();
 	//Start of tray icon initialization
 	createActions();
 	createTrayMenu();
@@ -65,6 +65,30 @@ PopupWindow::PopupWindow()
 	setMouseTracking(true);
 	//Reading settings and alsa variables
 	QSettings setts_;
+	isLightStyle_ = setts_.value(ICOSTYLE, true).toBool();
+	isAutorun_ = setts_.value(ISAUTO, false).toBool();
+	//Creating settings dialog
+	settingsDialog_ = new SettingsDialog(this);
+#ifdef USE_PULSE
+	isPulse_ = setts_.value(PULSE, false).toBool();
+	pulse_ = new PulseWork();
+	pulseCardList_ = pulse_->getCardList();
+	QString lastSink = setts_.value(LAST_SINK, "").toString();
+	if (!lastSink.isEmpty()) {
+		pulseCardName_ = pulse_->getCardDescription(lastSink);
+	}
+	else {
+		pulseCardName_ = pulse_->getDefaultCard();
+	}
+	pulse_->setCurrentCard(pulseCardName_);
+	if (isPulse_) {
+		isMuted_ = pulse_->getMute(pulseCardName_);
+		volumeValue_ = pulse_->getVolume(pulseCardName_);
+	}
+#else
+	isPulse_ = false;
+#endif
+	alsaWork_ = new AlsaWork();
 	cardList_ = alsaWork_->getCardsList();
 	cardIndex_ = setts_.value(CARD_INDEX, 0).toInt();
 	cardIndex_ = cardList_.size() >= cardIndex_ ? cardIndex_ : 0;
@@ -85,18 +109,23 @@ PopupWindow::PopupWindow()
 	QString mixer = mixerList_.contains("Master") ? "Master" : mixerList_.at(0);
 	mixerName_ = setts_.value(MIXER_NAME, mixer).toString();
 	cardName_ = alsaWork_->getCardName(cardIndex_);
-	volumeValue_ = alsaWork_->getAlsaVolume(cardIndex_, mixerName_);
-	isMuted_ = !alsaWork_->getMute(cardIndex_, mixerName_);
+	if (!isPulse_) {
+		volumeValue_ = alsaWork_->getAlsaVolume(cardIndex_, mixerName_);
+		isMuted_ = !alsaWork_->getMute(cardIndex_, mixerName_);
+	}
 	switchList_ = alsaWork_->getSwitchList(cardIndex_);
 	updateSwitches();
-	isLightStyle_ = setts_.value(ICOSTYLE, true).toBool();
-	isAutorun_ = setts_.value(ISAUTO, false).toBool();
-	//Creating settings dialog
-	settingsDialog_ = new SettingsDialog(this);
-	settingsDialog_->setSoundCards(cardList_);
-	settingsDialog_->setCurrentCard(cardName_);
-	settingsDialog_->setMixers(mixerList_);
-	settingsDialog_->setCurrentMixer(mixerName_);
+	if (!isPulse_) {
+		settingsDialog_->setMixers(mixerList_);
+		settingsDialog_->setCurrentMixer(mixerName_);
+		settingsDialog_->setSoundCards(cardList_);
+		settingsDialog_->setCurrentCard(cardName_);
+	} else {
+		settingsDialog_->setSoundCards(pulseCardList_);
+		settingsDialog_->setCurrentCard(pulseCardName_);
+		settingsDialog_->setUsePulse(isPulse_);
+		settingsDialog_->hideAlsaElements(isPulse_);
+	}
 	//
 	settingsDialog_->setIconStyle(isLightStyle_);
 	settingsDialog_->connectSignals(); //connecting settingsDialog_ internal signals
@@ -107,6 +136,9 @@ PopupWindow::PopupWindow()
 	connect(settingsDialog_, SIGNAL(enumChanged(QString,bool)), this, SLOT(onEnum(QString,bool)));
 	connect(settingsDialog_, SIGNAL(autorunChanged(bool)), this, SLOT(onAutorun(bool)));
 	connect(settingsDialog_,SIGNAL(styleChanged(bool)), this, SLOT(onStyleChanged(bool)));
+#ifdef USE_PULSE
+	connect(settingsDialog_, SIGNAL(soundSystemChanged(bool)), this, SLOT(onSoundSystem(bool)));
+#endif
 	//
 	createDesktopFile();
 	//Finish of tray icon initialization
@@ -123,6 +155,9 @@ PopupWindow::PopupWindow()
 
 PopupWindow::~PopupWindow()
 {
+#ifdef USE_PULSE
+	delete pulse_;
+#endif
 	delete alsaWork_;
 	delete restore_;
 	delete settings_;
@@ -175,7 +210,11 @@ void PopupWindow::onQuit()
 void PopupWindow::onAbout()
 {
 	QString title = QString(tr("About QtAlsaVolume"));
+#ifdef USE_PULSE
+	QString msg = QString(tr("Tray Alsa Volume Changer written using Qt\n\nWith Pulseaudio support\n\n2014 (c) Vitaly Tonkacheyev (thetvg@gmail.com)\n\nversion: %1")).arg(APP_VERSION);
+#else
 	QString msg = QString(tr("Tray Alsa Volume Changer written using Qt\n\n2013 (c) Vitaly Tonkacheyev (thetvg@gmail.com)\n\nversion: %1")).arg(APP_VERSION);
+#endif
 	QMessageBox::about(this, title, msg);
 }
 
@@ -248,7 +287,12 @@ void PopupWindow::setTrayIcon(int value)
 void PopupWindow::showSettings()
 {
 	settingsDialog_->setIconStyle(isLightStyle_);
-	settingsDialog_->setCurrentCard(cardName_);
+	if (isPulse_) {
+		settingsDialog_->setCurrentCard(pulseCardName_);
+	}
+	else {
+		settingsDialog_->setCurrentCard(cardName_);
+	}
 	settingsDialog_->setCurrentMixer(mixerName_);
 	updateSwitches();
 	settingsDialog_->setPlaybackChecks(playBackItems_);
@@ -261,13 +305,24 @@ void PopupWindow::showSettings()
 void PopupWindow::onMute(bool isToggled)
 {
 	isMuted_ = isToggled;
-	alsaWork_->setMute(cardIndex_, mixerName_, !isToggled);
+#ifdef USE_PULSE
+	if (isPulse_) {
+		pulse_->setMute(isToggled);
+	}
+#endif
+	if (!isPulse_) {
+		alsaWork_->setMute(cardIndex_, mixerName_, !isToggled);
+	}
 	setTrayIcon(volumeValue_);
 }
 
 void PopupWindow::closeEvent(QCloseEvent *)
 {
 	QSettings setts_;
+#ifdef USE_PULSE
+	setts_.setValue(LAST_SINK, pulse_->getCardName(pulseCardName_));
+	setts_.setValue(PULSE, isPulse_);
+#endif
 	setts_.setValue(CARD_INDEX, cardIndex_);
 	setts_.setValue(MIXER_NAME, mixerName_);
 	setts_.setValue(ISAUTO, isAutorun_);
@@ -314,7 +369,14 @@ void PopupWindow::setVolume(int value)
 
 void PopupWindow::onSlider(int value)
 {
-	alsaWork_->setAlsaVolume(cardIndex_, mixerName_, value);
+#ifdef USE_PULSE
+	if (isPulse_) {
+		pulse_->setVolume(value);
+	}
+#endif
+	if (!isPulse_) {
+		alsaWork_->setAlsaVolume(cardIndex_, mixerName_, value);
+	}
 	volumeValue_ = value;
 	volumeLabel_->setText(QString::number(value));
 	setTrayIcon(value);
@@ -323,21 +385,36 @@ void PopupWindow::onSlider(int value)
 
 void PopupWindow::setIconToolTip(int value)
 {
-	const QString message = tr("Card: ") + cardName_ + "\n"+ tr("Mixer: ") + mixerName_ + "\n" + tr("Volume: ") + QString::number(value);
-	trayIcon_->setToolTip(message);
+	if (isPulse_) {
+		const QString message = tr("Card: ") + pulseCardName_ + "\n"+ tr("Volume: ") + QString::number(value);
+		trayIcon_->setToolTip(message);
+	}
+	else {
+		const QString message = tr("Card: ") + cardName_ + "\n"+ tr("Mixer: ") + mixerName_ + "\n" + tr("Volume: ") + QString::number(value);
+		trayIcon_->setToolTip(message);
+	}
 }
 
 void PopupWindow::onCardChanged(const QString &card)
 {
-	cardName_ = card;
-	cardIndex_ = cardList_.indexOf(card);
-	mixerList_ = alsaWork_->getVolumeMixers(cardIndex_);
-	settingsDialog_->setMixers(mixerList_);
-	switchList_ = alsaWork_->getSwitchList(cardIndex_);
-	updateSwitches();
-	settingsDialog_->setPlaybackChecks(playBackItems_);
-	settingsDialog_->setCaptureChecks(captureItems_);
-	settingsDialog_->setEnumChecks(enumItems_);
+#ifdef USE_PULSE
+	if (isPulse_) {
+		pulseCardName_ = card;
+		pulse_->setCurrentCard(pulseCardName_);
+		volumeValue_ = pulse_->getVolume(pulseCardName_);
+		volumeSlider_->setValue(volumeValue_);
+	}
+#endif
+	if (!isPulse_) {
+		cardName_ = card;
+		mixerList_ = alsaWork_->getVolumeMixers(cardIndex_);
+		settingsDialog_->setMixers(mixerList_);
+		switchList_ = alsaWork_->getSwitchList(cardIndex_);
+		updateSwitches();
+		settingsDialog_->setPlaybackChecks(playBackItems_);
+		settingsDialog_->setCaptureChecks(captureItems_);
+		settingsDialog_->setEnumChecks(enumItems_);
+	}
 }
 
 void PopupWindow::onMixerChanged(const QString &mixer)
@@ -358,6 +435,21 @@ void PopupWindow::updateSwitches()
 	}
 }
 
+void PopupWindow::onPlayback(const QString &name, bool isIt)
+{
+	alsaWork_->setSwitch(cardIndex_, name, PLAYBACK, isIt);
+}
+
+void PopupWindow::onCapture(const QString &name, bool isIt)
+{
+	alsaWork_->setSwitch(cardIndex_, name, CAPTURE ,isIt);
+}
+
+void PopupWindow::onEnum(const QString &name, bool isIt)
+{
+	alsaWork_->setSwitch(cardIndex_, name, ENUM, isIt);
+}
+
 void PopupWindow::iconActivated(QSystemTrayIcon::ActivationReason reason)
 {
 	switch (reason) {
@@ -373,20 +465,6 @@ void PopupWindow::iconActivated(QSystemTrayIcon::ActivationReason reason)
 	}
 }
 
-void PopupWindow::onPlayback(const QString &name, bool isIt)
-{
-	alsaWork_->setSwitch(cardIndex_, name, PLAYBACK, isIt);
-}
-
-void PopupWindow::onCapture(const QString &name, bool isIt)
-{
-	alsaWork_->setSwitch(cardIndex_, name, CAPTURE ,isIt);
-}
-
-void PopupWindow::onEnum(const QString &name, bool isIt)
-{
-	alsaWork_->setSwitch(cardIndex_, name, ENUM, isIt);
-}
 
 void PopupWindow::onAutorun(bool isIt)
 {
@@ -442,4 +520,17 @@ QString PopupWindow::getResPath(const QString &fileName)
 		}
 	}
 	return QString();
+}
+
+void PopupWindow::onSoundSystem(bool isIt)
+{
+	isPulse_ = isIt;
+	if (isPulse_) {
+		settingsDialog_->hideAlsaElements(isPulse_);
+		settingsDialog_->setSoundCards(pulseCardList_);
+	}
+	else {
+		settingsDialog_->hideAlsaElements(isPulse_);
+		settingsDialog_->setSoundCards(cardList_);
+	}
 }

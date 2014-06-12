@@ -48,6 +48,8 @@ public:
 	void setCaptureChecks(QList<switcher> cList);
 	void setEnumChecks(QList<switcher> eList);
 	void setIconStyle(bool isLight);
+	void setUsePulse(bool isPulse);
+	void hideAlsaElements(bool isHide);
 
 protected:
 	void closeEvent(QCloseEvent *);
@@ -63,6 +65,7 @@ protected slots:
 	void onENAction(QListWidgetItem *item);
 	void onDarkStyle(bool toggled);
 	void onLightStyle(bool toggled);
+	void onPulseSoundSystem(bool toggled);
 signals:
 	void soundCardChanged(const QString &card);
 	void mixerChanged(const QString &mixer);
@@ -71,6 +74,7 @@ signals:
 	void captChanged(const QString &check, bool isIt);
 	void enumChanged(const QString &check, bool isIt);
 	void styleChanged(bool isLight);
+	void soundSystemChanged(bool isAlsa);
 
 private:
 	Ui::SettingsDialog *ui;
