@@ -22,7 +22,6 @@
 
 #include <QtGui>
 #include <QDesktopWidget>
-#include <QDebug>
 
 static const QString autoStartPath = ".config/autostart";
 static const QString fName = QDir::home().absolutePath() + "/.config/autostart/qtalsavolume.desktop";
