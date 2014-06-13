@@ -21,6 +21,7 @@ public:
 	pa_cvolume volume;
 	int volume_percent();
 	bool mute();
+	double round(double value);
 private:
 	int percent(pa_cvolume& volume);
 private:

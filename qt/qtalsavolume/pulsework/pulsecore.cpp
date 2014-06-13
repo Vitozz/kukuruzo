@@ -189,14 +189,9 @@ PulseDevice PulseCore::getDefaultSource()
 	return getSource(info.defaultSourceName);
 }
 
-double PulseCore::round(double value)
-{
-	return (value > 0.0) ? floor(value + 0.5) : ceil(value - 0.5);
-}
-
 void PulseCore::setVolume_(PulseDevice &device, int value)
 {
-	pa_cvolume* new_cvolume = pa_cvolume_set(&device.volume, device.volume.channels, (pa_volume_t) round(fmax(((double)value * PA_VOLUME_NORM) / 100, 0)));
+	pa_cvolume* new_cvolume = pa_cvolume_set(&device.volume, device.volume.channels, (pa_volume_t) device.round(fmax(((double)value * PA_VOLUME_NORM) / 100, 0)));
 	pa_operation* op;
 	if (device.type() == SINK) {
 		op = pa_context_set_sink_volume_by_index(context_, device.index(), new_cvolume, success_cb, NULL);

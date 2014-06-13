@@ -45,7 +45,6 @@ private:
 	void setMute_(PulseDevice &device, bool mute);
 	void iterate(pa_operation* op);
 	void onError(const QString &message);
-	double round(double value);
 private:
 	pa_mainloop* mainLoop_;
 	pa_mainloop_api* mainLoopApi_;

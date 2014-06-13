@@ -558,6 +558,7 @@ build_qtavolume ()
 	debdir=${builddir}/${project}-${ver}
 	prepare
 	cd ${debdir}
+	sed "s/#CONFIG += pulseaudio/CONFIG += pulseaudio/" -i qtalsavolume.pro
 	section="sound"
 	arch="any"
 	builddep="debhelper (>= 7), cdbs, libqt4-dev, libasound2-dev"

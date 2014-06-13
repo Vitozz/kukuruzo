@@ -465,8 +465,8 @@ Simple tool written using gtkmm-3 library to set the levels of alsa mixers
 %setup
 
 %build
-qmake
-make  
+cmake -DCMAKE_INSTALL_PREFIX=%{buildroot}/usr .
+%{__make} %{?_smp_mflags}  
 
 %install
 [ \"%{buildroot}\" != \"/\"] && rm -rf %{buildroot}
@@ -514,7 +514,7 @@ License: GPL-2
 Group: Applications/Multimedia
 URL: http://sites.google.com/site/thesomeprojects/main-1
 Source0: %{name}-%{version}.tar.gz
-BuildRequires: gcc-c++, zlib-devel
+BuildRequires: gcc-c++, libpulse-devel
 %{!?_without_freedesktop:BuildRequires: desktop-file-utils}
 
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-build
@@ -526,8 +526,8 @@ Simple tool written using Qt4 library to set the levels of alsa mixers
 %setup
 
 %build
-qmake
-make  
+cmake -DCMAKE_INSTALL_PREFIX=%{buildroot}/usr -DUSE_PULSE=OK .
+%{__make} %{?_smp_mflags}   
 
 %install
 [ \"%{buildroot}\" != \"/\"] && rm -rf %{buildroot}

@@ -24,7 +24,7 @@ PulseDevice::PulseDevice(const pa_source_info* i)
 	index_ = i->index;
 	type_ = SOURCE;
 	name_ = QString(i->name);
-	description_ = QString(i->description);
+	description_ = QString::fromUtf8(i->description);  //Fixme later
 	volume.channels = i->volume.channels;
 	int n;
 	for (n = 0; n < volume.channels; ++n) {
@@ -40,7 +40,7 @@ PulseDevice::PulseDevice(const pa_sink_info* i)
 	index_ = i->index;
 	type_ = SINK;
 	name_ = QString(i->name);
-	description_ = QString(i->description);
+	description_ = QString::fromUtf8(i->description); //Fixme later
 	volume.channels = i->volume.channels;
 	int n;
 	for (n = 0; n < volume.channels; ++n)
@@ -52,6 +52,11 @@ PulseDevice::PulseDevice(const pa_sink_info* i)
 int PulseDevice::percent(pa_cvolume& volume_)
 {
 	return (int) round(((double) pa_cvolume_avg(&volume_) * 100.) / PA_VOLUME_NORM);
+}
+
+double PulseDevice::round(double value)
+{
+	return (value > 0.0) ? floor(value + 0.5) : ceil(value - 0.5);
 }
 
 uint32_t PulseDevice::index()
