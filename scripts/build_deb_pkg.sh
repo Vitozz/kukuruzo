@@ -642,10 +642,10 @@ build_i386 ()
 {
 	if [ ! -z "$1" ]
 	then
-		exitdir=/var/cache/pbuilder/${i386_dist}-i386/result
+		cowbdir=/var/cache/pbuilder/${i386_dist}-i386/result
 		app=$1
 		sudo DIST=${i386_dist} ARCH=i386 cowbuilder --build ${builddir}/${app}
-		cp -f ${exitdir}/${app/.dsc}_i386.deb	${exitdir}/
+		cp -f ${cowbdir}/${app/.dsc}_i386.deb	${exitdir}/
 	fi
 }
 
