@@ -669,7 +669,7 @@ build_all_qtalsa ()
 	build_i386 ${package_name}
 }
 
-build_all_qtalsa ()
+build_all_alsa ()
 {
 	project="alsavolume"
 	dirname="cppAlsaVolume"
