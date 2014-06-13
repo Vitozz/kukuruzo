@@ -28,6 +28,7 @@ addit=""
 builddep=""
 docfiles=""
 dirs=""
+i386_dist="precise" #Ubuntu 12.04
 
 CWDIR=`pwd`
 echo "Current workdir ${CWDIR}"
@@ -531,7 +532,7 @@ build_avolume ()
 	cd ${debdir}
 	section="sound"
 	arch="any"
-	builddep="debhelper (>= 7), cdbs, libqt4-dev, libgtkmm-3.0-dev, libasound2-dev"
+	builddep="debhelper (>= 7), cdbs, libqt4-dev, libgtkmm-3.0-dev, libasound2-dev, pkg-config"
 	addit="#"
 	depends="\${shlibs:Depends}, \${misc:Depends}, libgtkmm-3.0-1, libasound2, libc6 (>=2.7-1), libgcc1 (>=1:4.1.1), libstdc++6 (>=4.1.1), libx11-6, zlib1g (>=1:1.1.4)"
 	description="Tray ALSA volume changer"
@@ -637,6 +638,46 @@ usr/share/applications
 	cp -f ${builddir}/*.deb	${exitdir}/
 }
 
+build_i386 ()
+{
+	if [ ! -z "$1" ]
+	then
+		exitdir=/var/cache/pbuilder/${i386_dist}-i386/result
+		app=$1
+		sudo DIST=${i386_dist} ARCH=i386 cowbuilder --build ${builddir}/${app}
+		cp -f ${exitdir}/${app/.dsc}_i386.deb	${exitdir}/
+	fi
+}
+
+build_all_regexp ()
+{
+	project="regexptest"
+	dirname="qt/regexptest"
+	ver=$(cat ${srcdir}/${dirname}/version.txt)
+	package_name=${project}_${ver}-1.dsc
+	build_regext
+	build_i386 ${package_name}
+}
+
+build_all_qtalsa ()
+{
+	project="qtalsavolume"
+	dirname="qt/qtalsavolume"
+	ver=$(cat ${srcdir}/${dirname}/version.txt)
+	package_name=${project}_${ver}-1.dsc
+	build_qtavolume
+	build_i386 ${package_name}
+}
+
+build_all_qtalsa ()
+{
+	project="alsavolume"
+	dirname="cppAlsaVolume"
+	ver=$(cat ${srcdir}/${dirname}/version.txt)
+	package_name=${project}_${ver}-1.dsc
+	build_avolume
+	build_i386 ${package_name}
+}
 
 print_menu ()
 {
@@ -685,6 +726,9 @@ choose_action ()
 		"b" ) build_avolume;;
 		"c" ) build_qtavolume;;
 		"d" ) build_hismerger;;
+		"e" ) build_all_regexp;;
+		"f" ) build_all_alsa;;
+		"g" ) build_all_qtalsa;;
 		"0" ) quit;;
 		"ra" ) rm_all;;
 		"ga" ) get_all;;
