@@ -561,7 +561,7 @@ build_qtavolume ()
 	sed "s/#CONFIG += pulseaudio/CONFIG += pulseaudio/" -i qtalsavolume.pro
 	section="sound"
 	arch="any"
-	builddep="debhelper (>= 7), cdbs, libqt4-dev, libasound2-dev"
+	builddep="debhelper (>= 7), cdbs, libqt4-dev, libasound2-dev, libpulse-dev, pkg-config"
 	addit="#"
 	depends="\${shlibs:Depends}, \${misc:Depends}, libasound2, libc6 (>=2.7-1), libgcc1 (>=1:4.1.1), libstdc++6 (>=4.1.1), libx11-6, zlib1g (>=1:1.1.4)"
 	description="Tray ALSA volume changer"
