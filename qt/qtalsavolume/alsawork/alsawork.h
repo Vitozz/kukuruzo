@@ -50,7 +50,7 @@ private:
 	snd_mixer_t *getMixerHanlde(int id);
 	snd_mixer_elem_t *initMixerElement(snd_mixer_t *handle, const char *mixer);
 	void setVolume(snd_mixer_elem_t *element, snd_mixer_t *handle, double volume);
-	QString formatCardName(int id);
+	QString formatCardName(int id) const;
 	void checkError (int errorIndex);
 	void getCards();
 	void updateMixers(int cardIndex);

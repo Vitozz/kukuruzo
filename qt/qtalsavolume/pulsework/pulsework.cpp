@@ -30,7 +30,7 @@ PulseWork::~PulseWork()
 	delete pulse_;
 }
 
-QStringList PulseWork::getCardList()
+QStringList PulseWork::getCardList() const
 {
 	QStringList cards;
 	foreach (const QString &card, sinks_) {
@@ -42,22 +42,22 @@ QStringList PulseWork::getCardList()
 	return cards;
 }
 
-QString PulseWork::getCardName(const QString &description)
+QString PulseWork::getCardName(const QString &description) const
 {
 	return pulse_->getDeviceName(description);
 }
 
-QString PulseWork::getCardDescription(const QString &name)
+QString PulseWork::getCardDescription(const QString &name) const
 {
 	return pulse_->getDeviceDescription(name);
 }
 
-int PulseWork::getVolume(const QString &description)
+int PulseWork::getVolume(const QString &description) const
 {
 	return pulse_->getVolume(description);
 }
 
-bool PulseWork::getMute(const QString &description)
+bool PulseWork::getMute(const QString &description) const
 {
 	return pulse_->getMute(description);
 }
@@ -72,7 +72,7 @@ void PulseWork::setVolume(int value)
 	pulse_->setVolume(currentCard_, value);
 }
 
-QString PulseWork::getDefaultCard()
+QString PulseWork::getDefaultCard() const
 {
 	return pulse_->defaultSink();
 }

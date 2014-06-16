@@ -76,7 +76,7 @@ private:
 	void setIconToolTip(int value);
 	void createDesktopFile();
 	void readDesktopFile();
-	QString getResPath(const QString &fileName);
+	QString getResPath(const QString &fileName) const;
 	void updateSwitches();
 
 private:

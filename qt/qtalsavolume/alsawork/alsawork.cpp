@@ -253,7 +253,7 @@ snd_mixer_t *AlsaWork::getMixerHanlde(int id)
 	return handle;
 }
 
-QString AlsaWork::formatCardName(int id)
+QString AlsaWork::formatCardName(int id) const
 {
 	QString result = "hw:" + QString::number(id);
 	return result;

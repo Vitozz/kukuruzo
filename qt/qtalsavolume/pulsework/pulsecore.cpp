@@ -189,34 +189,7 @@ PulseDevice PulseCore::getDefaultSource()
 	return getSource(info.defaultSourceName);
 }
 
-void PulseCore::setVolume_(PulseDevice &device, int value)
-{
-	pa_cvolume* new_cvolume = pa_cvolume_set(&device.volume, device.volume.channels, (pa_volume_t) device.round(fmax(((double)value * PA_VOLUME_NORM) / 100, 0)));
-	pa_operation* op;
-	if (device.type() == SINK) {
-		op = pa_context_set_sink_volume_by_index(context_, device.index(), new_cvolume, success_cb, NULL);
-	}
-	else {
-		op = pa_context_set_source_volume_by_index(context_, device.index(), new_cvolume, success_cb, NULL);
-	}
-	iterate(op);
-	pa_operation_unref(op);
-}
-
-void PulseCore::setMute_(PulseDevice &device, bool mute)
-{
-	pa_operation* op;
-	if (device.type() == SINK) {
-		op = pa_context_set_sink_mute_by_index(context_, device.index(), (int) mute, success_cb, NULL);
-	}
-	else {
-		op = pa_context_set_source_mute_by_index(context_, device.index(), (int) mute, success_cb, NULL);
-	}
-	iterate(op);
-	pa_operation_unref(op);
-}
-
-QStringList PulseCore::getSinksDescriptions()
+QStringList PulseCore::getSinksDescriptions() const
 {
 	QStringList descriptions;
 	foreach (PulseDevice device, sinks_) {
@@ -225,7 +198,7 @@ QStringList PulseCore::getSinksDescriptions()
 	return descriptions;
 }
 
-QStringList PulseCore::getSourcesDescriptions()
+QStringList PulseCore::getSourcesDescriptions() const
 {
 	QStringList descriptions;
 	foreach (PulseDevice device, sources_) {
@@ -255,6 +228,43 @@ QString PulseCore::getDeviceName(const QString &description)
 		}
 	}
 	return getDefaultSink().name();
+}
+
+QString PulseCore::defaultSink()
+{
+	return getDefaultSink().description();
+}
+
+QString PulseCore::defaultSource()
+{
+	return getDefaultSource().description();
+}
+
+void PulseCore::setVolume_(PulseDevice &device, int value)
+{
+	pa_cvolume* new_cvolume = pa_cvolume_set(&device.volume, device.volume.channels, (pa_volume_t) device.round(fmax(((double)value * PA_VOLUME_NORM) / 100, 0)));
+	pa_operation* op;
+	if (device.type() == SINK) {
+		op = pa_context_set_sink_volume_by_index(context_, device.index(), new_cvolume, success_cb, NULL);
+	}
+	else {
+		op = pa_context_set_source_volume_by_index(context_, device.index(), new_cvolume, success_cb, NULL);
+	}
+	iterate(op);
+	pa_operation_unref(op);
+}
+
+void PulseCore::setMute_(PulseDevice &device, bool mute)
+{
+	pa_operation* op;
+	if (device.type() == SINK) {
+		op = pa_context_set_sink_mute_by_index(context_, device.index(), (int) mute, success_cb, NULL);
+	}
+	else {
+		op = pa_context_set_source_mute_by_index(context_, device.index(), (int) mute, success_cb, NULL);
+	}
+	iterate(op);
+	pa_operation_unref(op);
 }
 
 void PulseCore::onError(const QString &message)
@@ -289,14 +299,4 @@ bool PulseCore::getMute(const QString &description)
 	QString name = getDeviceName(description);
 	PulseDevice device = getSink(name);
 	return device.mute();
-}
-
-QString PulseCore::defaultSink()
-{
-	return getDefaultSink().description();
-}
-
-QString PulseCore::defaultSource()
-{
-	return getDefaultSource().description();
 }

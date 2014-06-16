@@ -14,16 +14,16 @@ class PulseDevice
 public:
 	PulseDevice(const pa_source_info* i_);
 	PulseDevice(const pa_sink_info* i);
-	uint32_t index();
-	device_type type();
-	QString name();
-	QString description();
+	uint32_t index() const;
+	device_type type() const;
+	QString &name();
+	QString &description();
 	pa_cvolume volume;
-	int volume_percent();
-	bool mute();
-	double round(double value);
+	int volume_percent() const;
+	bool mute() const;
+	double round(double value) const;
 private:
-	int percent(pa_cvolume& volume);
+	int percent(pa_cvolume& volume) const;
 private:
 	uint32_t index_;
 	device_type type_;

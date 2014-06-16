@@ -38,15 +38,15 @@ class SettingsDialog : public QDialog
 public:
 	explicit SettingsDialog(QWidget *parent = 0);
 	~SettingsDialog();
-	void setSoundCards(QStringList cards);
-	void setMixers(QStringList mixers);
+	void setSoundCards(const QStringList &cards);
+	void setMixers(const QStringList &mixers);
 	void setAutorun(bool isAutorun);
 	void connectSignals();
 	void setCurrentCard(const QString &card);
 	void setCurrentMixer(const QString &mixer);
-	void setPlaybackChecks(QList<switcher> pbList);
-	void setCaptureChecks(QList<switcher> cList);
-	void setEnumChecks(QList<switcher> eList);
+	void setPlaybackChecks(const QList<switcher> &pbList);
+	void setCaptureChecks(const QList<switcher> &cList);
+	void setEnumChecks(const QList<switcher> &eList);
 	void setIconStyle(bool isLight);
 	void setUsePulse(bool isPulse);
 	void hideAlsaElements(bool isHide);

@@ -504,7 +504,7 @@ void PopupWindow::onStyleChanged(bool isLight)
 	setTrayIcon(volumeValue_);
 }
 
-QString PopupWindow::getResPath(const QString &fileName)
+QString PopupWindow::getResPath(const QString &fileName) const
 {
 	QStringList resDirs;
 	resDirs << QString(QDir::currentPath());

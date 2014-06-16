@@ -57,7 +57,7 @@ SettingsDialog::~SettingsDialog()
 	delete ui;
 }
 
-void SettingsDialog::setSoundCards(QStringList cards)
+void SettingsDialog::setSoundCards(const QStringList &cards)
 {
 	soundCards_ = cards;
 	if (ui->cardBox->count() > 0) {
@@ -67,7 +67,7 @@ void SettingsDialog::setSoundCards(QStringList cards)
 	ui->cardBox->setCurrentIndex(0);
 }
 
-void SettingsDialog::setMixers(QStringList mixers)
+void SettingsDialog::setMixers(const QStringList &mixers)
 {
 	mixers_ = mixers;
 	if (ui->mixerBox->count() > 0) {
@@ -143,7 +143,7 @@ void SettingsDialog::closeEvent(QCloseEvent *)
 	hide();
 }
 
-void SettingsDialog::setPlaybackChecks(QList<switcher> pbList)
+void SettingsDialog::setPlaybackChecks(const QList<switcher> &pbList)
 {
 	itemsAdded_ = false;
 	if (playbacks_->count() > 0) {
@@ -164,7 +164,7 @@ void SettingsDialog::setPlaybackChecks(QList<switcher> pbList)
 	itemsAdded_ = true;
 }
 
-void SettingsDialog::setCaptureChecks(QList<switcher> cList)
+void SettingsDialog::setCaptureChecks(const QList<switcher> &cList)
 {
 	itemsAdded_ = false;
 	if (captures_->count() > 0 ){
@@ -185,7 +185,7 @@ void SettingsDialog::setCaptureChecks(QList<switcher> cList)
 	itemsAdded_ = true;
 }
 
-void SettingsDialog::setEnumChecks(QList<switcher> eList)
+void SettingsDialog::setEnumChecks(const QList<switcher> &eList)
 {
 	itemsAdded_ = false;
 	if (enums_->count() > 0 ){

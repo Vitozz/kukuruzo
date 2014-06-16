@@ -43,48 +43,49 @@ PulseDevice::PulseDevice(const pa_sink_info* i)
 	description_ = QString::fromUtf8(i->description); //Fixme later
 	volume.channels = i->volume.channels;
 	int n;
-	for (n = 0; n < volume.channels; ++n)
+	for (n = 0; n < volume.channels; ++n) {
 		volume.values[n] = i->volume.values[n];
+	}
 	volume_percent_ = percent(volume);
 	mute_ = i->mute == 1;
 }
 
-int PulseDevice::percent(pa_cvolume& volume_)
+int PulseDevice::percent(pa_cvolume& volume_) const
 {
 	return (int) round(((double) pa_cvolume_avg(&volume_) * 100.) / PA_VOLUME_NORM);
 }
 
-double PulseDevice::round(double value)
+double PulseDevice::round(double value) const
 {
 	return (value > 0.0) ? floor(value + 0.5) : ceil(value - 0.5);
 }
 
-uint32_t PulseDevice::index()
+uint32_t PulseDevice::index() const
 {
 	return index_;
 }
 
-device_type PulseDevice::type()
+device_type PulseDevice::type() const
 {
 	return type_;
 }
 
-QString PulseDevice::name()
+QString &PulseDevice::name()
 {
 	return name_;
 }
 
-QString PulseDevice::description()
+QString &PulseDevice::description()
 {
 	return description_;
 }
 
-int PulseDevice::volume_percent()
+int PulseDevice::volume_percent() const
 {
 	return volume_percent_;
 }
 
-bool PulseDevice::mute()
+bool PulseDevice::mute() const
 {
 	return mute_;
 }
