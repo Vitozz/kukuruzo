@@ -24,7 +24,7 @@ PulseDevice::PulseDevice(const pa_source_info* i)
 	index_ = i->index;
 	type_ = SOURCE;
 	name_ = QString(i->name);
-	description_ = QString::fromUtf8(i->description);  //Fixme later
+	description_ = QString::fromLocal8Bit(i->description);  //Fixme later
 	volume.channels = i->volume.channels;
 	int n;
 	for (n = 0; n < volume.channels; ++n) {
@@ -40,7 +40,7 @@ PulseDevice::PulseDevice(const pa_sink_info* i)
 	index_ = i->index;
 	type_ = SINK;
 	name_ = QString(i->name);
-	description_ = QString::fromUtf8(i->description); //Fixme later
+	description_ = QString::fromLocal8Bit(i->description); //Fixme later
 	volume.channels = i->volume.channels;
 	int n;
 	for (n = 0; n < volume.channels; ++n) {
