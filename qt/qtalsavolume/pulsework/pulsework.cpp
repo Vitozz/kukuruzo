@@ -30,16 +30,16 @@ PulseWork::~PulseWork()
 	delete pulse_;
 }
 
-QStringList PulseWork::getCardList() const
+void PulseWork::updateDevices()
 {
-	QStringList cards;
-	foreach (const QString &card, sinks_) {
-		cards << card;
-	}
-	foreach (const QString &card, sources_) {
-		cards << card;
-	}
-	return cards;
+	sinks_ = pulse_->getSinksDescriptions();
+	sources_ = pulse_->getSourcesDescriptions();
+}
+
+QStringList PulseWork::getCardList()
+{
+	updateDevices();
+	return QStringList() << sinks_ << sources_;
 }
 
 QString PulseWork::getCardName(const QString &description) const

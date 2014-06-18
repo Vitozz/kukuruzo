@@ -11,7 +11,7 @@ public:
 	PulseWork();
 	PulseWork(PulseWork const &);
 	~PulseWork();
-	QStringList getCardList() const;
+	QStringList getCardList();
 	QString getCardName(const QString &description) const;
 	QString getCardDescription(const QString &name) const;
 	QString getDefaultCard() const;
@@ -20,6 +20,8 @@ public:
 	bool getMute(const QString &description) const;
 	void setMute(bool mute);
 	void setVolume(int value);
+private:
+	void updateDevices();
 private:
 	PulseCore *pulse_;
 	QStringList sinks_;

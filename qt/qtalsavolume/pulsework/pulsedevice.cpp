@@ -17,14 +17,14 @@
  */
 
 #include "pulsedevice.h"
-#include <cmath>
+#include <QtCore/qmath.h>
 
 PulseDevice::PulseDevice(const pa_source_info* i)
 {
 	index_ = i->index;
 	type_ = SOURCE;
 	name_ = QString(i->name);
-	description_ = QString::fromLocal8Bit(i->description);  //Fixme later
+	description_ = QString::fromLocal8Bit(i->description);
 	volume.channels = i->volume.channels;
 	int n;
 	for (n = 0; n < volume.channels; ++n) {
@@ -40,7 +40,7 @@ PulseDevice::PulseDevice(const pa_sink_info* i)
 	index_ = i->index;
 	type_ = SINK;
 	name_ = QString(i->name);
-	description_ = QString::fromLocal8Bit(i->description); //Fixme later
+	description_ = QString::fromLocal8Bit(i->description);
 	volume.channels = i->volume.channels;
 	int n;
 	for (n = 0; n < volume.channels; ++n) {
@@ -57,7 +57,7 @@ int PulseDevice::percent(pa_cvolume& volume_) const
 
 double PulseDevice::round(double value) const
 {
-	return (value > 0.0) ? floor(value + 0.5) : ceil(value - 0.5);
+	return (value > 0.0) ? qFloor(value + 0.5) : qCeil(value - 0.5);
 }
 
 uint32_t PulseDevice::index() const

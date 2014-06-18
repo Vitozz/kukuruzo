@@ -287,6 +287,9 @@ void PopupWindow::showSettings()
 {
 	settingsDialog_->setIconStyle(isLightStyle_);
 	if (isPulse_) {
+#ifdef USE_PULSE
+		pulseCardList_ = pulse_->getCardList();
+#endif
 		settingsDialog_->setCurrentCard(pulseCardName_);
 	}
 	else {

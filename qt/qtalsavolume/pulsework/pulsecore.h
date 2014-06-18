@@ -23,6 +23,7 @@
 #include "pulse/pulseaudio.h"
 #include <QStringList>
 #include <QList>
+#include <QPair>
 
 struct ServerInfo {
 	QString defaultSourceName;
@@ -34,6 +35,8 @@ enum state {
 	ERROR
 };
 
+typedef QPair<device_type, QString> SimpleDevice;
+
 class PulseCore
 {
 public:
@@ -42,8 +45,8 @@ public:
 	state pState;
 	QString defaultSink();
 	QString defaultSource();
-	QStringList getSinksDescriptions() const;
-	QStringList getSourcesDescriptions() const;
+	QStringList getSinksDescriptions();
+	QStringList getSourcesDescriptions();
 	QString getDeviceDescription(const QString &name);
 	QString getDeviceName(const QString &description);
 	int getVolume(const QString &description);
@@ -59,6 +62,7 @@ private:
 	PulseDevice getSource(const QString &name);
 	PulseDevice getDefaultSink();
 	PulseDevice getDefaultSource();
+	SimpleDevice getSimpleDevice(const QString &description);
 	void setVolume_(PulseDevice &device, int value);
 	void setMute_(PulseDevice &device, bool mute);
 	void iterate(pa_operation* op);
@@ -68,8 +72,6 @@ private:
 	pa_mainloop_api* mainLoopApi_;
 	pa_context* context_;
 	int retval_;
-	QList<PulseDevice> sinks_;
-	QList<PulseDevice> sources_;
 };
 
 #endif // PULSECORE_H

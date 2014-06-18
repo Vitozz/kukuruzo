@@ -19,7 +19,6 @@
 #include "pulsecore.h"
 #include "pulse/pulseaudio.h"
 
-#include <cmath>
 #include <QMessageBox>
 
 //Callbacks
@@ -73,10 +72,10 @@ void success_cb(pa_context* c, int success, void* raw) {
 
 
 PulseCore::PulseCore(const char *clientName)
+: mainLoop_(pa_mainloop_new()),
+  mainLoopApi_(pa_mainloop_get_api(mainLoop_)),
+  context_(pa_context_new(mainLoopApi_,clientName))
 {
-	mainLoop_ = pa_mainloop_new();
-	mainLoopApi_ = pa_mainloop_get_api(mainLoop_);
-	context_ = pa_context_new(mainLoopApi_,clientName);
 	pState = CONNECTING;
 	pa_context_set_state_callback(context_, &state_cb, this);
 	pa_context_connect(context_, NULL, PA_CONTEXT_NOFLAGS, NULL);
@@ -86,12 +85,11 @@ PulseCore::PulseCore(const char *clientName)
 	if (pState == ERROR) {
 		onError("Connection Error");
 	}
-	sinks_ = getSinks();
-	sources_ = getSources();
 }
 
 PulseCore::~PulseCore()
 {
+
 	if (pState == CONNECTED) {
 		pa_context_disconnect(context_);
 	}
@@ -189,19 +187,19 @@ PulseDevice PulseCore::getDefaultSource()
 	return getSource(info.defaultSourceName);
 }
 
-QStringList PulseCore::getSinksDescriptions() const
+QStringList PulseCore::getSinksDescriptions()
 {
 	QStringList descriptions;
-	foreach (PulseDevice device, sinks_) {
+	foreach (PulseDevice device, getSinks()) {
 		descriptions << device.description();
 	}
 	return descriptions;
 }
 
-QStringList PulseCore::getSourcesDescriptions() const
+QStringList PulseCore::getSourcesDescriptions()
 {
 	QStringList descriptions;
-	foreach (PulseDevice device, sources_) {
+	foreach (PulseDevice device, getSources()) {
 		descriptions << device.description();
 	}
 	return descriptions;
@@ -209,25 +207,42 @@ QStringList PulseCore::getSourcesDescriptions() const
 
 QString PulseCore::getDeviceDescription(const QString &name)
 {
-	PulseDevice device = getSink(name);
-	return device.description();
+	foreach (PulseDevice device, getSinks()) {
+		if (device.name() == name) {
+			return device.description();
+		}
+	}
+	foreach (PulseDevice device, getSources()) {
+		if (device.name() == name) {
+			return device.description();
+		}
+	}
+	return getDefaultSink().description();
+}
+
+SimpleDevice PulseCore::getSimpleDevice(const QString &description)
+{
+	SimpleDevice sDevice = SimpleDevice(getDefaultSink().type(),getDefaultSink().name());
+	foreach (PulseDevice device, getSinks()) {
+		if (device.description() == description) {
+			sDevice.first = device.type();
+			sDevice.second = device.name();
+			break;
+		}
+	}
+	foreach (PulseDevice device, getSources()) {
+		if (device.description() == description) {
+			sDevice.first = device.type();
+			sDevice.second = device.name();
+			break;
+		}
+	}
+	return sDevice;
 }
 
 QString PulseCore::getDeviceName(const QString &description)
 {
-	sinks_ = getSinks();
-	sources_ = getSources();
-	foreach (PulseDevice device, sinks_) {
-		if (device.description().contains(description)) {
-			return device.name();
-		}
-	}
-	foreach (PulseDevice device, sinks_) {
-		if (device.description().contains(description)) {
-			return device.name();
-		}
-	}
-	return getDefaultSink().name();
+	return getSimpleDevice(description).second;
 }
 
 QString PulseCore::defaultSink()
@@ -242,7 +257,10 @@ QString PulseCore::defaultSource()
 
 void PulseCore::setVolume_(PulseDevice &device, int value)
 {
-	pa_cvolume* new_cvolume = pa_cvolume_set(&device.volume, device.volume.channels, (pa_volume_t) device.round(fmax(((double)value * PA_VOLUME_NORM) / 100, 0)));
+	pa_cvolume* new_cvolume = pa_cvolume_set(&device.volume,
+						 device.volume.channels,
+						 (pa_volume_t) device.round(qMax(((double)value * PA_VOLUME_NORM) / 100, 0.0))
+						 );
 	pa_operation* op;
 	if (device.type() == SINK) {
 		op = pa_context_set_sink_volume_by_index(context_, device.index(), new_cvolume, success_cb, NULL);
@@ -275,28 +293,52 @@ void PulseCore::onError(const QString &message)
 
 void PulseCore::setVolume(const QString &description, int value)
 {
-	QString name = getDeviceName(description);
-	PulseDevice device = getSink(name);
+	SimpleDevice sDevice = getSimpleDevice(description);
+	PulseDevice device = getDefaultSink();
+	if (sDevice.first == SINK) {
+		device = getSink(sDevice.second);
+	}
+	else if (sDevice.first == SOURCE) {
+		device = getSource(sDevice.second);
+	}
 	setVolume_(device, value);
 }
 
 void PulseCore::setMute(const QString &description, bool mute)
 {
-	QString name = getDeviceName(description);
-	PulseDevice device = getSink(name);
+	SimpleDevice sDevice = getSimpleDevice(description);
+	PulseDevice device = getDefaultSink();
+	if (sDevice.first == SINK) {
+		device = getSink(sDevice.second);
+	}
+	else if (sDevice.first == SOURCE) {
+		device = getSource(sDevice.second);
+	}
 	setMute_(device, mute);
 }
 
 int PulseCore::getVolume(const QString &description)
 {
-	QString name = getDeviceName(description);
-	PulseDevice device = getSink(name);
+	SimpleDevice sDevice = getSimpleDevice(description);
+	PulseDevice device = getDefaultSink();
+	if (sDevice.first == SINK) {
+		device = getSink(sDevice.second);
+	}
+	else if (sDevice.first == SOURCE) {
+		device = getSource(sDevice.second);
+	}
 	return device.volume_percent();
 }
 
 bool PulseCore::getMute(const QString &description)
 {
-	QString name = getDeviceName(description);
-	PulseDevice device = getSink(name);
+	SimpleDevice sDevice = getSimpleDevice(description);
+	PulseDevice device = getDefaultSink();
+	if (sDevice.first == SINK) {
+		device = getSink(sDevice.second);
+	}
+	else if (sDevice.first == SOURCE) {
+		device = getSource(sDevice.second);
+	}
 	return device.mute();
 }
