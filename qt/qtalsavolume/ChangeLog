@@ -1,6 +1,7 @@
 2014-06-19
 v0.0.7
   + Fixed work with devices in Pulseaudio
+  + Removed unused class PulseWork 
   
 2014-06-16
 v0.0.6

@@ -45,14 +45,14 @@ public:
 	state pState;
 	QString defaultSink();
 	QString defaultSource();
-	QStringList getSinksDescriptions();
-	QStringList getSourcesDescriptions();
+	QStringList getCardList();
 	QString getDeviceDescription(const QString &name);
 	QString getDeviceName(const QString &description);
-	int getVolume(const QString &description);
-	bool getMute(const QString &description);
-	void setVolume(const QString &description, int value);
-	void setMute(const QString &description, bool mute);
+	int getVolume();
+	bool getMute();
+	void setVolume(int value);
+	void setMute(bool mute);
+	void setCurrentDevice(const QString &description);
 private:
 	QList<PulseDevice> getSinks();
 	QList<PulseDevice> getSources();
@@ -63,6 +63,8 @@ private:
 	PulseDevice getDefaultSink();
 	PulseDevice getDefaultSource();
 	SimpleDevice getSimpleDevice(const QString &description);
+	QStringList getSinksDescriptions();
+	QStringList getSourcesDescriptions();
 	void setVolume_(PulseDevice &device, int value);
 	void setMute_(PulseDevice &device, bool mute);
 	void iterate(pa_operation* op);
@@ -72,6 +74,7 @@ private:
 	pa_mainloop_api* mainLoopApi_;
 	pa_context* context_;
 	int retval_;
+	PulseDevice *currentDevice_;
 };
 
 #endif // PULSECORE_H

@@ -20,11 +20,9 @@ PKGCONFIG += alsa
 pulseaudio {
 	DEFINES += USE_PULSE
 	PKGCONFIG += libpulse
-	SOURCES += pulsework/pulsework.cpp \
-		   pulsework/pulsecore.cpp \
+	SOURCES += pulsework/pulsecore.cpp \
 		   pulsework/pulsedevice.cpp
-	HEADERS += pulsework/pulsework.h \
-		   pulsework/pulsecore.h \
+	HEADERS += pulsework/pulsecore.h \
 		   pulsework/pulsedevice.h
 }
 

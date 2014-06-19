@@ -70,19 +70,19 @@ PopupWindow::PopupWindow()
 	settingsDialog_ = new SettingsDialog(this);
 #ifdef USE_PULSE
 	isPulse_ = setts_.value(PULSE, false).toBool();
-	pulse_ = new PulseWork();
+	pulse_ = new PulseCore(APP_NAME);
 	pulseCardList_ = pulse_->getCardList();
 	QString lastSink = setts_.value(LAST_SINK, "").toString();
 	if (!lastSink.isEmpty()) {
-		pulseCardName_ = pulse_->getCardDescription(lastSink);
+		pulseCardName_ = pulse_->getDeviceDescription(lastSink);
 	}
 	else {
-		pulseCardName_ = pulse_->getDefaultCard();
+		pulseCardName_ = pulse_->defaultSink();
 	}
-	pulse_->setCurrentCard(pulseCardName_);
+	pulse_->setCurrentDevice(pulseCardName_);
 	if (isPulse_) {
-		isMuted_ = pulse_->getMute(pulseCardName_);
-		volumeValue_ = pulse_->getVolume(pulseCardName_);
+		isMuted_ = pulse_->getMute();
+		volumeValue_ = pulse_->getVolume();
 	}
 #else
 	isPulse_ = false;
@@ -212,7 +212,7 @@ void PopupWindow::onAbout()
 #ifdef USE_PULSE
 	QString msg = QString(tr("Tray Alsa Volume Changer written using Qt\n\nWith Pulseaudio support\n\n2014 (c) Vitaly Tonkacheyev (thetvg@gmail.com)\n\nversion: %1")).arg(APP_VERSION);
 #else
-	QString msg = QString(tr("Tray Alsa Volume Changer written using Qt\n\n2013 (c) Vitaly Tonkacheyev (thetvg@gmail.com)\n\nversion: %1")).arg(APP_VERSION);
+	QString msg = QString(tr("Tray Alsa Volume Changer written using Qt\n\n2014 (c) Vitaly Tonkacheyev (thetvg@gmail.com)\n\nversion: %1")).arg(APP_VERSION);
 #endif
 	QMessageBox::about(this, title, msg);
 }
@@ -322,7 +322,7 @@ void PopupWindow::closeEvent(QCloseEvent *)
 {
 	QSettings setts_;
 #ifdef USE_PULSE
-	setts_.setValue(LAST_SINK, pulse_->getCardName(pulseCardName_));
+	setts_.setValue(LAST_SINK, pulse_->getDeviceName(pulseCardName_));
 	setts_.setValue(PULSE, isPulse_);
 #endif
 	setts_.setValue(CARD_INDEX, cardIndex_);
@@ -402,8 +402,8 @@ void PopupWindow::onCardChanged(const QString &card)
 #ifdef USE_PULSE
 	if (isPulse_) {
 		pulseCardName_ = card;
-		pulse_->setCurrentCard(pulseCardName_);
-		volumeValue_ = pulse_->getVolume(pulseCardName_);
+		pulse_->setCurrentDevice(pulseCardName_);
+		volumeValue_ = pulse_->getVolume();
 		volumeSlider_->setValue(volumeValue_);
 	}
 #endif
@@ -421,7 +421,7 @@ void PopupWindow::onCardChanged(const QString &card)
 
 void PopupWindow::onMixerChanged(const QString &mixer)
 {
-	if (mixerList_.contains(mixer)) {
+	if (mixerList_.contains(mixer) && !isPulse_) {
 		mixerName_ = mixer;
 		volumeValue_ = alsaWork_->getAlsaVolume(cardIndex_, mixer);
 		volumeSlider_->setValue(volumeValue_);
@@ -528,6 +528,9 @@ void PopupWindow::onSoundSystem(bool isIt)
 {
 	isPulse_ = isIt;
 	if (isPulse_) {
+#ifdef USE_PULSE
+		pulseCardList_ = pulse_->getCardList();
+#endif
 		settingsDialog_->hideAlsaElements(isPulse_);
 		settingsDialog_->setSoundCards(pulseCardList_);
 	}

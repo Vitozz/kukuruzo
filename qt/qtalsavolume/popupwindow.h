@@ -26,7 +26,7 @@
 
 #include "alsawork/alsawork.h"
 #ifdef USE_PULSE
-#include "pulsework/pulsework.h"
+#include "pulsework/pulsecore.h"
 #endif
 #include "settingsdialog.h"
 #include "defines.h"
@@ -82,7 +82,7 @@ private:
 private:
 	AlsaWork *alsaWork_;
 #ifdef USE_PULSE
-	PulseWork * pulse_;
+	PulseCore * pulse_;
 #endif
 	QString mixerName_;
 	int cardIndex_;
