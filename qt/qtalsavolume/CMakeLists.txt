@@ -25,12 +25,10 @@ if (USE_PULSE)
 	include_directories (${PULSE_INCLUDE_DIRS})
 	add_definitions ( -DUSE_PULSE )
 	set ( pulse_HEADERS
-		pulsework/pulsework.cpp
 		pulsework/pulsecore.cpp
 		pulsework/pulsedevice.cpp
 	)
 	set ( pulse_SOURCES
-		pulsework/pulsework.cpp
 		pulsework/pulsecore.cpp
 		pulsework/pulsedevice.cpp
 	)
