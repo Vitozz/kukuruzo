@@ -35,8 +35,6 @@ enum state {
 	ERROR
 };
 
-typedef QPair<device_type, QString> SimpleDevice;
-
 class PulseCore
 {
 public:
@@ -44,25 +42,26 @@ public:
 	~PulseCore();
 	state pState;
 	QString defaultSink();
-	QString defaultSource();
 	QStringList getCardList();
 	QString getDeviceDescription(const QString &name);
-	QString getDeviceName(const QString &description);
+	QString getDeviceNameByIndex(int index);
+	int getCurrentDeviceIndex();
 	int getVolume();
 	bool getMute();
 	void setVolume(int value);
 	void setMute(bool mute);
-	void setCurrentDevice(const QString &description);
+	void setCurrentDevice(const QString &name);
 private:
 	QList<PulseDevice> getSinks();
 	QList<PulseDevice> getSources();
-	//PulseDevice getSink(u_int32_t);
+	PulseDevice getSink(u_int32_t);
 	PulseDevice getSink(const QString &name);
-	//PulseDevice getSource(u_int32_t);
+	PulseDevice getSource(u_int32_t);
 	PulseDevice getSource(const QString &name);
 	PulseDevice getDefaultSink();
 	PulseDevice getDefaultSource();
-	SimpleDevice getSimpleDevice(const QString &description);
+	PulseDevice getDeviceByName(const QString &name);
+	PulseDevice getDeviceByIndex(int index);
 	QStringList getSinksDescriptions();
 	QStringList getSourcesDescriptions();
 	void setVolume_(PulseDevice &device, int value);

@@ -28,6 +28,7 @@ class FileManager(QObject):
 	def __init__(self):
 		super(FileManager, self).__init__()
 		self.regex = re.compile(r'\|(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})\|\d\|(\w+)\|[^|]+\|.+', re.IGNORECASE)
+		self.fileDesc = re.compile(r'([^\\/]+)\.([^\\/.]+)$')
 		self.isBackup = False
 
 	def readFile(self, fileName):
@@ -148,3 +149,45 @@ class FileManager(QObject):
 
 	def setIsBackup(self, state):
 		self.isBackup = state
+
+	def getFileList(self, dirname):
+		alist = []
+		result = []
+		if (os.path.exists(dirname) && os.path.isdir(dirname)):
+			alist = os.listdir(dirname)
+			for item in alist:
+				if item:
+					filename = os.path.join(dirname, item)
+					fileStruc = [] #list of: 0 = full_path, 1 = file_name, 2 = file_ext
+					if (not os.isdir(filename)):
+						fileStruc.append(filename)
+						matchObj = self.fileDesc.search(filename)
+						if matchObj:
+							fileStruc.append(matchObj.group(1))
+							fileStruc.append(matchObj.group(2))
+							if fileStruc[2] == 'history':
+								result.append(fileStruc)
+		return result
+
+	def processDirs(self, dirlist):
+		allFiles = []
+		if dirlist:
+			for directory in dirlist:
+				filelist = self.getFileList(directory)
+				for file_s in filelist:
+					if file_s:
+						allFiles.append(file_s)
+		return allFiles
+
+	def getDuplicates(self, allFileList):
+		listlen = len(allFileList)
+		result = []
+		for index in xrange(listlen):
+			duplicates=[]
+			current = allFileList[index]
+			next_index = index + 1
+			if next_index < listlen:
+				next_item = allFileList[next_index]
+				if current[1] == next_item[1]:
+					result.append((current, next_item))
+		return result

@@ -59,7 +59,7 @@ protected slots:
 	void onAbout();
 	void onQuit();
 	void onSlider(int value);
-	void onCardChanged(const QString &card);
+	void onCardChanged(int card);
 	void onAutorun(bool isIt);
 	void onStyleChanged(bool isLight);
 	void onMixerChanged(const QString &mixer);
@@ -83,6 +83,7 @@ private:
 	AlsaWork *alsaWork_;
 #ifdef USE_PULSE
 	PulseCore * pulse_;
+	int deviceIndex_;
 #endif
 	QString mixerName_;
 	int cardIndex_;

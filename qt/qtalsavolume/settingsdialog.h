@@ -42,7 +42,7 @@ public:
 	void setMixers(const QStringList &mixers);
 	void setAutorun(bool isAutorun);
 	void connectSignals();
-	void setCurrentCard(const QString &card);
+	void setCurrentCard(int index);
 	void setCurrentMixer(const QString &mixer);
 	void setPlaybackChecks(const QList<switcher> &pbList);
 	void setCaptureChecks(const QList<switcher> &cList);
@@ -55,7 +55,7 @@ protected:
 	void closeEvent(QCloseEvent *);
 
 protected slots:
-	void onSoundCard(const QString &changed);
+	void onSoundCard(int changed);
 	void onMixer(const QString &changed);
 	void onAutorun(bool toggle);
 	void onOk();
@@ -67,7 +67,7 @@ protected slots:
 	void onLightStyle(bool toggled);
 	void onPulseSoundSystem(bool toggled);
 signals:
-	void soundCardChanged(const QString &card);
+	void soundCardChanged(int card);
 	void mixerChanged(const QString &mixer);
 	void autorunChanged(bool isIt);
 	void playChanged(const QString &check, bool isIt);

@@ -122,7 +122,7 @@ QList<PulseDevice> PulseCore::getSources()
 	return sources;
 }
 
-/*PulseDevice PulseCore::getSink(u_int32_t index)
+PulseDevice PulseCore::getSink(u_int32_t index)
 {
 	QList<PulseDevice> sinks;
 	pa_operation* op = pa_context_get_sink_info_by_index(context_, index, &sink_list_cb, &sinks);
@@ -132,7 +132,7 @@ QList<PulseDevice> PulseCore::getSources()
 		onError("The sink doesn't exit");
 	}
 	return *(sinks.begin());
-}*/
+}
 
 PulseDevice PulseCore::getSink(const QString &name)
 {
@@ -146,7 +146,7 @@ PulseDevice PulseCore::getSink(const QString &name)
 	return *(sinks.begin());
 }
 
-/*PulseDevice PulseCore::getSource(u_int32_t index)
+PulseDevice PulseCore::getSource(u_int32_t index)
 {
 	QList<PulseDevice> sources;
 	pa_operation* op = pa_context_get_source_info_by_index(context_, index, &source_list_cb, &sources);
@@ -156,7 +156,7 @@ PulseDevice PulseCore::getSink(const QString &name)
 		onError("The source doesn't exit");
 	}
 	return *(sources.begin());
-}*/
+}
 
 PulseDevice PulseCore::getSource(const QString &name)
 {
@@ -208,52 +208,37 @@ QStringList PulseCore::getSourcesDescriptions()
 
 QString PulseCore::getDeviceDescription(const QString &name)
 {
+	QString desc = getDeviceByName(name).description();
+	if (desc.isEmpty()) {
+		desc = getDefaultSink().description();
+	}
+	return desc;
+}
+
+PulseDevice PulseCore::getDeviceByName(const QString &name)
+{
+	PulseDevice result = PulseDevice();
 	foreach (PulseDevice device, getSinks()) {
 		if (device.name() == name) {
-			return device.description();
+			result = device;
 		}
 	}
 	foreach (PulseDevice device, getSources()) {
 		if (device.name() == name) {
-			return device.description();
+			result = device;
 		}
 	}
-	return getDefaultSink().description();
+	return result;
 }
 
-SimpleDevice PulseCore::getSimpleDevice(const QString &description)
+QString PulseCore::getDeviceNameByIndex(int index)
 {
-	SimpleDevice sDevice = SimpleDevice(currentDevice_->type(),currentDevice_->name());
-	foreach (PulseDevice device, getSinks()) {
-		if (device.description() == description) {
-			sDevice.first = device.type();
-			sDevice.second = device.name();
-			break;
-		}
-	}
-	foreach (PulseDevice device, getSources()) {
-		if (device.description() == description) {
-			sDevice.first = device.type();
-			sDevice.second = device.name();
-			break;
-		}
-	}
-	return sDevice;
-}
-
-QString PulseCore::getDeviceName(const QString &description)
-{
-	return getSimpleDevice(description).second;
+	return getDeviceByIndex(index).name();
 }
 
 QString PulseCore::defaultSink()
 {
-	return getDefaultSink().description();
-}
-
-QString PulseCore::defaultSource()
-{
-	return getDefaultSource().description();
+	return getDefaultSink().name();
 }
 
 void PulseCore::setVolume_(PulseDevice &device, int value)
@@ -292,17 +277,10 @@ void PulseCore::onError(const QString &message)
 	mbox.critical(0, "Error", message);
 }
 
-void PulseCore::setCurrentDevice(const QString &description)
+void PulseCore::setCurrentDevice(const QString &name)
 {
-	SimpleDevice sDevice = getSimpleDevice(description);
-	if (sDevice.second != currentDevice_->name()) {
-		if (sDevice.first == SINK) {
-			currentDevice_ = new PulseDevice(getSink(sDevice.second));
-		}
-		else {
-			currentDevice_ = new PulseDevice(getSource(sDevice.second));
-		}
-	}
+	currentDevice_ = 0;
+	currentDevice_ = new PulseDevice(getDeviceByName(name));
 }
 
 void PulseCore::setVolume(int value)
@@ -328,4 +306,34 @@ bool PulseCore::getMute()
 QStringList PulseCore::getCardList()
 {
 	return QStringList() << getSinksDescriptions() << getSourcesDescriptions();
+}
+
+PulseDevice PulseCore::getDeviceByIndex(int index)
+{
+	PulseDevice device = getDefaultSink();
+	QStringList sourcesDesc = getSourcesDescriptions();
+	QStringList sinksDesc = getSinksDescriptions();
+	int sinksSize = sinksDesc.size();
+	int deltaIndex = sinksSize - index;
+	if (index < sinksSize) {
+		device = getSink(index);
+	}
+	else if (deltaIndex < sourcesDesc.size()){
+		device = getSource(deltaIndex);
+	}
+	return device;
+}
+
+int PulseCore::getCurrentDeviceIndex()
+{
+	QStringList sinksDesc = getSinksDescriptions();
+	int sinksSize = sinksDesc.size();
+	int absIndex = currentDevice_->index();
+	if (currentDevice_->type() == SINK) {
+		return absIndex;
+	}
+	else {
+		return (sinksSize + absIndex);
+	}
+	return getDefaultSink().index();
 }

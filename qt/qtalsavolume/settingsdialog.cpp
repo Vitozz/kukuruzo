@@ -59,16 +59,18 @@ SettingsDialog::~SettingsDialog()
 
 void SettingsDialog::setSoundCards(const QStringList &cards)
 {
+	ui->cardBox->blockSignals(true);
 	soundCards_ = cards;
 	if (ui->cardBox->count() > 0) {
 		ui->cardBox->clear();
 	}
 	ui->cardBox->addItems(soundCards_);
-	ui->cardBox->setCurrentIndex(0);
+	ui->cardBox->blockSignals(false);
 }
 
 void SettingsDialog::setMixers(const QStringList &mixers)
 {
+	ui->mixerBox->blockSignals(true);
 	mixers_ = mixers;
 	if (ui->mixerBox->count() > 0) {
 		ui->mixerBox->clear();
@@ -76,6 +78,7 @@ void SettingsDialog::setMixers(const QStringList &mixers)
 	if (mixers_.size() > 0) {
 		ui->mixerBox->addItems(mixers_);
 	}
+	ui->mixerBox->blockSignals(false);
 }
 
 void SettingsDialog::connectSignals()
@@ -85,7 +88,7 @@ void SettingsDialog::connectSignals()
 	connect(enums_, SIGNAL(itemChanged(QListWidgetItem*)), this, SLOT(onENAction(QListWidgetItem*)));
 	connect(ui->darkRadio, SIGNAL(toggled(bool)), this, SLOT(onDarkStyle(bool)));
 	connect(ui->lightRadio, SIGNAL(toggled(bool)), this, SLOT(onLightStyle(bool)));
-	connect(ui->cardBox, SIGNAL(currentIndexChanged(QString)), this, SLOT(onSoundCard(QString)));
+	connect(ui->cardBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onSoundCard(int)));
 	connect(ui->mixerBox, SIGNAL(currentIndexChanged(QString)), this, SLOT(onMixer(QString)));
 	connect(ui->isAutorun, SIGNAL(toggled(bool)), this, SLOT(onAutorun(bool)));
 #ifdef USE_PULSE
@@ -93,7 +96,7 @@ void SettingsDialog::connectSignals()
 #endif
 }
 
-void SettingsDialog::onSoundCard(const QString &changed)
+void SettingsDialog::onSoundCard(int changed)
 {
 	emit soundCardChanged(changed);
 }
@@ -103,10 +106,13 @@ void SettingsDialog::onMixer(const QString &changed)
 	emit mixerChanged(changed);
 }
 
-void SettingsDialog::setCurrentCard(const QString &card)
+void SettingsDialog::setCurrentCard(int index)
 {
-	if (soundCards_.contains(card)) {
-		ui->cardBox->setCurrentIndex(soundCards_.indexOf(card));
+	if (index < soundCards_.size()) {
+		ui->cardBox->setCurrentIndex(index);
+	}
+	else {
+		ui->cardBox->setCurrentIndex(0);
 	}
 }
 
@@ -120,7 +126,7 @@ void SettingsDialog::setCurrentMixer(const QString &mixer)
 void SettingsDialog::onOk()
 {
 	QString mixer = ui->mixerBox->currentText();
-	QString card = ui->cardBox->currentText();
+	int card = ui->cardBox->currentIndex();
 	emit soundCardChanged(card);
 	emit mixerChanged(mixer);
 	hide();

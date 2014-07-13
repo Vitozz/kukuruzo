@@ -74,12 +74,13 @@ PopupWindow::PopupWindow()
 	pulseCardList_ = pulse_->getCardList();
 	QString lastSink = setts_.value(LAST_SINK, "").toString();
 	if (!lastSink.isEmpty()) {
-		pulseCardName_ = pulse_->getDeviceDescription(lastSink);
+		pulseCardName_ = lastSink;
 	}
 	else {
 		pulseCardName_ = pulse_->defaultSink();
 	}
 	pulse_->setCurrentDevice(pulseCardName_);
+	deviceIndex_ = pulse_->getCurrentDeviceIndex();
 	if (isPulse_) {
 		isMuted_ = pulse_->getMute();
 		volumeValue_ = pulse_->getVolume();
@@ -115,20 +116,18 @@ PopupWindow::PopupWindow()
 	switchList_ = alsaWork_->getSwitchList(cardIndex_);
 	updateSwitches();
 	if (!isPulse_) {
-		settingsDialog_->setMixers(mixerList_);
-		settingsDialog_->setCurrentMixer(mixerName_);
 		settingsDialog_->setSoundCards(cardList_);
-		settingsDialog_->setCurrentCard(cardName_);
+		settingsDialog_->setCurrentCard(cardIndex_);
 	} else {
 		settingsDialog_->setSoundCards(pulseCardList_);
-		settingsDialog_->setCurrentCard(pulseCardName_);
+		settingsDialog_->setCurrentCard(pulse_->getCurrentDeviceIndex());
 		settingsDialog_->setUsePulse(isPulse_);
 		settingsDialog_->hideAlsaElements(isPulse_);
 	}
 	//
 	settingsDialog_->setIconStyle(isLightStyle_);
 	settingsDialog_->connectSignals(); //connecting settingsDialog_ internal signals
-	connect(settingsDialog_, SIGNAL(soundCardChanged(QString)), this, SLOT(onCardChanged(QString)));
+	connect(settingsDialog_, SIGNAL(soundCardChanged(int)), this, SLOT(onCardChanged(int)));
 	connect(settingsDialog_, SIGNAL(mixerChanged(QString)), this, SLOT(onMixerChanged(QString)));
 	connect(settingsDialog_, SIGNAL(playChanged(QString,bool)), this, SLOT(onPlayback(QString,bool)));
 	connect(settingsDialog_, SIGNAL(captChanged(QString,bool)), this, SLOT(onCapture(QString,bool)));
@@ -286,15 +285,16 @@ void PopupWindow::setTrayIcon(int value)
 void PopupWindow::showSettings()
 {
 	settingsDialog_->setIconStyle(isLightStyle_);
-	if (isPulse_) {
 #ifdef USE_PULSE
+	if (isPulse_) {
 		pulseCardList_ = pulse_->getCardList();
+		settingsDialog_->setCurrentCard(pulse_->getCurrentDeviceIndex());
+	}
 #endif
-		settingsDialog_->setCurrentCard(pulseCardName_);
+	if (!isPulse_) {
+		settingsDialog_->setCurrentCard(cardIndex_);
 	}
-	else {
-		settingsDialog_->setCurrentCard(cardName_);
-	}
+	settingsDialog_->setMixers(mixerList_);
 	settingsDialog_->setCurrentMixer(mixerName_);
 	updateSwitches();
 	settingsDialog_->setPlaybackChecks(playBackItems_);
@@ -322,7 +322,7 @@ void PopupWindow::closeEvent(QCloseEvent *)
 {
 	QSettings setts_;
 #ifdef USE_PULSE
-	setts_.setValue(LAST_SINK, pulse_->getDeviceName(pulseCardName_));
+	setts_.setValue(LAST_SINK, pulseCardName_);
 	setts_.setValue(PULSE, isPulse_);
 #endif
 	setts_.setValue(CARD_INDEX, cardIndex_);
@@ -388,7 +388,7 @@ void PopupWindow::onSlider(int value)
 void PopupWindow::setIconToolTip(int value)
 {
 	if (isPulse_) {
-		const QString message = tr("Card: ") + pulseCardName_ + "\n"+ tr("Volume: ") + QString::number(value);
+		const QString message = tr("Card: ") + pulse_->getDeviceDescription(pulseCardName_) + "\n"+ tr("Volume: ") + QString::number(value);
 		trayIcon_->setToolTip(message);
 	}
 	else {
@@ -397,18 +397,20 @@ void PopupWindow::setIconToolTip(int value)
 	}
 }
 
-void PopupWindow::onCardChanged(const QString &card)
+void PopupWindow::onCardChanged(int card)
 {
 #ifdef USE_PULSE
 	if (isPulse_) {
-		pulseCardName_ = card;
+		pulseCardName_ = pulse_->getDeviceNameByIndex(card);
 		pulse_->setCurrentDevice(pulseCardName_);
+		deviceIndex_ = pulse_->getCurrentDeviceIndex();
 		volumeValue_ = pulse_->getVolume();
 		volumeSlider_->setValue(volumeValue_);
 	}
 #endif
 	if (!isPulse_) {
-		cardName_ = card;
+		cardIndex_ = (card >0 && card < cardList_.size()) ? card : 0;
+		cardName_ = cardList_.at(cardIndex_);
 		mixerList_ = alsaWork_->getVolumeMixers(cardIndex_);
 		settingsDialog_->setMixers(mixerList_);
 		switchList_ = alsaWork_->getSwitchList(cardIndex_);
@@ -530,12 +532,14 @@ void PopupWindow::onSoundSystem(bool isIt)
 	if (isPulse_) {
 #ifdef USE_PULSE
 		pulseCardList_ = pulse_->getCardList();
-#endif
 		settingsDialog_->hideAlsaElements(isPulse_);
 		settingsDialog_->setSoundCards(pulseCardList_);
+		settingsDialog_->setCurrentCard(deviceIndex_);
+#endif
 	}
 	else {
 		settingsDialog_->hideAlsaElements(isPulse_);
 		settingsDialog_->setSoundCards(cardList_);
+		settingsDialog_->setCurrentCard(cardIndex_);
 	}
 }

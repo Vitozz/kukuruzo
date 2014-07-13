@@ -1,3 +1,7 @@
+2014-07-13
+v0.0.8
+  + Fixed work with sources in Pulseaudio
+
 2014-06-19
 v0.0.7
   + Fixed work with devices in Pulseaudio

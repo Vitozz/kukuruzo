@@ -19,12 +19,22 @@
 #include "pulsedevice.h"
 #include <QtCore/qmath.h>
 
-PulseDevice::PulseDevice(const pa_source_info* i)
+PulseDevice::PulseDevice()
+: index_(0),
+  type_(SINK),
+  name_(QString()),
+  description_(QString()),
+  volume_percent_(0),
+  mute_(false)
 {
-	index_ = i->index;
-	type_ = SOURCE;
-	name_ = QString(i->name);
-	description_ = QString::fromLocal8Bit(i->description);
+}
+
+PulseDevice::PulseDevice(const pa_source_info* i)
+: index_(i->index),
+  type_(SOURCE),
+  name_(QString(i->name)),
+  description_(QString::fromLocal8Bit(i->description))
+{
 	volume.channels = i->volume.channels;
 	int n;
 	for (n = 0; n < volume.channels; ++n) {
@@ -36,11 +46,11 @@ PulseDevice::PulseDevice(const pa_source_info* i)
 }
 
 PulseDevice::PulseDevice(const pa_sink_info* i)
+: index_(i->index),
+  type_(SINK),
+  name_(QString(i->name)),
+  description_(QString::fromLocal8Bit(i->description))
 {
-	index_ = i->index;
-	type_ = SINK;
-	name_ = QString(i->name);
-	description_ = QString::fromLocal8Bit(i->description);
 	volume.channels = i->volume.channels;
 	int n;
 	for (n = 0; n < volume.channels; ++n) {
