@@ -1,8 +1,8 @@
 This is a simple application to control one of the Alsa's mixers volume in tray.
 
-Application uses Qt4 interface
+Application uses Qt interface
 
-What features available:
+Available features:
 
 	- sound card selection
 	- sound card mixer selection
@@ -11,3 +11,7 @@ What features available:
 	- mute sound on middleclick and by checkbox selection
 	- enable or disable sound card switches in settings dialog
 	- initial Pulseaudio support if application builded with Pulseaudio support
+	- both Qt4 and Qt5 support
+
+WARNING for Qt5 users!!!
+Qt5 on Linux at this moment (09.07.2014) can't show systray icons

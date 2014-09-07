@@ -25,6 +25,7 @@
 #include <QSharedMemory>
 #include <QTranslator>
 #include <QtGui>
+#include <QMessageBox>
 
 int main(int argc, char *argv[])
 {

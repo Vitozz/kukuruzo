@@ -22,6 +22,16 @@
 
 #include <QtGui>
 #include <QDesktopWidget>
+#include <QVBoxLayout>
+#include <QSlider>
+#include <QLabel>
+#include <QAction>
+#include <QMenu>
+#include <QMessageBox>
+#ifdef HAVE_QT5
+#include <QScreen>
+#endif
+
 
 static const QString autoStartPath = ".config/autostart";
 static const QString fName = QDir::home().absolutePath() + "/.config/autostart/qtalsavolume.desktop";
@@ -219,8 +229,13 @@ void PopupWindow::onAbout()
 void PopupWindow::showPopup()
 {
 	if (!this->isVisible()) {
+#ifdef HAVE_QT5
+		const int screenHeight = qApp->primaryScreen()->availableGeometry().height();
+		const int screenTop = qApp->primaryScreen()->availableGeometry().top();
+#else
 		const int screenHeight = qApp->desktop()->availableGeometry().height();
 		const int screenTop = qApp->desktop()->availableGeometry().top();
+#endif
 		QPoint point;
 		const int iconLeft = trayIcon_->geometry().left();
 		const int iconWidth = trayIcon_->geometry().width();

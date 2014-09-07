@@ -22,6 +22,7 @@
 #include "ui_settingsdialog.h"
 
 #include <QtGui>
+#include <QListWidget>
 
 SettingsDialog::SettingsDialog(QWidget *parent) :
 QDialog(parent),
