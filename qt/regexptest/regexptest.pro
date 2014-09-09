@@ -10,6 +10,11 @@ PREFIX = /usr
 BINDIR = $$PREFIX/bin
 DATADIR = $$PREFIX/share
 
+greaterThan(QT_MAJOR_VERSION, 4){
+	QT += widgets gui
+	DEFINES += HAVE_QT5
+}
+
 SOURCES += main.cpp \
 	   mainwindow.cpp
 HEADERS += mainwindow.h

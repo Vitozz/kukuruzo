@@ -36,7 +36,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui->setupUi(this);
 	ui->label->setReadOnly(true);
 	connect(ui->actionE_xit, SIGNAL(triggered()), SLOT(on_actionE_xit_triggered()));
-	connect(ui->actionOnline_Help, SIGNAL(triggered()), SLOT(on_actionOnline_Help_triggered()));
+	connect(ui->actionOnline_Help, SIGNAL(changed()), SLOT(on_actionOnline_Help_triggered()));
 	readSettings();
 }
 
@@ -129,12 +129,20 @@ QString MainWindow::GetRegexpList(const QList<QStringList> &matches, const int &
 			result += tr("<u><a style=\"color:red\">Match # </a>") + "<b>"+ QString::number(matches.indexOf(group)+1) + "</b></u><br>";
 			if(parm == CHECK_ALL){
 				for(int i=0; i<group.length();i++){
+#ifdef HAVE_QT5
+					result += tr("<a style=\"color:blue\">Group # </a>")+ "<b>"+QString::number(i)+ ": </b>"+"<i>" + group[i].toHtmlEscaped() + "</i><br>";
+#else
 					result += tr("<a style=\"color:blue\">Group # </a>")+ "<b>"+QString::number(i)+ ": </b>"+"<i>" + Qt::escape(group[i]) + "</i><br>";
+#endif
 				}
 			}
 			else if(parm == CHECK_POS) {
 				if(pos < group.length()) {
+#ifdef HAVE_QT5
+					result += tr("<a style=\"color:blue\">Group # </a>")+ "<b>"+ QString::number(pos)+ ": </b>"+"<i>" + group[pos].toHtmlEscaped() + "</i><br>";
+#else
 					result += tr("<a style=\"color:blue\">Group # </a>")+ "<b>"+ QString::number(pos)+ ": </b>"+"<i>" + Qt::escape(group[pos]) + "</i><br>";
+#endif
 				}
 			}
 		}
