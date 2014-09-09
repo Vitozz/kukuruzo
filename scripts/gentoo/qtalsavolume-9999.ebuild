@@ -4,15 +4,26 @@
 EAPI=4
 
 inherit cmake-utils git-2
-IUSE="pulseaudio"
+IUSE="pulseaudio qt4 qt5"
+
+REQUIRED_USE="qt4? ( !qt5 )"
+REQUIRED_USE="qt5? ( !qt4 )"
+
 DEPEND="
-	dev-qt/qtgui
+	qt4? (
+		dev-qt/qtcore
+		dev-qt/qtgui
+	)
+	qt5? (
+		dev-qt/qtcore:5
+		dev-qt/qtgui:5
+		dev-qt/qtwidgets:5
+	)
 	media-libs/alsa-lib
 	pulseaudio? ( media-sound/pulseaudio )
 "
 RDEPEND="
 	${DEPEND}
-	dev-qt/qtcore
 "
 DESCRIPTION="Tray ALSA volume changer written using Qt library"
 HOMEPAGE="http://sites.google.com/site/thesomeprojects/"
@@ -22,11 +33,17 @@ SLOT="0"
 KEYWORDS="~amd64 ~x86 ~amd64-linux ~x86-linux"
 LICENSE="GPL-3"
 
+PULSE_FLAG="OFF"
+use pulseaudio && PULSE_FLAG="ON"
+use qt5 && QT_FLAG="ON"
+use qt4 && QT_FLAG="OFF"
+
 src_configure() {
-	if use pulseaudio; then
-		mycmakeargs="${mycmakeargs} -DUSE_PULSE=OK"
-		cmake-utils_src_configure
-	fi
+	mycmakeargs="${mycmakeargs}
+				-DUSE_PULSE='${PULSE_FLAG}'
+				-DUSE_QT5='${QT_FLAG}'
+				"
+	cmake-utils_src_configure
 }
 
 src_prepare() {
