@@ -1,127 +1,127 @@
-set (PROJECT qtalsavolume )
-cmake_minimum_required( VERSION 2.6 )
-add_definitions ( -Wall )
-
-set (USE_PULSE NO CACHE BOOL "Set pulseaudio usage" )
-
-find_package ( Qt4 REQUIRED )
-include ( ${QT_USE_FILE} )
-
-find_package ( PkgConfig REQUIRED )
-pkg_check_modules ( ALSA REQUIRED alsa )
-link_directories ( ${ALSA_LIBRARY_DIRS} )
-include_directories (
-	${CMAKE_SOURCE_DIR}
-	${CMAKE_CURRENT_BINARY_DIR}
-	${QT_QTCORE_INCLUDE_DIR}
-	${QT_QTGUI_INCLUDE_DIR}
-	${QT_QTCORE_INCLUDE_DIR}
-	${QT_QTGUI_INCLUDE_DIR}
-	${ALSA_INCLUDE_DIRS}
-)
-if (USE_PULSE)
-	pkg_check_modules ( PULSE REQUIRED libpulse )
-	link_directories ( ${PULSE_LIBRARY_DIRS} )
-	include_directories (${PULSE_INCLUDE_DIRS})
-	add_definitions ( -DUSE_PULSE )
-	set ( pulse_HEADERS
-		pulsework/pulsecore.cpp
-		pulsework/pulsedevice.cpp
+set(PROJECT qtalsavolume )
+cmake_minimum_required( VERSION 2.8.11 )
+if( UNIX AND NOT (APPLE OR CYGWIN) )
+	add_definitions( -Wall )
+	set( CMAKE_AUTOMOC ON )
+	set( CMAKE_INCLUDE_CURRENT_DIR ON )
+	set(USE_PULSE NO CACHE BOOL "Set pulseaudio usage" )
+	set( USE_QT5 OFF CACHE BOOL "Use Qt5" )
+	find_package( PkgConfig REQUIRED )
+	pkg_check_modules( ALSA REQUIRED alsa )
+	link_directories( ${ALSA_LIBRARY_DIRS} )
+	set( DEPLIBS
+		${ALSA_LIBRARIES}
 	)
-	set ( pulse_SOURCES
-		pulsework/pulsecore.cpp
-		pulsework/pulsedevice.cpp
+	include_directories(
+		${CMAKE_SOURCE_DIR}
+		${CMAKE_CURRENT_BINARY_DIR}
+		${ALSA_INCLUDE_DIRS}
 	)
-endif (USE_PULSE)
-
-set ( HEADERS
-	alsawork/alsawork.h
-	alsawork/mixerswitches.h
-	alsawork/volumemixers.h
-	defines.h
-	${pulse_HEADERS}
-)
-
-set ( CPP_FILES
-	main.cpp
-	popupwindow.cpp
-	alsawork/alsawork.cpp
-	alsawork/mixerswitches.cpp
-	alsawork/volumemixers.cpp
-	settingsdialog.cpp
-	${pulse_SOURCES}
-)
-
-set ( UI_FILES
-	settingsdialog.ui
-)
-QT4_WRAP_UI(UIS ${UI_FILES})
-
-set ( QRC_FILES
-	icons.qrc
-)
-QT4_ADD_RESOURCES(RSCS ${QRC_FILES})
-
-set ( TRANSLATIONS_PATH languages )
-set ( DATADIR_PATH share )
-set ( APPDIR_PATH ${DATADIR_PATH}/applications )
-set ( DESKTOP_FILES ${PROJECT}.desktop )
-set ( ICON_FILES icons/volume_ico.png )
-set ( DARK_ICONS
-	icons/dark/tb_icon0.png
-	icons/dark/tb_icon20.png
-	icons/dark/tb_icon40.png
-	icons/dark/tb_icon60.png
-	icons/dark/tb_icon80.png
-	icons/dark/tb_icon100.png
-)
-set ( LIGHT_ICONS
-	icons/light/tb_icon0.png
-	icons/light/tb_icon20.png
-	icons/light/tb_icon40.png
-	icons/light/tb_icon60.png
-	icons/light/tb_icon80.png
-	icons/light/tb_icon100.png
-)
-
-set ( qtalsavolume_TRS
-	${TRANSLATIONS_PATH}/${PROJECT}_en.ts
-	${TRANSLATIONS_PATH}/${PROJECT}_ru.ts
-	${TRANSLATIONS_PATH}/${PROJECT}_uk.ts
-)
-
-QT4_ADD_TRANSLATION(TRS ${qtalsavolume_TRS})
-
-set ( MOC_FILES
-	popupwindow.h
-	settingsdialog.h
-)
-QT4_WRAP_CPP(MOCS ${MOC_FILES})
-
-add_executable ( ${PROJECT} ${CPP_FILES} ${UIS} ${RSCS} ${TRS} ${MOCS} )
-if (USE_PULSE)
-target_link_libraries (
-	${PROJECT}
-	${QT_QTCORE_LIBRARY}
-	${QT_QTGUI_LIBRARY}
-	${QT_QTCORE_LIBRARY}
-	${QT_QTGUI_LIBRARY}
-	${ALSA_LIBRARIES}
-	${PULSE_LIBRARIES}
-)
-else (USE_PULSE)
-target_link_libraries (
-	${PROJECT}
-	${QT_QTCORE_LIBRARY}
-	${QT_QTGUI_LIBRARY}
-	${QT_QTCORE_LIBRARY}
-	${QT_QTGUI_LIBRARY}
-	${ALSA_LIBRARIES}
-)
-endif (USE_PULSE)
-INSTALL ( TARGETS ${PROJECT} RUNTIME DESTINATION bin )
-INSTALL ( FILES ${DESKTOP_FILES} DESTINATION ${APPDIR_PATH} )
-INSTALL ( FILES ${ICON_FILES} DESTINATION ${DATADIR_PATH}/${PROJECT}/icons )
-INSTALL ( FILES ${DARK_ICONS} DESTINATION ${DATADIR_PATH}/${PROJECT}/icons/dark )
-INSTALL ( FILES ${LIGHT_ICONS} DESTINATION ${DATADIR_PATH}/${PROJECT}/icons/light )
-INSTALL ( FILES ${TRS} DESTINATION ${DATADIR_PATH}/${PROJECT}/${TRANSLATIONS_PATH} )
+	set( HEADERS
+		alsawork/alsawork.h
+		alsawork/mixerswitches.h
+		alsawork/volumemixers.h
+		defines.h
+	)
+	set ( CPP_FILES
+		main.cpp
+		popupwindow.cpp
+		alsawork/alsawork.cpp
+		alsawork/mixerswitches.cpp
+		alsawork/volumemixers.cpp
+		settingsdialog.cpp
+	)
+	set ( UI_FILES
+		settingsdialog.ui
+	)
+	set ( QRC_FILES
+		icons.qrc
+	)
+	set( TRANSLATIONS_PATH languages )
+	set( DATADIR_PATH share )
+	set( APPDIR_PATH ${DATADIR_PATH}/applications )
+	set( DESKTOP_FILES ${PROJECT}.desktop )
+	set( ICON_FILES icons/volume_ico.png )
+	set( DARK_ICONS
+		icons/dark/tb_icon0.png
+		icons/dark/tb_icon20.png
+		icons/dark/tb_icon40.png
+		icons/dark/tb_icon60.png
+		icons/dark/tb_icon80.png
+		icons/dark/tb_icon100.png
+	)
+	set ( LIGHT_ICONS
+		icons/light/tb_icon0.png
+		icons/light/tb_icon20.png
+		icons/light/tb_icon40.png
+		icons/light/tb_icon60.png
+		icons/light/tb_icon80.png
+		icons/light/tb_icon100.png
+	)
+	set ( qtalsavolume_TRS
+		${TRANSLATIONS_PATH}/${PROJECT}_en.ts
+		${TRANSLATIONS_PATH}/${PROJECT}_ru.ts
+		${TRANSLATIONS_PATH}/${PROJECT}_uk.ts
+	)
+	if( ${USE_PULSE} )
+		pkg_check_modules( PULSE REQUIRED libpulse )
+		link_directories( ${PULSE_LIBRARY_DIRS} )
+		include_directories( ${PULSE_INCLUDE_DIRS} )
+		add_definitions( -DUSE_PULSE )
+		set ( HEADERS
+			${HEADERS}
+			pulsework/pulsecore.cpp
+			pulsework/pulsedevice.cpp
+		)
+		set ( CPP_FILES
+			${CPP_FILES}
+			pulsework/pulsecore.cpp
+			pulsework/pulsedevice.cpp
+		)
+		set( DEPLIBS
+			${DEPLIBS}
+			${PULSE_LIBRARIES}
+		)
+	endif( ${USE_PULSE} )
+	if( ${USE_QT5} )
+		find_package ( Qt5Widgets REQUIRED )
+		find_package ( Qt5LinguistTools REQUIRED )
+		include_directories(
+			${Qt5Widgets_INCLUDES}
+		)
+		set( CMAKE_CXX_FLAGS "-std=c++0x ${CMAKE_CXX_FLAGS} ${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}" )
+		add_definitions( -DHAVE_QT5 )
+		qt5_add_resources( RSCS ${QRC_FILES} )
+		qt5_add_translation( TRS ${qtalsavolume_TRS} )
+		qt5_wrap_ui( UIS ${UI_FILES} )
+		set ( QT_DEPLIBS
+			Qt5::Widgets
+		)
+	else( ${USE_QT5} )
+		find_package ( Qt4 REQUIRED )
+		include ( ${QT_USE_FILE} )
+		include_directories (
+			${QT_QTCORE_INCLUDE_DIR}
+			${QT_QTGUI_INCLUDE_DIR}
+		)
+		QT4_WRAP_UI( UIS ${UI_FILES} )
+		QT4_ADD_RESOURCES( RSCS ${QRC_FILES} )
+		QT4_ADD_TRANSLATION( TRS ${qtalsavolume_TRS} )
+		set ( QT_DEPLIBS
+			${QT_QTCORE_LIBRARY}
+			${QT_QTGUI_LIBRARY}
+		)
+	endif( ${USE_QT5} )
+	add_executable ( ${PROJECT} ${CPP_FILES} ${UIS} ${RSCS} ${TRS} ${MOCS} )
+	target_link_libraries (
+		${PROJECT}
+		${QT_DEPLIBS}
+		${DEPLIBS}
+	)
+	INSTALL( TARGETS ${PROJECT} RUNTIME DESTINATION bin )
+	INSTALL( FILES ${DESKTOP_FILES} DESTINATION ${APPDIR_PATH} )
+	INSTALL( FILES ${ICON_FILES} DESTINATION ${DATADIR_PATH}/${PROJECT}/icons )
+	INSTALL( FILES ${DARK_ICONS} DESTINATION ${DATADIR_PATH}/${PROJECT}/icons/dark )
+	INSTALL( FILES ${LIGHT_ICONS} DESTINATION ${DATADIR_PATH}/${PROJECT}/icons/light )
+	INSTALL( FILES ${TRS} DESTINATION ${DATADIR_PATH}/${PROJECT}/${TRANSLATIONS_PATH} )
+endif( UNIX AND NOT (APPLE OR CYGWIN) )

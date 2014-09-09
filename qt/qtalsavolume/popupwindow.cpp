@@ -129,10 +129,12 @@ PopupWindow::PopupWindow()
 		settingsDialog_->setSoundCards(cardList_);
 		settingsDialog_->setCurrentCard(cardIndex_);
 	} else {
+#ifdef USE_PULSE
 		settingsDialog_->setSoundCards(pulseCardList_);
 		settingsDialog_->setCurrentCard(pulse_->getCurrentDeviceIndex());
 		settingsDialog_->setUsePulse(isPulse_);
 		settingsDialog_->hideAlsaElements(isPulse_);
+#endif
 	}
 	//
 	settingsDialog_->setIconStyle(isLightStyle_);
@@ -402,8 +404,11 @@ void PopupWindow::onSlider(int value)
 void PopupWindow::setIconToolTip(int value)
 {
 	if (isPulse_) {
+#ifdef USE_PULSE
 		const QString message = tr("Card: ") + pulse_->getDeviceDescription(pulseCardName_) + "\n"+ tr("Volume: ") + QString::number(value);
 		trayIcon_->setToolTip(message);
+#endif
+		//
 	}
 	else {
 		const QString message = tr("Card: ") + cardName_ + "\n"+ tr("Mixer: ") + mixerName_ + "\n" + tr("Volume: ") + QString::number(value);
