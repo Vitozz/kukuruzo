@@ -453,7 +453,7 @@ License: GPL-2
 Group: Applications/Multimedia
 URL: http://sites.google.com/site/thesomeprojects/main-1
 Source0: %{name}-%{version}.tar.gz
-BuildRequires: gcc-c++, zlib-devel, gtkmm3-devel
+BuildRequires: gcc-c++, zlib-devel, gtkmm3-devel, libpulse-devel
 %{!?_without_freedesktop:BuildRequires: desktop-file-utils}
 
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-build
@@ -465,7 +465,7 @@ Simple tool written using gtkmm-3 library to set the levels of alsa mixers
 %setup
 
 %build
-cmake -DCMAKE_INSTALL_PREFIX=%{buildroot}/usr .
+cmake -DCMAKE_INSTALL_PREFIX=%{buildroot}/usr -DUSE_PULSE=ON .
 %{__make} %{?_smp_mflags}  
 
 %install
