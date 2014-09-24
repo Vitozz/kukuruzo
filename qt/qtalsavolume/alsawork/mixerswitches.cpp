@@ -19,6 +19,9 @@
  */
 
 #include "mixerswitches.h"
+#ifdef ISDEBUG
+#include <QDebug>
+#endif
 
 MixerSwitches::MixerSwitches()
 {

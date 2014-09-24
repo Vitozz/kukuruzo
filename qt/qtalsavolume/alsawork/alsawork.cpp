@@ -22,6 +22,9 @@
 #include "volumemixers.h"
 #include "alsawork.h"
 #include <stdexcept>
+#ifdef ISDEBUG
+#include <QDebug>
+#endif
 
 const double ZERO = 0.0;
 

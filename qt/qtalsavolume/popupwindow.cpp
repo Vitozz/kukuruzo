@@ -31,7 +31,9 @@
 #ifdef HAVE_QT5
 #include <QScreen>
 #endif
-
+#ifdef ISDEBUG
+#include <QDebug>
+#endif
 
 static const QString autoStartPath = ".config/autostart";
 static const QString fName = QDir::home().absolutePath() + "/.config/autostart/qtalsavolume.desktop";
@@ -71,7 +73,7 @@ PopupWindow::PopupWindow()
 	setMinimumHeight(140);
 	setMinimumWidth(30);
 	setWindowFlags(Qt::FramelessWindowHint);
-	setMouseTracking(true);
+	this->setMouseTracking(true);
 	//Reading settings and alsa variables
 	QSettings setts_;
 	isLightStyle_ = setts_.value(ICOSTYLE, true).toBool();
@@ -172,6 +174,7 @@ PopupWindow::~PopupWindow()
 	delete restore_;
 	delete settings_;
 	delete mute_;
+	delete aboutQt_;
 	delete about_;
 	delete exit_;
 	delete trayMenu_;
@@ -196,6 +199,9 @@ void PopupWindow::createActions()
 	about_ = new QAction(tr("&About..."), this);
 	connect(about_, SIGNAL(triggered()), this, SLOT(onAbout()));
 
+	aboutQt_ = new QAction(tr("About Qt"), this);
+	connect(aboutQt_, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
+
 	exit_ = new QAction(tr("&Quit"), this);
 	connect(exit_, SIGNAL(triggered()), this, SLOT(onQuit()));
 }
@@ -207,7 +213,9 @@ void PopupWindow::createTrayMenu()
 	trayMenu_->addSeparator();
 	trayMenu_->addAction(settings_);
 	trayMenu_->addAction(mute_);
+	trayMenu_->addSeparator();
 	trayMenu_->addAction(about_);
+	trayMenu_->addAction(aboutQt_);
 	trayMenu_->addSeparator();
 	trayMenu_->addAction(exit_);
 }
@@ -364,11 +372,11 @@ bool PopupWindow::eventFilter(QObject *object, QEvent *event)
 
 void PopupWindow::mouseMoveEvent(QMouseEvent *event)
 {
-	const QPoint point = event->globalPos();
-	const int top_ = this->geometry().top();
-	const int left_ = this->geometry().left();
-	const int right_ = this->geometry().right();
-	if ((point.x() < left_ || point.x() > right_ || point.y() < top_) && this->isVisible()) {
+	const int delta = 2; //2px distance from dialog borders
+	const int x = event->x();
+	const int y = event->y();
+	const int w = this->geometry().width();
+	if ( ((x - delta) <= 0 || (x + delta) >= w || (y-delta) <= 0 ) && this->isVisible()) {
 		this->hide();
 	}
 }

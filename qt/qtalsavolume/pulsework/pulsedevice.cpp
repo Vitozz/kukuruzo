@@ -18,6 +18,9 @@
 
 #include "pulsedevice.h"
 #include <QtCore/qmath.h>
+#ifdef ISDEBUG
+#include <QDebug>
+#endif
 
 PulseDevice::PulseDevice()
 : index_(0),

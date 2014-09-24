@@ -12,6 +12,3 @@ Available features:
 	- enable or disable sound card switches in settings dialog
 	- initial Pulseaudio support if application builded with Pulseaudio support
 	- both Qt4 and Qt5 support
-
-WARNING for Qt5 users!!!
-Qt5 on Linux at this moment (09.07.2014) can't show systray icons

@@ -26,6 +26,9 @@
 #include <QTranslator>
 #include <QtGui>
 #include <QMessageBox>
+#ifdef ISDEBUG
+#include <QDebug>
+#endif
 
 int main(int argc, char *argv[])
 {

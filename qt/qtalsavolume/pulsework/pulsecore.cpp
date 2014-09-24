@@ -20,6 +20,9 @@
 #include "pulse/pulseaudio.h"
 
 #include <QMessageBox>
+#ifdef ISDEBUG
+#include <QDebug>
+#endif
 
 //Callbacks
 void state_cb(pa_context* context, void* raw) {

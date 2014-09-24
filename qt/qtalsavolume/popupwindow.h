@@ -96,6 +96,7 @@ private:
 	QAction *settings_;
 	QAction *mute_;
 	QAction *about_;
+	QAction *aboutQt_;
 	QAction *exit_;
 	QMenu *trayMenu_;
 	QSystemTrayIcon *trayIcon_;

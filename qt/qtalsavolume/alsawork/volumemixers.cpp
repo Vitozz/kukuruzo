@@ -19,6 +19,9 @@
  */
 
 #include "volumemixers.h"
+#ifdef ISDEBUG
+#include <QDebug>
+#endif
 
 VolumeMixers::VolumeMixers()
 {

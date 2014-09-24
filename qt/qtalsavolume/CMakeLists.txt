@@ -63,6 +63,9 @@ if( UNIX AND NOT (APPLE OR CYGWIN) )
 		${TRANSLATIONS_PATH}/${PROJECT}_ru.ts
 		${TRANSLATIONS_PATH}/${PROJECT}_uk.ts
 	)
+	if( "${CMAKE_BUILD_TYPE}" STREQUAL "Debug" )
+		add_definitions( -DISDEBUG )
+	endif( "${CMAKE_BUILD_TYPE}" STREQUAL "Debug" )
 	if( ${USE_PULSE} )
 		pkg_check_modules( PULSE REQUIRED libpulse )
 		link_directories( ${PULSE_LIBRARY_DIRS} )

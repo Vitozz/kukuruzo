@@ -23,6 +23,9 @@
 
 #include <QtGui>
 #include <QListWidget>
+#ifdef ISDEBUG
+#include <QDebug>
+#endif
 
 SettingsDialog::SettingsDialog(QWidget *parent) :
 QDialog(parent),
