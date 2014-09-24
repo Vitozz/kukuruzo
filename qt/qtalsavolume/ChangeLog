@@ -2,6 +2,7 @@
 v.0.0.9
   + Fixed popupwindow hide on mouse over
   + Some fixes in PulseAudio
+  + Changed work with alsa
   + Added Qt5 support
   + Updated translations
 

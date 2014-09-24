@@ -33,6 +33,7 @@
 #define PULSE "Main/pulse"
 
 #include <QPair>
+#include <QString>
 
 typedef QPair<QString, bool> switcher;
 

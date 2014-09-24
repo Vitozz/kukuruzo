@@ -1,6 +1,6 @@
 /*
  * alsawork.h
- * Copyright (C) 2013 Vitaly Tonkacheyev
+ * Copyright (C) 2012 Vitaly Tonkacheyev
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -23,11 +23,13 @@
 
 #include "alsa/asoundlib.h"
 #include "mixerswitches.h"
-#include "volumemixers.h"
-#include <iostream>
-#include <vector>
+#include "alsadevice.h"
+#include <QString>
+#include <QStringList>
+#include <QList>
+//#include <QSharedPointer>
 
-class QStringList;
+//typedef QSharedPointer<> AlsaDevicePtr;
 
 class AlsaWork
 {
@@ -35,22 +37,32 @@ public:
 	AlsaWork();
 	AlsaWork(AlsaWork const &);
 	~AlsaWork();
-	void setAlsaVolume(int cardId, const QString &mixer, int volume);
-	int getAlsaVolume(int cardId, const QString& mixer);
+	void setCurrentCard(int cardId);
+	void setCurrentMixer(const QString &mixer);
+	void setCurrentMixer(int id);
+	void setAlsaVolume(double volume);
+	double getAlsaVolume();
 	QString getCardName(int index);
-	QStringList &getCardsList();
-	QStringList &getVolumeMixers(int cardIndex);
-	MixerSwitches &getSwitchList(int cardIndex);
-	void setSwitch(int cardId, const QString& mixer, int id, bool enabled);
-	void setMute(int cardId, const QString& mixer, bool mute);
-	bool getMute(int cardId, const QString& mixer);
+	QString getCurrentMixerName() const;
+	const QStringList &getCardsList() const;
+	const QStringList &getVolumeMixers() const;
+	const MixerSwitches &getSwitchList() const;
+	void setSwitch(const QString& mixer, int id, bool enabled);
+	void setMute(bool enabled);
+	bool getMute();
+	bool haveVolumeMixers();
+	bool cardExists(int id);
+	bool mixerExists(const QString &name);
+	bool mixerExists(int id);
+	int getFirstCardWithMixers();
+	int getCurrentMixerId();
 private:
 	bool checkCardId(int cardId);
 	int getTotalCards();
 	snd_mixer_t *getMixerHanlde(int id);
 	snd_mixer_elem_t *initMixerElement(snd_mixer_t *handle, const char *mixer);
 	void setVolume(snd_mixer_elem_t *element, snd_mixer_t *handle, double volume);
-	QString formatCardName(int id) const;
+	std::string formatCardName(int id) const;
 	void checkError (int errorIndex);
 	void getCards();
 	void updateMixers(int cardIndex);
@@ -58,8 +70,8 @@ private:
 	snd_mixer_selem_channel_id_t checkMixerChannels(snd_mixer_elem_t *element);
 private:
 	QStringList cardList_;
-	QStringList mixerList_;
-	MixerSwitches *switches_;
-	VolumeMixers *volumeMixers_;
+	int totalCards_;
+	AlsaDevice *currentAlsaDevice_;
+	QList< AlsaDevice* > devices_;
 };
 #endif // ALSAWORK_H

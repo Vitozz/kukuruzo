@@ -103,29 +103,22 @@ PopupWindow::PopupWindow()
 	alsaWork_ = new AlsaWork();
 	cardList_ = alsaWork_->getCardsList();
 	cardIndex_ = setts_.value(CARD_INDEX, 0).toInt();
-	cardIndex_ = cardList_.size() >= cardIndex_ ? cardIndex_ : 0;
-	QStringList mixers = alsaWork_->getVolumeMixers(cardIndex_);
-	if (mixers.isEmpty()) { //check card for empty mixerlist
-		for (int index = 0; index < cardList_.size(); ++index) {
-			mixers = alsaWork_->getVolumeMixers(index);
-			if (index != cardIndex_ && !mixers.isEmpty()) {
-				mixerList_ = mixers;
-				cardIndex_ = index;
-				break;
-			}
+	if (alsaWork_->cardExists(cardIndex_)) {
+		alsaWork_->setCurrentCard(cardIndex_);
+		if (!alsaWork_->haveVolumeMixers()) {
+			cardIndex_ = alsaWork_->getFirstCardWithMixers();
+			alsaWork_->setCurrentCard(cardIndex_);
 		}
 	}
-	else {
-		mixerList_ = mixers;
-	}
+	mixerList_ = alsaWork_->getVolumeMixers();
 	QString mixer = mixerList_.contains("Master") ? "Master" : mixerList_.at(0);
 	mixerName_ = setts_.value(MIXER_NAME, mixer).toString();
 	cardName_ = alsaWork_->getCardName(cardIndex_);
 	if (!isPulse_) {
-		volumeValue_ = alsaWork_->getAlsaVolume(cardIndex_, mixerName_);
-		isMuted_ = !alsaWork_->getMute(cardIndex_, mixerName_);
+		volumeValue_ = alsaWork_->getAlsaVolume();
+		isMuted_ = !alsaWork_->getMute();
 	}
-	switchList_ = alsaWork_->getSwitchList(cardIndex_);
+	switchList_ = alsaWork_->getSwitchList();
 	updateSwitches();
 	if (!isPulse_) {
 		settingsDialog_->setSoundCards(cardList_);
@@ -337,7 +330,7 @@ void PopupWindow::onMute(bool isToggled)
 	}
 #endif
 	if (!isPulse_) {
-		alsaWork_->setMute(cardIndex_, mixerName_, !isToggled);
+		alsaWork_->setMute(!isToggled);
 	}
 	setTrayIcon(volumeValue_);
 }
@@ -401,7 +394,7 @@ void PopupWindow::onSlider(int value)
 	}
 #endif
 	if (!isPulse_) {
-		alsaWork_->setAlsaVolume(cardIndex_, mixerName_, value);
+		alsaWork_->setAlsaVolume(value);
 	}
 	volumeValue_ = value;
 	volumeLabel_->setText(QString::number(value));
@@ -436,11 +429,12 @@ void PopupWindow::onCardChanged(int card)
 	}
 #endif
 	if (!isPulse_) {
-		cardIndex_ = (card >0 && card < cardList_.size()) ? card : 0;
-		cardName_ = cardList_.at(cardIndex_);
-		mixerList_ = alsaWork_->getVolumeMixers(cardIndex_);
+		cardIndex_ = alsaWork_->cardExists(card) ? card : 0;
+		cardName_ = alsaWork_->getCardName(cardIndex_);
+		alsaWork_->setCurrentCard(cardIndex_);
+		mixerList_ = alsaWork_->getVolumeMixers();
 		settingsDialog_->setMixers(mixerList_);
-		switchList_ = alsaWork_->getSwitchList(cardIndex_);
+		switchList_ = alsaWork_->getSwitchList();
 		updateSwitches();
 		settingsDialog_->setPlaybackChecks(playBackItems_);
 		settingsDialog_->setCaptureChecks(captureItems_);
@@ -452,7 +446,8 @@ void PopupWindow::onMixerChanged(const QString &mixer)
 {
 	if (mixerList_.contains(mixer) && !isPulse_) {
 		mixerName_ = mixer;
-		volumeValue_ = alsaWork_->getAlsaVolume(cardIndex_, mixer);
+		alsaWork_->setCurrentMixer(mixerList_.indexOf(mixerName_));
+		volumeValue_ = alsaWork_->getAlsaVolume();
 		volumeSlider_->setValue(volumeValue_);
 	}
 }
@@ -468,17 +463,17 @@ void PopupWindow::updateSwitches()
 
 void PopupWindow::onPlayback(const QString &name, bool isIt)
 {
-	alsaWork_->setSwitch(cardIndex_, name, PLAYBACK, isIt);
+	alsaWork_->setSwitch(name, PLAYBACK, isIt);
 }
 
 void PopupWindow::onCapture(const QString &name, bool isIt)
 {
-	alsaWork_->setSwitch(cardIndex_, name, CAPTURE ,isIt);
+	alsaWork_->setSwitch(name, CAPTURE ,isIt);
 }
 
 void PopupWindow::onEnum(const QString &name, bool isIt)
 {
-	alsaWork_->setSwitch(cardIndex_, name, ENUM, isIt);
+	alsaWork_->setSwitch(name, ENUM, isIt);
 }
 
 void PopupWindow::iconActivated(QSystemTrayIcon::ActivationReason reason)

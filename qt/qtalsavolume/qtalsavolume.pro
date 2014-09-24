@@ -34,14 +34,14 @@ SOURCES += main.cpp\
 	   settingsdialog.cpp \
 	   alsawork/alsawork.cpp \
 	   alsawork/mixerswitches.cpp \
-	   alsawork/volumemixers.cpp
+	   alsawork/alsadevice.cpp
 
 HEADERS  += settingsdialog.h \
 	    defines.h \
 	    popupwindow.h \
 	    alsawork/alsawork.h \
 	    alsawork/mixerswitches.h \
-	    alsawork/volumemixers.h
+	    alsawork/alsadevice.h
 
 FORMS    += \
 	    settingsdialog.ui

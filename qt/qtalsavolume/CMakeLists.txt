@@ -4,8 +4,9 @@ if( UNIX AND NOT (APPLE OR CYGWIN) )
 	add_definitions( -Wall )
 	set( CMAKE_AUTOMOC ON )
 	set( CMAKE_INCLUDE_CURRENT_DIR ON )
-	set(USE_PULSE NO CACHE BOOL "Set pulseaudio usage" )
+	set( USE_PULSE OFF CACHE BOOL "Set pulseaudio usage" )
 	set( USE_QT5 OFF CACHE BOOL "Use Qt5" )
+	set( BUILD_TRANSLATIONS ON CACHE BOOL "Build project translations")
 	find_package( PkgConfig REQUIRED )
 	pkg_check_modules( ALSA REQUIRED alsa )
 	link_directories( ${ALSA_LIBRARY_DIRS} )
@@ -20,7 +21,7 @@ if( UNIX AND NOT (APPLE OR CYGWIN) )
 	set( HEADERS
 		alsawork/alsawork.h
 		alsawork/mixerswitches.h
-		alsawork/volumemixers.h
+		alsawork/alsadevice.h
 		defines.h
 	)
 	set ( CPP_FILES
@@ -28,7 +29,7 @@ if( UNIX AND NOT (APPLE OR CYGWIN) )
 		popupwindow.cpp
 		alsawork/alsawork.cpp
 		alsawork/mixerswitches.cpp
-		alsawork/volumemixers.cpp
+		alsawork/alsadevice.cpp
 		settingsdialog.cpp
 	)
 	set ( UI_FILES
@@ -88,14 +89,16 @@ if( UNIX AND NOT (APPLE OR CYGWIN) )
 	endif( ${USE_PULSE} )
 	if( ${USE_QT5} )
 		find_package ( Qt5Widgets REQUIRED )
-		find_package ( Qt5LinguistTools REQUIRED )
 		include_directories(
 			${Qt5Widgets_INCLUDES}
 		)
 		set( CMAKE_CXX_FLAGS "-std=c++0x ${CMAKE_CXX_FLAGS} ${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}" )
 		add_definitions( -DHAVE_QT5 )
 		qt5_add_resources( RSCS ${QRC_FILES} )
-		qt5_add_translation( TRS ${qtalsavolume_TRS} )
+		if( ${BUILD_TRANSLATIONS} )
+			find_package ( Qt5LinguistTools REQUIRED )
+			qt5_add_translation( TRS ${qtalsavolume_TRS} )
+		endif( ${BUILD_TRANSLATIONS} )
 		qt5_wrap_ui( UIS ${UI_FILES} )
 		set ( QT_DEPLIBS
 			Qt5::Widgets
@@ -109,7 +112,9 @@ if( UNIX AND NOT (APPLE OR CYGWIN) )
 		)
 		QT4_WRAP_UI( UIS ${UI_FILES} )
 		QT4_ADD_RESOURCES( RSCS ${QRC_FILES} )
-		QT4_ADD_TRANSLATION( TRS ${qtalsavolume_TRS} )
+		if( ${BUILD_TRANSLATIONS} )
+			QT4_ADD_TRANSLATION( TRS ${qtalsavolume_TRS} )
+		endif( ${BUILD_TRANSLATIONS} )
 		set ( QT_DEPLIBS
 			${QT_QTCORE_LIBRARY}
 			${QT_QTGUI_LIBRARY}

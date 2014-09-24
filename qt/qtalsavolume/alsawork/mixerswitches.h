@@ -1,6 +1,6 @@
 /*
  * mixerswitches.h
- * Copyright (C) 2013 Vitaly Tonkacheyev
+ * Copyright (C) 2012 Vitaly Tonkacheyev
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -22,23 +22,22 @@
 #define MIXERSWITCHES_H
 
 #include "defines.h"
-
 #include <QList>
-#include <QPair>
-#include <QString>
 
 class MixerSwitches
 {
 public:
 	MixerSwitches();
-	void pushBack(SwitchType sType, QPair<QString, bool> &item);
+	MixerSwitches(const MixerSwitches &ms);
+	~MixerSwitches();
+	void pushBack(SwitchType sType, switcher &item);
 	void setCaptureSwitchList(const QList<switcher> &list);
 	void setPlaybackSwitchList(const QList<switcher> &list);
 	void setEnumSwitchList(const QList<switcher> &list);
 	void clear(SwitchType sType);
-	QList<switcher> &captureSwitchList();
-	QList<switcher> &playbackSwitchList();
-	QList<switcher> &enumSwitchList();
+	const QList<switcher> &captureSwitchList() const;
+	const QList<switcher> &playbackSwitchList() const;
+	const QList<switcher> &enumSwitchList() const;
 	bool isEmpty();
 
 private:
