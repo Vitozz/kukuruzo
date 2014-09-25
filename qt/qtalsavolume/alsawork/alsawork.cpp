@@ -118,14 +118,10 @@ void AlsaWork::setSwitch(const QString &mixer, int id, bool enabled)
 
 bool AlsaWork::checkCardId(int cardId)
 {
-	try {
-		if (cardId < int(cardList_.size()) && !cardList_.at(cardId).isEmpty()) {
-			return true;
-		}
+	if (cardId < int(cardList_.size()) && !cardList_.at(cardId).isEmpty()) {
+		return true;
 	}
-	catch (std::out_of_range &ex) {
-		checkError("Error in alsawork.cpp","line::122::Item out of Range::"+QString::fromLocal8Bit(ex.what()));
-	}
+	checkError("Error in alsawork.cpp","line::121::Item out of Range::");
 	return false;
 }
 

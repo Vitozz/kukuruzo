@@ -152,9 +152,9 @@ PulseDevice PulseCore::getSink(const QString &name)
 	return getDefaultSink();
 }
 
-PulseDevice PulseCore::getSource(u_int32_t index)
+PulseDevice PulseCore::getSource(int index)
 {
-	if (index >= 0 && (int)index < sources_.size()) {
+	if (index >= 0 && index < sources_.size()) {
 		return sources_.at(index);
 	}
 	else {

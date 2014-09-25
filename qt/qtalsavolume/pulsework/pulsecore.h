@@ -57,7 +57,7 @@ private:
 	const QList<PulseDevice> getSources();
 	PulseDevice getSink(int index);
 	PulseDevice getSink(const QString &name);
-	PulseDevice getSource(u_int32_t);
+	PulseDevice getSource(int index);
 	PulseDevice getSource(const QString &name);
 	PulseDevice getDefaultSink();
 	PulseDevice getDefaultSource();

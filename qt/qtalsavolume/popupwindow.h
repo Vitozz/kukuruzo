@@ -114,12 +114,8 @@ private:
 	bool isAutorun_;
 	bool isLightStyle_;
 	bool isPulse_;
-	const QString TITLE_ = QString(tr("About QtAlsaVolume"));
-#ifdef USE_PULSE
-	const QString ABOUT_MSG_ = QString(tr("Tray Alsa Volume Changer written using Qt\n\nWith Pulseaudio support\n\n2014 (c) Vitaly Tonkacheyev (thetvg@gmail.com)\n\nversion: %1")).arg(APP_VERSION);
-#else
-	const QString ABOUT_MSG_ = QString(tr("Tray Alsa Volume Changer written using Qt\n\n2014 (c) Vitaly Tonkacheyev (thetvg@gmail.com)\n\nversion: %1")).arg(APP_VERSION);
-#endif
+	QString title_;
+	QString message_;
 };
 
 #endif // POPUPWINDOW_H

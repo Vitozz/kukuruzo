@@ -89,9 +89,6 @@ private:
 	QLabel *l1_;
 	QLabel *l2_;
 	QLabel *l3_;
-	const QString PLAYBACK_TIP = tr("Enable/Disable Alsa's Playback Switch");
-	const QString CAPTURE_TIP = tr("Enable/Disable Alsa's Capture Switch");
-	const QString ENUMS_TIP = tr("Enable/Disable Alsa's Enumerated Switch");
 };
 
 #endif // SETTINGSDIALOG_H

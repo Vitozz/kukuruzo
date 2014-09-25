@@ -44,9 +44,9 @@ SettingsDialog::SettingsDialog(QWidget *parent)
 	ui->setupUi(this);
 	connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(onOk()));
 	connect(ui->buttonBox, SIGNAL(rejected()), this, SLOT(onCancel()));
-	playbacks_->setToolTip(PLAYBACK_TIP);
-	captures_->setToolTip(CAPTURE_TIP);
-	enums_->setToolTip(ENUMS_TIP);
+	playbacks_->setToolTip(tr("Enable/Disable Alsa's Playback Switch"));
+	captures_->setToolTip(tr("Enable/Disable Alsa's Capture Switch"));
+	enums_->setToolTip(tr("Enable/Disable Alsa's Enumerated Switch"));
 	ui->verticalLayout_3->addWidget(l1_);
 	ui->verticalLayout_3->addWidget(playbacks_);
 	ui->verticalLayout_3->addWidget(l2_);

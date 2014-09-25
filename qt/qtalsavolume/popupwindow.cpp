@@ -90,7 +90,13 @@ PopupWindow::PopupWindow()
   isMuted_(false),
   isAutorun_(false),
   isLightStyle_(false),
-  isPulse_(false)
+  isPulse_(false),
+  title_(tr("About QtAlsaVolume")),
+#ifdef USE_PULSE
+  message_(QString(tr("Tray Alsa Volume Changer written using Qt\n\nWith Pulseaudio support\n\n2014 (c) Vitaly Tonkacheyev (thetvg@gmail.com)\n\nversion: %1")).arg(APP_VERSION))
+#else
+  message_(QString(tr("Tray Alsa Volume Changer written using Qt\n\n2014 (c) Vitaly Tonkacheyev (thetvg@gmail.com)\n\nversion: %1")).arg(APP_VERSION))
+#endif
 {
 	setWindowIcon(QIcon(":/images/icons/volume_ico.png"));
 	//Start of tray icon initialization
@@ -240,7 +246,7 @@ void PopupWindow::updateTrayMenu()
 
 void PopupWindow::onAbout()
 {
-	QMessageBox::about(this, TITLE_, ABOUT_MSG_);
+	QMessageBox::about(this, title_, message_);
 }
 
 void PopupWindow::showPopup()
