@@ -77,7 +77,11 @@ void success_cb(pa_context* c, int success, void* raw) {
 PulseCore::PulseCore(const char *clientName)
 : mainLoop_(pa_mainloop_new()),
   mainLoopApi_(pa_mainloop_get_api(mainLoop_)),
-  context_(pa_context_new(mainLoopApi_,clientName))
+  context_(pa_context_new(mainLoopApi_,clientName)),
+  sinksDescriptions_(QStringList()),
+  sourcesDescriptions_(QStringList()),
+  deviceNames_(QStringList()),
+  deviceDescriptions_(QStringList())
 {
 	pState = CONNECTING;
 	pa_context_set_state_callback(context_, &state_cb, this);
@@ -86,8 +90,9 @@ PulseCore::PulseCore(const char *clientName)
 		pa_mainloop_iterate(mainLoop_, 1, &retval_);
 	}
 	if (pState == ERROR) {
-		onError("Connection Error");
+		onError("Error to connect to Pulseaudio main loop");
 	}
+	updateDevices();
 	currentDevice_ = new PulseDevice(getDefaultSink());
 }
 
@@ -125,52 +130,48 @@ const QList<PulseDevice> PulseCore::getSources()
 	return sources;
 }
 
-PulseDevice PulseCore::getSink(u_int32_t index)
+PulseDevice PulseCore::getSink(int index)
 {
-	QList<PulseDevice> sinks;
-	pa_operation* op = pa_context_get_sink_info_by_index(context_, index, &sink_list_cb, &sinks);
-	iterate(op);
-	pa_operation_unref(op);
-	if (sinks.isEmpty()) {
-		onError("The sink doesn't exit");
+	if (index >= 0 && (int)index < sinks_.size()) {
+		return sinks_.at(index);
 	}
-	return *(sinks.begin());
+	else {
+		onError(QString("Pulseaudio sink with id=%1 not exist.\n Default sink will be used").arg(QString::number(index)));
+	}
+	return getDefaultSink();
 }
 
 PulseDevice PulseCore::getSink(const QString &name)
 {
-	QList<PulseDevice> sinks;
-	pa_operation* op = pa_context_get_sink_info_by_name(context_, name.toStdString().c_str(), &sink_list_cb, &sinks);
-	iterate(op);
-	pa_operation_unref(op);
-	if (sinks.isEmpty()) {
-		onError("The sink doesn't exit");
+	foreach(const PulseDevice &sink, sinks_) {
+		if (sink.name() == name) {
+			return sink;
+		}
 	}
-	return *(sinks.begin());
+	onError(QString("Pulseaudio sink with name=%1 not exist.\n Default sink will be used").arg(name));
+	return getDefaultSink();
 }
 
 PulseDevice PulseCore::getSource(u_int32_t index)
 {
-	QList<PulseDevice> sources;
-	pa_operation* op = pa_context_get_source_info_by_index(context_, index, &source_list_cb, &sources);
-	iterate(op);
-	pa_operation_unref(op);
-	if (sources.isEmpty()) {
-		onError("The source doesn't exit");
+	if (index >= 0 && (int)index < sources_.size()) {
+		return sources_.at(index);
 	}
-	return *(sources.begin());
+	else {
+		onError(QString("Pulseaudio source with id=%1 not exist.\n Default source will be used").arg(QString::number(index)));
+	}
+	return getDefaultSource();
 }
 
 PulseDevice PulseCore::getSource(const QString &name)
 {
-	QList<PulseDevice> sources;
-	pa_operation* op = pa_context_get_source_info_by_name(context_, name.toStdString().c_str(), &source_list_cb, &sources);
-	iterate(op);
-	pa_operation_unref(op);
-	if (sources.isEmpty()) {
-		onError("The source doesn't exit");
+	foreach(const PulseDevice &source, sources_) {
+		if (source.name() == name) {
+			return source;
+		}
 	}
-	return *(sources.begin());
+	onError(QString("Pulseaudio source with name=%1 not exist.\n Default source will be used").arg(name));
+	return getDefaultSource();
 }
 
 PulseDevice PulseCore::getDefaultSink()
@@ -191,24 +192,6 @@ PulseDevice PulseCore::getDefaultSource()
 	return getSource(info.defaultSourceName);
 }
 
-const QStringList PulseCore::getSinksDescriptions()
-{
-	QStringList descriptions;
-	foreach (PulseDevice device, getSinks()) {
-		descriptions << device.description();
-	}
-	return descriptions;
-}
-
-const QStringList PulseCore::getSourcesDescriptions()
-{
-	QStringList descriptions;
-	foreach (PulseDevice device, getSources()) {
-		descriptions << device.description();
-	}
-	return descriptions;
-}
-
 const QString PulseCore::getDeviceDescription(const QString &name)
 {
 	QString desc = getDeviceByName(name).description();
@@ -221,12 +204,12 @@ const QString PulseCore::getDeviceDescription(const QString &name)
 PulseDevice PulseCore::getDeviceByName(const QString &name)
 {
 	PulseDevice result = PulseDevice();
-	foreach (PulseDevice device, getSinks()) {
+	foreach (const PulseDevice &device, sinks_) {
 		if (device.name() == name) {
 			result = device;
 		}
 	}
-	foreach (PulseDevice device, getSources()) {
+	foreach (const PulseDevice &device, sources_) {
 		if (device.name() == name) {
 			result = device;
 		}
@@ -277,7 +260,8 @@ void PulseCore::setMute_(PulseDevice &device, bool mute)
 void PulseCore::onError(const QString &message)
 {
 	QMessageBox mbox;
-	mbox.critical(0, "Error", message);
+	mbox.critical(0, "Error in pulsecore.cpp", message);
+	mbox.exec();
 }
 
 void PulseCore::setCurrentDevice(const QString &name)
@@ -296,6 +280,47 @@ void PulseCore::setMute(bool mute)
 	setMute_((*currentDevice_), mute);
 }
 
+void PulseCore::updateDevices()
+{
+	if (!sinks_.isEmpty()) {
+		sinks_.clear();
+	}
+	if (!sources_.isEmpty()) {
+		sources_.clear();
+	}
+	if (!deviceNames_.isEmpty()) {
+		deviceNames_.clear();
+	}
+	if (!deviceDescriptions_.isEmpty()) {
+		deviceDescriptions_.clear();
+	}
+	if (!sinksDescriptions_.isEmpty()) {
+		sinksDescriptions_.clear();
+	}
+	if (!sourcesDescriptions_.isEmpty()) {
+		sourcesDescriptions_.clear();
+	}
+	sinks_ = getSinks();
+	sources_ = getSources();
+	foreach(const PulseDevice &device, sinks_) {
+		deviceNames_ << device.name();
+		sinksDescriptions_ << device.description();
+	}
+	foreach(const PulseDevice &device, sources_) {
+		deviceNames_ << device.name();
+		sourcesDescriptions_ << device.description();
+	}
+	deviceDescriptions_ = sinksDescriptions_;
+	foreach(const QString &desc, sourcesDescriptions_) {
+		deviceDescriptions_ << desc;
+	}
+}
+
+void PulseCore::refreshDevices()
+{
+	updateDevices();
+}
+
 int PulseCore::getVolume() const
 {
 	return currentDevice_->volume_percent();
@@ -306,37 +331,26 @@ bool PulseCore::getMute()
 	return currentDevice_->mute();
 }
 
-const QStringList PulseCore::getCardList()
+const QStringList &PulseCore::getCardList() const
 {
-	return QStringList() << getSinksDescriptions() << getSourcesDescriptions();
+	return deviceDescriptions_;
 }
 
 PulseDevice PulseCore::getDeviceByIndex(int index)
 {
 	PulseDevice device = getDefaultSink();
-	QStringList sourcesDesc = getSourcesDescriptions();
-	QStringList sinksDesc = getSinksDescriptions();
-	int sinksSize = sinksDesc.size();
-	int deltaIndex = sinksSize - index;
+	const int sinksSize = sinksDescriptions_.size();
+	const int deltaIndex = abs(sinksSize - index);
 	if (index < sinksSize) {
 		device = getSink(index);
 	}
-	else if (deltaIndex < sourcesDesc.size()){
+	else if (deltaIndex < sourcesDescriptions_.size()){
 		device = getSource(deltaIndex);
 	}
 	return device;
 }
 
-int PulseCore::getCurrentDeviceIndex()
+int PulseCore::getCurrentDeviceIndex() const
 {
-	QStringList sinksDesc = getSinksDescriptions();
-	int sinksSize = sinksDesc.size();
-	int absIndex = currentDevice_->index();
-	if (currentDevice_->type() == SINK) {
-		return absIndex;
-	}
-	else {
-		return (sinksSize + absIndex);
-	}
-	return getDefaultSink().index();
+	return deviceNames_.indexOf(currentDevice_->name());
 }

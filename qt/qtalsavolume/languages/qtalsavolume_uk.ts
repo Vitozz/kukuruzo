@@ -4,42 +4,42 @@
 <context>
     <name>PopupWindow</name>
     <message>
-        <location filename="../popupwindow.cpp" line="189"/>
+        <location filename="../popupwindow.cpp" line="73"/>
         <source>&amp;Restore</source>
         <translation>&amp;Відновити</translation>
     </message>
     <message>
-        <location filename="../popupwindow.cpp" line="192"/>
+        <location filename="../popupwindow.cpp" line="74"/>
         <source>&amp;Settings</source>
         <translation>&amp;Налаштування</translation>
     </message>
     <message>
-        <location filename="../popupwindow.cpp" line="195"/>
+        <location filename="../popupwindow.cpp" line="75"/>
         <source>&amp;Mute</source>
         <translation>&amp;Заглушити</translation>
     </message>
     <message>
-        <location filename="../popupwindow.cpp" line="199"/>
+        <location filename="../popupwindow.cpp" line="76"/>
         <source>&amp;About...</source>
         <translation>&amp;Про програму...</translation>
     </message>
     <message>
-        <location filename="../popupwindow.cpp" line="202"/>
+        <location filename="../popupwindow.cpp" line="77"/>
         <source>About Qt</source>
         <translation>Про Qt</translation>
     </message>
     <message>
-        <location filename="../popupwindow.cpp" line="205"/>
+        <location filename="../popupwindow.cpp" line="78"/>
         <source>&amp;Quit</source>
         <translation>&amp;Вихід</translation>
     </message>
     <message>
-        <location filename="../popupwindow.cpp" line="230"/>
+        <location filename="../popupwindow.h" line="117"/>
         <source>About QtAlsaVolume</source>
         <translation>Про QtAlsaVolume</translation>
     </message>
     <message>
-        <location filename="../popupwindow.cpp" line="232"/>
+        <location filename="../popupwindow.h" line="119"/>
         <source>Tray Alsa Volume Changer written using Qt
 
 With Pulseaudio support
@@ -56,7 +56,7 @@ version: %1</source>
 версія: %1</translation>
     </message>
     <message>
-        <location filename="../popupwindow.cpp" line="234"/>
+        <location filename="../popupwindow.h" line="121"/>
         <source>Tray Alsa Volume Changer written using Qt
 
 2014 (c) Vitaly Tonkacheyev (thetvg@gmail.com)
@@ -94,18 +94,18 @@ version: 0.0.1</source>
     </message>
     <message>
         <location filename="../popupwindow.cpp" line="416"/>
-        <location filename="../popupwindow.cpp" line="422"/>
+        <location filename="../popupwindow.cpp" line="425"/>
         <source>Card: </source>
         <translation>Карта: </translation>
     </message>
     <message>
-        <location filename="../popupwindow.cpp" line="422"/>
+        <location filename="../popupwindow.cpp" line="428"/>
         <source>Mixer: </source>
         <translation>Мікшер: </translation>
     </message>
     <message>
-        <location filename="../popupwindow.cpp" line="416"/>
-        <location filename="../popupwindow.cpp" line="422"/>
+        <location filename="../popupwindow.cpp" line="418"/>
+        <location filename="../popupwindow.cpp" line="431"/>
         <source>Volume: </source>
         <translation>Гучність: </translation>
     </message>
@@ -113,12 +113,12 @@ version: 0.0.1</source>
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../main.cpp" line="54"/>
+        <location filename="../main.cpp" line="53"/>
         <source>Systray</source>
         <translation>Systray</translation>
     </message>
     <message>
-        <location filename="../main.cpp" line="54"/>
+        <location filename="../main.cpp" line="53"/>
         <source>System tray not detected</source>
         <translation>Системний трей не знайдено</translation>
     </message>
@@ -156,42 +156,56 @@ version: 0.0.1</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Оберіть Мікшер&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.ui" line="114"/>
         <source>Pulseaudio</source>
         <translation>Pulseaudio</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.ui" line="127"/>
+        <location filename="../settingsdialog.ui" line="114"/>
+        <source>Use PulseAudio volume control</source>
+        <translation>Задіяти регулювання гучності PulseAudio</translation>
+    </message>
+    <message>
+        <location filename="../settingsdialog.ui" line="117"/>
+        <source>Enable Pulseaudio</source>
+        <translation>Використовувати Pulseaudio</translation>
+    </message>
+    <message>
+        <location filename="../settingsdialog.ui" line="130"/>
+        <source>Start program on system startup</source>
+        <translation>Запускати програму при старті системи</translation>
+    </message>
+    <message>
+        <location filename="../settingsdialog.ui" line="133"/>
         <source>Autorun program on system start</source>
         <translation>Запускати програму під час запуску системи</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.ui" line="134"/>
+        <location filename="../settingsdialog.ui" line="140"/>
         <source>Icon Style</source>
         <translation>Стиль іконки</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.ui" line="155"/>
+        <location filename="../settingsdialog.ui" line="161"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Light style of tray icon&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Світлий стиль іконки в треї&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.ui" line="158"/>
+        <location filename="../settingsdialog.ui" line="164"/>
         <source>Light Style</source>
         <translation>Світлий стиль</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.ui" line="174"/>
+        <location filename="../settingsdialog.ui" line="180"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Dark style of tray icon&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Темний стиль іконки в треї&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.ui" line="177"/>
+        <location filename="../settingsdialog.ui" line="183"/>
         <source>Dark Style</source>
         <translation>Темний стиль</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.ui" line="201"/>
+        <location filename="../settingsdialog.ui" line="207"/>
         <source>Switchers</source>
         <translation>Перемикачі</translation>
     </message>
@@ -209,6 +223,21 @@ version: 0.0.1</source>
         <location filename="../settingsdialog.cpp" line="42"/>
         <source>Enum Switches</source>
         <translation>Інші перемикачі</translation>
+    </message>
+    <message>
+        <location filename="../settingsdialog.h" line="92"/>
+        <source>Enable/Disable Alsa&apos;s Playback Switch</source>
+        <translation>Увімкнути/Вимкнути перемикач програвання Alsa</translation>
+    </message>
+    <message>
+        <location filename="../settingsdialog.h" line="93"/>
+        <source>Enable/Disable Alsa&apos;s Capture Switch</source>
+        <translation>Увімкнути/Вимкнути перемикач запису Alsa</translation>
+    </message>
+    <message>
+        <location filename="../settingsdialog.h" line="94"/>
+        <source>Enable/Disable Alsa&apos;s Enumerated Switch</source>
+        <translation>Увімкнути/Вимкнути інший перемикач Alsa</translation>
     </message>
 </context>
 </TS>

@@ -35,6 +35,13 @@
 #include <QDebug>
 #endif
 
+static const QStringList icoPrefix = QStringList()
+				     << "tb_icon0.png" //0
+				     << "tb_icon20.png" //1
+				     << "tb_icon40.png" //2
+				     << "tb_icon60.png" //3
+				     << "tb_icon80.png" //4
+				     << "tb_icon100.png"; //5
 static const QString autoStartPath = ".config/autostart";
 static const QString fName = QDir::home().absolutePath() + "/.config/autostart/qtalsavolume.desktop";
 static const QString dFile = "[Desktop Entry]\n"
@@ -46,43 +53,72 @@ static const QString dFile = "[Desktop Entry]\n"
 			     "\n"
 			     "Type=Application\n"
 			     "Comment=Changes the volume of ALSA from the system tray\n";
+static const int POPUP_HEIGHT = 140;
+static const int POPUP_WIDTH = 30;
+static const int DELTA = 2;
 
 PopupWindow::PopupWindow()
+: alsaWork_(new AlsaWork),
+#ifdef USE_PULSE
+  pulse_(new PulseCore(APP_NAME)),
+  deviceIndex_(0),
+#endif
+  mixerName_(QString()),
+  cardIndex_(0),
+  mixerList_(QStringList()),
+  switchList_(new MixerSwitches()),
+  playBackItems_(QList<switcher>()),
+  captureItems_(QList<switcher>()),
+  enumItems_(QList<switcher>()),
+  restore_(new QAction(tr("&Restore"), this)),
+  settings_(new QAction(tr("&Settings"), this)),
+  mute_(new QAction(tr("&Mute"), this)),
+  about_(new QAction(tr("&About..."), this)),
+  aboutQt_(new QAction(tr("About Qt"), this)),
+  exit_(new QAction(tr("&Quit"), this)),
+  trayMenu_(new QMenu(this)),
+  trayIcon_(new QSystemTrayIcon(this)),
+  mainLayout_(new QVBoxLayout()),
+  volumeSlider_(new QSlider(Qt::Vertical, this)),
+  volumeLabel_(new QLabel(this)),
+  settingsDialog_(new SettingsDialog(this)),
+  cardName_(QString()),
+  cardList_(QStringList()),
+  pulseCardName_(QString()),
+  pulseCardList_(QStringList()),
+  volumeValue_(0),
+  isMuted_(false),
+  isAutorun_(false),
+  isLightStyle_(false),
+  isPulse_(false)
 {
 	setWindowIcon(QIcon(":/images/icons/volume_ico.png"));
 	//Start of tray icon initialization
-	createActions();
-	createTrayMenu();
-	trayIcon_ = new QSystemTrayIcon(this);
+	initActions();
+	updateTrayMenu();
 	trayIcon_->setContextMenu(trayMenu_);
 	//Adding QLabel and QSlider to PopupWindow
-	QVBoxLayout *mainLayout = new QVBoxLayout;
-	volumeSlider_ = new QSlider(Qt::Vertical, this);
 	volumeSlider_->setRange(0,100);
 	volumeSlider_->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
-	volumeLabel_ = new QLabel(this);
 	volumeLabel_->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
 	QFont font = volumeLabel_->font();
 	font.setBold(true);
 	volumeLabel_->setFont(font);
-	mainLayout->addWidget(volumeLabel_);
-	mainLayout->addWidget(volumeSlider_);
-	mainLayout->setContentsMargins(0,4,0,4);
-	mainLayout->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
-	setLayout(mainLayout);
-	setMinimumHeight(140);
-	setMinimumWidth(30);
+	mainLayout_->addWidget(volumeLabel_);
+	mainLayout_->addWidget(volumeSlider_);
+	mainLayout_->setContentsMargins(0,4,0,4);
+	mainLayout_->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+	setLayout(mainLayout_);
+	setMinimumHeight(POPUP_HEIGHT);
+	setMinimumWidth(POPUP_WIDTH);
 	setWindowFlags(Qt::FramelessWindowHint);
 	this->setMouseTracking(true);
 	//Reading settings and alsa variables
 	QSettings setts_;
 	isLightStyle_ = setts_.value(ICOSTYLE, true).toBool();
 	isAutorun_ = setts_.value(ISAUTO, false).toBool();
-	//Creating settings dialog
-	settingsDialog_ = new SettingsDialog(this);
 #ifdef USE_PULSE
 	isPulse_ = setts_.value(PULSE, false).toBool();
-	pulse_ = new PulseCore(APP_NAME);
 	pulseCardList_ = pulse_->getCardList();
 	QString lastSink = setts_.value(LAST_SINK, "").toString();
 	if (!lastSink.isEmpty()) {
@@ -100,7 +136,6 @@ PopupWindow::PopupWindow()
 #else
 	isPulse_ = false;
 #endif
-	alsaWork_ = new AlsaWork();
 	cardList_ = alsaWork_->getCardsList();
 	cardIndex_ = setts_.value(CARD_INDEX, 0).toInt();
 	if (alsaWork_->cardExists(cardIndex_)) {
@@ -118,20 +153,20 @@ PopupWindow::PopupWindow()
 		volumeValue_ = alsaWork_->getAlsaVolume();
 		isMuted_ = !alsaWork_->getMute();
 	}
-	switchList_ = alsaWork_->getSwitchList();
+	switchList_ = new MixerSwitches(alsaWork_->getSwitchList());
 	updateSwitches();
 	if (!isPulse_) {
 		settingsDialog_->setSoundCards(cardList_);
 		settingsDialog_->setCurrentCard(cardIndex_);
-	} else {
+	}
 #ifdef USE_PULSE
+	else {
 		settingsDialog_->setSoundCards(pulseCardList_);
 		settingsDialog_->setCurrentCard(pulse_->getCurrentDeviceIndex());
 		settingsDialog_->setUsePulse(isPulse_);
 		settingsDialog_->hideAlsaElements(isPulse_);
-#endif
 	}
-	//
+#endif
 	settingsDialog_->setIconStyle(isLightStyle_);
 	settingsDialog_->connectSignals(); //connecting settingsDialog_ internal signals
 	connect(settingsDialog_, SIGNAL(soundCardChanged(int)), this, SLOT(onCardChanged(int)));
@@ -144,7 +179,6 @@ PopupWindow::PopupWindow()
 #ifdef USE_PULSE
 	connect(settingsDialog_, SIGNAL(soundSystemChanged(bool)), this, SLOT(onSoundSystem(bool)));
 #endif
-	//
 	createDesktopFile();
 	//Finish of tray icon initialization
 	mute_->setChecked(isMuted_);
@@ -160,48 +194,39 @@ PopupWindow::PopupWindow()
 
 PopupWindow::~PopupWindow()
 {
+
+	delete settingsDialog_;
+	delete volumeLabel_;
+	delete volumeSlider_;
+	delete mainLayout_;
+	delete trayIcon_;
+	delete trayMenu_;
+	delete exit_;
+	delete aboutQt_;
+	delete about_;
+	delete mute_;
+	delete settings_;
+	delete restore_;
+	delete switchList_;
 #ifdef USE_PULSE
 	delete pulse_;
 #endif
 	delete alsaWork_;
-	delete restore_;
-	delete settings_;
-	delete mute_;
-	delete aboutQt_;
-	delete about_;
-	delete exit_;
-	delete trayMenu_;
-	delete trayIcon_;
-	delete volumeSlider_;
-	delete volumeLabel_;
-	delete settingsDialog_;
 }
 
-void PopupWindow::createActions()
+void PopupWindow::initActions()
 {
-	restore_ = new QAction(tr("&Restore"), this);
 	connect(restore_, SIGNAL(triggered()), this, SLOT(showPopup()));
-
-	settings_ = new QAction(tr("&Settings"), this);
 	connect(settings_, SIGNAL(triggered()), this, SLOT(showSettings()));
-
-	mute_ = new QAction(tr("&Mute"), this);
 	mute_->setCheckable(true);
 	connect(mute_, SIGNAL(toggled(bool)), this, SLOT(onMute(bool)));
-
-	about_ = new QAction(tr("&About..."), this);
 	connect(about_, SIGNAL(triggered()), this, SLOT(onAbout()));
-
-	aboutQt_ = new QAction(tr("About Qt"), this);
 	connect(aboutQt_, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
-
-	exit_ = new QAction(tr("&Quit"), this);
 	connect(exit_, SIGNAL(triggered()), this, SLOT(onQuit()));
 }
 
-void PopupWindow::createTrayMenu()
+void PopupWindow::updateTrayMenu()
 {
-	trayMenu_ = new QMenu(this);
 	trayMenu_->addAction(restore_);
 	trayMenu_->addSeparator();
 	trayMenu_->addAction(settings_);
@@ -213,20 +238,9 @@ void PopupWindow::createTrayMenu()
 	trayMenu_->addAction(exit_);
 }
 
-void PopupWindow::onQuit()
-{
-	close();
-}
-
 void PopupWindow::onAbout()
 {
-	QString title = QString(tr("About QtAlsaVolume"));
-#ifdef USE_PULSE
-	QString msg = QString(tr("Tray Alsa Volume Changer written using Qt\n\nWith Pulseaudio support\n\n2014 (c) Vitaly Tonkacheyev (thetvg@gmail.com)\n\nversion: %1")).arg(APP_VERSION);
-#else
-	QString msg = QString(tr("Tray Alsa Volume Changer written using Qt\n\n2014 (c) Vitaly Tonkacheyev (thetvg@gmail.com)\n\nversion: %1")).arg(APP_VERSION);
-#endif
-	QMessageBox::about(this, title, msg);
+	QMessageBox::about(this, TITLE_, ABOUT_MSG_);
 }
 
 void PopupWindow::showPopup()
@@ -245,7 +259,7 @@ void PopupWindow::showPopup()
 		const int iconTop = trayIcon_->geometry().top();
 		const int windowWidth = minimumWidth();
 		const int windowHeight = minimumHeight();
-		int position = iconTop > screenHeight/2 ? BOTTOM : TOP;
+		const int position = iconTop > screenHeight/2 ? BOTTOM : TOP;
 		point.setX(iconLeft + iconWidth/2 - windowWidth/2);
 		switch (position) {
 		case TOP:
@@ -267,36 +281,30 @@ void PopupWindow::showPopup()
 
 void PopupWindow::setTrayIcon(int value)
 {
-	QString pathPrefix;
-	if (isLightStyle_) {
-		pathPrefix = "icons/light/";
-	}
-	else {
-		pathPrefix = "icons/dark/";
-	}
-	QString pathSuffix = "tb_icon100.png";
+	const QString pathPrefix = (isLightStyle_) ? "icons/light/" : "icons/dark/";
+	QString pathSuffix = icoPrefix.at(5);
 	if (value <= 0) {
-		pathSuffix = "tb_icon0.png";
+		pathSuffix = icoPrefix.at(0);
 	}
 	if (value >0 && (value < 40)) {
-		pathSuffix = "tb_icon20.png";
+		pathSuffix = icoPrefix.at(1);
 	}
 	if (value >=40 && (value < 60)) {
-		pathSuffix = "tb_icon40.png";
+		pathSuffix = icoPrefix.at(2);
 	}
 	if (value >=60 && (value < 80)) {
-		pathSuffix = "tb_icon60.png";
+		pathSuffix = icoPrefix.at(3);
 	}
 	if (value >=80 && (value < 100)) {
-		pathSuffix = "tb_icon80.png";
+		pathSuffix = icoPrefix.at(4);
 	}
 	if (value >= 100) {
-		pathSuffix = "tb_icon100.png";
+		pathSuffix = icoPrefix.at(5);
 	}
 	if (isMuted_) {
-		pathSuffix = "tb_icon0.png";
+		pathSuffix = icoPrefix.at(0);
 	}
-	QString fullPath = getResPath(pathPrefix + pathSuffix);
+	const QString fullPath = getResPath(pathPrefix + pathSuffix);
 	trayIcon_->setIcon(QIcon(fullPath));
 }
 
@@ -354,8 +362,8 @@ bool PopupWindow::eventFilter(QObject *object, QEvent *event)
 	if (object == trayIcon_) {
 		if (event->type() == QEvent::Wheel) {
 			QWheelEvent *wheelEvent = static_cast<QWheelEvent*>(event);
-			int degs = wheelEvent->delta()/8;
-			int steps = degs/15;
+			const int degs = wheelEvent->delta()/8;
+			const int steps = degs/15;
 			setVolume(steps);
 			return true;
 		}
@@ -365,11 +373,10 @@ bool PopupWindow::eventFilter(QObject *object, QEvent *event)
 
 void PopupWindow::mouseMoveEvent(QMouseEvent *event)
 {
-	const int delta = 2; //2px distance from dialog borders
 	const int x = event->x();
 	const int y = event->y();
 	const int w = this->geometry().width();
-	if ( ((x - delta) <= 0 || (x + delta) >= w || (y-delta) <= 0 ) && this->isVisible()) {
+	if ( ((x - DELTA) <= 0 || (x + DELTA) >= w || (y - DELTA) <= 0 ) && this->isVisible()) {
 		this->hide();
 	}
 }
@@ -406,13 +413,23 @@ void PopupWindow::setIconToolTip(int value)
 {
 	if (isPulse_) {
 #ifdef USE_PULSE
-		const QString message = tr("Card: ") + pulse_->getDeviceDescription(pulseCardName_) + "\n"+ tr("Volume: ") + QString::number(value);
+		const QString message = tr("Card: ")
+					+ pulse_->getDeviceDescription(pulseCardName_)
+					+ "\n"+ tr("Volume: ")
+					+ QString::number(value);
 		trayIcon_->setToolTip(message);
 #endif
 		//
 	}
 	else {
-		const QString message = tr("Card: ") + cardName_ + "\n"+ tr("Mixer: ") + mixerName_ + "\n" + tr("Volume: ") + QString::number(value);
+		const QString message = tr("Card: ")
+					+ cardName_
+					+ "\n"
+					+ tr("Mixer: ")
+					+ mixerName_
+					+ "\n"
+					+ tr("Volume: ")
+					+ QString::number(value);
 		trayIcon_->setToolTip(message);
 	}
 }
@@ -434,7 +451,7 @@ void PopupWindow::onCardChanged(int card)
 		alsaWork_->setCurrentCard(cardIndex_);
 		mixerList_ = alsaWork_->getVolumeMixers();
 		settingsDialog_->setMixers(mixerList_);
-		switchList_ = alsaWork_->getSwitchList();
+		switchList_ = new MixerSwitches(alsaWork_->getSwitchList());
 		updateSwitches();
 		settingsDialog_->setPlaybackChecks(playBackItems_);
 		settingsDialog_->setCaptureChecks(captureItems_);
@@ -454,10 +471,10 @@ void PopupWindow::onMixerChanged(const QString &mixer)
 
 void PopupWindow::updateSwitches()
 {
-	if (!switchList_.isEmpty()) {
-		playBackItems_ = switchList_.playbackSwitchList();
-		captureItems_ = switchList_.captureSwitchList();
-		enumItems_ = switchList_.enumSwitchList();
+	if (!switchList_->isEmpty()) {
+		playBackItems_ = switchList_->playbackSwitchList();
+		captureItems_ = switchList_->captureSwitchList();
+		enumItems_ = switchList_->enumSwitchList();
 	}
 }
 
@@ -533,14 +550,14 @@ void PopupWindow::onStyleChanged(bool isLight)
 
 QString PopupWindow::getResPath(const QString &fileName) const
 {
-	QStringList resDirs;
-	resDirs << QString(QDir::currentPath());
-	resDirs << QString(qApp->applicationDirPath());
-	resDirs << QString("/usr/share/qtalsavolume");
-	resDirs << QString("/usr/local/share/qtalsavolume");
-	resDirs << QString(QDir::home().absolutePath() + "/.local/share/qtalsavolume");
+	const QStringList resDirs = QStringList()
+				    << QString(QDir::currentPath())
+				    << QString(qApp->applicationDirPath())
+				    << QString("/usr/share/qtalsavolume")
+				    << QString("/usr/local/share/qtalsavolume")
+				    << QString(QDir::home().absolutePath() + "/.local/share/qtalsavolume");
 	foreach(const QString &dir, resDirs){
-		QString fullName = dir + "/" + fileName;
+		const QString fullName = dir + "/" + fileName;
 		if (QFile::exists(fullName)) {
 			return fullName;
 		}

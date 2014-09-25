@@ -27,27 +27,33 @@
 #include <QDebug>
 #endif
 
-SettingsDialog::SettingsDialog(QWidget *parent) :
-QDialog(parent),
-ui(new Ui::SettingsDialog)
+SettingsDialog::SettingsDialog(QWidget *parent)
+: QDialog(parent),
+  ui(new Ui::SettingsDialog),
+  soundCards_(QStringList()),
+  mixers_(QStringList()),
+  isAutorun_(false),
+  itemsAdded_(false),
+  playbacks_(new QListWidget(this)),
+  captures_(new QListWidget(this)),
+  enums_(new QListWidget(this)),
+  l1_(new QLabel(tr("Playback Switches"),this)),
+  l2_(new QLabel(tr("Capture Switches"),this)),
+  l3_(new QLabel(tr("Enum Switches"),this))
 {
 	ui->setupUi(this);
 	connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(onOk()));
 	connect(ui->buttonBox, SIGNAL(rejected()), this, SLOT(onCancel()));
-	playbacks_ = new QListWidget(this);
-	captures_ = new QListWidget(this);
-	enums_ = new QListWidget(this);
-	QLabel *l1 = new QLabel(tr("Playback Switches"),this);
-	QLabel *l2 = new QLabel(tr("Capture Switches"),this);
-	QLabel *l3 = new QLabel(tr("Enum Switches"),this);
-	ui->verticalLayout_3->addWidget(l1);
+	playbacks_->setToolTip(PLAYBACK_TIP);
+	captures_->setToolTip(CAPTURE_TIP);
+	enums_->setToolTip(ENUMS_TIP);
+	ui->verticalLayout_3->addWidget(l1_);
 	ui->verticalLayout_3->addWidget(playbacks_);
-	ui->verticalLayout_3->addWidget(l2);
+	ui->verticalLayout_3->addWidget(l2_);
 	ui->verticalLayout_3->addWidget(captures_);
-	ui->verticalLayout_3->addWidget(l3);
+	ui->verticalLayout_3->addWidget(l3_);
 	ui->verticalLayout_3->addWidget(enums_);
 	ui->tabWidget->setCurrentIndex(0);
-	itemsAdded_ = false;
 #ifndef USE_PULSE
 	ui->usePulseaudio->setEnabled(false);
 #endif
@@ -55,9 +61,12 @@ ui(new Ui::SettingsDialog)
 
 SettingsDialog::~SettingsDialog()
 {
-	delete playbacks_;
-	delete captures_;
+	delete l3_;
+	delete l2_;
+	delete l1_;
 	delete enums_;
+	delete captures_;
+	delete playbacks_;
 	delete ui;
 }
 
@@ -129,8 +138,8 @@ void SettingsDialog::setCurrentMixer(const QString &mixer)
 
 void SettingsDialog::onOk()
 {
-	QString mixer = ui->mixerBox->currentText();
-	int card = ui->cardBox->currentIndex();
+	const QString mixer = ui->mixerBox->currentText();
+	const int card = ui->cardBox->currentIndex();
 	emit soundCardChanged(card);
 	emit mixerChanged(mixer);
 	hide();
@@ -226,8 +235,8 @@ void SettingsDialog::setAutorun(bool isAutorun)
 void SettingsDialog::onPBAction(QListWidgetItem *item)
 {
 	if (itemsAdded_) {
-		QString name = item->text();
-		Qt::CheckState checked = item->checkState();
+		const QString name = item->text();
+		const Qt::CheckState checked = item->checkState();
 		emit playChanged(name, (checked == Qt::Checked));
 	}
 }
@@ -235,8 +244,8 @@ void SettingsDialog::onPBAction(QListWidgetItem *item)
 void SettingsDialog::onCPAction(QListWidgetItem *item)
 {
 	if (itemsAdded_) {
-		QString name = item->text();
-		Qt::CheckState checked = item->checkState();
+		const QString name = item->text();
+		const Qt::CheckState checked = item->checkState();
 		emit captChanged(name, (checked == Qt::Checked));
 	}
 }
@@ -244,8 +253,8 @@ void SettingsDialog::onCPAction(QListWidgetItem *item)
 void SettingsDialog::onENAction(QListWidgetItem *item)
 {
 	if (itemsAdded_) {
-		QString name = item->text();
-		Qt::CheckState checked = item->checkState();
+		const QString name = item->text();
+		const Qt::CheckState checked = item->checkState();
 		emit enumChanged(name, (checked == Qt::Checked));
 	}
 }

@@ -110,8 +110,11 @@
          </item>
          <item>
           <widget class="QCheckBox" name="usePulseaudio">
+           <property name="toolTip">
+            <string>Use PulseAudio volume control</string>
+           </property>
            <property name="text">
-            <string>Pulseaudio</string>
+            <string>Enable Pulseaudio</string>
            </property>
           </widget>
          </item>
@@ -122,6 +125,9 @@
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
+           </property>
+           <property name="toolTip">
+            <string>Start program on system startup</string>
            </property>
            <property name="text">
             <string>Autorun program on system start</string>

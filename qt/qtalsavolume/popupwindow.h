@@ -23,6 +23,7 @@
 
 #include <QSystemTrayIcon>
 #include <QDialog>
+#include <QVBoxLayout>
 
 #include "alsawork/alsawork.h"
 #ifdef USE_PULSE
@@ -57,7 +58,7 @@ protected slots:
 	void showSettings();
 	void onMute(bool isToggled);
 	void onAbout();
-	void onQuit();
+	inline void onQuit() {close();}
 	void onSlider(int value);
 	void onCardChanged(int card);
 	void onAutorun(bool isIt);
@@ -70,8 +71,8 @@ protected slots:
 
 private:
 	void setTrayIcon(int value);
-	void createActions();
-	void createTrayMenu();
+	void initActions();
+	void updateTrayMenu();
 	void setVolume(int value);
 	void setIconToolTip(int value);
 	void createDesktopFile();
@@ -88,7 +89,7 @@ private:
 	QString mixerName_;
 	int cardIndex_;
 	QStringList mixerList_;
-	MixerSwitches switchList_;
+	MixerSwitches *switchList_;
 	QList<switcher> playBackItems_;
 	QList<switcher> captureItems_;
 	QList<switcher> enumItems_;
@@ -100,6 +101,7 @@ private:
 	QAction *exit_;
 	QMenu *trayMenu_;
 	QSystemTrayIcon *trayIcon_;
+	QVBoxLayout *mainLayout_;
 	QSlider *volumeSlider_;
 	QLabel *volumeLabel_;
 	SettingsDialog *settingsDialog_;
@@ -112,6 +114,12 @@ private:
 	bool isAutorun_;
 	bool isLightStyle_;
 	bool isPulse_;
+	const QString TITLE_ = QString(tr("About QtAlsaVolume"));
+#ifdef USE_PULSE
+	const QString ABOUT_MSG_ = QString(tr("Tray Alsa Volume Changer written using Qt\n\nWith Pulseaudio support\n\n2014 (c) Vitaly Tonkacheyev (thetvg@gmail.com)\n\nversion: %1")).arg(APP_VERSION);
+#else
+	const QString ABOUT_MSG_ = QString(tr("Tray Alsa Volume Changer written using Qt\n\n2014 (c) Vitaly Tonkacheyev (thetvg@gmail.com)\n\nversion: %1")).arg(APP_VERSION);
+#endif
 };
 
 #endif // POPUPWINDOW_H

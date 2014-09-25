@@ -4,42 +4,42 @@
 <context>
     <name>PopupWindow</name>
     <message>
-        <location filename="../popupwindow.cpp" line="189"/>
+        <location filename="../popupwindow.cpp" line="73"/>
         <source>&amp;Restore</source>
         <translation>&amp;Restore</translation>
     </message>
     <message>
-        <location filename="../popupwindow.cpp" line="192"/>
+        <location filename="../popupwindow.cpp" line="74"/>
         <source>&amp;Settings</source>
         <translation>&amp;Settings</translation>
     </message>
     <message>
-        <location filename="../popupwindow.cpp" line="195"/>
+        <location filename="../popupwindow.cpp" line="75"/>
         <source>&amp;Mute</source>
         <translation>&amp;Mute</translation>
     </message>
     <message>
-        <location filename="../popupwindow.cpp" line="199"/>
+        <location filename="../popupwindow.cpp" line="76"/>
         <source>&amp;About...</source>
         <translation>&amp;About...</translation>
     </message>
     <message>
-        <location filename="../popupwindow.cpp" line="202"/>
+        <location filename="../popupwindow.cpp" line="77"/>
         <source>About Qt</source>
         <translation>About Qt</translation>
     </message>
     <message>
-        <location filename="../popupwindow.cpp" line="205"/>
+        <location filename="../popupwindow.cpp" line="78"/>
         <source>&amp;Quit</source>
         <translation>&amp;Quit</translation>
     </message>
     <message>
-        <location filename="../popupwindow.cpp" line="230"/>
+        <location filename="../popupwindow.h" line="117"/>
         <source>About QtAlsaVolume</source>
         <translation>About QtAlsaVolume</translation>
     </message>
     <message>
-        <location filename="../popupwindow.cpp" line="232"/>
+        <location filename="../popupwindow.h" line="119"/>
         <source>Tray Alsa Volume Changer written using Qt
 
 With Pulseaudio support
@@ -56,7 +56,7 @@ With Pulseaudio support
 version: %1</translation>
     </message>
     <message>
-        <location filename="../popupwindow.cpp" line="234"/>
+        <location filename="../popupwindow.h" line="121"/>
         <source>Tray Alsa Volume Changer written using Qt
 
 2014 (c) Vitaly Tonkacheyev (thetvg@gmail.com)
@@ -94,18 +94,18 @@ version: 0.0.1</translation>
     </message>
     <message>
         <location filename="../popupwindow.cpp" line="416"/>
-        <location filename="../popupwindow.cpp" line="422"/>
+        <location filename="../popupwindow.cpp" line="425"/>
         <source>Card: </source>
         <translation>Card: </translation>
     </message>
     <message>
-        <location filename="../popupwindow.cpp" line="422"/>
+        <location filename="../popupwindow.cpp" line="428"/>
         <source>Mixer: </source>
         <translation>Mixer: </translation>
     </message>
     <message>
-        <location filename="../popupwindow.cpp" line="416"/>
-        <location filename="../popupwindow.cpp" line="422"/>
+        <location filename="../popupwindow.cpp" line="418"/>
+        <location filename="../popupwindow.cpp" line="431"/>
         <source>Volume: </source>
         <translation>Volume: </translation>
     </message>
@@ -113,12 +113,12 @@ version: 0.0.1</translation>
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../main.cpp" line="54"/>
+        <location filename="../main.cpp" line="53"/>
         <source>Systray</source>
         <translation>Systray</translation>
     </message>
     <message>
-        <location filename="../main.cpp" line="54"/>
+        <location filename="../main.cpp" line="53"/>
         <source>System tray not detected</source>
         <translation>System tray not detected</translation>
     </message>
@@ -156,42 +156,56 @@ version: 0.0.1</translation>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select Mixer&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.ui" line="114"/>
         <source>Pulseaudio</source>
         <translation>Pulseaudio</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.ui" line="127"/>
+        <location filename="../settingsdialog.ui" line="114"/>
+        <source>Use PulseAudio volume control</source>
+        <translation>Use PulseAudio volume control</translation>
+    </message>
+    <message>
+        <location filename="../settingsdialog.ui" line="117"/>
+        <source>Enable Pulseaudio</source>
+        <translation>Enable Pulseaudio</translation>
+    </message>
+    <message>
+        <location filename="../settingsdialog.ui" line="130"/>
+        <source>Start program on system startup</source>
+        <translation>Enable Pulseaudio</translation>
+    </message>
+    <message>
+        <location filename="../settingsdialog.ui" line="133"/>
         <source>Autorun program on system start</source>
         <translation>Autorun program on system start</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.ui" line="134"/>
+        <location filename="../settingsdialog.ui" line="140"/>
         <source>Icon Style</source>
         <translation>Icon Style</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.ui" line="155"/>
+        <location filename="../settingsdialog.ui" line="161"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Light style of tray icon&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Light style of tray icon&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.ui" line="158"/>
+        <location filename="../settingsdialog.ui" line="164"/>
         <source>Light Style</source>
         <translation>Light Style</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.ui" line="174"/>
+        <location filename="../settingsdialog.ui" line="180"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Dark style of tray icon&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Dark style of tray icon&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.ui" line="177"/>
+        <location filename="../settingsdialog.ui" line="183"/>
         <source>Dark Style</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Dark style of tray icon&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.ui" line="201"/>
+        <location filename="../settingsdialog.ui" line="207"/>
         <source>Switchers</source>
         <translation>Switchers</translation>
     </message>
@@ -209,6 +223,21 @@ version: 0.0.1</translation>
         <location filename="../settingsdialog.cpp" line="42"/>
         <source>Enum Switches</source>
         <translation>Enum Switches</translation>
+    </message>
+    <message>
+        <location filename="../settingsdialog.h" line="92"/>
+        <source>Enable/Disable Alsa&apos;s Playback Switch</source>
+        <translation>Enable/Disable Alsa&apos;s Playback Switch</translation>
+    </message>
+    <message>
+        <location filename="../settingsdialog.h" line="93"/>
+        <source>Enable/Disable Alsa&apos;s Capture Switch</source>
+        <translation>Enable/Disable Alsa&apos;s Playback Switch</translation>
+    </message>
+    <message>
+        <location filename="../settingsdialog.h" line="94"/>
+        <source>Enable/Disable Alsa&apos;s Enumerated Switch</source>
+        <translation>Enable/Disable Alsa&apos;s Other Switch</translation>
     </message>
 </context>
 </TS>
