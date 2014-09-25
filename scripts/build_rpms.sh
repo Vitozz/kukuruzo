@@ -526,7 +526,7 @@ Simple tool written using Qt4 library to set the levels of alsa mixers
 %setup
 
 %build
-cmake -DCMAKE_INSTALL_PREFIX=%{buildroot}/usr -DUSE_PULSE=OK .
+cmake -DCMAKE_INSTALL_PREFIX=%{buildroot}/usr -DUSE_PULSE=ON .
 %{__make} %{?_smp_mflags}   
 
 %install
