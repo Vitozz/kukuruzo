@@ -35,8 +35,8 @@ public:
 	PulseDevice(const pa_sink_info* i);
 	uint32_t index() const;
 	device_type type() const;
-	QString &name();
-	QString &description();
+	const QString &name() const;
+	const QString &description() const;
 	pa_cvolume volume;
 	int volume_percent() const;
 	bool mute() const;

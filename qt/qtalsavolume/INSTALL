@@ -1,6 +1,6 @@
 Build Deps:
 =========================================================
-- Qt4
+- Qt4 / Qt5
 - alsa/asoundlib (libasound2-dev package in Ubuntu)
 - Pulseaudio (libpulse) to build With Pulseaudio support
 =========================================================
@@ -54,3 +54,9 @@ $ make
 
 $ make install
 ==========================
+
+Some usefull cmake flags:
+-DCMAKE_INSTALL_PREFIX=path
+-DUSE_QT5=ON / OFF (default)
+-DUSE_PULSE=ON / OFF (default)
+-DBUILD_TRANSLATIONS=ON (default) / OFF

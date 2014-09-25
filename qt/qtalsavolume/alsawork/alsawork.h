@@ -1,6 +1,6 @@
 /*
  * alsawork.h
- * Copyright (C) 2012 Vitaly Tonkacheyev
+ * Copyright (C) 2012-2014 Vitaly Tonkacheyev
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -27,9 +27,6 @@
 #include <QString>
 #include <QStringList>
 #include <QList>
-//#include <QSharedPointer>
-
-//typedef QSharedPointer<> AlsaDevicePtr;
 
 class AlsaWork
 {
@@ -42,7 +39,7 @@ public:
 	void setCurrentMixer(int id);
 	void setAlsaVolume(double volume);
 	double getAlsaVolume();
-	QString getCardName(int index);
+	const QString getCardName(int index);
 	QString getCurrentMixerName() const;
 	const QStringList &getCardsList() const;
 	const QStringList &getVolumeMixers() const;
@@ -54,8 +51,8 @@ public:
 	bool cardExists(int id);
 	bool mixerExists(const QString &name);
 	bool mixerExists(int id);
-	int getFirstCardWithMixers();
-	int getCurrentMixerId();
+	int getFirstCardWithMixers() const;
+	int getCurrentMixerId() const;
 private:
 	bool checkCardId(int cardId);
 	int getTotalCards();
@@ -64,6 +61,7 @@ private:
 	void setVolume(snd_mixer_elem_t *element, snd_mixer_t *handle, double volume);
 	std::string formatCardName(int id) const;
 	void checkError (int errorIndex);
+	void checkError (const QString &title, const QString &message);
 	void getCards();
 	void updateMixers(int cardIndex);
 	void updateMixerList(int cardIndex);

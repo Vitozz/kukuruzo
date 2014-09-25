@@ -18,6 +18,10 @@
  *
  */
 #include "alsadevice.h"
+#include <QMessageBox>
+
+#define ERROR_TITLE "Error in alsadevice.cpp"
+#define WARNING_TITLE "Warning in alsadevice.cpp"
 
 const double ZERO = 0.0;
 
@@ -86,13 +90,15 @@ AlsaDevice::~AlsaDevice()
 
 void AlsaDevice::initMixerList()
 {
-	bool isplay = havePlaybackMixers();
-	bool isrec = haveCaptureMixers();
+	bool isplay = !volumeMixers_.isEmpty();
+	bool isrec = !captureMixers_.isEmpty();
 	if (!mixers_.isEmpty()) {
 		mixers_.clear();
 	}
 	if (isplay) {
-		mixers_= volumeMixers_;
+		foreach (const QString &mixer, volumeMixers_) {
+			mixers_ << mixer;
+		}
 	}
 	if (isrec && !mixers_.isEmpty()) {
 		foreach (const QString &mixer, captureMixers_) {
@@ -171,9 +177,12 @@ void AlsaDevice::setDeviceVolume(double volume)
 			checkError(snd_mixer_selem_set_capture_volume_all(element, realVolume));
 		}
 		else {
-			std::cerr << "Selected mixer has no playback or capture volume" << std::endl;
+			checkError(WARNING_TITLE, "Selected mixer has no playback and capture volume");
 		}
 		checkError(snd_mixer_close(handle));
+	}
+	else {
+		checkError(ERROR_TITLE, "setDeviceVolume::current mixer is empty");
 	}
 }
 
@@ -217,6 +226,9 @@ double AlsaDevice::getVolume()
 		}
 		checkError(snd_mixer_close(handle));
 	}
+	else {
+		checkError(ERROR_TITLE, "getVolume::current mixer is empty");
+	}
 	return ZERO;
 }
 
@@ -256,6 +268,9 @@ void AlsaDevice::setMute(bool enabled)
 		}
 		checkError(snd_mixer_close(handle));
 	}
+	else {
+		checkError(ERROR_TITLE, "setMute::current mixer is empty");
+	}
 }
 
 bool AlsaDevice::getMute()
@@ -279,6 +294,9 @@ bool AlsaDevice::getMute()
 			return bool(value);
 		}
 		checkError(snd_mixer_close(handle));
+	}
+	else {
+		checkError(ERROR_TITLE, "getMute::current mixer is empty");
 	}
 	return true;
 }
@@ -313,7 +331,7 @@ const QString &AlsaDevice::name() const
 	return name_;
 }
 
-int AlsaDevice::id()
+int AlsaDevice::id() const
 {
 	return id_;
 }
@@ -326,18 +344,19 @@ const QStringList &AlsaDevice::mixers() const
 void AlsaDevice::checkError (int errorIndex)
 {
 	if (errorIndex < 0) {
-		std::cerr << snd_strerror(errorIndex) << std::endl;
+		QMessageBox mb;
+		mb.critical(0, ERROR_TITLE, QString(snd_strerror(errorIndex)));
+		mb.exec();
 	}
 }
 
-bool AlsaDevice::havePlaybackMixers()
+void AlsaDevice::checkError(const QString &title, const QString &message)
 {
-	return !volumeMixers_.isEmpty();
-}
-
-bool AlsaDevice::haveCaptureMixers()
-{
-	return !captureMixers_.isEmpty();
+	if(!title.isEmpty() && !message.isEmpty()) {
+		QMessageBox mb;
+		mb.critical(0, title, message);
+		mb.exec();
+	}
 }
 
 bool AlsaDevice::haveMixers()
@@ -350,7 +369,7 @@ const MixerSwitches &AlsaDevice::switches() const
 	return *switches_;
 }
 
-int AlsaDevice::currentMixerId()
+int AlsaDevice::currentMixerId() const
 {
 	return currentMixerId_;
 }

@@ -12,3 +12,6 @@ Available features:
 	- enable or disable sound card switches in settings dialog
 	- initial Pulseaudio support if application builded with Pulseaudio support
 	- both Qt4 and Qt5 support
+
+TODO
+Alsa and Pulseaudio monitors

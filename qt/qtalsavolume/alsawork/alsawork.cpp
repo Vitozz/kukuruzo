@@ -1,6 +1,6 @@
 /*
  * alsawork.cpp
- * Copyright (C) 2012 Vitaly Tonkacheyev
+ * Copyright (C) 2012-2014 Vitaly Tonkacheyev
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -20,7 +20,7 @@
 
 #include "mixerswitches.h"
 #include "alsawork.h"
-#include <stdexcept>
+#include <QMessageBox>
 
 AlsaWork::AlsaWork()
 : cardList_(QStringList())
@@ -69,7 +69,7 @@ double AlsaWork::getAlsaVolume()
 	return currentAlsaDevice_->getVolume();
 }
 
-QString AlsaWork::getCardName(int index)
+const QString AlsaWork::getCardName(int index)
 {
 	std::string card(formatCardName(index));
 	snd_ctl_t *ctl;
@@ -124,7 +124,7 @@ bool AlsaWork::checkCardId(int cardId)
 		}
 	}
 	catch (std::out_of_range &ex) {
-		std::cerr << "alsawork.cpp::124:: Item out of Range " << ex.what() << std::endl;
+		checkError("Error in alsawork.cpp","line::122::Item out of Range::"+QString::fromLocal8Bit(ex.what()));
 	}
 	return false;
 }
@@ -133,7 +133,18 @@ bool AlsaWork::checkCardId(int cardId)
 void AlsaWork::checkError (int errorIndex)
 {
 	if (errorIndex < 0) {
-		std::cerr << snd_strerror(errorIndex) << std::endl;
+		QMessageBox mb;
+		mb.critical(0, "Error in alsawork.cpp", QString(snd_strerror(errorIndex)));
+		mb.exec();
+	}
+}
+
+void AlsaWork::checkError(const QString &title, const QString &message)
+{
+	if(!title.isEmpty() && !message.isEmpty()) {
+		QMessageBox mb;
+		mb.critical(0, title, message);
+		mb.exec();
 	}
 }
 
@@ -198,7 +209,7 @@ bool AlsaWork::mixerExists(int id)
 	return bool(id >=0 && id < (int)currentAlsaDevice_->mixers().size());
 }
 
-int AlsaWork::getFirstCardWithMixers()
+int AlsaWork::getFirstCardWithMixers() const
 {
 	for(int index = 0; index < devices_.size(); index+=1) {
 		if(devices_.at(index)->haveMixers()) {
@@ -208,7 +219,7 @@ int AlsaWork::getFirstCardWithMixers()
 	return 0;
 }
 
-int AlsaWork::getCurrentMixerId()
+int AlsaWork::getCurrentMixerId() const
 {
 	return currentAlsaDevice_->currentMixerId();
 }

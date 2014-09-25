@@ -83,12 +83,12 @@ device_type PulseDevice::type() const
 	return type_;
 }
 
-QString &PulseDevice::name()
+const QString &PulseDevice::name() const
 {
 	return name_;
 }
 
-QString &PulseDevice::description()
+const QString &PulseDevice::description() const
 {
 	return description_;
 }

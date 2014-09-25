@@ -107,7 +107,7 @@ void PulseCore::iterate(pa_operation *op)
 	}
 }
 
-QList<PulseDevice> PulseCore::getSinks()
+const QList<PulseDevice> PulseCore::getSinks()
 {
 	QList<PulseDevice> sinks;
 	pa_operation* op = pa_context_get_sink_info_list(context_, &sink_list_cb, &sinks);
@@ -116,7 +116,7 @@ QList<PulseDevice> PulseCore::getSinks()
 	return sinks;
 }
 
-QList<PulseDevice> PulseCore::getSources()
+const QList<PulseDevice> PulseCore::getSources()
 {
 	QList<PulseDevice> sources;
 	pa_operation* op = pa_context_get_source_info_list(context_, &source_list_cb, &sources);
@@ -191,7 +191,7 @@ PulseDevice PulseCore::getDefaultSource()
 	return getSource(info.defaultSourceName);
 }
 
-QStringList PulseCore::getSinksDescriptions()
+const QStringList PulseCore::getSinksDescriptions()
 {
 	QStringList descriptions;
 	foreach (PulseDevice device, getSinks()) {
@@ -200,7 +200,7 @@ QStringList PulseCore::getSinksDescriptions()
 	return descriptions;
 }
 
-QStringList PulseCore::getSourcesDescriptions()
+const QStringList PulseCore::getSourcesDescriptions()
 {
 	QStringList descriptions;
 	foreach (PulseDevice device, getSources()) {
@@ -209,7 +209,7 @@ QStringList PulseCore::getSourcesDescriptions()
 	return descriptions;
 }
 
-QString PulseCore::getDeviceDescription(const QString &name)
+const QString PulseCore::getDeviceDescription(const QString &name)
 {
 	QString desc = getDeviceByName(name).description();
 	if (desc.isEmpty()) {
@@ -234,12 +234,12 @@ PulseDevice PulseCore::getDeviceByName(const QString &name)
 	return result;
 }
 
-QString PulseCore::getDeviceNameByIndex(int index)
+const QString PulseCore::getDeviceNameByIndex(int index)
 {
 	return getDeviceByIndex(index).name();
 }
 
-QString PulseCore::defaultSink()
+const QString PulseCore::defaultSink()
 {
 	return getDefaultSink().name();
 }
@@ -296,7 +296,7 @@ void PulseCore::setMute(bool mute)
 	setMute_((*currentDevice_), mute);
 }
 
-int PulseCore::getVolume()
+int PulseCore::getVolume() const
 {
 	return currentDevice_->volume_percent();
 }
@@ -306,7 +306,7 @@ bool PulseCore::getMute()
 	return currentDevice_->mute();
 }
 
-QStringList PulseCore::getCardList()
+const QStringList PulseCore::getCardList()
 {
 	return QStringList() << getSinksDescriptions() << getSourcesDescriptions();
 }

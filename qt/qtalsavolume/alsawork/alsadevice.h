@@ -32,13 +32,11 @@ public:
 	~AlsaDevice();
 	AlsaDevice(AlsaDevice const &);
 	const QString &name() const;
-	int id();
+	int id() const;
 	const QStringList &mixers() const;
 	const MixerSwitches &switches() const;
 	const QString &currentMixer() const;
-	int currentMixerId();
-	bool havePlaybackMixers();
-	bool haveCaptureMixers();
+	int currentMixerId() const;
 	bool haveMixers();
 	double getVolume();
 	bool getMute();
@@ -54,6 +52,7 @@ private:
 	snd_mixer_selem_channel_id_t checkMixerChannels(snd_mixer_elem_t *element);
 	snd_mixer_elem_t *initMixerElement(snd_mixer_t *handle, const char *mixer);
 	void checkError (int errorIndex);
+	void checkError (const QString &title, const QString &message);
 	void initMixerList();
 
 private:
