@@ -27,6 +27,10 @@
 #include <QString>
 #include <QStringList>
 #include <QList>
+#include <QSharedPointer>
+
+typedef QSharedPointer<AlsaDevice> AlsaDevicePtr;
+typedef QList<AlsaDevicePtr> AlsaDevicePtrList;
 
 class AlsaWork
 {
@@ -69,7 +73,7 @@ private:
 private:
 	QStringList cardList_;
 	int totalCards_;
-	AlsaDevice *currentAlsaDevice_;
-	QList< AlsaDevice* > devices_;
+	AlsaDevicePtr currentAlsaDevice_;
+	AlsaDevicePtrList devices_;
 };
 #endif // ALSAWORK_H

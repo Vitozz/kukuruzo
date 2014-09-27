@@ -1,6 +1,7 @@
 /*
- * Copyright (C) 2011 Clément Démoulins <clement@archivel.fr>
  * Copyright (C) 2014 Vitaly Tonkacheyev <thetvg@gmail.com>
+ *
+ * Big thanks to Clément Démoulins <clement@archivel.fr>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,6 +25,7 @@
 #include <QStringList>
 #include <QList>
 #include <QPair>
+#include <QSharedPointer>
 
 struct ServerInfo {
 	QString defaultSourceName;
@@ -34,6 +36,9 @@ enum state {
 	CONNECTED,
 	ERROR
 };
+
+typedef QSharedPointer<PulseDevice> PulseDevicePtr;
+typedef QList<PulseDevicePtr> PulseDevicePtrList;
 
 class PulseCore
 {
@@ -53,18 +58,18 @@ public:
 	void setCurrentDevice(const QString &name);
 	void refreshDevices();
 private:
-	const QList<PulseDevice> getSinks();
-	const QList<PulseDevice> getSources();
-	PulseDevice getSink(int index);
-	PulseDevice getSink(const QString &name);
-	PulseDevice getSource(int index);
-	PulseDevice getSource(const QString &name);
-	PulseDevice getDefaultSink();
-	PulseDevice getDefaultSource();
-	PulseDevice getDeviceByName(const QString &name);
-	PulseDevice getDeviceByIndex(int index);
-	void setVolume_(PulseDevice &device, int value);
-	void setMute_(PulseDevice &device, bool mute);
+	void getSinks();
+	void getSources();
+	PulseDevicePtr getSink(int index);
+	PulseDevicePtr getSink(const QString &name);
+	PulseDevicePtr getSource(int index);
+	PulseDevicePtr getSource(const QString &name);
+	PulseDevicePtr getDefaultSink();
+	PulseDevicePtr getDefaultSource();
+	PulseDevicePtr getDeviceByName(const QString &name);
+	PulseDevicePtr getDeviceByIndex(int index);
+	void setVolume_(PulseDevicePtr &device, int value);
+	void setMute_(PulseDevicePtr &device, bool mute);
 	void iterate(pa_operation* op);
 	void onError(const QString &message);
 	void updateDevices();
@@ -73,13 +78,13 @@ private:
 	pa_mainloop_api* mainLoopApi_;
 	pa_context* context_;
 	int retval_;
-	PulseDevice *currentDevice_;
+	PulseDevicePtr currentDevice_;
 	QStringList sinksDescriptions_;
 	QStringList sourcesDescriptions_;
 	QStringList deviceNames_;
 	QStringList deviceDescriptions_;
-	QList<PulseDevice> sinks_;
-	QList<PulseDevice> sources_;
+	PulseDevicePtrList sinks_;
+	PulseDevicePtrList sources_;
 };
 
 #endif // PULSECORE_H

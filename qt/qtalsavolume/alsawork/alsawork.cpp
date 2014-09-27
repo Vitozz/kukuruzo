@@ -22,22 +22,20 @@
 #include "alsawork.h"
 #include <QMessageBox>
 
+static const QString ERROR_TITLE = "Error in alsawork.cpp";
+
 AlsaWork::AlsaWork()
 : cardList_(QStringList())
 {
 	getCards();
 	foreach (const QString &name, cardList_) {
-		devices_.push_back(new AlsaDevice(cardList_.indexOf(name), name));
+		devices_.push_back(AlsaDevicePtr(new AlsaDevice(cardList_.indexOf(name), name)));
 	}
 	setCurrentCard(0);
 }
 
 AlsaWork::~AlsaWork()
 {
-	if(!devices_.isEmpty()) {
-		devices_.clear();
-	}
-	delete currentAlsaDevice_;
 	snd_config_update_free_global();
 }
 
@@ -121,7 +119,7 @@ bool AlsaWork::checkCardId(int cardId)
 	if (cardId < int(cardList_.size()) && !cardList_.at(cardId).isEmpty()) {
 		return true;
 	}
-	checkError("Error in alsawork.cpp","line::121::Item out of Range::");
+	checkError(ERROR_TITLE,QString("line::119::Item with id=%1 out of Range ").arg(QString::number(cardId));
 	return false;
 }
 
@@ -130,7 +128,7 @@ void AlsaWork::checkError (int errorIndex)
 {
 	if (errorIndex < 0) {
 		QMessageBox mb;
-		mb.critical(0, "Error in alsawork.cpp", QString(snd_strerror(errorIndex)));
+		mb.critical(0, ERROR_TITLE, QString(snd_strerror(errorIndex)));
 		mb.exec();
 	}
 }
