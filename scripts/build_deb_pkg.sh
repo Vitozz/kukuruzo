@@ -224,7 +224,7 @@ include /usr/share/cdbs/1/class/python-distutils.mk
 # Add here any variable or target overrides you need.
 '
 
-rules_qt='#!/usr/bin/make -f
+rules_qt="#!/usr/bin/make -f
 # -*- makefile -*-
 # Sample debian/rules that uses debhelper.
 # This file was originally written by Joey Hess and Craig Small.
@@ -237,18 +237,16 @@ rules_qt='#!/usr/bin/make -f
 config.status: configure
 	dh_testdir
 
-	# Add here commands to configure the package.
-	./configure --host=$(DEB_HOST_GNU_TYPE)
-	--build=$(DEB_BUILD_GNU_TYPE)
-	--prefix=/usr 
   
 include /usr/share/cdbs/1/rules/debhelper.mk
-include /usr/share/cdbs/1/class/qmake.mk
+include /usr/share/cdbs/1/class/cmake.mk
 
 # Add here any variable or target overrides you need.
-QMAKE=qmake-qt4
+#QMAKE=qmake-qt4
+DEB_CMAKE_EXTRA_FLAGS += ${cmake_flags}
 CFLAGS=-O3
-CXXFLAGS=-O3'
+CXXFLAGS=-O3
+"
 
 	if [ "${project}" != "pyalsavolume" -a "${project}" != "regexptest" ]
 	then
@@ -498,9 +496,10 @@ build_regext ()
 	debdir=${builddir}/${project}-${ver}
 	prepare
 	cd ${debdir}
+	cmake_flags=""
 	section="x11"
 	arch="any"
-	builddep="debhelper (>= 7), cdbs, libqt4-dev, qconf"
+	builddep="debhelper (>= 7), cdbs, libqt4-dev, cmake"
 	addit="#"
 	depends="\${shlibs:Depends}, \${misc:Depends}, libc6 (>=2.7-1), libgcc1 (>=1:4.1.1), libqtcore4 (>=4.4.3), libqtgui4 (>=4.4.3), libstdc++6 (>=4.1.1), libx11-6, zlib1g (>=1:1.1.4)"
 	description="RegExp Tester"
@@ -530,10 +529,11 @@ build_avolume ()
 	debdir=${builddir}/${project}-${ver}
 	prepare
 	cd ${debdir}
-	sed "s/#CONFIG += pulseaudio/CONFIG += pulseaudio/" -i alsavolume.pro
+	#sed "s/#CONFIG += pulseaudio/CONFIG += pulseaudio/" -i alsavolume.pro
+	cmake_flags="-DUSE_PULSE=ON"
 	section="sound"
 	arch="any"
-	builddep="debhelper (>= 7), cdbs, libqt4-dev, libgtkmm-3.0-dev, libasound2-dev, libpulse-dev, pkg-config"
+	builddep="debhelper (>= 7), cdbs, libgtkmm-3.0-dev, libasound2-dev, libpulse-dev, pkg-config, cmake"
 	addit="#"
 	depends="\${shlibs:Depends}, \${misc:Depends}, libgtkmm-3.0-1, libasound2, libpulse0, libc6 (>=2.7-1), libgcc1 (>=1:4.1.1), libstdc++6 (>=4.1.1), libx11-6, zlib1g (>=1:1.1.4)"
 	description="Tray ALSA volume changer"
@@ -560,10 +560,11 @@ build_qtavolume ()
 	debdir=${builddir}/${project}-${ver}
 	prepare
 	cd ${debdir}
-	sed "s/#CONFIG += pulseaudio/CONFIG += pulseaudio/" -i qtalsavolume.pro
+	#sed "s/#CONFIG += pulseaudio/CONFIG += pulseaudio/" -i qtalsavolume.pro
+	cmake_flags="-DUSE_PULSE=ON"
 	section="sound"
 	arch="any"
-	builddep="debhelper (>= 7), cdbs, libqt4-dev, libasound2-dev, libpulse-dev, pkg-config"
+	builddep="debhelper (>= 7), cdbs, libqt4-dev, libasound2-dev, libpulse-dev, pkg-config, cmake"
 	addit="#"
 	depends="\${shlibs:Depends}, \${misc:Depends}, libasound2, libpulse0, libc6 (>=2.7-1), libgcc1 (>=1:4.1.1), libstdc++6 (>=4.1.1), libx11-6, zlib1g (>=1:1.1.4)"
 	description="Tray ALSA volume changer"

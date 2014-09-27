@@ -545,7 +545,7 @@ mkdir -p %{buildroot}/usr/share/%{name}/languages
 %{__install} -c -m 755 icons/light/tb_icon*.png %{buildroot}/usr/share/%{name}/icons/light/
 %{__install} -c -m 755 icons/dark/tb_icon*.png %{buildroot}/usr/share/%{name}/icons/dark/
 %{__install} -c -m 755 icons/volume*.png %{buildroot}/usr/share/%{name}/icons/
-%{__install} -c -m 755 languages/*.qm %{buildroot}/usr/share/%{name}/languages/
+#%{__install} -c -m 755 languages/*.qm %{buildroot}/usr/share/%{name}/languages/
 %{__install} -c -m 755 %{name} %{buildroot}/usr/bin/
 %{__install} -c -m 755 %{name}.desktop %{buildroot}/usr/share/applications
 
