@@ -119,7 +119,7 @@ bool AlsaWork::checkCardId(int cardId)
 	if (cardId < int(cardList_.size()) && !cardList_.at(cardId).isEmpty()) {
 		return true;
 	}
-	checkError(ERROR_TITLE,QString("line::119::Item with id=%1 out of Range ").arg(QString::number(cardId));
+	checkError(ERROR_TITLE,QString("line::119::Item with id=%1 out of Range ").arg(QString::number(cardId)));
 	return false;
 }
 
