@@ -102,6 +102,9 @@ PopupWindow::PopupWindow()
 	//Start of tray icon initialization
 	initActions();
 	updateTrayMenu();
+	if(!trayIcon_->isSystemTrayAvailable()) {
+		QMessageBox::critical(this, "Error", "System tray is not available");
+	}
 	trayIcon_->setContextMenu(trayMenu_);
 	//Adding QLabel and QSlider to PopupWindow
 	volumeSlider_->setRange(0,100);
@@ -251,7 +254,7 @@ void PopupWindow::onAbout()
 
 void PopupWindow::showPopup()
 {
-	if (!this->isVisible()) {
+	if (!this->isVisible() && trayIcon_->isVisible()) {
 #ifdef HAVE_QT5
 		const int screenHeight = qApp->primaryScreen()->availableGeometry().height();
 		const int screenTop = qApp->primaryScreen()->availableGeometry().top();
@@ -263,21 +266,20 @@ void PopupWindow::showPopup()
 		const int iconLeft = trayIcon_->geometry().left();
 		const int iconWidth = trayIcon_->geometry().width();
 		const int iconTop = trayIcon_->geometry().top();
-		const int windowWidth = minimumWidth();
-		const int windowHeight = minimumHeight();
 		const int position = iconTop > screenHeight/2 ? BOTTOM : TOP;
-		point.setX(iconLeft + iconWidth/2 - windowWidth/2);
+		point.setX(iconLeft + iconWidth/2 - width()/2);
 		switch (position) {
 		case TOP:
 			point.setY(screenTop + 2);
 			break;
 		case BOTTOM:
-			point.setY(screenHeight - windowHeight -2);
+			point.setY(screenHeight - height() - 2);
 			break;
 		default:
 			break;
 		}
-		this->setGeometry(point.x(), point.y(), windowWidth, windowHeight);
+		//this->setGeometry(point.x(), point.y(), windowWidth, windowHeight);
+		this->move(point.x(), point.y());
 		this->show();
 	}
 	else {
