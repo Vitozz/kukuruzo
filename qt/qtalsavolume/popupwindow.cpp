@@ -28,7 +28,6 @@
 #include <QAction>
 #include <QMenu>
 #include <QMessageBox>
-#include <QPixmap>
 #ifdef HAVE_QT5
 #include <QScreen>
 #endif

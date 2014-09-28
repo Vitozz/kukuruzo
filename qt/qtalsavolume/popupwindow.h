@@ -80,7 +80,6 @@ private:
 	QString getResPath(const QString &fileName) const;
 	void updateSwitches();
 	void setPopupPosition(const QPoint &point);
-	Position getPanelPosition(const QPoint &point);
 
 private:
 	AlsaWork *alsaWork_;
