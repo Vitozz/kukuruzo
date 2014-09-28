@@ -28,6 +28,7 @@
 #include <QAction>
 #include <QMenu>
 #include <QMessageBox>
+#include <QPixmap>
 #ifdef HAVE_QT5
 #include <QScreen>
 #endif
@@ -70,7 +71,6 @@ PopupWindow::PopupWindow()
   playBackItems_(QList<switcher>()),
   captureItems_(QList<switcher>()),
   enumItems_(QList<switcher>()),
-  restore_(new QAction(tr("&Restore"), this)),
   settings_(new QAction(tr("&Settings"), this)),
   mute_(new QAction(tr("&Mute"), this)),
   about_(new QAction(tr("&About..."), this)),
@@ -215,7 +215,6 @@ PopupWindow::~PopupWindow()
 	delete about_;
 	delete mute_;
 	delete settings_;
-	delete restore_;
 	delete switchList_;
 #ifdef USE_PULSE
 	delete pulse_;
@@ -225,7 +224,6 @@ PopupWindow::~PopupWindow()
 
 void PopupWindow::initActions()
 {
-	connect(restore_, SIGNAL(triggered()), this, SLOT(showPopup()));
 	connect(settings_, SIGNAL(triggered()), this, SLOT(showSettings()));
 	mute_->setCheckable(true);
 	connect(mute_, SIGNAL(toggled(bool)), this, SLOT(onMute(bool)));
@@ -236,8 +234,6 @@ void PopupWindow::initActions()
 
 void PopupWindow::updateTrayMenu()
 {
-	trayMenu_->addAction(restore_);
-	trayMenu_->addSeparator();
 	trayMenu_->addAction(settings_);
 	trayMenu_->addAction(mute_);
 	trayMenu_->addSeparator();
@@ -255,31 +251,7 @@ void PopupWindow::onAbout()
 void PopupWindow::showPopup()
 {
 	if (!this->isVisible() && trayIcon_->isVisible()) {
-#ifdef HAVE_QT5
-		const int screenHeight = qApp->primaryScreen()->availableGeometry().height();
-		const int screenTop = qApp->primaryScreen()->availableGeometry().top();
-#else
-		const int screenHeight = qApp->desktop()->availableGeometry().height();
-		const int screenTop = qApp->desktop()->availableGeometry().top();
-#endif
-		QPoint point;
-		const int iconLeft = trayIcon_->geometry().left();
-		const int iconWidth = trayIcon_->geometry().width();
-		const int iconTop = trayIcon_->geometry().top();
-		const int position = iconTop > screenHeight/2 ? BOTTOM : TOP;
-		point.setX(iconLeft + iconWidth/2 - width()/2);
-		switch (position) {
-		case TOP:
-			point.setY(screenTop + 2);
-			break;
-		case BOTTOM:
-			point.setY(screenHeight - height() - 2);
-			break;
-		default:
-			break;
-		}
-		//this->setGeometry(point.x(), point.y(), windowWidth, windowHeight);
-		this->move(point.x(), point.y());
+		setPopupPosition(QCursor::pos());
 		this->show();
 	}
 	else {
@@ -363,6 +335,39 @@ void PopupWindow::closeEvent(QCloseEvent *)
 	setts_.setValue(ISAUTO, isAutorun_);
 	setts_.setValue(ICOSTYLE, isLightStyle_);
 	qApp->quit();
+}
+
+void PopupWindow::setPopupPosition(const QPoint &point)
+{
+	const QRect trayGeometry = trayIcon_->geometry();
+	QPoint to;
+	Position position;
+#ifdef HAVE_QT5
+	const int screenHeight = qApp->primaryScreen()->availableGeometry().height();
+	const int screenTop = qApp->primaryScreen()->availableGeometry().top();
+#else
+	const int screenHeight = qApp->desktop()->availableGeometry().height();
+	const int screenTop = qApp->desktop()->availableGeometry().top();
+#endif
+	if (!trayGeometry.isEmpty()) {
+		position = trayGeometry.top() > screenHeight/2 ? BOTTOM : TOP;
+		to.setX(trayGeometry.left() + trayGeometry.width()/2 - width()/2);
+	}
+	else {
+		position = (point.y() > screenHeight/2) ? BOTTOM : TOP;
+		to.setX(point.x() - width()/2);
+	}
+	switch (position) {
+	case TOP:
+		to.setY(screenTop + 2);
+		break;
+	case BOTTOM:
+		to.setY(screenHeight - height() - 2);
+		break;
+	default:
+		break;
+	}
+	this->setGeometry(to.x(), to.y(), width(), height());
 }
 
 bool PopupWindow::eventFilter(QObject *object, QEvent *event)
@@ -515,7 +520,6 @@ void PopupWindow::iconActivated(QSystemTrayIcon::ActivationReason reason)
 	;
 	}
 }
-
 
 void PopupWindow::onAutorun(bool isIt)
 {

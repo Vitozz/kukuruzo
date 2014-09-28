@@ -79,6 +79,8 @@ private:
 	void readDesktopFile();
 	QString getResPath(const QString &fileName) const;
 	void updateSwitches();
+	void setPopupPosition(const QPoint &point);
+	Position getPanelPosition(const QPoint &point);
 
 private:
 	AlsaWork *alsaWork_;
@@ -93,7 +95,6 @@ private:
 	QList<switcher> playBackItems_;
 	QList<switcher> captureItems_;
 	QList<switcher> enumItems_;
-	QAction *restore_;
 	QAction *settings_;
 	QAction *mute_;
 	QAction *about_;
