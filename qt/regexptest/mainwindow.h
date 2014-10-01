@@ -32,9 +32,9 @@ private:
 	QString GetRegexpList(const QList <QStringList> &matches, const int &parm, const int &pos) const;
 	void readSettings();
 	void writeSettings();
-	QString replaceNotGreedy(QString text) const;
-	QString unquoteText(QString &text) const;
-	QString quoteText(QString &text) const;
+	QString replaceNotGreedy(const QString &text) const;
+	QString unquoteText(const QString &text) const;
+	QString quoteText(const QString &text) const;
 	QString getDirName(const QString &filename) const;
 
 	Qt::CaseSensitivity sens_;

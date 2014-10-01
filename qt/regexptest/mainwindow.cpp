@@ -26,9 +26,6 @@
 #define ISEXACT_OPT "isexact"
 #define ISMINIMAL_OPT "isminimal"
 
-
-
-
 MainWindow::MainWindow(QWidget *parent) :
 	QMainWindow(parent),
 	ui(new Ui::MainWindow)
@@ -37,6 +34,8 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui->label->setReadOnly(true);
 	connect(ui->actionE_xit, SIGNAL(triggered()), SLOT(on_actionE_xit_triggered()));
 	connect(ui->actionOnline_Help, SIGNAL(changed()), SLOT(on_actionOnline_Help_triggered()));
+	connect(ui->actionAbout_Qt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
+	connect(ui->actionOpen, SIGNAL(triggered()), SLOT(on_openFile_clicked()));
 	readSettings();
 }
 
@@ -63,7 +62,7 @@ void MainWindow::closeEvent(QCloseEvent *){
 
 void MainWindow::on_runit_clicked()
 {
-	QList <QStringList> matches = CheckExpression(regExpText_,inputText_);
+	const QList <QStringList> matches = CheckExpression(regExpText_,inputText_);
 	ui->label->document()->setHtml(GetRegexpList(matches,CHECK_ALL,0));
 }
 
@@ -125,14 +124,14 @@ QString MainWindow::GetRegexpList(const QList<QStringList> &matches, const int &
 {
 	QString result;
 	if(!matches.isEmpty()){
-		foreach(QStringList group, matches) {
+		foreach(const QStringList &group, matches) {
 			result += tr("<u><a style=\"color:red\">Match # </a>") + "<b>"+ QString::number(matches.indexOf(group)+1) + "</b></u><br>";
 			if(parm == CHECK_ALL){
-				for(int i=0; i<group.length();i++){
+				foreach (const QString &item, group) {
 #ifdef HAVE_QT5
-					result += tr("<a style=\"color:blue\">Group # </a>")+ "<b>"+QString::number(i)+ ": </b>"+"<i>" + group[i].toHtmlEscaped() + "</i><br>";
+					result += tr("<a style=\"color:blue\">Group # </a>")+ "<b>"+QString::number(group.indexOf(item))+ ": </b>"+"<i>" + item.toHtmlEscaped() + "</i><br>";
 #else
-					result += tr("<a style=\"color:blue\">Group # </a>")+ "<b>"+QString::number(i)+ ": </b>"+"<i>" + Qt::escape(group[i]) + "</i><br>";
+					result += tr("<a style=\"color:blue\">Group # </a>")+ "<b>"+QString::number(group.indexOf(item))+ ": </b>"+"<i>" + Qt::escape(item) + "</i><br>";
 #endif
 				}
 			}
@@ -166,6 +165,10 @@ QList <QStringList> MainWindow::CheckExpression(const QString &regexp, const QSt
 			pos += rx.matchedLength();
 		}
 		ui->spinBox->setMaximum(rx.captureCount());
+		return result;
+	}
+	else if (!rx.isValid()) {
+		QMessageBox::critical(0, "Regexp error", rx.errorString());
 	}
 	return result;
 }
@@ -184,8 +187,10 @@ QString MainWindow::LoadTextFile(const QString &filename){
 		if(file.open(QIODevice::ReadOnly)){
 			result = in.readAll();
 			isLoaded_ = true;
+			return result;
 		}
-	}else{
+	}
+	else {
 		isLoaded_ = false;
 	}
 	return result;
@@ -194,13 +199,12 @@ QString MainWindow::LoadTextFile(const QString &filename){
 void MainWindow::RunOnlineHelp()
 {
 	QString helpdir;
-	QStringList dirs;
-	dirs << "/usr/share/doc/regexptest/html";
-	dirs << "/usr/local/share/doc/regexptest/html";
-	dirs << "/usr/share/doc/regexptest/html";
-	dirs << QDir::homePath() + "/.local/share/doc/regexptest/html";
-	dirs << qApp->applicationDirPath() + "/docs";
-	foreach (QString item, dirs) {
+	const QStringList dirs = QStringList() << "/usr/share/doc/regexptest/html"
+					       << "/usr/local/share/doc/regexptest/html"
+					       << "/usr/share/doc/regexptest/html"
+					       << QDir::homePath() + "/.local/share/doc/regexptest/html"
+					       << qApp->applicationDirPath() + "/docs";
+	foreach (const QString &item, dirs) {
 		QDir _dir(item);
 		if (_dir.exists()) {
 			helpdir = item;
@@ -254,12 +258,13 @@ void MainWindow::on_fileName_textChanged(QString )
 
 void MainWindow::on_inputText_textChanged()
 {
-	if(!ui->inputText->document()->isEmpty()){
+	if (!ui->inputText->document()->isEmpty()) {
 		inputText_ = ui->inputText->document()->toPlainText();
-		if(!isLoaded_){
+		if (!isLoaded_) {
 			ui->fileName->setText("");
 			fileName_ = "";
-		}else{
+		}
+		else {
 			isLoaded_ = false;
 		}
 	}
@@ -267,7 +272,7 @@ void MainWindow::on_inputText_textChanged()
 
 void MainWindow::on_spinBox_valueChanged(int value)
 {
-	QList <QStringList> matches = CheckExpression(regExpText_,inputText_);
+	const QList <QStringList> matches = CheckExpression(regExpText_,inputText_);
 	ui->label->document()->setHtml(GetRegexpList(matches,CHECK_POS,value));
 
 }
@@ -283,7 +288,7 @@ void MainWindow::on_openFile_clicked()
 							    tr("All Files (*);;Text Files (*.txt)"));
 	if (!str_fileName.isEmpty())
 	{
-		QFileInfo fi(str_fileName);
+		const QFileInfo fi(str_fileName);
 		dir_ = fi.absolutePath();
 		ui->fileName->setText(str_fileName);
 		ui->inputText->setPlainText(LoadTextFile(str_fileName));
@@ -303,36 +308,40 @@ QString MainWindow::getDirName(const QString &filename) const{
 	return result;
 }
 
-QString MainWindow::replaceNotGreedy(QString text) const{
-	if(!text.isEmpty()){
-		text.replace("+?","+");
-		text.replace("*?","*");
-		text.replace("}?","}");
+QString MainWindow::replaceNotGreedy(const QString &text) const
+{
+	QString greedy = text;
+	if(!greedy.isEmpty()){
+		greedy.replace("+?","+");
+		greedy.replace("*?","*");
+		greedy.replace("}?","}");
 	}
-	return text;
+	return greedy;
 }
 
-QString MainWindow::unquoteText(QString &text) const
+QString MainWindow::unquoteText(const QString &text) const
 {
-	if (!text.isEmpty()) {
-		text.replace("\\\\", "\\");
+	QString quoted = text;
+	if (!quoted.isEmpty()) {
+		quoted.replace("\\\\", "\\");
 	}
-	return text;
+	return quoted;
 }
 
-QString MainWindow::quoteText(QString &text) const
+QString MainWindow::quoteText(const QString &text) const
 {
-	if (!text.isEmpty()) {
-		text.replace("\\", "\\\\");
+	QString unqouted = text;
+	if (!unqouted.isEmpty()) {
+		unqouted.replace("\\", "\\\\");
 	}
-	return text;
+	return unqouted;
 }
 
 void MainWindow::on_RegExp_textChanged(QString )
 {
 	if(!ui->RegExp->text().isEmpty()){
 		originRegExpText_ = ui->RegExp->text();
-		QString tmp = replaceNotGreedy(originRegExpText_);
+		const QString tmp = replaceNotGreedy(originRegExpText_);
 		regExpText_ = ui->unquotebox->isChecked() ? unquoteText(tmp) : tmp;
 	}
 }

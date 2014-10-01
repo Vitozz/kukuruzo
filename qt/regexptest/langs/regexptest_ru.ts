@@ -114,43 +114,60 @@
         <translation>&amp;Файл</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="419"/>
+        <location filename="../mainwindow.ui" line="420"/>
         <source>&amp;Help</source>
         <translation>&amp;Справка</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="428"/>
+        <location filename="../mainwindow.ui" line="430"/>
         <source>&amp;Run Help</source>
         <translation>&amp;Запустить справку</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="433"/>
+        <location filename="../mainwindow.ui" line="435"/>
         <source>E&amp;xit</source>
         <translation>В&amp;ыход</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="436"/>
+        <location filename="../mainwindow.ui" line="438"/>
         <source>Ctrl+X</source>
         <translation>Ctrl+X</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="129"/>
+        <location filename="../mainwindow.ui" line="443"/>
+        <source>&amp;About Qt</source>
+        <translation>&amp;О Qt</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="448"/>
+        <source>&amp;Open</source>
+        <translation>&amp;Открыть</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="451"/>
+        <source>Ctrl+O</source>
+        <translation>Ctrl+O</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="128"/>
         <source>&lt;u&gt;&lt;a style=&quot;color:red&quot;&gt;Match # &lt;/a&gt;</source>
         <translation>&lt;u&gt;&lt;a style=&quot;color:red&quot;&gt;Совпадение # &lt;/a&gt;</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="132"/>
-        <location filename="../mainwindow.cpp" line="137"/>
+        <location filename="../mainwindow.cpp" line="134"/>
+        <location filename="../mainwindow.cpp" line="141"/>
+        <location filename="../mainwindow.cpp" line="143"/>
         <source>&lt;a style=&quot;color:blue&quot;&gt;Group # &lt;/a&gt;</source>
         <translation>&lt;a style=&quot;color:blue&quot;&gt;Группа # &lt;/a&gt;</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="272"/>
+        <location filename="../mainwindow.cpp" line="286"/>
         <source>Open File...</source>
         <translation>Открыть файл...</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="274"/>
+        <location filename="../mainwindow.cpp" line="288"/>
         <source>All Files (*);;Text Files (*.txt)</source>
         <translation>Все файлы (*);;Текстовые файлы (*.txt)</translation>
     </message>

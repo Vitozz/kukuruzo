@@ -1,8 +1,9 @@
 project( regexptest )
-cmake_minimum_required( VERSION 2.8.11 )
+cmake_minimum_required( VERSION 2.8.7 )
 set( CMAKE_AUTOMOC ON )
 set( CMAKE_INCLUDE_CURRENT_DIR ON )
 set( USE_QT5 OFF CACHE BOOL "Use Qt5" )
+set( BUILD_TRANSLATIONS ON CACHE BOOL "Build project translations")
 include_directories(
 	${CMAKE_SOURCE_DIR}
 	${CMAKE_CURRENT_BINARY_DIR}
@@ -37,14 +38,16 @@ set(LICENSE_FILES
 )
 if( ${USE_QT5} )
 	find_package( Qt5Widgets REQUIRED )
-	find_package( Qt5LinguistTools REQUIRED )
 	include_directories(
 		${Qt5Widgets_INCLUDES}
 	)
 	set( CMAKE_CXX_FLAGS "-std=c++0x ${CMAKE_CXX_FLAGS} ${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}" )
 	add_definitions( -DHAVE_QT5 )
 	qt5_add_resources( RSCS ${regexptest_QRC} )
-	qt5_add_translation( TRS ${regexptest_TRS} )
+	if( ${BUILD_TRANSLATIONS} )
+		find_package( Qt5LinguistTools REQUIRED )
+		qt5_add_translation( TRS ${regexptest_TRS} )
+	endif( ${BUILD_TRANSLATIONS} )
 	qt5_wrap_ui( UIS ${regexptest_UI} )
 	set( QT_DEPLIBS
 		Qt5::Widgets
@@ -58,7 +61,9 @@ else( ${USE_QT5} )
 	)
 	QT4_WRAP_UI( UIS ${regexptest_UI} )
 	QT4_ADD_RESOURCES( RSCS ${regexptest_QRC} )
-	QT4_ADD_TRANSLATION( TRS ${regexptest_TRS} )
+	if( ${BUILD_TRANSLATIONS} )
+		QT4_ADD_TRANSLATION( TRS ${regexptest_TRS} )
+	endif( ${BUILD_TRANSLATIONS} )
 	set( QT_DEPLIBS
 		${QT_QTCORE_LIBRARY}
 		${QT_QTGUI_LIBRARY}

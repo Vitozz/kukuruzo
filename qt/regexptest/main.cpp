@@ -6,7 +6,7 @@
 
 #define ORGANIZATION "thesomeprojects"
 #define APPNAME "regexptest"
-#define APPVERISON "0.3.4"
+#define APPVERISON "0.3.5"
 
 int main(int argc, char *argv[])
 {
@@ -15,14 +15,14 @@ int main(int argc, char *argv[])
 	a.setApplicationName(QString(APPNAME));
 	a.setApplicationVersion(QString(APPVERISON));
 	QTranslator translator;
-	QStringList localeDirs;
-	localeDirs << QString("%1/langs").arg(QDir::currentPath());
-	localeDirs << QString(qApp->applicationDirPath() + "/langs");
-	localeDirs << QString("../share/%1/langs").arg(APPNAME);
-	localeDirs << QString("/usr/share/%1/langs").arg(QString(APPNAME));
-	localeDirs << QString("/usr/local/share/%1/langs").arg(QString(APPNAME));
-	localeDirs << QString(QDir::home().absolutePath() + "/.local/share/%1/langs").arg(QString(APPNAME));
-	QString langFile = QString(APPNAME);
+	const QStringList localeDirs = QStringList()
+				       << QString("%1/langs").arg(QDir::currentPath())
+				       << QString(qApp->applicationDirPath() + "/langs")
+				       << QString("../share/%1/langs").arg(APPNAME)
+				       << QString("/usr/share/%1/langs").arg(QString(APPNAME))
+				       << QString("/usr/local/share/%1/langs").arg(QString(APPNAME))
+				       << QString(QDir::home().absolutePath() + "/.local/share/%1/langs").arg(QString(APPNAME));
+	const QString langFile = QString(APPNAME);
 	foreach(const QString &dir, localeDirs){
 		if (translator.load(QLocale::system(),langFile, "_", dir )) {
 			qApp->installTranslator(&translator);
