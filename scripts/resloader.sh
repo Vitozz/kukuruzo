@@ -3,7 +3,14 @@
 #srcdir=${homedir}/kukuruzorepo
 #builddir=${srcdir}/build
 #exitdir=${srcdir}/debians
-
+#COLORS
+red="\e[0;31m"
+green="\e[0;32m"
+nocolor="\x1B[0m"
+pink="\x1B[01;91m"
+yellow="\x1B[01;93m"
+blue="\x1B[01;94m"
+#
 check_dir ()
 {
 	if [ ! -z "$1" ]
@@ -11,7 +18,7 @@ check_dir ()
 		if [ ! -d "$1" ]
 		then
 			tmpdir=$1			
-			echo "making directory $tmpdir..."
+			echo -e "${blue}making directory${nocolor} ${pink}$tmpdir...${nocolor}"
 			cd ${builddir}
 			mkdir "$tmpdir"
 		fi
@@ -22,7 +29,7 @@ set_workdir ()
 {
 	if [ ! -z "$1" ]
 	then
-		echo "Workdir = $1"
+		echo -e "${blue}Workdir =${nocolor} ${pink}$1${nocolor}"
 		workdir="$1"
 	fi
 }

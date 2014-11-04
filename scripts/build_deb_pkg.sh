@@ -11,12 +11,20 @@
 # sudo apt-get install libqt4-dev qconf
 # -------------------------------------------------------------------------
 #
+#COLORS
+red="\e[0;31m"
+green="\e[0;32m"
+nocolor="\x1B[0m"
+pink="\x1B[01;91m"
+yellow="\x1B[01;93m"
+blue="\x1B[01;94m"
+#
 homedir=$HOME
 srcdir=${homedir}/kukuruzorepo
 builddir=${srcdir}/build
 exitdir=${srcdir}/debians
-data=`LANG=en date +'%a, %d %b %Y %T %z'`
-year=`date +'%Y'`
+data=$(LANG=en date +'%a, %d %b %Y %T %z')
+year=$(date +'%Y')
 isloop=1
 project=""
 section=""
@@ -28,10 +36,15 @@ addit=""
 builddep=""
 docfiles=""
 dirs=""
-i386_dist="precise" #Ubuntu 12.04
+if [ "$(lsb_release -is)" == "Ubuntu" ]; then
+	oscodename=$(lsb_release -cs)
+else
+	oscodename="unstable"
+fi
+i386_dist=${oscodename}
 
-CWDIR=`pwd`
-echo "Current workdir ${CWDIR}"
+CWDIR=$(pwd)
+echo -e "${red}Current workdir ${CWDIR}${nocolor}"
 
 if [ ! -z $USERNAME ]
 then
@@ -70,7 +83,7 @@ run_resloader ()
 			. ./resloader.sh
 			$cmd
 		else
-			echo "No resloder.sh file found. Please download it with this script in the same dir"
+			echo -e "${pink}No resloder.sh file found. Please download it with this script in the same dir${nocolor}"
 			quit
 		fi
 	fi
@@ -96,20 +109,6 @@ get_all ()
 	run_resloader get_avolume
 }
 
-check_qconf ()
-{
-	if [ -f "/usr/bin/qconf" -o -f "/usr/local/bin/qconf" ]
-	then
-		qconfcmd=qconf
-	fi
-	if [ -f "/usr/bin/qt-qconf" -o -f "/usr/local/bin/qt-qconf" ]
-	then
-		qconfcmd=qt-qconf
-	else
-		echo "Install Please qconf utility to continue"
-	fi
-}
-
 prepare ()
 {
 	run_resloader "set_workdir ${project}-${ver}"
@@ -129,7 +128,7 @@ quit ()
 #
 prepare_specs ()
 {
-changelog="${project} (${ver}-1) unstable; urgency=low
+changelog="${project} (${ver}-1) ${oscodename}; urgency=low
 
   * new upsream release
 
@@ -284,7 +283,7 @@ build_erp ()
 {
 	project="exaile-remote-plugin"
 	dirname="python/exaile-remote-plugin"
-	ver=`cat ${srcdir}/${dirname}/version.txt`
+	ver=$(cat ${srcdir}/${dirname}/version.txt)
 	debdir=${builddir}/${project}-${ver}
 	prepare
 	cd ${debdir}
@@ -306,7 +305,7 @@ build_etp ()
 {
 	project="exaile-tunetopsi-plugin"
 	dirname="python/exaile-tunetopsi-plugin"
-	ver=`cat ${srcdir}/${dirname}/version.txt`
+	ver=$(cat ${srcdir}/${dirname}/version.txt)
 	debdir=${builddir}/${project}-${ver}
 	prepare
 	cd ${debdir}
@@ -329,7 +328,7 @@ build_pyav ()
 	run_resloader get_pyav
 	project="pyalsavolume"
 	dirname="pyalsavolume"
-	ver=`cat ${srcdir}/${dirname}/version.txt`
+	ver=$(cat ${srcdir}/${dirname}/version.txt)
 	debdir=${builddir}/${project}-${ver}
 	prepare
 	cd ${debdir}
@@ -359,9 +358,9 @@ build_pypoff ()
 	project="pypoweroff"
 	if [ "${version}" == "1.2" ]
 	then
-		ver=`cat ${srcdir}/${dirname}/version1.2.txt`
+		ver=$(cat ${srcdir}/${dirname}/version1.2.txt)
 	else
-		ver=`cat ${srcdir}/${dirname}/version.txt`
+		ver=$(cat ${srcdir}/${dirname}/version.txt)
 	fi
 	debdir=${builddir}/${project}-${ver}
 	prepare
@@ -397,7 +396,7 @@ build_pyssh ()
 	run_resloader get_pyssh
 	project="pysshclient"
 	dirname="pysshclient"
-	ver=`cat ${srcdir}/${dirname}/version.txt`
+	ver=$(cat ${srcdir}/${dirname}/version.txt)
 	debdir=${builddir}/${project}-${ver}
 	prepare
 	cd ${debdir}
@@ -426,7 +425,7 @@ build_rbremp ()
 {
 	project="rb-remote-plugin"
 	dirname="python/rb-remote-plugin"
-	ver=`cat ${srcdir}/${dirname}/version.txt`
+	ver=$(cat ${srcdir}/${dirname}/version.txt)
 	debdir=${builddir}/${project}-${ver}
 	prepare
 	cd ${debdir}
@@ -447,7 +446,7 @@ build_rbresp ()
 {
 	project="rb-restore-plugin"
 	dirname="python/rb-restore-plugin"
-	ver=`cat ${srcdir}/${dirname}/version.txt`
+	ver=$(cat ${srcdir}/${dirname}/version.txt)
 	debdir=${builddir}/${project}-${ver}
 	prepare
 	cd ${debdir}
@@ -469,7 +468,7 @@ build_rbtunp ()
 {
 	project="rb-tunetopsi-plugin"
 	dirname="python/rb-tunetopsi-plugin"
-	ver=`cat ${srcdir}/${dirname}/version.txt`
+	ver=$(cat ${srcdir}/${dirname}/version.txt)
 	debdir=${builddir}/${project}-${ver}
 	prepare
 	cd ${debdir}
@@ -489,10 +488,9 @@ build_rbtunp ()
 
 build_regext ()
 {
-	check_qconf
 	project="regexptest"
 	dirname="qt/regexptest"
-	ver=`cat ${srcdir}/${dirname}/version.txt`
+	ver=$(cat ${srcdir}/${dirname}/version.txt)
 	debdir=${builddir}/${project}-${ver}
 	prepare
 	cd ${debdir}
@@ -525,17 +523,30 @@ build_avolume ()
 	run_resloader get_avolume
 	project="alsavolume"
 	dirname="cppAlsaVolume"
-	ver=`cat ${srcdir}/${dirname}/version.txt`
+	ver=$(cat ${srcdir}/${dirname}/version.txt)
 	debdir=${builddir}/${project}-${ver}
 	prepare
 	cd ${debdir}
-	#sed "s/#CONFIG += pulseaudio/CONFIG += pulseaudio/" -i alsavolume.pro
-	cmake_flags="-DUSE_PULSE=ON"
+	builddep="debhelper (>= 7), cdbs, libasound2-dev, pkg-config, cmake"
+	echo -e "${blue}Enable pulseaudio support${nocolor} ${pink}[y/n(default)]${nocolor}"
+	read ispulse
+	if [ "${ispulse}" == "y" ]; then
+		cmake_flags="-DUSE_PULSE=ON"
+		builddep="${builddep}, libpulse-dev"
+	fi
+	echo -e "${blue}Enable GTK+2 support${nocolor} ${pink}[y/n(default)]${nocolor}"
+	read isgtk
+	if [ "${isgtk}" == "y" ]; then
+		project="alsavolume-gtk2"
+		cmake_flags="${cmake_flags} -DUSE_GTK3=OFF"
+		builddep="${builddep}, libgtkmm-2.4-dev"
+	else
+		builddep="${builddep}, libgtkmm-3.0-dev"
+	fi
 	section="sound"
-	arch="any"
-	builddep="debhelper (>= 7), cdbs, libgtkmm-3.0-dev, libasound2-dev, libpulse-dev, pkg-config, cmake"
+	arch="any"	
 	addit="#"
-	depends="\${shlibs:Depends}, \${misc:Depends}, libgtkmm-3.0-1, libasound2, libpulse0, libc6 (>=2.7-1), libgcc1 (>=1:4.1.1), libstdc++6 (>=4.1.1), libx11-6, zlib1g (>=1:1.1.4)"
+	depends="\${shlibs:Depends}, \${misc:Depends}, libasound2, libc6 (>=2.7-1), libgcc1 (>=1:4.1.1), libstdc++6 (>=4.1.1), libx11-6, zlib1g (>=1:1.1.4)"
 	description="Tray ALSA volume changer"
 	descriptionlong='Simple programm to change the volume of one of the ALSA mixer from the system tray.'
 	docfiles=""
@@ -556,17 +567,21 @@ build_qtavolume ()
 {
 	project="qtalsavolume"
 	dirname="qt/qtalsavolume"
-	ver=`cat ${srcdir}/${dirname}/version.txt`
+	ver=$(cat ${srcdir}/${dirname}/version.txt)
 	debdir=${builddir}/${project}-${ver}
 	prepare
 	cd ${debdir}
-	#sed "s/#CONFIG += pulseaudio/CONFIG += pulseaudio/" -i qtalsavolume.pro
-	cmake_flags="-DUSE_PULSE=ON"
+	builddep="debhelper (>= 7), cdbs, libqt4-dev, libasound2-dev, pkg-config, cmake"
+	echo -e "${blue}Enable pulseaudio support${nocolor} ${pink}[y/n(default)]${nocolor}"
+	read ispulse
+	if [ "${ispulse}" == "y" ]; then
+		cmake_flags="-DUSE_PULSE=ON"
+		builddep="${builddep}, libpulse-dev"
+	fi
 	section="sound"
 	arch="any"
-	builddep="debhelper (>= 7), cdbs, libqt4-dev, libasound2-dev, libpulse-dev, pkg-config, cmake"
 	addit="#"
-	depends="\${shlibs:Depends}, \${misc:Depends}, libasound2, libpulse0, libc6 (>=2.7-1), libgcc1 (>=1:4.1.1), libstdc++6 (>=4.1.1), libx11-6, zlib1g (>=1:1.1.4)"
+	depends="\${shlibs:Depends}, \${misc:Depends}, libasound2, libc6 (>=2.7-1), libgcc1 (>=1:4.1.1), libstdc++6 (>=4.1.1), libx11-6, zlib1g (>=1:1.1.4)"
 	description="Tray ALSA volume changer"
 	descriptionlong='Simple programm to change the volume of one of the ALSA mixer from the system tray.'
 	docfiles=""
@@ -590,7 +605,7 @@ build_html2text ()
 	run_resloader get_html2text
 	project="htmltotextgui"
 	dirname="htmltotextgui"
-	ver=`cat ${srcdir}/${dirname}/version.txt`
+	ver=$(cat ${srcdir}/${dirname}/version.txt)
 	debdir=${builddir}/${project}-${ver}
 	prepare
 	cd ${debdir}
@@ -617,7 +632,7 @@ build_hismerger ()
 {
 	project="psi-history-merger"
 	dirname="python/pyHistoryMerge"
-	ver=`cat ${srcdir}/${dirname}/version.txt`
+	ver=$(cat ${srcdir}/${dirname}/version.txt)
 	debdir=${builddir}/${project}-${ver}
 	prepare
 	cd ${debdir}
@@ -644,10 +659,11 @@ build_i386 ()
 {
 	if [ ! -z "$1" ]
 	then
-		cowbdir=/var/cache/pbuilder/${i386_dist}-i386/result
+		build_arch=i386
+		cowbdir=/var/cache/pbuilder/${i386_dist}-${build_arch}/result
 		app=$1
-		sudo DIST=${i386_dist} ARCH=i386 cowbuilder --build ${builddir}/${app}
-		cp -f ${cowbdir}/${app/.dsc}_i386.deb	${exitdir}/
+		sudo DIST=${i386_dist} ARCH=${build_arch} cowbuilder --build ${builddir}/${app}
+		cp -f ${cowbdir}/${app/.dsc}_${build_arch}.deb	${exitdir}/
 	fi
 }
 
@@ -683,23 +699,22 @@ build_all_alsa ()
 
 print_menu ()
 {
-  local menu_text='Choose action TODO!
-[1] - Build exaile-remote-plugin debian package
-[2] - Build exaile-tunetopsi-plugin debian package
-[3] - Build pyalsavolume debian package
-[4] - Build pypoweroff 1.3.x debian package
-[41] - Build pypoweroff 1.2.x debian package
-[5] - Build pysshclient debian package
-[6] - Build rb-remote-plugin debian package
-[7] - Build rb-restore-plugin debian package
-[8] - Build rb-tunetopsi-plugin debian package
-[9] - Build regexptest debian package
-[a] - Build html2text debian package
-[b] - Build alsavolume debian package
-[c] - Build qtalsavolume debian package
-[d] - Build psi-history-merger debian package
-[0] - Exit'
-  echo "${menu_text}"
+echo -e "${blue}Choose action TODO!${nocolor}
+${pink}[1]${nocolor} - Build exaile-remote-plugin debian package
+${pink}[2]${nocolor} - Build exaile-tunetopsi-plugin debian package
+${pink}[3]${nocolor} - Build pyalsavolume debian package
+${pink}[4]${nocolor} - Build pypoweroff 1.3.x debian package
+${pink}[41]${nocolor} - Build pypoweroff 1.2.x debian package
+${pink}[5]${nocolor} - Build pysshclient debian package
+${pink}[6]${nocolor} - Build rb-remote-plugin debian package
+${pink}[7]${nocolor} - Build rb-restore-plugin debian package
+${pink}[8]${nocolor} - Build rb-tunetopsi-plugin debian package
+${pink}[9]${nocolor} - Build regexptest debian package
+${pink}[a]${nocolor} - Build html2text debian package
+${pink}[b]${nocolor} - Build alsavolume debian package
+${pink}[c]${nocolor} - Build qtalsavolume debian package
+${pink}[d]${nocolor} - Build psi-history-merger debian package
+${pink}[0]${nocolor} - Exit"
 }
 
 choose_action ()
@@ -709,12 +724,12 @@ choose_action ()
 		"1" ) build_erp;;
 		"2" ) build_etp;;
 		"3" ) build_pyav;;
-		"4" ) echo "Building PyPowerOff 1.3"
+		"4" ) echo -e "${blue}Building PyPowerOff 1.3${nocolor}"
 			depends="\${python:Depends}, \${misc:Depends}, libgtk-3-0, python-gobject (>=3.0.0)"
 			dirname="pypoweroff"
 			version="1.3"
 			build_pypoff;;
-		"41" ) echo "Building PyPowerOff 1.3"
+		"41" ) echo -e "${blue}Building PyPowerOff 1.3${nocolor}"
 			dirname="pypoweroff"
 			depends="\${python:Depends}, \${misc:Depends}, python-gtk2, python-glade2"
 			version="1.2"
