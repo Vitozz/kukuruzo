@@ -42,6 +42,7 @@ else
 	oscodename="unstable"
 fi
 i386_dist=${oscodename}
+build_count=1
 
 CWDIR=$(pwd)
 echo -e "${red}Current workdir ${CWDIR}${nocolor}"
@@ -128,7 +129,7 @@ quit ()
 #
 prepare_specs ()
 {
-changelog="${project} (${ver}-1) ${oscodename}; urgency=low
+changelog="${project} (${ver}-${build_count}) ${oscodename}; urgency=low
 
   * new upsream release
 
@@ -252,7 +253,7 @@ CXXFLAGS=-O3
 		echo "${rules_py}" > rules
 		echo "${pyversions}" > pyversions
 	fi 
-	if [ "${project}" == "regexptest" -o "${project}" == "alsavolume" -o "${project}" == "qtalsavolume" ]
+	if [ "${project}" == "regexptest" ] || [ "${project}" == "alsavolume" ] || [ "${project}" == "qtalsavolume" ]
 	then
 		echo "${rules_qt}" > rules
 	fi
@@ -488,6 +489,7 @@ build_rbtunp ()
 
 build_regext ()
 {
+	build_count=1
 	project="regexptest"
 	dirname="qt/regexptest"
 	ver=$(cat ${srcdir}/${dirname}/version.txt)
@@ -531,16 +533,20 @@ build_avolume ()
 	echo -e "${blue}Enable pulseaudio support${nocolor} ${pink}[y/n(default)]${nocolor}"
 	read ispulse
 	if [ "${ispulse}" == "y" ]; then
+		build_count=1
 		cmake_flags="-DUSE_PULSE=ON"
 		builddep="${builddep}, libpulse-dev"
+	else
+		build_count=2
 	fi
 	echo -e "${blue}Enable GTK+2 support${nocolor} ${pink}[y/n(default)]${nocolor}"
 	read isgtk
 	if [ "${isgtk}" == "y" ]; then
-		project="alsavolume-gtk2"
+		build_count=2
 		cmake_flags="${cmake_flags} -DUSE_GTK3=OFF"
 		builddep="${builddep}, libgtkmm-2.4-dev"
 	else
+		build_count=1
 		builddep="${builddep}, libgtkmm-3.0-dev"
 	fi
 	section="sound"
@@ -575,8 +581,11 @@ build_qtavolume ()
 	echo -e "${blue}Enable pulseaudio support${nocolor} ${pink}[y/n(default)]${nocolor}"
 	read ispulse
 	if [ "${ispulse}" == "y" ]; then
+		build_count=1
 		cmake_flags="-DUSE_PULSE=ON"
 		builddep="${builddep}, libpulse-dev"
+	else
+		build_count=2
 	fi
 	section="sound"
 	arch="any"
@@ -661,8 +670,8 @@ build_i386 ()
 	then
 		build_arch=i386
 		cowbdir=/var/cache/pbuilder/${i386_dist}-${build_arch}/result
-		app=$1
-		sudo DIST=${i386_dist} ARCH=${build_arch} cowbuilder --build ${builddir}/${app}
+		app=$1-${build_count}.dsc
+		sudo DIST=${i386_dist} ARCH=${build_arch} cowbuilder --build ${builddir}/${app} --basepath=/var/cache/pbuilder/${i386_dist}-${build_arch}
 		cp -f ${cowbdir}/${app/.dsc}_${build_arch}.deb	${exitdir}/
 	fi
 }
@@ -672,7 +681,7 @@ build_all_regexp ()
 	project="regexptest"
 	dirname="qt/regexptest"
 	ver=$(cat ${srcdir}/${dirname}/version.txt)
-	package_name=${project}_${ver}-1.dsc
+	package_name=${project}_${ver}
 	build_regext
 	build_i386 ${package_name}
 }
@@ -682,7 +691,7 @@ build_all_qtalsa ()
 	project="qtalsavolume"
 	dirname="qt/qtalsavolume"
 	ver=$(cat ${srcdir}/${dirname}/version.txt)
-	package_name=${project}_${ver}-1.dsc
+	package_name=${project}_${ver}
 	build_qtavolume
 	build_i386 ${package_name}
 }
@@ -692,7 +701,7 @@ build_all_alsa ()
 	project="alsavolume"
 	dirname="cppAlsaVolume"
 	ver=$(cat ${srcdir}/${dirname}/version.txt)
-	package_name=${project}_${ver}-1.dsc
+	package_name=${project}_${ver}
 	build_avolume
 	build_i386 ${package_name}
 }
