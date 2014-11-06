@@ -4,10 +4,14 @@
 EAPI=4
 
 inherit cmake-utils git-2
-IUSE="pulseaudio"
+IUSE="pulseaudio gtk2 gtk3"
+
+REQUIRED_USE="gtk2? ( !gtk3 )"
+REQUIRED_USE="gtk3? ( !gtk2 )"
 
 DEPEND="
-	>=dev-cpp/gtkmm-3.0
+	gtk3? ( >=dev-cpp/gtkmm-3.0 )
+	gtk2? ( >=dev-cpp/gtkmm-2.4 )
 	media-libs/alsa-lib
 	pulseaudio? ( media-sound/pulseaudio )
 "
@@ -23,10 +27,13 @@ KEYWORDS="~amd64 ~x86 ~amd64-linux ~x86-linux"
 LICENSE="GPL-2"
 
 PULSE_FLAG="OFF"
+GTK_FLAG="ON"
 use pulseaudio && PULSE_FLAG="ON"
+use gtk2 && GTK_FLAG="OFF"
 src_configure() {
 	mycmakeargs="${mycmakeargs}
 				-DUSE_PULSE='${PULSE_FLAG}'
+				-DUSE_GTK3='${GTK_FLAG}'
 				"
 	cmake-utils_src_configure
 }
