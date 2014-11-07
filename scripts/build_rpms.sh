@@ -9,8 +9,8 @@ specfiles=${rpmdir}/SPECS
 srcfiles=${rpmdir}/SOURCES
 rpms=${rpmdir}/RPMS
 srpms=${rpmdir}/SRPMS
-data=`LANG=en date +'%a, %d %b %Y %T %z'`
-year=`date +'%Y'`
+data=$(LANG=en date +'%a, %d %b %Y %T %z')
+year=$(date +'%Y')
 isloop=1
 project=""
 section=""
@@ -22,7 +22,14 @@ addit=""
 builddep=""
 docfiles=""
 dirs=""
-
+#COLORS
+red="\e[0;31m"
+green="\e[0;32m"
+nocolor="\x1B[0m"
+pink="\x1B[01;91m"
+yellow="\x1B[01;93m"
+blue="\x1B[01;94m"
+#
 if [ ! -z $USERNAME ]
 then
 	username=$USERNAME
@@ -49,7 +56,7 @@ fi
 
 Maintainer="Vitaly Tonkacheyev <thetvg@gmail.com>"
 
-CWDIR=`pwd`
+CWDIR=$(pwd)
 echo "Current workdir ${CWDIR}"
 
 run_resloader ()
@@ -63,7 +70,7 @@ run_resloader ()
 			. ./resloader.sh
 			$cmd
 		else
-			echo "No resloder.sh file found. Please download it with this script in the same dir"
+			echo -e "${pink}No resloder.sh file found. Please download it with this script in the same dir${nocolor}"
 			quit
 		fi
 	fi
@@ -103,7 +110,7 @@ prepare_tarball ()
 {
 	if [ ! -z "$1" ]
 	then
-		echo "Creating tarball archive"
+		echo -e "${blue}Creating tarball archive${nocolor}"
 		tar -pczf "$1" "${project}-${ver}"
 	fi
 }
@@ -192,7 +199,7 @@ build_erp ()
 {
 	project="exaile-remote-plugin"
 	dirname="python/exaile-remote-plugin"
-	ver=`cat ${srcdir}/${dirname}/version.txt`
+	ver=$(cat ${srcdir}/${dirname}/version.txt)
 	prepare ${dirname}
 	prepare_sound_python
 	depends="python >= 2.6, python-gtk >= 2.0, exaile >= 0.3.2.0"
@@ -209,7 +216,7 @@ build_etp ()
 {
 	project="exaile-tunetopsi-plugin"
 	dirname="python/exaile-tunetopsi-plugin"
-	ver=`cat ${srcdir}/${dirname}/version.txt`
+	ver=$(cat ${srcdir}/${dirname}/version.txt)
 	prepare ${dirname}
 	prepare_sound_python
 	depends="python >= 2.6, exaile"
@@ -227,7 +234,7 @@ build_pyav ()
 	run_resloader get_pyav
 	project="pyalsavolume"
 	dirname="pyalsavolume"
-	ver=`cat ${srcdir}/${dirname}/version.txt`
+	ver=$(cat ${srcdir}/${dirname}/version.txt)
 	prepare ${dirname}
 	prepare_sound_python
 	depends="python >= 2.6, libgtk-3-0, python-gobject >= 3.0.0, pyalsaaudio >= 0.6"
@@ -245,9 +252,9 @@ build_pypoff ()
 	project="pypoweroff"
 	if [ "${version}" == "1.2" ]
 	then
-		ver=`cat ${srcdir}/${dirname}/version1.2.txt`
+		ver=$(cat ${srcdir}/${dirname}/version1.2.txt)
 	else
-		ver=`cat ${srcdir}/${dirname}/version.txt`
+		ver=$(cat ${srcdir}/${dirname}/version.txt)
 	fi
         run_resloader get_pypoff
 	prepare ${dirname}
@@ -268,7 +275,7 @@ build_pyssh ()
 	run_resloader get_pyssh
 	project="pysshclient"
 	dirname="pysshclient"
-	ver=`cat ${srcdir}/${dirname}/version.txt`
+	ver=$(cat ${srcdir}/${dirname}/version.txt)
 	prepare ${dirname}
 	section="Applications/Communications"
 	arch="noarch"
@@ -288,7 +295,7 @@ build_rbremp ()
 {
 	project="rb-remote-plugin"
 	dirname="python/rb-remote-plugin"
-	ver=`cat ${srcdir}/${dirname}/version.txt`
+	ver=$(cat ${srcdir}/${dirname}/version.txt)
 	prepare ${dirname}
 	prepare_sound_python
 	depends="python >= 2.6, python-gtk >= 2.0, python-gconf, rhythmbox"
@@ -305,7 +312,7 @@ build_rbresp ()
 {
 	project="rb-restore-plugin"
 	dirname="python/rb-restore-plugin"
-	ver=`cat ${srcdir}/${dirname}/version.txt`
+	ver=$(cat ${srcdir}/${dirname}/version.txt)
 	prepare ${dirname}
 	prepare_sound_python
 	depends="python >= 2.6, python-gtk >= 2.0, python-gconf, rhythmbox"
@@ -323,7 +330,7 @@ build_rbtunp ()
 {
 	project="rb-tunetopsi-plugin"
 	dirname="python/rb-tunetopsi-plugin"
-	ver=`cat ${srcdir}/${dirname}/version.txt`
+	ver=$(cat ${srcdir}/${dirname}/version.txt)
 	prepare ${dirname}
 	prepare_sound_python
 	depends="python >= 2.6, python-gtk >= 2.0, python-gconf, rhythmbox"
@@ -342,7 +349,7 @@ build_regext ()
 	check_qconf
 	project="regexptest"
 	dirname="qt/regexptest"
-	ver=`cat ${srcdir}/${dirname}/version.txt`
+	ver=$(cat ${srcdir}/${dirname}/version.txt)
 	prepare ${dirname}
         regspecfile="Summary: RegExp Tester
 Name: regexptest
@@ -405,7 +412,7 @@ build_html2text ()
 	run_resloader get_html2text
 	project="htmltotextgui"
 	dirname="htmltotextgui"
-	ver=`cat ${srcdir}/${dirname}/version.txt`
+	ver=$(cat ${srcdir}/${dirname}/version.txt)
 	prepare ${dirname}
 	section="Applications/Utility"
 	arch="noarch"
@@ -423,7 +430,7 @@ build_html2text ()
 build_hismerger (){
 	project="psi-history-merger"
 	dirname="python/pyHistoryMerge"
-	ver=`cat ${srcdir}/${dirname}/version.txt`
+	ver=$(cat ${srcdir}/${dirname}/version.txt)
 	prepare ${dirname}
 	section="Applications/Utility"
 	arch="noarch"
@@ -443,17 +450,27 @@ build_avolume ()
 	project="alsavolume"
 	dirname="cppAlsaVolume"
 	run_resloader get_avolume
-	ver=`cat ${srcdir}/${dirname}/version.txt`
+	ver=$(cat ${srcdir}/${dirname}/version.txt)
 	prepare ${dirname}
+	echo -e "${blue}Enable pulseaudio support${nocolor} ${pink}[y/n(default)]${nocolor}"
+	read ispulse
+	if [ "${ispulse}" == "y" ]; then
+		build_count=1
+		cmake_flags="-DUSE_PULSE=ON"
+		builddep=", libpulse-devel"
+	else
+		cmake_flags="-DUSE_PULSE=OFF"
+		build_count=2
+	fi
         regspecfile="Summary: AlsaVolume
 Name: alsavolume
 Version: ${ver}
-Release: 1
+Release: ${build_count}
 License: GPL-2
 Group: Applications/Multimedia
 URL: http://sites.google.com/site/thesomeprojects/main-1
 Source0: %{name}-%{version}.tar.gz
-BuildRequires: gcc-c++, zlib-devel, gtkmm3-devel, libpulse-devel
+BuildRequires: gcc-c++, zlib-devel, gtkmm3-devel${builddep}
 %{!?_without_freedesktop:BuildRequires: desktop-file-utils}
 
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-build
@@ -465,7 +482,7 @@ Simple tool written using gtkmm-3 library to set the levels of alsa mixers
 %setup
 
 %build
-cmake -DCMAKE_INSTALL_PREFIX=%{buildroot}/usr -DUSE_PULSE=ON .
+cmake -DCMAKE_INSTALL_PREFIX=%{buildroot}/usr ${cmake_flags} .
 %{__make} %{?_smp_mflags}  
 
 %install
@@ -504,17 +521,27 @@ build_qtavolume ()
 {
 	project="qtalsavolume"
 	dirname="qt/qtalsavolume"
-	ver=`cat ${srcdir}/${dirname}/version.txt`
+	ver=$(cat ${srcdir}/${dirname}/version.txt)
+	echo -e "${blue}Enable pulseaudio support${nocolor} ${pink}[y/n(default)]${nocolor}"
+	read ispulse
+	if [ "${ispulse}" == "y" ]; then
+		build_count=1
+		cmake_flags="-DUSE_PULSE=ON"
+		builddep=", libpulse-devel"
+	else
+		cmake_flags="-DUSE_PULSE=OFF"
+		build_count=2
+	fi
 	prepare ${dirname}
         regspecfile="Summary: QtAlsaVolume
 Name: qtalsavolume
 Version: ${ver}
-Release: 1
+Release: ${build_count}
 License: GPL-2
 Group: Applications/Multimedia
 URL: http://sites.google.com/site/thesomeprojects/main-1
 Source0: %{name}-%{version}.tar.gz
-BuildRequires: gcc-c++, libpulse-devel
+BuildRequires: gcc-c++${builddep}
 %{!?_without_freedesktop:BuildRequires: desktop-file-utils}
 
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-build
@@ -526,7 +553,7 @@ Simple tool written using Qt4 library to set the levels of alsa mixers
 %setup
 
 %build
-cmake -DCMAKE_INSTALL_PREFIX=%{buildroot}/usr -DUSE_PULSE=ON .
+cmake -DCMAKE_INSTALL_PREFIX=%{buildroot}/usr ${cmake_flags} .
 %{__make} %{?_smp_mflags}   
 
 %install
@@ -568,23 +595,22 @@ mkdir -p %{buildroot}/usr/share/%{name}/languages
 
 print_menu ()
 {
-  local menu_text='Choose action TODO!
-[1] - Build exaile-remote-plugin OpenSUSE RPM package
-[2] - Build exaile-tunetopsi-plugin OpenSUSE RPM package
-[3] - Build pyalsavolume OpenSUSE RPM package
-[4] - Build pypoweroff 1.3.x OpenSUSE RPM package
-[41] - Build pypoweroff 1.2.x OpenSUSE RPM package
-[5] - Build pysshclient OpenSUSE RPM package
-[6] - Build rb-remote-plugin OpenSUSE RPM package
-[7] - Build rb-restore-plugin OpenSUSE RPM package
-[8] - Build rb-tunetopsi-plugin OpenSUSE RPM package
-[9] - Build regexptest OpenSUSE RPM package
-[a] - Build html2text OpenSUSE RPM package
-[b] - Build alsavolume OpenSUSE RPM package
-[c] - Build qtalsavolume OpenSUSE RPM package
-[d] - Build psi-history-merger OpenSUSE RPM package
-[0] - Exit'
-  echo "${menu_text}"
+  echo -e "${blue}Choose action TODO!${nocolor}
+${pink}[1]${nocolor} - Build exaile-remote-plugin OpenSUSE RPM package
+${pink}[2]${nocolor} - Build exaile-tunetopsi-plugin OpenSUSE RPM package
+${pink}[3]${nocolor} - Build pyalsavolume OpenSUSE RPM package
+${pink}[4]${nocolor} - Build pypoweroff 1.3.x OpenSUSE RPM package
+${pink}[41]${nocolor} - Build pypoweroff 1.2.x OpenSUSE RPM package
+${pink}[5]${nocolor} - Build pysshclient OpenSUSE RPM package
+${pink}[6]${nocolor} - Build rb-remote-plugin OpenSUSE RPM package
+${pink}[7]${nocolor} - Build rb-restore-plugin OpenSUSE RPM package
+${pink}[8]${nocolor} - Build rb-tunetopsi-plugin OpenSUSE RPM package
+${pink}[9]${nocolor} - Build regexptest OpenSUSE RPM package
+${pink}[a]${nocolor} - Build html2text OpenSUSE RPM package
+${pink}[b]${nocolor} - Build alsavolume OpenSUSE RPM package
+${pink}[c]${nocolor} - Build qtalsavolume OpenSUSE RPM package
+${pink}[d]${nocolor} - Build psi-history-merger OpenSUSE RPM package
+${pink}[0]${nocolor} - Exit"
 }
 
 choose_action ()
@@ -594,12 +620,12 @@ choose_action ()
 		"1" ) build_erp;;
 		"2" ) build_etp;;
 		"3" ) build_pyav;;
-		"4" ) echo "Building PyPowerOff-1.3"
+		"4" ) echo -e "${blue}Building PyPowerOff-${nocolor}${pink}1.3${nocolor}"
 			dirname="pypoweroff"
 			depends="python >= 2.6, libgtk-3-0, python-gobject >= 3.0.0"
 			version="1.3"
 			build_pypoff;;
-		"41" ) echo "Building PyPowerOff-1.2"
+		"41" ) echo -e "${blue}Building PyPowerOff-${nocolor}${pink}1.2${nocolor}"
 			dirname="pypoweroff"
 			depends="python >= 2.6, python-gtk >= 2.0"
 			version="1.2"
@@ -619,9 +645,8 @@ choose_action ()
 }
 
 cd ${home}
-clear
 run_resloader "check_dir ${srcdir}"
-run_resloader get_src
+run_resloader get_src && clear
 while [ ${isloop} = 1 ]
 do
   print_menu
