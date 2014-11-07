@@ -23,6 +23,10 @@
 
 #include <QtGui>
 #include <QListWidget>
+#include <QCheckBox>
+#include <QComboBox>
+#include <QRadioButton>
+#include <QDialogButtonBox>
 #ifdef ISDEBUG
 #include <QDebug>
 #endif
@@ -34,6 +38,7 @@ SettingsDialog::SettingsDialog(QWidget *parent)
   mixers_(QStringList()),
   isAutorun_(false),
   itemsAdded_(false),
+  pulseAvailable_(false),
   playbacks_(new QListWidget(this)),
   captures_(new QListWidget(this)),
   enums_(new QListWidget(this)),
@@ -54,13 +59,11 @@ SettingsDialog::SettingsDialog(QWidget *parent)
 	ui->verticalLayout_3->addWidget(l3_);
 	ui->verticalLayout_3->addWidget(enums_);
 	ui->tabWidget->setCurrentIndex(0);
-#ifndef USE_PULSE
-	ui->usePulseaudio->setEnabled(false);
-#endif
 }
 
 SettingsDialog::~SettingsDialog()
 {
+	disconnectSignals();
 	delete l3_;
 	delete l2_;
 	delete l1_;
@@ -104,9 +107,20 @@ void SettingsDialog::connectSignals()
 	connect(ui->cardBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onSoundCard(int)));
 	connect(ui->mixerBox, SIGNAL(currentIndexChanged(QString)), this, SLOT(onMixer(QString)));
 	connect(ui->isAutorun, SIGNAL(toggled(bool)), this, SLOT(onAutorun(bool)));
-#ifdef USE_PULSE
 	connect(ui->usePulseaudio, SIGNAL(toggled(bool)), this, SLOT(onPulseSoundSystem(bool)));
-#endif
+}
+
+void SettingsDialog::disconnectSignals()
+{
+	playbacks_->disconnect(SIGNAL(itemChanged(QListWidgetItem*)));
+	captures_->disconnect(SIGNAL(itemChanged(QListWidgetItem*)));
+	enums_->disconnect(SIGNAL(itemChanged(QListWidgetItem*)));
+	ui->darkRadio->disconnect(SIGNAL(toggled(bool)));
+	ui->lightRadio->disconnect(SIGNAL(toggled(bool)));
+	ui->cardBox->disconnect(SIGNAL(currentIndexChanged(int)));
+	ui->mixerBox->disconnect(SIGNAL(currentIndexChanged(QString)));
+	ui->isAutorun->disconnect(SIGNAL(toggled(bool)));
+	ui->usePulseaudio->disconnect(SIGNAL(toggled(bool)));
 }
 
 void SettingsDialog::onSoundCard(int changed)
@@ -290,11 +304,7 @@ void SettingsDialog::onPulseSoundSystem(bool toggled)
 
 void SettingsDialog::setUsePulse(bool isPulse)
 {
-#ifdef USE_PULSE
 	ui->usePulseaudio->setChecked(isPulse);
-#else
-	Q_UNUSED(isPulse)
-#endif
 }
 
 void SettingsDialog::hideAlsaElements(bool isHide)
@@ -303,4 +313,16 @@ void SettingsDialog::hideAlsaElements(bool isHide)
 	playbacks_->setEnabled(!isHide);
 	captures_->setEnabled(!isHide);
 	enums_->setEnabled(!isHide);
+}
+
+void SettingsDialog::setPulseAvailable(bool available)
+{
+	pulseAvailable_ = available;
+	if (!pulseAvailable_) {
+		ui->usePulseaudio->setEnabled(false);
+	}
+	else {
+		ui->usePulseaudio->setEnabled(true);
+	}
+
 }

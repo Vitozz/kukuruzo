@@ -57,6 +57,7 @@ public:
 	void setMute(bool mute);
 	void setCurrentDevice(const QString &name);
 	void refreshDevices();
+	bool available();
 private:
 	void getSinks();
 	void getSources();
@@ -85,6 +86,7 @@ private:
 	QStringList deviceDescriptions_;
 	PulseDevicePtrList sinks_;
 	PulseDevicePtrList sources_;
+	bool isAvailable_;
 };
 
 #endif // PULSECORE_H

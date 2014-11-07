@@ -23,7 +23,7 @@
 
 #define APP_NAME "qtalsavolume"
 #define APP_ORG "thesomeprojects"
-#define APP_VERSION "0.0.9"
+#define APP_VERSION "0.1.0"
 
 #define CARD_INDEX "Main/card"
 #define MIXER_NAME "Main/mixer"

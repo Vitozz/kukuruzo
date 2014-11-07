@@ -126,20 +126,22 @@ PopupWindow::PopupWindow()
 	isLightStyle_ = setts_.value(ICOSTYLE, true).toBool();
 	isAutorun_ = setts_.value(ISAUTO, false).toBool();
 #ifdef USE_PULSE
-	isPulse_ = setts_.value(PULSE, false).toBool();
-	pulseCardList_ = pulse_->getCardList();
-	QString lastSink = setts_.value(LAST_SINK, "").toString();
-	if (!lastSink.isEmpty()) {
-		pulseCardName_ = lastSink;
-	}
-	else {
-		pulseCardName_ = pulse_->defaultSink();
-	}
-	pulse_->setCurrentDevice(pulseCardName_);
-	deviceIndex_ = pulse_->getCurrentDeviceIndex();
-	if (isPulse_) {
-		isMuted_ = pulse_->getMute();
-		volumeValue_ = pulse_->getVolume();
+	if (pulse_->available()) {
+		isPulse_ = setts_.value(PULSE, false).toBool();
+		pulseCardList_ = pulse_->getCardList();
+		QString lastSink = setts_.value(LAST_SINK, "").toString();
+		if (!lastSink.isEmpty()) {
+			pulseCardName_ = lastSink;
+		}
+		else {
+			pulseCardName_ = pulse_->defaultSink();
+		}
+		pulse_->setCurrentDevice(pulseCardName_);
+		deviceIndex_ = pulse_->getCurrentDeviceIndex();
+		if (isPulse_) {
+			isMuted_ = pulse_->getMute();
+			volumeValue_ = pulse_->getVolume();
+		}
 	}
 #else
 	isPulse_ = false;
@@ -185,7 +187,10 @@ PopupWindow::PopupWindow()
 	connect(settingsDialog_, SIGNAL(autorunChanged(bool)), this, SLOT(onAutorun(bool)));
 	connect(settingsDialog_,SIGNAL(styleChanged(bool)), this, SLOT(onStyleChanged(bool)));
 #ifdef USE_PULSE
-	connect(settingsDialog_, SIGNAL(soundSystemChanged(bool)), this, SLOT(onSoundSystem(bool)));
+	if (pulse_->available()) {
+		settingsDialog_->setPulseAvailable(isPulse_);
+		connect(settingsDialog_, SIGNAL(soundSystemChanged(bool)), this, SLOT(onSoundSystem(bool)));
+	}
 #endif
 	createDesktopFile();
 	//Finish of tray icon initialization
@@ -291,9 +296,13 @@ void PopupWindow::showSettings()
 {
 	settingsDialog_->setIconStyle(isLightStyle_);
 #ifdef USE_PULSE
-	if (isPulse_) {
+	if (isPulse_ && pulse_->available()) {
+		settingsDialog_->blockSignals(true);
+		settingsDialog_->setSoundCards(pulseCardList_);
+		settingsDialog_->blockSignals(false);
 		settingsDialog_->setCurrentCard(pulse_->getCurrentDeviceIndex());
 	}
+	settingsDialog_->setPulseAvailable(isPulse_);
 #endif
 	if (!isPulse_) {
 		settingsDialog_->setCurrentCard(cardIndex_);
@@ -312,7 +321,7 @@ void PopupWindow::onMute(bool isToggled)
 {
 	isMuted_ = isToggled;
 #ifdef USE_PULSE
-	if (isPulse_) {
+	if (isPulse_ && pulse_->available()) {
 		pulse_->setMute(isToggled);
 	}
 #endif
@@ -326,8 +335,10 @@ void PopupWindow::closeEvent(QCloseEvent *)
 {
 	QSettings setts_;
 #ifdef USE_PULSE
-	setts_.setValue(LAST_SINK, pulseCardName_);
-	setts_.setValue(PULSE, isPulse_);
+	if (pulse_->available()) {
+		setts_.setValue(LAST_SINK, pulseCardName_);
+		setts_.setValue(PULSE, isPulse_);
+	}
 #endif
 	setts_.setValue(CARD_INDEX, cardIndex_);
 	setts_.setValue(MIXER_NAME, mixerName_);
@@ -408,7 +419,7 @@ void PopupWindow::setVolume(int value)
 void PopupWindow::onSlider(int value)
 {
 #ifdef USE_PULSE
-	if (isPulse_) {
+	if (isPulse_ && pulse_->available()) {
 		pulse_->setVolume(value);
 	}
 #endif
@@ -425,11 +436,13 @@ void PopupWindow::setIconToolTip(int value)
 {
 	if (isPulse_) {
 #ifdef USE_PULSE
-		const QString message = tr("Card: ")
-					+ pulse_->getDeviceDescription(pulseCardName_)
-					+ "\n"+ tr("Volume: ")
-					+ QString::number(value);
-		trayIcon_->setToolTip(message);
+		if (pulse_->available()) {
+			const QString message = tr("Card: ")
+						+ pulse_->getDeviceDescription(pulseCardName_)
+						+ "\n"+ tr("Volume: ")
+						+ QString::number(value);
+			trayIcon_->setToolTip(message);
+		}
 #endif
 		//
 	}
@@ -449,9 +462,14 @@ void PopupWindow::setIconToolTip(int value)
 void PopupWindow::onCardChanged(int card)
 {
 #ifdef USE_PULSE
-	if (isPulse_) {
+	if (isPulse_ && pulse_->available()) {
 		pulseCardName_ = pulse_->getDeviceNameByIndex(card);
 		pulse_->setCurrentDevice(pulseCardName_);
+		pulseCardList_ = pulse_->getCardList();
+		settingsDialog_->blockSignals(true); //Block Signals
+		settingsDialog_->setSoundCards(pulseCardList_);
+		settingsDialog_->setCurrentCard(pulse_->getCurrentDeviceIndex());
+		settingsDialog_->blockSignals(false); //Block Signals
 		deviceIndex_ = pulse_->getCurrentDeviceIndex();
 		volumeValue_ = pulse_->getVolume();
 		volumeSlider_->setValue(volumeValue_);
@@ -581,10 +599,12 @@ void PopupWindow::onSoundSystem(bool isIt)
 	isPulse_ = isIt;
 	if (isPulse_) {
 #ifdef USE_PULSE
-		pulseCardList_ = pulse_->getCardList();
-		settingsDialog_->hideAlsaElements(isPulse_);
-		settingsDialog_->setSoundCards(pulseCardList_);
-		settingsDialog_->setCurrentCard(deviceIndex_);
+		if (pulse_->available()) {
+			pulseCardList_ = pulse_->getCardList();
+			settingsDialog_->hideAlsaElements(isPulse_);
+			settingsDialog_->setSoundCards(pulseCardList_);
+			settingsDialog_->setCurrentCard(deviceIndex_);
+		}
 #endif
 	}
 	else {

@@ -24,7 +24,7 @@ if( UNIX AND NOT (APPLE OR CYGWIN) )
 		alsawork/alsadevice.h
 		defines.h
 	)
-	set ( CPP_FILES
+	set( CPP_FILES
 		main.cpp
 		popupwindow.cpp
 		alsawork/alsawork.cpp
@@ -32,10 +32,10 @@ if( UNIX AND NOT (APPLE OR CYGWIN) )
 		alsawork/alsadevice.cpp
 		settingsdialog.cpp
 	)
-	set ( UI_FILES
+	set( UI_FILES
 		settingsdialog.ui
 	)
-	set ( QRC_FILES
+	set( QRC_FILES
 		icons.qrc
 	)
 	set( TRANSLATIONS_PATH languages )
@@ -51,7 +51,7 @@ if( UNIX AND NOT (APPLE OR CYGWIN) )
 		icons/dark/tb_icon80.png
 		icons/dark/tb_icon100.png
 	)
-	set ( LIGHT_ICONS
+	set( LIGHT_ICONS
 		icons/light/tb_icon0.png
 		icons/light/tb_icon20.png
 		icons/light/tb_icon40.png
@@ -59,7 +59,7 @@ if( UNIX AND NOT (APPLE OR CYGWIN) )
 		icons/light/tb_icon80.png
 		icons/light/tb_icon100.png
 	)
-	set ( qtalsavolume_TRS
+	set( qtalsavolume_TRS
 		${TRANSLATIONS_PATH}/${PROJECT}_en.ts
 		${TRANSLATIONS_PATH}/${PROJECT}_ru.ts
 		${TRANSLATIONS_PATH}/${PROJECT}_uk.ts
@@ -72,12 +72,12 @@ if( UNIX AND NOT (APPLE OR CYGWIN) )
 		link_directories( ${PULSE_LIBRARY_DIRS} )
 		include_directories( ${PULSE_INCLUDE_DIRS} )
 		add_definitions( -DUSE_PULSE )
-		set ( HEADERS
+		set( HEADERS
 			${HEADERS}
 			pulsework/pulsecore.cpp
 			pulsework/pulsedevice.cpp
 		)
-		set ( CPP_FILES
+		set( CPP_FILES
 			${CPP_FILES}
 			pulsework/pulsecore.cpp
 			pulsework/pulsedevice.cpp
@@ -96,17 +96,17 @@ if( UNIX AND NOT (APPLE OR CYGWIN) )
 		add_definitions( -DHAVE_QT5 )
 		qt5_add_resources( RSCS ${QRC_FILES} )
 		if( ${BUILD_TRANSLATIONS} )
-			find_package ( Qt5LinguistTools REQUIRED )
+			find_package( Qt5LinguistTools REQUIRED )
 			qt5_add_translation( TRS ${qtalsavolume_TRS} )
 		endif( ${BUILD_TRANSLATIONS} )
 		qt5_wrap_ui( UIS ${UI_FILES} )
-		set ( QT_DEPLIBS
+		set( QT_DEPLIBS
 			Qt5::Widgets
 		)
 	else( ${USE_QT5} )
-		find_package ( Qt4 REQUIRED )
-		include ( ${QT_USE_FILE} )
-		include_directories (
+		find_package( Qt4 REQUIRED )
+		include( ${QT_USE_FILE} )
+		include_directories(
 			${QT_QTCORE_INCLUDE_DIR}
 			${QT_QTGUI_INCLUDE_DIR}
 		)
@@ -120,8 +120,8 @@ if( UNIX AND NOT (APPLE OR CYGWIN) )
 			${QT_QTGUI_LIBRARY}
 		)
 	endif( ${USE_QT5} )
-	add_executable ( ${PROJECT} ${CPP_FILES} ${UIS} ${RSCS} ${TRS} ${MOCS} )
-	target_link_libraries (
+	add_executable( ${PROJECT} ${CPP_FILES} ${UIS} ${RSCS} ${TRS} ${MOCS} )
+	target_link_libraries(
 		${PROJECT}
 		${QT_DEPLIBS}
 		${DEPLIBS}

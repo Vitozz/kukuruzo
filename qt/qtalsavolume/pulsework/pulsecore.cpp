@@ -82,6 +82,7 @@ PulseCore::PulseCore(const char *clientName)
   deviceNames_(QStringList()),
   deviceDescriptions_(QStringList())
 {
+	isAvailable_ = true;
 	pState = CONNECTING;
 	pa_context_set_state_callback(context_, &state_cb, this);
 	pa_context_connect(context_, NULL, PA_CONTEXT_NOFLAGS, NULL);
@@ -90,9 +91,12 @@ PulseCore::PulseCore(const char *clientName)
 	}
 	if (pState == ERROR) {
 		onError("Error to connect to Pulseaudio main loop");
+		isAvailable_ = false;
 	}
-	updateDevices();
-	currentDevice_ = getDefaultSink();
+	if (isAvailable_) {
+		updateDevices();
+		currentDevice_ = getDefaultSink();
+	}
 }
 
 PulseCore::~PulseCore()
@@ -101,6 +105,11 @@ PulseCore::~PulseCore()
 		pa_context_disconnect(context_);
 	}
 	pa_mainloop_free(mainLoop_);
+}
+
+bool PulseCore::available()
+{
+	return isAvailable_;
 }
 
 void PulseCore::iterate(pa_operation *op)
@@ -130,7 +139,7 @@ PulseDevicePtr PulseCore::getSink(int index)
 		return sinks_.at(index);
 	}
 	else {
-		onError(QString("Pulseaudio sink with id=%1 not exist.\n Default sink will be used").arg(QString::number(index)));
+		onError(QString("Error in pulsecore.cpp:142. Pulseaudio sink with id=%1 not exist.\n Default sink will be used").arg(QString::number(index)));
 	}
 	return getDefaultSink();
 }
@@ -142,7 +151,7 @@ PulseDevicePtr PulseCore::getSink(const QString &name)
 			return sink;
 		}
 	}
-	onError(QString("Pulseaudio sink with name=%1 not exist.\n Default sink will be used").arg(name));
+	onError(QString("Error in pulsecore.cpp:154. Pulseaudio sink with name=%1 not exist.\n Default sink will be used").arg(name));
 	return getDefaultSink();
 }
 
@@ -152,7 +161,7 @@ PulseDevicePtr PulseCore::getSource(int index)
 		return sources_.at(index);
 	}
 	else {
-		onError(QString("Pulseaudio source with id=%1 not exist.\n Default source will be used").arg(QString::number(index)));
+		onError(QString("Error in pulsecore.cpp:164. Pulseaudio source with id=%1 not exist.\n Default source will be used").arg(QString::number(index)));
 	}
 	return getDefaultSource();
 }
@@ -164,7 +173,7 @@ PulseDevicePtr PulseCore::getSource(const QString &name)
 			return source;
 		}
 	}
-	onError(QString("Pulseaudio source with name=%1 not exist.\n Default source will be used").arg(name));
+	onError(QString("Error in pulsecore.cpp:176. Pulseaudio source with name=%1 not exist.\n Default source will be used").arg(name));
 	return getDefaultSource();
 }
 
@@ -174,7 +183,12 @@ PulseDevicePtr PulseCore::getDefaultSink()
 	pa_operation* op = pa_context_get_server_info(context_, &server_info_cb, &info);
 	iterate(op);
 	pa_operation_unref(op);
-	return getSink(info.defaultSinkName);
+	if (!info.defaultSinkName.isEmpty()) {
+		return getSink(info.defaultSinkName);
+	}
+	onError(QString("Error in pulsecore.cpp:189. Error in pulseaudio. Can't get Default sink"));
+	isAvailable_ = false;
+	return PulseDevicePtr();
 }
 
 PulseDevicePtr PulseCore::getDefaultSource()
@@ -183,7 +197,12 @@ PulseDevicePtr PulseCore::getDefaultSource()
 	pa_operation* op = pa_context_get_server_info(context_, &server_info_cb, &info);
 	iterate(op);
 	pa_operation_unref(op);
-	return getSource(info.defaultSourceName);
+	if (!info.defaultSourceName.isEmpty()) {
+		return getSource(info.defaultSourceName);
+	}
+	onError(QString("Error in pulsecore.cpp:203. Error in pulseaudio. Can't get Default source"));
+	isAvailable_ = false;
+	return PulseDevicePtr();
 }
 
 const QString PulseCore::getDeviceDescription(const QString &name)
@@ -255,11 +274,11 @@ void PulseCore::onError(const QString &message)
 {
 	QMessageBox mbox;
 	mbox.critical(0, "Error in pulsecore.cpp", message);
-	mbox.exec();
 }
 
 void PulseCore::setCurrentDevice(const QString &name)
 {
+	updateDevices();
 	currentDevice_ = getDeviceByName(name);
 }
 

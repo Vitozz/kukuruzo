@@ -51,6 +51,7 @@ public:
 	void setIconStyle(bool isLight);
 	void setUsePulse(bool isPulse);
 	void hideAlsaElements(bool isHide);
+	void setPulseAvailable(bool available);
 
 protected:
 	void closeEvent(QCloseEvent *);
@@ -78,11 +79,15 @@ signals:
 	void soundSystemChanged(bool isAlsa);
 
 private:
+	void disconnectSignals();
+
+private:
 	Ui::SettingsDialog *ui;
 	QStringList soundCards_;
 	QStringList mixers_;
 	bool isAutorun_;
 	bool itemsAdded_;
+	bool pulseAvailable_;
 	QListWidget *playbacks_;
 	QListWidget *captures_;
 	QListWidget *enums_;

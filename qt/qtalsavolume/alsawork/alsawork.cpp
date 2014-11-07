@@ -129,7 +129,6 @@ void AlsaWork::checkError (int errorIndex)
 	if (errorIndex < 0) {
 		QMessageBox mb;
 		mb.critical(0, ERROR_TITLE, QString(snd_strerror(errorIndex)));
-		mb.exec();
 	}
 }
 
