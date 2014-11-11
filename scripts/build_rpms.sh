@@ -452,6 +452,7 @@ build_avolume ()
 	run_resloader get_avolume
 	ver=$(cat ${srcdir}/${dirname}/version.txt)
 	prepare ${dirname}
+	builddep="intltool, gettext-tools"
 	echo -e "${blue}Enable pulseaudio support${nocolor} ${pink}[y/n(default)]${nocolor}"
 	read ispulse
 	if [ "${ispulse}" == "y" ]; then
@@ -495,6 +496,11 @@ mkdir -p %{buildroot}/usr/share/%{name}
 mkdir -p %{buildroot}/usr/share/applications
 mkdir -p %{buildroot}/usr/share/%{name}/icons
 mkdir -p %{buildroot}/usr/share/%{name}/gladefiles
+mkdir -p %{buildroot}/usr/share/%{name}/locale
+mkdir -p %{buildroot}/usr/share/%{name}/locale/ru
+mkdir -p %{buildroot}/usr/share/%{name}/locale/ru/LC_MESSAGES
+mkdir -p %{buildroot}/usr/share/%{name}/locale/uk
+mkdir -p %{buildroot}/usr/share/%{name}/locale/uk/LC_MESSAGES
 
 %{__install} -c -m 755 icons/tb_icon*.png %{buildroot}/usr/share/%{name}/icons/
 %{__install} -c -m 755 icons/volume*.png %{buildroot}/usr/share/%{name}/icons/
@@ -510,6 +516,7 @@ mkdir -p %{buildroot}/usr/share/%{name}/gladefiles
 %{_bindir}/%{name}
 %{_datadir}/%{name}/icons/
 %{_datadir}/%{name}/gladefiles/
+%{_datadir}/%{name}/locale/
 %{_datadir}/applications/"
         echo "${regspecfile}" > ${specfiles}/"alsavolume.spec"
 	rpmbuild -ba ${specfiles}/"alsavolume.spec"

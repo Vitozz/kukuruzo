@@ -529,7 +529,7 @@ build_avolume ()
 	debdir=${builddir}/${project}-${ver}
 	prepare
 	cd ${debdir}
-	builddep="debhelper (>= 7), cdbs, libasound2-dev, pkg-config, cmake"
+	builddep="debhelper (>= 7), cdbs, libasound2-dev, pkg-config, cmake, intltool, gettext"
 	echo -e "${blue}Enable pulseaudio support${nocolor} ${pink}[y/n(default)]${nocolor}"
 	read ispulse
 	if [ "${ispulse}" == "y" ]; then
@@ -560,6 +560,11 @@ build_avolume ()
 usr/share/alsavolume
 usr/share/alsavolume/icons
 usr/share/alsavolume/gladefiles
+usr/share/alsavolume/locale
+usr/share/alsavolume/locale/ru
+usr/share/alsavolume/locale/ru/LC_MESSAGES
+usr/share/alsavolume/locale/uk
+usr/share/alsavolume/locale/uk/LC_MESSAGES
 usr/share/applications"
 	cd ${debdir}/debian
 	prepare_specs
