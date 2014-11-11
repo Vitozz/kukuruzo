@@ -119,7 +119,7 @@ PopupWindow::PopupWindow()
 	setLayout(mainLayout_);
 	setMinimumHeight(POPUP_HEIGHT);
 	setMinimumWidth(POPUP_WIDTH);
-	setWindowFlags(Qt::FramelessWindowHint);
+	setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
 	this->setMouseTracking(true);
 	//Reading settings and alsa variables
 	QSettings setts_;
