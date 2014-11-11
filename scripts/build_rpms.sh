@@ -452,13 +452,13 @@ build_avolume ()
 	run_resloader get_avolume
 	ver=$(cat ${srcdir}/${dirname}/version.txt)
 	prepare ${dirname}
-	builddep="intltool, gettext-tools"
+	builddep="alsa-devel, intltool, gettext-tools"
 	echo -e "${blue}Enable pulseaudio support${nocolor} ${pink}[y/n(default)]${nocolor}"
 	read ispulse
 	if [ "${ispulse}" == "y" ]; then
 		build_count=1
 		cmake_flags="-DUSE_PULSE=ON"
-		builddep=", libpulse-devel"
+		builddep="${builddep}, libpulse-devel"
 	else
 		cmake_flags="-DUSE_PULSE=OFF"
 		build_count=2
@@ -471,7 +471,7 @@ License: GPL-2
 Group: Applications/Multimedia
 URL: http://sites.google.com/site/thesomeprojects/main-1
 Source0: %{name}-%{version}.tar.gz
-BuildRequires: gcc-c++, zlib-devel, gtkmm3-devel${builddep}
+BuildRequires: gcc-c++, zlib-devel, gtkmm3-devel, ${builddep}
 %{!?_without_freedesktop:BuildRequires: desktop-file-utils}
 
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-build
@@ -529,12 +529,13 @@ build_qtavolume ()
 	project="qtalsavolume"
 	dirname="qt/qtalsavolume"
 	ver=$(cat ${srcdir}/${dirname}/version.txt)
+	builddep="alsa-devel"
 	echo -e "${blue}Enable pulseaudio support${nocolor} ${pink}[y/n(default)]${nocolor}"
 	read ispulse
 	if [ "${ispulse}" == "y" ]; then
 		build_count=1
 		cmake_flags="-DUSE_PULSE=ON"
-		builddep=", libpulse-devel"
+		builddep="${builddep}, libpulse-devel"
 	else
 		cmake_flags="-DUSE_PULSE=OFF"
 		build_count=2
@@ -548,7 +549,7 @@ License: GPL-2
 Group: Applications/Multimedia
 URL: http://sites.google.com/site/thesomeprojects/main-1
 Source0: %{name}-%{version}.tar.gz
-BuildRequires: gcc-c++${builddep}
+BuildRequires: gcc-c++, ${builddep}
 %{!?_without_freedesktop:BuildRequires: desktop-file-utils}
 
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-build
