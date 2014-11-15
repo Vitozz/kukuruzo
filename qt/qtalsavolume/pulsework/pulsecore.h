@@ -37,14 +37,14 @@ enum state {
 	ERROR
 };
 
-typedef QSharedPointer<PulseDevice> PulseDevicePtr;
-typedef QList<PulseDevicePtr> PulseDevicePtrList;
+typedef QList<PulseDevice::Ptr> PulseDevicePtrList;
 
 class PulseCore
 {
 public:
 	PulseCore(const char *clientName);
 	~PulseCore();
+	typedef QSharedPointer<PulseCore> Ptr;
 	state pState;
 	const QString defaultSink();
 	const QStringList &getCardList() const;
@@ -61,16 +61,16 @@ public:
 private:
 	void getSinks();
 	void getSources();
-	PulseDevicePtr getSink(int index);
-	PulseDevicePtr getSink(const QString &name);
-	PulseDevicePtr getSource(int index);
-	PulseDevicePtr getSource(const QString &name);
-	PulseDevicePtr getDefaultSink();
-	PulseDevicePtr getDefaultSource();
-	PulseDevicePtr getDeviceByName(const QString &name);
-	PulseDevicePtr getDeviceByIndex(int index);
-	void setVolume_(PulseDevicePtr &device, int value);
-	void setMute_(PulseDevicePtr &device, bool mute);
+	PulseDevice::Ptr getSink(int index);
+	PulseDevice::Ptr getSink(const QString &name);
+	PulseDevice::Ptr getSource(int index);
+	PulseDevice::Ptr getSource(const QString &name);
+	PulseDevice::Ptr getDefaultSink();
+	PulseDevice::Ptr getDefaultSource();
+	PulseDevice::Ptr getDeviceByName(const QString &name);
+	PulseDevice::Ptr getDeviceByIndex(int index);
+	void setVolume_(const PulseDevice::Ptr &device, int value);
+	void setMute_(const PulseDevice::Ptr &device, bool mute);
 	void iterate(pa_operation* op);
 	void onError(const QString &message);
 	void updateDevices();
@@ -79,7 +79,7 @@ private:
 	pa_mainloop_api* mainLoopApi_;
 	pa_context* context_;
 	int retval_;
-	PulseDevicePtr currentDevice_;
+	PulseDevice::Ptr currentDevice_;
 	QStringList sinksDescriptions_;
 	QStringList sourcesDescriptions_;
 	QStringList deviceNames_;

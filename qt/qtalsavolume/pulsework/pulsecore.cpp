@@ -48,14 +48,14 @@ void sink_list_cb(pa_context *c, const pa_sink_info *i, int eol, void *raw) {
 	Q_UNUSED(c);
 	if (eol != 0) return;
 	PulseDevicePtrList* sinks = (PulseDevicePtrList*) raw;
-	sinks->push_back(PulseDevicePtr(new PulseDevice(i)));
+	sinks->push_back(PulseDevice::Ptr(new PulseDevice(i)));
 }
 
 void source_list_cb(pa_context *c, const pa_source_info *i, int eol, void *raw) {
 	Q_UNUSED(c);
 	if (eol != 0) return;
 	PulseDevicePtrList* sources = (PulseDevicePtrList*) raw;
-	sources->push_back(PulseDevicePtr(new PulseDevice(i)));
+	sources->push_back(PulseDevice::Ptr(new PulseDevice(i)));
 }
 
 void server_info_cb(pa_context* c, const pa_server_info* i, void* raw) {
@@ -133,7 +133,7 @@ void PulseCore::getSources()
 	pa_operation_unref(op);
 }
 
-PulseDevicePtr PulseCore::getSink(int index)
+PulseDevice::Ptr PulseCore::getSink(int index)
 {
 	if (index >= 0 && (int)index < sinks_.size()) {
 		return sinks_.at(index);
@@ -144,9 +144,9 @@ PulseDevicePtr PulseCore::getSink(int index)
 	return getDefaultSink();
 }
 
-PulseDevicePtr PulseCore::getSink(const QString &name)
+PulseDevice::Ptr PulseCore::getSink(const QString &name)
 {
-	foreach(const PulseDevicePtr &sink, sinks_) {
+	foreach(const PulseDevice::Ptr &sink, sinks_) {
 		if (sink->name() == name) {
 			return sink;
 		}
@@ -155,7 +155,7 @@ PulseDevicePtr PulseCore::getSink(const QString &name)
 	return getDefaultSink();
 }
 
-PulseDevicePtr PulseCore::getSource(int index)
+PulseDevice::Ptr PulseCore::getSource(int index)
 {
 	if (index >= 0 && index < sources_.size()) {
 		return sources_.at(index);
@@ -166,9 +166,9 @@ PulseDevicePtr PulseCore::getSource(int index)
 	return getDefaultSource();
 }
 
-PulseDevicePtr PulseCore::getSource(const QString &name)
+PulseDevice::Ptr PulseCore::getSource(const QString &name)
 {
-	foreach(const PulseDevicePtr &source, sources_) {
+	foreach(const PulseDevice::Ptr &source, sources_) {
 		if (source->name() == name) {
 			return source;
 		}
@@ -177,7 +177,7 @@ PulseDevicePtr PulseCore::getSource(const QString &name)
 	return getDefaultSource();
 }
 
-PulseDevicePtr PulseCore::getDefaultSink()
+PulseDevice::Ptr PulseCore::getDefaultSink()
 {
 	ServerInfo info;
 	pa_operation* op = pa_context_get_server_info(context_, &server_info_cb, &info);
@@ -188,10 +188,10 @@ PulseDevicePtr PulseCore::getDefaultSink()
 	}
 	onError(QString("Error in pulsecore.cpp:189. Error in pulseaudio. Can't get Default sink"));
 	isAvailable_ = false;
-	return PulseDevicePtr();
+	return PulseDevice::Ptr();
 }
 
-PulseDevicePtr PulseCore::getDefaultSource()
+PulseDevice::Ptr PulseCore::getDefaultSource()
 {
 	ServerInfo info;
 	pa_operation* op = pa_context_get_server_info(context_, &server_info_cb, &info);
@@ -202,7 +202,7 @@ PulseDevicePtr PulseCore::getDefaultSource()
 	}
 	onError(QString("Error in pulsecore.cpp:203. Error in pulseaudio. Can't get Default source"));
 	isAvailable_ = false;
-	return PulseDevicePtr();
+	return PulseDevice::Ptr();
 }
 
 const QString PulseCore::getDeviceDescription(const QString &name)
@@ -214,15 +214,15 @@ const QString PulseCore::getDeviceDescription(const QString &name)
 	return desc;
 }
 
-PulseDevicePtr PulseCore::getDeviceByName(const QString &name)
+PulseDevice::Ptr PulseCore::getDeviceByName(const QString &name)
 {
-	PulseDevicePtr result = getDefaultSink();
-	foreach (const PulseDevicePtr &device, sinks_) {
+	PulseDevice::Ptr result = getDefaultSink();
+	foreach (const PulseDevice::Ptr &device, sinks_) {
 		if (device->name() == name) {
 			result = device;
 		}
 	}
-	foreach (const PulseDevicePtr &device, sources_) {
+	foreach (const PulseDevice::Ptr &device, sources_) {
 		if (device->name() == name) {
 			result = device;
 		}
@@ -240,7 +240,7 @@ const QString PulseCore::defaultSink()
 	return getDefaultSink()->name();
 }
 
-void PulseCore::setVolume_(PulseDevicePtr &device, int value)
+void PulseCore::setVolume_(const PulseDevice::Ptr &device, int value)
 {
 	pa_cvolume* new_cvolume = pa_cvolume_set(&device->volume,
 						 device->volume.channels,
@@ -257,7 +257,7 @@ void PulseCore::setVolume_(PulseDevicePtr &device, int value)
 	pa_operation_unref(op);
 }
 
-void PulseCore::setMute_(PulseDevicePtr &device, bool mute)
+void PulseCore::setMute_(const PulseDevice::Ptr &device, bool mute)
 {
 	pa_operation* op;
 	if (device->type() == SINK) {
@@ -272,8 +272,7 @@ void PulseCore::setMute_(PulseDevicePtr &device, bool mute)
 
 void PulseCore::onError(const QString &message)
 {
-	QMessageBox mbox;
-	mbox.critical(0, "Error in pulsecore.cpp", message);
+	QMessageBox::critical(0, "Error in pulsecore.cpp", message);
 }
 
 void PulseCore::setCurrentDevice(const QString &name)
@@ -314,11 +313,11 @@ void PulseCore::updateDevices()
 	}
 	getSinks();
 	getSources();
-	foreach(const PulseDevicePtr &device, sinks_) {
+	foreach(const PulseDevice::Ptr &device, sinks_) {
 		deviceNames_ << device->name();
 		sinksDescriptions_ << device->description();
 	}
-	foreach(const PulseDevicePtr &device, sources_) {
+	foreach(const PulseDevice::Ptr &device, sources_) {
 		deviceNames_ << device->name();
 		sourcesDescriptions_ << device->description();
 	}
@@ -348,10 +347,10 @@ const QStringList &PulseCore::getCardList() const
 	return deviceDescriptions_;
 }
 
-PulseDevicePtr PulseCore::getDeviceByIndex(int index)
+PulseDevice::Ptr PulseCore::getDeviceByIndex(int index)
 {
 	const int deltaIndex = sinksDescriptions_.size() - index;
-	PulseDevicePtr device = (deltaIndex != 0 && deltaIndex >0) ? getSink(index) : getSource(abs(deltaIndex));
+	PulseDevice::Ptr device = (deltaIndex != 0 && deltaIndex >0) ? getSink(index) : getSource(abs(deltaIndex));
 	return device;
 }
 

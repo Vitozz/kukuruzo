@@ -22,6 +22,7 @@
 
 #include "pulse/pulseaudio.h"
 #include <QString>
+#include <QSharedPointer>
 
 enum device_type {
 	SOURCE,
@@ -34,6 +35,7 @@ public:
 	PulseDevice();
 	PulseDevice(const pa_source_info* i_);
 	PulseDevice(const pa_sink_info* i);
+	typedef QSharedPointer<PulseDevice> Ptr;
 	uint32_t index() const;
 	device_type type() const;
 	const QString &name() const;

@@ -60,7 +60,7 @@ static const int DELTA = 2;
 PopupWindow::PopupWindow()
 : alsaWork_(new AlsaWork),
 #ifdef USE_PULSE
-  pulse_(new PulseCore(APP_NAME)),
+  pulse_(PulseCore::Ptr(new PulseCore(APP_NAME))),
   deviceIndex_(0),
 #endif
   mixerName_(QString()),
@@ -101,8 +101,10 @@ PopupWindow::PopupWindow()
 	//Start of tray icon initialization
 	initActions();
 	updateTrayMenu();
+	const QString errorHeader(tr("Error"));
+	const QString systrayMissing(tr("System tray is not available. Exiting..."));
 	if(!trayIcon_->isSystemTrayAvailable()) {
-		QMessageBox::critical(this, "Error", "System tray is not available");
+		QMessageBox::critical(this, errorHeader, systrayMissing);
 	}
 	trayIcon_->setContextMenu(trayMenu_);
 	//Adding QLabel and QSlider to PopupWindow
@@ -126,16 +128,12 @@ PopupWindow::PopupWindow()
 	isLightStyle_ = setts_.value(ICOSTYLE, true).toBool();
 	isAutorun_ = setts_.value(ISAUTO, false).toBool();
 #ifdef USE_PULSE
+	const QString pulseIsMissing(tr("Can't start PulseAudio. Using Alsa as default"));
+	isPulse_ = setts_.value(PULSE, false).toBool();
 	if (pulse_->available()) {
-		isPulse_ = setts_.value(PULSE, false).toBool();
 		pulseCardList_ = pulse_->getCardList();
-		QString lastSink = setts_.value(LAST_SINK, "").toString();
-		if (!lastSink.isEmpty()) {
-			pulseCardName_ = lastSink;
-		}
-		else {
-			pulseCardName_ = pulse_->defaultSink();
-		}
+		const QString lastSink = setts_.value(LAST_SINK, "").toString();
+		pulseCardName_ = (!lastSink.isEmpty()) ? lastSink : pulse_->defaultSink();
 		pulse_->setCurrentDevice(pulseCardName_);
 		deviceIndex_ = pulse_->getCurrentDeviceIndex();
 		if (isPulse_) {
@@ -143,8 +141,15 @@ PopupWindow::PopupWindow()
 			volumeValue_ = pulse_->getVolume();
 		}
 	}
+	else {
+		QMessageBox::critical(this, errorHeader, pulseIsMissing);
+		pulse_.clear();
+		isPulse_ = false;
+		settingsDialog_->setPulseAvailable(false);
+	}
 #else
 	isPulse_ = false;
+	settingsDialog_->setPulseAvailable(false);
 #endif
 	cardList_ = alsaWork_->getCardsList();
 	cardIndex_ = setts_.value(CARD_INDEX, 0).toInt();
@@ -170,7 +175,7 @@ PopupWindow::PopupWindow()
 		settingsDialog_->setCurrentCard(cardIndex_);
 	}
 #ifdef USE_PULSE
-	else {
+	else if (pulse_) {
 		settingsDialog_->setSoundCards(pulseCardList_);
 		settingsDialog_->setCurrentCard(pulse_->getCurrentDeviceIndex());
 		settingsDialog_->setUsePulse(isPulse_);
@@ -187,8 +192,7 @@ PopupWindow::PopupWindow()
 	connect(settingsDialog_, SIGNAL(autorunChanged(bool)), this, SLOT(onAutorun(bool)));
 	connect(settingsDialog_,SIGNAL(styleChanged(bool)), this, SLOT(onStyleChanged(bool)));
 #ifdef USE_PULSE
-	if (pulse_->available()) {
-		settingsDialog_->setPulseAvailable(isPulse_);
+	if (pulse_) {
 		connect(settingsDialog_, SIGNAL(soundSystemChanged(bool)), this, SLOT(onSoundSystem(bool)));
 	}
 #endif
@@ -220,9 +224,6 @@ PopupWindow::~PopupWindow()
 	delete mute_;
 	delete settings_;
 	delete switchList_;
-#ifdef USE_PULSE
-	delete pulse_;
-#endif
 	delete alsaWork_;
 }
 
@@ -296,13 +297,12 @@ void PopupWindow::showSettings()
 {
 	settingsDialog_->setIconStyle(isLightStyle_);
 #ifdef USE_PULSE
-	if (isPulse_ && pulse_->available()) {
+	if (isPulse_ && pulse_) {
 		settingsDialog_->blockSignals(true);
 		settingsDialog_->setSoundCards(pulseCardList_);
 		settingsDialog_->blockSignals(false);
 		settingsDialog_->setCurrentCard(pulse_->getCurrentDeviceIndex());
 	}
-	settingsDialog_->setPulseAvailable(isPulse_);
 #endif
 	if (!isPulse_) {
 		settingsDialog_->setCurrentCard(cardIndex_);
@@ -321,7 +321,7 @@ void PopupWindow::onMute(bool isToggled)
 {
 	isMuted_ = isToggled;
 #ifdef USE_PULSE
-	if (isPulse_ && pulse_->available()) {
+	if (isPulse_ && pulse_) {
 		pulse_->setMute(isToggled);
 	}
 #endif
@@ -335,7 +335,7 @@ void PopupWindow::closeEvent(QCloseEvent *)
 {
 	QSettings setts_;
 #ifdef USE_PULSE
-	if (pulse_->available()) {
+	if (pulse_) {
 		setts_.setValue(LAST_SINK, pulseCardName_);
 		setts_.setValue(PULSE, isPulse_);
 	}
@@ -419,7 +419,7 @@ void PopupWindow::setVolume(int value)
 void PopupWindow::onSlider(int value)
 {
 #ifdef USE_PULSE
-	if (isPulse_ && pulse_->available()) {
+	if (isPulse_ && pulse_) {
 		pulse_->setVolume(value);
 	}
 #endif
@@ -436,7 +436,7 @@ void PopupWindow::setIconToolTip(int value)
 {
 	if (isPulse_) {
 #ifdef USE_PULSE
-		if (pulse_->available()) {
+		if (pulse_) {
 			const QString message = tr("Card: ")
 						+ pulse_->getDeviceDescription(pulseCardName_)
 						+ "\n"+ tr("Volume: ")
@@ -462,7 +462,7 @@ void PopupWindow::setIconToolTip(int value)
 void PopupWindow::onCardChanged(int card)
 {
 #ifdef USE_PULSE
-	if (isPulse_ && pulse_->available()) {
+	if (isPulse_ && pulse_) {
 		pulseCardName_ = pulse_->getDeviceNameByIndex(card);
 		pulse_->setCurrentDevice(pulseCardName_);
 		pulseCardList_ = pulse_->getCardList();
@@ -599,7 +599,7 @@ void PopupWindow::onSoundSystem(bool isIt)
 	isPulse_ = isIt;
 	if (isPulse_) {
 #ifdef USE_PULSE
-		if (pulse_->available()) {
+		if (pulse_) {
 			pulseCardList_ = pulse_->getCardList();
 			settingsDialog_->hideAlsaElements(isPulse_);
 			settingsDialog_->setSoundCards(pulseCardList_);

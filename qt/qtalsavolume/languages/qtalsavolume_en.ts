@@ -1,45 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="en_US">
+<TS version="2.0" language="en_US">
 <context>
     <name>PopupWindow</name>
     <message>
-        <location filename="../popupwindow.cpp" line="73"/>
         <source>&amp;Restore</source>
-        <translation>&amp;Restore</translation>
+        <translation type="obsolete">&amp;Restore</translation>
     </message>
     <message>
-        <location filename="../popupwindow.cpp" line="74"/>
+        <location filename="../popupwindow.cpp" line="73"/>
         <source>&amp;Settings</source>
         <translation>&amp;Settings</translation>
     </message>
     <message>
-        <location filename="../popupwindow.cpp" line="75"/>
+        <location filename="../popupwindow.cpp" line="74"/>
         <source>&amp;Mute</source>
         <translation>&amp;Mute</translation>
     </message>
     <message>
-        <location filename="../popupwindow.cpp" line="76"/>
+        <location filename="../popupwindow.cpp" line="75"/>
         <source>&amp;About...</source>
         <translation>&amp;About...</translation>
     </message>
     <message>
-        <location filename="../popupwindow.cpp" line="77"/>
+        <location filename="../popupwindow.cpp" line="76"/>
         <source>About Qt</source>
         <translation>About Qt</translation>
     </message>
     <message>
-        <location filename="../popupwindow.cpp" line="78"/>
+        <location filename="../popupwindow.cpp" line="77"/>
         <source>&amp;Quit</source>
         <translation>&amp;Quit</translation>
     </message>
     <message>
-        <location filename="../popupwindow.cpp" line="94"/>
+        <location filename="../popupwindow.cpp" line="93"/>
         <source>About QtAlsaVolume</source>
         <translation>About QtAlsaVolume</translation>
     </message>
     <message>
-        <location filename="../popupwindow.cpp" line="96"/>
+        <location filename="../popupwindow.cpp" line="95"/>
         <source>Tray Alsa Volume Changer written using Qt
 
 With Pulseaudio support
@@ -56,7 +55,7 @@ With Pulseaudio support
 version: %1</translation>
     </message>
     <message>
-        <location filename="../popupwindow.cpp" line="98"/>
+        <location filename="../popupwindow.cpp" line="97"/>
         <source>Tray Alsa Volume Changer written using Qt
 
 2014 (c) Vitaly Tonkacheyev (thetvg@gmail.com)
@@ -67,6 +66,21 @@ version: %1</source>
 2014 (c) Vitaly Tonkacheyev (thetvg@gmail.com)
 
 version: %1</translation>
+    </message>
+    <message>
+        <location filename="../popupwindow.cpp" line="104"/>
+        <source>Error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../popupwindow.cpp" line="105"/>
+        <source>System tray is not available. Exiting...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../popupwindow.cpp" line="131"/>
+        <source>Can&apos;t start PulseAudio. Using Alsa as default</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Tray Alsa Volume Changer written using Qt
@@ -74,7 +88,7 @@ version: %1</translation>
 2013 (c) Vitaly Tonkacheyev (thetvg@gmail.com)
 
 version: %1</source>
-        <translation type="vanished">Tray Alsa Volume Changer written using Qt
+        <translation type="obsolete">Tray Alsa Volume Changer written using Qt
 
 2013 (c) Vitaly Tonkacheyev (thetvg@gmail.com)
 
@@ -93,19 +107,19 @@ version: 0.0.1</source>
 version: 0.0.1</translation>
     </message>
     <message>
-        <location filename="../popupwindow.cpp" line="422"/>
-        <location filename="../popupwindow.cpp" line="431"/>
+        <location filename="../popupwindow.cpp" line="440"/>
+        <location filename="../popupwindow.cpp" line="450"/>
         <source>Card: </source>
         <translation>Card: </translation>
     </message>
     <message>
-        <location filename="../popupwindow.cpp" line="434"/>
+        <location filename="../popupwindow.cpp" line="453"/>
         <source>Mixer: </source>
         <translation>Mixer: </translation>
     </message>
     <message>
-        <location filename="../popupwindow.cpp" line="424"/>
-        <location filename="../popupwindow.cpp" line="437"/>
+        <location filename="../popupwindow.cpp" line="442"/>
+        <location filename="../popupwindow.cpp" line="456"/>
         <source>Volume: </source>
         <translation>Volume: </translation>
     </message>
@@ -157,7 +171,7 @@ version: 0.0.1</translation>
     </message>
     <message>
         <source>Pulseaudio</source>
-        <translation type="vanished">Pulseaudio</translation>
+        <translation type="obsolete">Pulseaudio</translation>
     </message>
     <message>
         <location filename="../settingsdialog.ui" line="114"/>
@@ -210,32 +224,32 @@ version: 0.0.1</translation>
         <translation>Switchers</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="40"/>
+        <location filename="../settingsdialog.cpp" line="45"/>
         <source>Playback Switches</source>
         <translation>Playback Switches</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="41"/>
+        <location filename="../settingsdialog.cpp" line="46"/>
         <source>Capture Switches</source>
         <translation>Capture Switches</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="42"/>
+        <location filename="../settingsdialog.cpp" line="47"/>
         <source>Enum Switches</source>
         <translation>Enum Switches</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="47"/>
+        <location filename="../settingsdialog.cpp" line="52"/>
         <source>Enable/Disable Alsa&apos;s Playback Switch</source>
         <translation>Enable/Disable Alsa&apos;s Playback Switch</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="48"/>
+        <location filename="../settingsdialog.cpp" line="53"/>
         <source>Enable/Disable Alsa&apos;s Capture Switch</source>
         <translation>Enable/Disable Alsa&apos;s Playback Switch</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="49"/>
+        <location filename="../settingsdialog.cpp" line="54"/>
         <source>Enable/Disable Alsa&apos;s Enumerated Switch</source>
         <translation>Enable/Disable Alsa&apos;s Other Switch</translation>
     </message>

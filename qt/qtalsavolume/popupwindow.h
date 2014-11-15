@@ -84,7 +84,7 @@ private:
 private:
 	AlsaWork *alsaWork_;
 #ifdef USE_PULSE
-	PulseCore * pulse_;
+	PulseCore::Ptr pulse_;
 	int deviceIndex_;
 #endif
 	QString mixerName_;

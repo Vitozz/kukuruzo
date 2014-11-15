@@ -127,17 +127,14 @@ bool AlsaWork::checkCardId(int cardId)
 void AlsaWork::checkError (int errorIndex)
 {
 	if (errorIndex < 0) {
-		QMessageBox mb;
-		mb.critical(0, ERROR_TITLE, QString(snd_strerror(errorIndex)));
+		QMessageBox::critical(0, ERROR_TITLE, QString(snd_strerror(errorIndex)));
 	}
 }
 
 void AlsaWork::checkError(const QString &title, const QString &message)
 {
 	if(!title.isEmpty() && !message.isEmpty()) {
-		QMessageBox mb;
-		mb.critical(0, title, message);
-		mb.exec();
+		QMessageBox::critical(0, title, message);
 	}
 }
 

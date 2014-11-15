@@ -310,18 +310,17 @@ void SettingsDialog::setUsePulse(bool isPulse)
 void SettingsDialog::hideAlsaElements(bool isHide)
 {
 	ui->mixerBox->setEnabled(!isHide);
-	playbacks_->setEnabled(!isHide);
-	captures_->setEnabled(!isHide);
-	enums_->setEnabled(!isHide);
 }
 
 void SettingsDialog::setPulseAvailable(bool available)
 {
 	pulseAvailable_ = available;
 	if (!pulseAvailable_) {
+		ui->usePulseaudio->setVisible(false);
 		ui->usePulseaudio->setEnabled(false);
 	}
 	else {
+		ui->usePulseaudio->setVisible(true);
 		ui->usePulseaudio->setEnabled(true);
 	}
 
