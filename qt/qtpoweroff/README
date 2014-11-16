@@ -1,0 +1,49 @@
+QtPowerOff - simple tool to sheduled power off / reboot your PC
+
+Written on Qt4/Qt5.
+
+On Linux systems works with DBUS
+
+On Windows with shutdown app (Needs Administrator rights)
+
+---------------
+Howto build app:
+---------------
+
+Using qmake:
+------------
+
+> qmake
+
+> make
+
+> make install
+
+To install into different PREFIX run:
+
+> qmake PREFIX=${PREFIX}
+
+where ${PREFIX} - Your prefix path
+
+To build app in debug mode:
+
+> qmake CONFIG+=debug
+
+Using cmake:
+-----------
+
+> mkdir build && cd build
+
+> cmake ..
+
+> make && make install
+
+Usefull cmake flags:
+
+-DUSE_QT5=ON (OFF - Default) --Disable or enable Qt5 support
+
+-DCMAKE_INSTALL_PREFIX=${PREFIX} --Set install prefix
+
+-DBUILD_TRANSLATIONS=OFF (ON - Default) --Build project translations
+
+-DCMAKE_BUILD_TYPE=Release (Debug and other) --Change binary type 

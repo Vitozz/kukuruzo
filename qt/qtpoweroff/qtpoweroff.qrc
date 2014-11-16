@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/">
+        <file>images/poweroff.png</file>
+        <file>images/tb_icon.png</file>
+    </qresource>
+</RCC>
