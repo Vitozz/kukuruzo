@@ -29,7 +29,7 @@
 #include <QtDBus/QDBusConnection>
 #include <QtDBus/QDBusInterface>
 #endif
-#ifdef Q_OS_WINDOWS
+#ifdef Q_OS_WIN
 #include <QProcess>
 #endif
 #ifdef IS_DEBUG
@@ -154,6 +154,9 @@ QString MainWindow::getTimeString(int seconds)
 	const QString hourStr = (hour >= 10) ? QString::number(hour) : "0" + QString::number(hour);
 	const QString minStr = (mins >= 10) ? QString::number(mins) : "0" + QString::number(mins);
 	const QString secStr = (secs >= 10) ? QString::number(secs) : "0" + QString::number(secs);
+	if (day == 0) {
+		return (tr("%1:%2:%3").arg(hourStr, minStr, secStr));
+	}
 	return (tr("%1 days %2:%3:%4").arg(dayStr, hourStr, minStr, secStr));
 }
 
@@ -177,7 +180,7 @@ void MainWindow::onPowerOffClicked()
 #endif
 			}
 		}
-		const QString timeStr = QString("%1 at %2").arg(time_->toString("dd-MM-yyyy"), time_->toString("hh:mm:ss"));
+		const QString timeStr = tr("%1 at %2").arg(time_->toString("dd-MM-yyyy"), time_->toString("hh:mm:ss"));
 		QMessageBox box;
 		const QString poffType2 = (isReboot_) ? tr("reboot") : tr("shutdown");
 		box.setWindowTitle(tr("Please Confirm Your Choice"));
@@ -243,7 +246,7 @@ void MainWindow::onTimer()
 		qDebug() << "T - " << timeStr;
 #endif
 		const QString poffType = (isReboot_) ? tr("Reboot") : tr("Shutdown");
-		const QString tip = tr("Time to %1 - %2").arg(poffType, timeStr);
+		const QString tip = tr("%1 at - %2").arg(poffType, timeStr);
 		SetTrayToolTip(tip);
 		setWindowTitle(QString("QtPowerOff - %1").arg(tip));
 	}
@@ -336,10 +339,10 @@ void MainWindow::doAction()
 
 	}
 #endif
-#ifdef Q_OS_WINDOWS
-	const QString method = (isReboot_) ? "-r" : "-s";
+#ifdef Q_OS_WIN
+	const QString method = (isReboot_) ? "/r" : "/s";
 	QProcess process;
-	process.start("shutdown", QStringList() << method);
+	process.startDetached("shutdown", QStringList() << method);
 	onExit();
 #endif
 }

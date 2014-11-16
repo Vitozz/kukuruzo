@@ -133,7 +133,7 @@ if( ${WIN32} )
 		${UIS}
 		${RSCS}
 		${TRS}
-		qtpoweroff_RC
+		${qtpoweroff_RC}
 	)
 	target_link_libraries ( ${PROJECT_NAME}
 				${QT_DEPLIBS}

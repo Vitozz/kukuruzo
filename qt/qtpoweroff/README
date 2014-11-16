@@ -47,3 +47,19 @@ Usefull cmake flags:
 -DBUILD_TRANSLATIONS=OFF (ON - Default) --Build project translations
 
 -DCMAKE_BUILD_TYPE=Release (Debug and other) --Change binary type 
+
+-------------------------
+Howto Create polkit rules
+-------------------------
+To use this tool on Linux you need to be in "power" group
+And create 10-upower.rules file in /etc/polkit-1/rules.d containing
+
+polkit.addRule(function(action, subject) {
+    if (action.id == "org.freedesktop.consolekit.system.restart" ||
+        action.id == "org.freedesktop.consolekit.system.stop" ||
+        action.id == "org.freedesktop.consolekit.system.restart-multiple-users" ||
+        action.id == "org.freedesktop.consolekit.system.stop-multiple-users" &&
+        subject.isInGroup("power")) {
+        return polkit.Result.YES;
+}
+});
