@@ -3,9 +3,10 @@
 Encoding=UTF-8
 Icon=/usr/share/qtpoweroff/images/tb_icon.png
 Name=QtPowerOff
-Comment= The program for the planned shutdown of computer
+Comment=The program for the planned shutdown of computer
 Exec=qtpoweroff
 Terminal=false
+Type=Application
 Categories=Utility;
 StartupNotify=false
 
