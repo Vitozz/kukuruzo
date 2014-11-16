@@ -246,12 +246,19 @@ CFLAGS=-O3
 CXXFLAGS=-O3
 "
 
-	if [ "${project}" != "pyalsavolume" -a "${project}" != "regexptest" ]
+	if [ "${project}" != "pyalsavolume" ] &&\
+	[ "${project}" != "regexptest" ] &&\
+	[ "${project}" != "alsavolume" ] &&\
+	[ "${project}" != "qtalsavolume" ] &&\
+	[ "${project}" != "qtpoweroff" ]
 	then
 		echo "${rules_py}" > rules
 		echo "${pyversions}" > pyversions
 	fi 
-	if [ "${project}" == "regexptest" ] || [ "${project}" == "alsavolume" ] || [ "${project}" == "qtalsavolume" ]
+	if [ "${project}" == "regexptest" ] ||\
+	[ "${project}" == "alsavolume" ] ||\
+	[ "${project}" == "qtalsavolume" ] ||\
+	[ "${project}" == "qtpoweroff" ]
 	then
 		echo "${rules_qt}" > rules
 	fi
@@ -611,6 +618,36 @@ usr/share/applications"
 	cp -f ${builddir}/*.deb	${exitdir}/
 }
 
+build_qtpoweroff ()
+{
+	project="qtpoweroff"
+	dirname="qt/qtpoweroff"
+	ver=$(cat ${srcdir}/${dirname}/version.txt)
+	debdir=${builddir}/${project}-${ver}
+	prepare
+	cd ${debdir}
+	builddep="debhelper (>= 7), cdbs, libqt4-dev, cmake"
+	section="misc"
+	arch="any"
+	addit="#"
+	depends="\${shlibs:Depends}, \${misc:Depends}"
+	description="Simple Power-Off Tool"
+	descriptionlong='Simple program to sheduled power-off/reboot of system. Written on Qt'
+	docfiles=""
+	dirs="usr/bin
+usr/share/qtpoweroff
+usr/share/qtpoweroff/images
+usr/share/qtpoweroff/languages
+usr/share/docs/qtpoweroff
+usr/share/applications"
+	cd ${debdir}/debian
+	prepare_specs
+	cd ${debdir}
+	qmake
+	build_deb
+	cp -f ${builddir}/*.deb	${exitdir}/
+}
+
 build_html2text ()
 {
 	project="htmltotextgui"
@@ -707,6 +744,16 @@ build_all_alsa ()
 	build_i386 ${package_name}
 }
 
+build_all_qtpoweroff ()
+{
+	project="qtpoweroff"
+	dirname="qt/qtpoweroff"
+	ver=$(cat ${srcdir}/${dirname}/version.txt)
+	package_name=${project}_${ver}
+	build_qtpoweroff
+	build_i386 ${package_name}
+}
+
 print_menu ()
 {
 echo -e "${blue}Choose action TODO!${nocolor}
@@ -724,6 +771,7 @@ ${pink}[a]${nocolor} - Build html2text debian package
 ${pink}[b]${nocolor} - Build alsavolume debian package
 ${pink}[c]${nocolor} - Build qtalsavolume debian package
 ${pink}[d]${nocolor} - Build psi-history-merger debian package
+${pink}[e]${nocolor} - Build qtpoweroff debian package
 ${pink}[0]${nocolor} - Exit"
 }
 
@@ -753,9 +801,11 @@ choose_action ()
 		"b" ) build_avolume;;
 		"c" ) build_qtavolume;;
 		"d" ) build_hismerger;;
-		"e" ) build_all_regexp;;
-		"f" ) build_all_alsa;;
-		"g" ) build_all_qtalsa;;
+		"e" ) build_qtpoweroff;;
+		"f" ) build_all_regexp;;
+		"g" ) build_all_alsa;;
+		"h" ) build_all_qtalsa;;
+		"j" ) build_all_qtpoweroff;;
 		"0" ) quit;;
 		"ra" ) rm_all;;
 		"ga" ) get_all;;

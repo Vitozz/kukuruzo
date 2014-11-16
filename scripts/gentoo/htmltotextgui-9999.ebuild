@@ -1,7 +1,7 @@
 # Copyright 1999-2012 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=4
+EAPI=5
 
 PYTHON_DEPEND="2:2.7"
 SUPPORT_PYTHON_ABIS="1"
@@ -15,7 +15,7 @@ DEPEND="
 RDEPEND="${DEPEND}"
 DESCRIPTION="HTML To TXT File Converter"
 HOMEPAGE="http://sites.google.com/site/thesomeprojects/"
-EGIT_REPO_URI="git://github.com/Vitozz/htmltotextgui.git"
+EGIT_REPO_URI="git://github.com/Vitozz/kukuruzo.git"
 
 SLOT="0"
 KEYWORDS="~amd64 ~x86 ~amd64-linux ~x86-linux"
@@ -27,4 +27,8 @@ src_compile() {
 
 src_install() {
 	distutils_src_install
+}
+
+src_prepare() {
+	S=${EGIT_SOURCEDIR}/python/htmltotextgui
 }

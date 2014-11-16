@@ -599,6 +599,65 @@ mkdir -p %{buildroot}/usr/share/%{name}/languages
         cp -f ${srpms}/*.rpm	${exitdir}/
 }
 
+build_qtpoweroff ()
+{
+	project="qtpoweroff"
+	dirname="qt/qtpoweroff"
+	ver=$(cat ${srcdir}/${dirname}/version.txt)
+	addit="%doc COPYING
+%doc README"
+	prepare ${dirname}
+        regspecfile="Summary: QtPowerOff
+Name: qtpoweroff
+Version: ${ver}
+Release: ${build_count}
+License: GPL-2
+Group: Applications/System
+URL: http://sites.google.com/site/thesomeprojects/main-1
+Source0: %{name}-%{version}.tar.gz
+BuildRequires: gcc-c++
+%{!?_without_freedesktop:BuildRequires: desktop-file-utils}
+
+BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-build
+
+%description
+Simple tool written using Qt4 library to shedules reboot / shutdown PC
+
+%prep
+%setup
+
+%build
+cmake -DCMAKE_INSTALL_PREFIX=%{buildroot}/usr ${cmake_flags} .
+%{__make} %{?_smp_mflags}   
+
+%install
+[ \"%{buildroot}\" != \"/\"] && rm -rf %{buildroot}
+
+%{__make} install INSTALL_ROOT=\"%{buildroot}\"
+
+mkdir -p %{buildroot}/usr/bin
+mkdir -p %{buildroot}/usr/share/%{name}
+mkdir -p %{buildroot}/usr/share/applications
+mkdir -p %{buildroot}/usr/share/%{name}/images
+mkdir -p %{buildroot}/usr/share/doc/%{name}
+mkdir -p %{buildroot}/usr/share/%{name}/languages
+
+%clean
+[ \"%{buildroot}\" != \"/\" ] && rm -rf %{buildroot}
+
+%files
+%defattr(-, root, root, 0755)
+%{_bindir}/%{name}
+%{_datadir}/%{name}/images/
+%{_datadir}/%{name}/languages/
+%{_datadir}/applications/
+${addit}"
+        echo "${regspecfile}" > ${specfiles}/"qtalsavolume.spec"
+	rpmbuild -ba ${specfiles}/"qtalsavolume.spec"
+	cp -f ${rpms}/i*/*.rpm	${exitdir}/
+        cp -f ${srpms}/*.rpm	${exitdir}/
+}
+
 print_menu ()
 {
   echo -e "${blue}Choose action TODO!${nocolor}
@@ -616,6 +675,7 @@ ${pink}[a]${nocolor} - Build html2text OpenSUSE RPM package
 ${pink}[b]${nocolor} - Build alsavolume OpenSUSE RPM package
 ${pink}[c]${nocolor} - Build qtalsavolume OpenSUSE RPM package
 ${pink}[d]${nocolor} - Build psi-history-merger OpenSUSE RPM package
+${pink}[e]${nocolor} - Build qtpoweroff OpenSUSE RPM package
 ${pink}[0]${nocolor} - Exit"
 }
 
@@ -645,6 +705,7 @@ choose_action ()
 		"b" ) build_avolume;;
 		"c" ) build_qtavolume;;
 		"d" ) build_hismerger;;
+		"e" ) build_qtpoweroff;;
 		"0" ) quit;;
 		"ra" ) rm_all;;
 	esac
