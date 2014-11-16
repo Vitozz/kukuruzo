@@ -80,38 +80,6 @@ get_pypoff ()
 	fi
 }
 
-get_pyssh ()
-{
-	tmp_dir="${srcdir}/pysshclient"
-	check_dir ${tmp_dir}
-	if [ -d "${tmp_dir}/.git" ]
-	then
-		update_git ${tmp_dir}
-	else
-		git clone "git://github.com/Vitozz/pysshclient.git"  ${tmp_dir}
-		cd ${tmp_dir}
-		git init
-		git pull
-		cd ${srcdir}
-	fi
-}
-
-get_html2text ()
-{
-	tmp_dir="${srcdir}/htmltotextgui"
-	check_dir ${tmp_dir}
-	if [ -d "${tmp_dir}/.git" ]
-	then
-		update_git ${tmp_dir}
-	else
-		git clone "git://github.com/Vitozz/htmltotextgui.git"  ${tmp_dir}
-		cd ${tmp_dir}
-		git init
-		git pull
-		cd ${srcdir}
-	fi
-}
-
 get_avolume ()
 {
 	tmp_dir="${srcdir}/cppAlsaVolume"

@@ -105,8 +105,6 @@ get_all ()
 	run_resloader get_src
 	run_resloader get_pyav
 	run_resloader get_pypoff
-	run_resloader get_pyssh
-	run_resloader get_html2text
 	run_resloader get_avolume
 }
 
@@ -394,9 +392,8 @@ usr/share/applications
 
 build_pyssh ()
 {
-	run_resloader get_pyssh
 	project="pysshclient"
-	dirname="pysshclient"
+	dirname="python/pysshclient"
 	ver=$(cat ${srcdir}/${dirname}/version.txt)
 	debdir=${builddir}/${project}-${ver}
 	prepare
@@ -616,9 +613,8 @@ usr/share/applications"
 
 build_html2text ()
 {
-	run_resloader get_html2text
 	project="htmltotextgui"
-	dirname="htmltotextgui"
+	dirname="python/htmltotextgui"
 	ver=$(cat ${srcdir}/${dirname}/version.txt)
 	debdir=${builddir}/${project}-${ver}
 	prepare

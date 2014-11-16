@@ -272,9 +272,8 @@ build_pypoff ()
 
 build_pyssh ()
 {
-	run_resloader get_pyssh
 	project="pysshclient"
-	dirname="pysshclient"
+	dirname="python/pysshclient"
 	ver=$(cat ${srcdir}/${dirname}/version.txt)
 	prepare ${dirname}
 	section="Applications/Communications"
@@ -409,9 +408,8 @@ mkdir -p %{buildroot}/usr/share/%{name}/langs
 
 build_html2text ()
 {
-	run_resloader get_html2text
 	project="htmltotextgui"
-	dirname="htmltotextgui"
+	dirname="python/htmltotextgui"
 	ver=$(cat ${srcdir}/${dirname}/version.txt)
 	prepare ${dirname}
 	section="Applications/Utility"
