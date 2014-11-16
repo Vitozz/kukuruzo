@@ -1,0 +1,14 @@
+
+[Desktop Entry]
+Encoding=UTF-8
+Icon=/usr/share/pysshclient/ssh_icon.png
+Name=SSHFS Client
+Comment= The GUI program for remote access via SSHFS
+Exec=/usr/bin/pysshclient
+Terminal=false
+Type=Application
+Categories=Application;Utility;
+StartupNotify=false
+
+Comment[ru]=Графический интерфейс для удаленного подключения через SSHFS
+Name[ru]=Клиент SSHFS

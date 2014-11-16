@@ -14,8 +14,10 @@ Map of Repository:
                               ---cplugins_script
                               ---exaile-remote-plugin
                               ---exaile-tunetopsi-plugin
+                              ---htmltotextgui
                               ---pyalsavolume
                               ---pyHistoryMerge
+                              ---pysshclient
                               ---rb-remote-plugin
                               ---rb-restore-plugin
                               ---rb-tunetopsi-plugin

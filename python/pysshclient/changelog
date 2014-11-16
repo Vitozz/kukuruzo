@@ -1,0 +1,41 @@
+pysshclient (0.3.1-1) unstable; urgency=low
+
+  * added debian/pyversions
+  * removed debian/pycompat
+
+ -- Vitaly Tonkacheyev <thetvg@gmail.com>  Thu, 27 Oct 2011 12:42:00 +0200
+
+pysshclient (0.3-2) unstable; urgency=low
+
+  * Changed package structure
+
+ -- Vitaly Tonkacheyev <thetvg@gmail.com>  Wed, 09 Jun 2010 11:00:00 +0200
+
+pysshclient (0.3-1) unstable; urgency=low
+
+  * Fixed error when adding a new connection
+  * Password no longer exists in the configuration file
+
+ -- Vitaly Tonkacheyev <thetvg@gmail.com>  Wed, 01 Jan 2010 20:22:42 +0200
+
+pysshclient (0.2-2) unstable; urgency=low
+
+  * Fixed version number in about dialog
+
+ -- Vitaly Tonkacheyev <thetvg@gmail.com>  Mon, 01 Feb 2010 20:13:17 +0200
+
+pysshclient (0.2-1) unstable; urgency=low
+
+  * Added ability to specify the remote port to connect
+  * Added ability to create multiple connections in one time
+  * Now when you close the program it disables all active connections, if any, existed
+  * Changed the appearance of the program
+  * Fixed few errors
+
+ -- Vitaly Tonkacheyev <thetvg@gmail.com>  Wed, 28 Jan 2010 20:14:42 +0200
+
+pysshclient (0.1-1) unstable; urgency=low
+
+  * Initial release
+
+ -- Vitaly Tonkacheyev <thetvg@gmail.com>  Wed, 27 Jan 2010 20:14:42 +0200

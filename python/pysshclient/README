@@ -1,0 +1,2 @@
+pyssclient - simple tool for establish remote connection using SSHFS with simple GUI.
+Written on Python using Gtk+3 interface
