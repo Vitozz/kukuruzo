@@ -24,6 +24,9 @@
 #include <QSystemTrayIcon>
 #include <QTimer>
 #include <QDateTime>
+#ifdef HAVE_DBUS
+#include <QDBusMessage>
+#endif
 
 namespace Ui {
 class MainWindow;
@@ -62,6 +65,9 @@ private:
 	void updateTrayMenu();
 	void doAction();
 	QString getTimeString(int seconds);
+#ifdef HAVE_DBUS
+	bool getBoolReply(const QDBusMessage &message);
+#endif
 
 private:
 	Ui::MainWindow *ui;

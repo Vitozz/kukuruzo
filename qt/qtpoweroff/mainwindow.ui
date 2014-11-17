@@ -239,7 +239,7 @@
   </action>
   <action name="actionAbout">
    <property name="text">
-    <string>About ...</string>
+    <string>About QtPowerOff</string>
    </property>
   </action>
   <action name="actionAbout_Qt">

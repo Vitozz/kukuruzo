@@ -43,7 +43,7 @@ MainWindow::MainWindow(QWidget *parent)
   poffTimer_(new QTimer(this)),
   time_(new QDateTime()),
   terminate_(new QAction(tr("Terminate"), this)),
-  about_(new QAction(tr("About ..."), this)),
+  about_(new QAction(tr("About QtPowerOff"), this)),
   aboutQt_(new QAction(tr("About Qt"), this)),
   exit_(new QAction(tr("Exit"), this)),
   popupMenu_(new QMenu(this)),
@@ -124,7 +124,12 @@ void MainWindow::onMinsChecked(bool toggled)
 
 void MainWindow::onAbout()
 {
-	const QString message = tr("Simple Power Off Tool written using Qt\n\n2014 (c) Vitaly Tonkacheyev (thetvg@gmail.com)\n\nversion: %1").arg(APP_VERSION);
+	const QString message = tr("<!DOCTYPE html><html><body>"
+				   "<p><b>Tool for scheduled Shutdown/Reboot</b></p>"
+				   "<p>written using Qt</p>"
+				   "<p>2014 (c) Vitaly Tonkacheyev <address><a href=\"mailto:thetvg@gmail.com\">&lt;EMail&gt;</a></address></p>"
+				   "<a href=\"http://sites.google.com/site/thesomeprojects/\">Program WebSite</a>"
+				   "<p>version: <b>%1</b></p></body></html>").arg(APP_VERSION);
 	QMessageBox aboutDialog;
 	aboutDialog.setWindowTitle(tr("About QtPowerOff"));
 	aboutDialog.setText(message);
@@ -180,7 +185,8 @@ void MainWindow::onPowerOffClicked()
 #endif
 			}
 		}
-		const QString timeStr = tr("%1 at %2").arg(time_->toString("dd-MM-yyyy"), time_->toString("hh:mm:ss"));
+		const QString timeStr = tr("%1 at %2").arg(time_->toString("dd-MM-yyyy"),
+							   time_->toString("hh:mm:ss"));
 		QMessageBox box;
 		const QString poffType2 = (isReboot_) ? tr("reboot") : tr("shutdown");
 		box.setWindowTitle(tr("Please Confirm Your Choice"));
@@ -311,6 +317,19 @@ void MainWindow::SaveSettings()
 	settings_.setValue(DAYS, ui->dateTimeEdit->date().day());
 }
 
+#ifdef HAVE_DBUS
+bool MainWindow::getBoolReply(const QDBusMessage &message)
+{
+	if (message.type() != QDBusMessage::InvalidMessage && !message.arguments().isEmpty()) {
+		QVariant arg = message.arguments().takeFirst();
+		if (arg.type() == QVariant::Bool) {
+			return arg.toBool();
+		}
+	}
+	return false;
+}
+#endif
+
 void MainWindow::doAction()
 {
 	onTerminate();
@@ -322,19 +341,18 @@ void MainWindow::doAction()
 	if (interface.isValid()) {
 		const QString method = (isReboot_) ? "Restart" : "Stop";
 		const QString checkMethod = (isReboot_) ? "CanRestart" : "CanStop";
-		QDBusMessage ret = interface.call(checkMethod);
-#ifdef IS_DEBUG
-		qDebug() << "Message type " << ret.type();
-		qDebug() << "Args " << ret.arguments().takeFirst().type();
-#endif
-		if (ret.type() != QDBusMessage::InvalidMessage && !ret.arguments().isEmpty()) {
-			interface.call(method);
+		QDBusMessage reply = interface.call(checkMethod.toLatin1());
+		if (getBoolReply(reply)) {
+			interface.call(method.toLatin1());
 			onExit();
 		}
 		else {
 			QMessageBox::critical(this,
 					      tr("Errorr in DBUS"),
-					      tr("Can't establish connection to\n org.freedesktop.ConsoleKit.Manager\nMay be you have no permissions\nOr service not available"));
+					      tr("Can't establish connection to\n"
+						 "org.freedesktop.ConsoleKit.Manager\n"
+						 "May be you have no permissions\n"
+						 "Or service not available"));
 		}
 
 	}
