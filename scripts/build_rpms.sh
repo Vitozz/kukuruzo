@@ -614,6 +614,7 @@ Group: Applications/System
 URL: http://sites.google.com/site/thesomeprojects/main-1
 Source0: %{name}-%{version}.tar.gz
 BuildRequires: gcc-c++
+Requires: ConsoleKit
 %{!?_without_freedesktop:BuildRequires: desktop-file-utils}
 
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-build
