@@ -86,6 +86,7 @@ else( ${USE_QT5} )
 	)
 	if( UNIX AND NOT (APPLE OR CYGWIN) )
 		include_directories( ${QT_QTDBUS_INCLUDE_DIR} )
+		add_definitions( -DHAVE_DBUS )
 		set( QT_DEPLIBS
 			${QT_DEPLIBS}
 			${QT_QTDBUS_LIBRARY}
