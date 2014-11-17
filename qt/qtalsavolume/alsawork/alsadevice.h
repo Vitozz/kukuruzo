@@ -24,6 +24,7 @@
 #include "mixerswitches.h"
 #include <iostream>
 #include <QStringList>
+#include <QSharedPointer>
 
 class AlsaDevice
 {
@@ -31,6 +32,7 @@ public:
 	AlsaDevice(int id, const QString &card);
 	~AlsaDevice();
 	AlsaDevice(AlsaDevice const &);
+	typedef QSharedPointer<AlsaDevice> Ptr;
 	const QString &name() const;
 	int id() const;
 	const QStringList &mixers() const;
@@ -45,10 +47,10 @@ public:
 	void setCurrentMixer(const QString &mixer);
 	void setSwitch(const QString &mixer, int id, bool enabled);
 	void setMute(bool enabled);
+	static std::string formatCardName(int id);
 
 private:
 	snd_mixer_t *getMixerHanlde(int id);
-	std::string formatCardName(int id) const;
 	snd_mixer_selem_channel_id_t checkMixerChannels(snd_mixer_elem_t *element);
 	snd_mixer_elem_t *initMixerElement(snd_mixer_t *handle, const char *mixer);
 	void checkError (int errorIndex);

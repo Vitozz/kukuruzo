@@ -301,7 +301,7 @@ bool AlsaDevice::getMute()
 	return true;
 }
 
-std::string AlsaDevice::formatCardName(int id) const
+std::string AlsaDevice::formatCardName(int id)
 {
 	size_t size = 64;
 	char *name = (char*)malloc(size);
@@ -344,18 +344,14 @@ const QStringList &AlsaDevice::mixers() const
 void AlsaDevice::checkError (int errorIndex)
 {
 	if (errorIndex < 0) {
-		QMessageBox mb;
-		mb.critical(0, ERROR_TITLE, QString(snd_strerror(errorIndex)));
-		mb.exec();
+		QMessageBox::critical(0, ERROR_TITLE, QString(snd_strerror(errorIndex)));
 	}
 }
 
 void AlsaDevice::checkError(const QString &title, const QString &message)
 {
 	if(!title.isEmpty() && !message.isEmpty()) {
-		QMessageBox mb;
-		mb.critical(0, title, message);
-		mb.exec();
+		QMessageBox::critical(0, title, message);
 	}
 }
 

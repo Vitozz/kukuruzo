@@ -92,9 +92,14 @@ PopupWindow::PopupWindow()
   isPulse_(false),
   title_(tr("About QtAlsaVolume")),
 #ifdef USE_PULSE
-  message_(QString(tr("Tray Alsa Volume Changer written using Qt\n\nWith Pulseaudio support\n\n2014 (c) Vitaly Tonkacheyev (thetvg@gmail.com)\n\nversion: %1")).arg(APP_VERSION))
+  message_(QString(tr("Tray Alsa Volume Changer written using Qt\n\n"
+		      "With Pulseaudio support\n\n"
+		      "2014 (c) Vitaly Tonkacheyev (thetvg@gmail.com)\n\n"
+		      "version: %1")).arg(APP_VERSION))
 #else
-  message_(QString(tr("Tray Alsa Volume Changer written using Qt\n\n2014 (c) Vitaly Tonkacheyev (thetvg@gmail.com)\n\nversion: %1")).arg(APP_VERSION))
+  message_(QString(tr("Tray Alsa Volume Changer written using Qt\n\n"
+		      "2014 (c) Vitaly Tonkacheyev (thetvg@gmail.com)\n\n"
+		      "version: %1")).arg(APP_VERSION))
 #endif
 {
 	setWindowIcon(QIcon(":/images/icons/volume_ico.png"));
@@ -582,9 +587,10 @@ QString PopupWindow::getResPath(const QString &fileName) const
 	const QStringList resDirs = QStringList()
 				    << QString(QDir::currentPath())
 				    << QString(qApp->applicationDirPath())
-				    << QString("/usr/share/qtalsavolume")
-				    << QString("/usr/local/share/qtalsavolume")
-				    << QString(QDir::home().absolutePath() + "/.local/share/qtalsavolume");
+				    << QString("/usr/share/%1").arg(APP_NAME)
+				    << QString("/usr/local/share/%1").arg(APP_NAME)
+				    << QString(QDir::home().absolutePath() + "/.local/share/%1").arg(APP_NAME)
+				    << QString(QDir::currentPath().left(QDir::currentPath().lastIndexOf("/")) + "/share/%1").arg(APP_NAME);
 	foreach(const QString &dir, resDirs){
 		const QString fullName = dir + "/" + fileName;
 		if (QFile::exists(fullName)) {

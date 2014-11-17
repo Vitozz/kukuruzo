@@ -1,3 +1,9 @@
+2014-11-07
+v.0.1.0
+  + Adde popupwindow stay on top
+  + Fixes in PulseAudio
+  + Fixed App freeze on pulseaudio devices list changed
+
 2014-09-24
 v.0.0.9
   + Fixed popupwindow hide on mouse over

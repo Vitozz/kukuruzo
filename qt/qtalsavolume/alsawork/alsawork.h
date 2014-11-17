@@ -29,8 +29,7 @@
 #include <QList>
 #include <QSharedPointer>
 
-typedef QSharedPointer<AlsaDevice> AlsaDevicePtr;
-typedef QList<AlsaDevicePtr> AlsaDevicePtrList;
+typedef QList<AlsaDevice::Ptr> AlsaDevicePtrList;
 
 class AlsaWork
 {
@@ -63,7 +62,6 @@ private:
 	snd_mixer_t *getMixerHanlde(int id);
 	snd_mixer_elem_t *initMixerElement(snd_mixer_t *handle, const char *mixer);
 	void setVolume(snd_mixer_elem_t *element, snd_mixer_t *handle, double volume);
-	std::string formatCardName(int id) const;
 	void checkError (int errorIndex);
 	void checkError (const QString &title, const QString &message);
 	void getCards();
@@ -73,7 +71,7 @@ private:
 private:
 	QStringList cardList_;
 	int totalCards_;
-	AlsaDevicePtr currentAlsaDevice_;
+	AlsaDevice::Ptr currentAlsaDevice_;
 	AlsaDevicePtrList devices_;
 };
 #endif // ALSAWORK_H

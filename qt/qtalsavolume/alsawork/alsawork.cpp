@@ -29,7 +29,7 @@ AlsaWork::AlsaWork()
 {
 	getCards();
 	foreach (const QString &name, cardList_) {
-		devices_.push_back(AlsaDevicePtr(new AlsaDevice(cardList_.indexOf(name), name)));
+		devices_.push_back(AlsaDevice::Ptr(new AlsaDevice(cardList_.indexOf(name), name)));
 	}
 	setCurrentCard(0);
 }
@@ -69,7 +69,7 @@ double AlsaWork::getAlsaVolume()
 
 const QString AlsaWork::getCardName(int index)
 {
-	std::string card(formatCardName(index));
+	std::string card(AlsaDevice::formatCardName(index));
 	snd_ctl_t *ctl;
 	checkError(snd_ctl_open(&ctl, card.c_str(), SND_CTL_NONBLOCK));
 	snd_ctl_card_info_t *cardInfo;
@@ -136,14 +136,6 @@ void AlsaWork::checkError(const QString &title, const QString &message)
 	if(!title.isEmpty() && !message.isEmpty()) {
 		QMessageBox::critical(0, title, message);
 	}
-}
-
-std::string AlsaWork::formatCardName(int id) const
-{
-	size_t size = 64;
-	char *name = (char*)malloc(size);
-	sprintf(name, "hw:%d", id);
-	return std::string(name);
 }
 
 int AlsaWork::getTotalCards()

@@ -55,7 +55,7 @@ version: %1</source>
 версия: %1</translation>
     </message>
     <message>
-        <location filename="../popupwindow.cpp" line="97"/>
+        <location filename="../popupwindow.cpp" line="100"/>
         <source>Tray Alsa Volume Changer written using Qt
 
 2014 (c) Vitaly Tonkacheyev (thetvg@gmail.com)
@@ -68,17 +68,17 @@ version: %1</source>
 версия: %1</translation>
     </message>
     <message>
-        <location filename="../popupwindow.cpp" line="104"/>
+        <location filename="../popupwindow.cpp" line="109"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
     <message>
-        <location filename="../popupwindow.cpp" line="105"/>
+        <location filename="../popupwindow.cpp" line="110"/>
         <source>System tray is not available. Exiting...</source>
         <translation>Системный трей недоступен. Выходим...</translation>
     </message>
     <message>
-        <location filename="../popupwindow.cpp" line="131"/>
+        <location filename="../popupwindow.cpp" line="136"/>
         <source>Can&apos;t start PulseAudio. Using Alsa as default</source>
         <translation>Невозможно запустить PulseAudio. Используем по-умолчанию Alsa</translation>
     </message>
@@ -107,19 +107,19 @@ version: 0.0.1</source>
 версия: 0.0.1</translation>
     </message>
     <message>
-        <location filename="../popupwindow.cpp" line="440"/>
-        <location filename="../popupwindow.cpp" line="450"/>
+        <location filename="../popupwindow.cpp" line="445"/>
+        <location filename="../popupwindow.cpp" line="455"/>
         <source>Card: </source>
         <translation>Карта: </translation>
     </message>
     <message>
-        <location filename="../popupwindow.cpp" line="453"/>
+        <location filename="../popupwindow.cpp" line="458"/>
         <source>Mixer: </source>
         <translation>Микшер: </translation>
     </message>
     <message>
-        <location filename="../popupwindow.cpp" line="442"/>
-        <location filename="../popupwindow.cpp" line="456"/>
+        <location filename="../popupwindow.cpp" line="447"/>
+        <location filename="../popupwindow.cpp" line="461"/>
         <source>Volume: </source>
         <translation>Громкость: </translation>
     </message>
@@ -127,12 +127,12 @@ version: 0.0.1</source>
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../main.cpp" line="53"/>
+        <location filename="../main.cpp" line="54"/>
         <source>Systray</source>
         <translation>Systray</translation>
     </message>
     <message>
-        <location filename="../main.cpp" line="53"/>
+        <location filename="../main.cpp" line="54"/>
         <source>System tray not detected</source>
         <translation>Системный трей не найден</translation>
     </message>
