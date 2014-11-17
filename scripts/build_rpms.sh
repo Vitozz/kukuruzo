@@ -604,13 +604,11 @@ build_qtpoweroff ()
 	project="qtpoweroff"
 	dirname="qt/qtpoweroff"
 	ver=$(cat ${srcdir}/${dirname}/version.txt)
-	addit="%doc COPYING
-%doc README"
 	prepare ${dirname}
         regspecfile="Summary: QtPowerOff
 Name: qtpoweroff
 Version: ${ver}
-Release: ${build_count}
+Release: 1
 License: GPL-2
 Group: Applications/System
 URL: http://sites.google.com/site/thesomeprojects/main-1
@@ -630,17 +628,17 @@ Simple tool written using Qt4 library to shedules reboot / shutdown PC
 cmake -DCMAKE_INSTALL_PREFIX=%{buildroot}/usr ${cmake_flags} .
 %{__make} %{?_smp_mflags}   
 
-%install
-[ \"%{buildroot}\" != \"/\"] && rm -rf %{buildroot}
-
-%{__make} install INSTALL_ROOT=\"%{buildroot}\"
-
 mkdir -p %{buildroot}/usr/bin
 mkdir -p %{buildroot}/usr/share/%{name}
 mkdir -p %{buildroot}/usr/share/applications
 mkdir -p %{buildroot}/usr/share/%{name}/images
 mkdir -p %{buildroot}/usr/share/doc/%{name}
 mkdir -p %{buildroot}/usr/share/%{name}/languages
+
+%install
+[ \"%{buildroot}\" != \"/\"] && rm -rf %{buildroot}
+
+%{__make} install INSTALL_ROOT=\"%{buildroot}\"
 
 %clean
 [ \"%{buildroot}\" != \"/\" ] && rm -rf %{buildroot}
@@ -651,7 +649,7 @@ mkdir -p %{buildroot}/usr/share/%{name}/languages
 %{_datadir}/%{name}/images/
 %{_datadir}/%{name}/languages/
 %{_datadir}/applications/
-${addit}"
+%{_datadir}/doc/%{name}/"
         echo "${regspecfile}" > ${specfiles}/"qtalsavolume.spec"
 	rpmbuild -ba ${specfiles}/"qtalsavolume.spec"
 	cp -f ${rpms}/i*/*.rpm	${exitdir}/
