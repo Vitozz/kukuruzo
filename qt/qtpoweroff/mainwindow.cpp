@@ -338,6 +338,7 @@ void MainWindow::doAction()
 				 "/org/freedesktop/ConsoleKit/Manager",
 				 "org.freedesktop.ConsoleKit.Manager",
 				 QDBusConnection::systemBus());
+	bool isError = false;
 	if (interface.isValid()) {
 		const QString method = (isReboot_) ? "Restart" : "Stop";
 		const QString checkMethod = (isReboot_) ? "CanRestart" : "CanStop";
@@ -347,14 +348,20 @@ void MainWindow::doAction()
 			onExit();
 		}
 		else {
-			QMessageBox::critical(this,
-					      tr("Errorr in DBUS"),
-					      tr("Can't establish connection to\n"
-						 "org.freedesktop.ConsoleKit.Manager\n"
-						 "May be you have no permissions\n"
-						 "Or service not available"));
+			isError = true;
 		}
 
+	}
+	else {
+		isError = true;
+	}
+	if (isError) {
+		QMessageBox::critical(this,
+				      tr("Errorr in DBUS"),
+				      tr("Can't establish connection to\n"
+					 "org.freedesktop.ConsoleKit.Manager\n"
+					 "May be you have no permissions\n"
+					 "Or service not available"));
 	}
 #endif
 #ifdef Q_OS_WIN
