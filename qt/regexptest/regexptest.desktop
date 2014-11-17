@@ -6,7 +6,7 @@ Comment=Tool For Testing Regular Expressions
 Exec=regexptest
 Terminal=false
 Type=Application
-Categories=Development;
+Categories=Development;Qt;
 StartupNotify=false
 
 Comment[ru]=Утилита тестирования регулярных выражений
