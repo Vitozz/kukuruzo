@@ -390,8 +390,10 @@ bool PopupWindow::eventFilter(QObject *object, QEvent *event)
 	if (object == trayIcon_) {
 		if (event->type() == QEvent::Wheel) {
 			QWheelEvent *wheelEvent = static_cast<QWheelEvent*>(event);
-			const int degs = wheelEvent->delta()/8;
-			const int steps = degs/15;
+#ifdef ISDEBUG
+			qDebug() << "Delta " << wheelEvent->delta();
+#endif
+			const int steps = (wheelEvent->delta()>0) ? 1 : -1;
 			setVolume(steps);
 			return true;
 		}
