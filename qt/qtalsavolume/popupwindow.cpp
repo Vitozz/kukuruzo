@@ -92,14 +92,18 @@ PopupWindow::PopupWindow()
   isPulse_(false),
   title_(tr("About QtAlsaVolume")),
 #ifdef USE_PULSE
-  message_(QString(tr("Tray Alsa Volume Changer written using Qt\n\n"
-		      "With Pulseaudio support\n\n"
-		      "2014 (c) Vitaly Tonkacheyev (thetvg@gmail.com)\n\n"
-		      "version: %1")).arg(APP_VERSION))
+  message_(QString(tr("<!DOCTYPE html><html><body>"
+		      "<p><b>Tray Alsa Volume Changer written using Qt</b></p>"
+		      "<p>With Pulseaudio support</p>"
+		      "<p>2014 (c) Vitaly Tonkacheyev <address><a href=\"mailto:thetvg@gmail.com\">&lt;EMail&gt;</a></address></p>"
+		      "<a href=\"http://sites.google.com/site/thesomeprojects/\">Program WebSite</a>"
+		      "<p>version: <b>%1</b></p></body></html>")).arg(APP_VERSION))
 #else
-  message_(QString(tr("Tray Alsa Volume Changer written using Qt\n\n"
-		      "2014 (c) Vitaly Tonkacheyev (thetvg@gmail.com)\n\n"
-		      "version: %1")).arg(APP_VERSION))
+  message_(QString(tr("<!DOCTYPE html><html><body>"
+		      "<p><b>Tray Alsa Volume Changer written using Qt</b></p>"
+		      "<p>2014 (c) Vitaly Tonkacheyev <address><a href=\"mailto:thetvg@gmail.com\">&lt;EMail&gt;</a></address></p>"
+		      "<a href=\"http://sites.google.com/site/thesomeprojects/\">Program WebSite</a>"
+		      "<p>version: <b>%1</b></p></body></html>")).arg(APP_VERSION))
 #endif
 {
 	setWindowIcon(QIcon(":/images/icons/volume_ico.png"));

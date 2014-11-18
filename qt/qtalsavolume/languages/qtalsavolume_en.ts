@@ -39,6 +39,15 @@
     </message>
     <message>
         <location filename="../popupwindow.cpp" line="95"/>
+        <source>&lt;!DOCTYPE html&gt;&lt;html&gt;&lt;body&gt;&lt;p&gt;&lt;b&gt;Tray Alsa Volume Changer written using Qt&lt;/b&gt;&lt;/p&gt;&lt;p&gt;With Pulseaudio support&lt;/p&gt;&lt;p&gt;2014 (c) Vitaly Tonkacheyev &lt;address&gt;&lt;a href=&quot;mailto:thetvg@gmail.com&quot;&gt;&amp;lt;EMail&amp;gt;&lt;/a&gt;&lt;/address&gt;&lt;/p&gt;&lt;a href=&quot;http://sites.google.com/site/thesomeprojects/&quot;&gt;Program WebSite&lt;/a&gt;&lt;p&gt;version: &lt;b&gt;%1&lt;/b&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../popupwindow.cpp" line="102"/>
+        <source>&lt;!DOCTYPE html&gt;&lt;html&gt;&lt;body&gt;&lt;p&gt;&lt;b&gt;Tray Alsa Volume Changer written using Qt&lt;/b&gt;&lt;/p&gt;&lt;p&gt;2014 (c) Vitaly Tonkacheyev &lt;address&gt;&lt;a href=&quot;mailto:thetvg@gmail.com&quot;&gt;&amp;lt;EMail&amp;gt;&lt;/a&gt;&lt;/address&gt;&lt;/p&gt;&lt;a href=&quot;http://sites.google.com/site/thesomeprojects/&quot;&gt;Program WebSite&lt;/a&gt;&lt;p&gt;version: &lt;b&gt;%1&lt;/b&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Tray Alsa Volume Changer written using Qt
 
 With Pulseaudio support
@@ -46,7 +55,7 @@ With Pulseaudio support
 2014 (c) Vitaly Tonkacheyev (thetvg@gmail.com)
 
 version: %1</source>
-        <translation>Tray Alsa Volume Changer written using Qt
+        <translation type="obsolete">Tray Alsa Volume Changer written using Qt
 
 With Pulseaudio support
 
@@ -55,30 +64,29 @@ With Pulseaudio support
 version: %1</translation>
     </message>
     <message>
-        <location filename="../popupwindow.cpp" line="100"/>
         <source>Tray Alsa Volume Changer written using Qt
 
 2014 (c) Vitaly Tonkacheyev (thetvg@gmail.com)
 
 version: %1</source>
-        <translation>Tray Alsa Volume Changer written using Qt
+        <translation type="obsolete">Tray Alsa Volume Changer written using Qt
 
 2014 (c) Vitaly Tonkacheyev (thetvg@gmail.com)
 
 version: %1</translation>
     </message>
     <message>
-        <location filename="../popupwindow.cpp" line="109"/>
+        <location filename="../popupwindow.cpp" line="113"/>
         <source>Error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../popupwindow.cpp" line="110"/>
+        <location filename="../popupwindow.cpp" line="114"/>
         <source>System tray is not available. Exiting...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../popupwindow.cpp" line="136"/>
+        <location filename="../popupwindow.cpp" line="140"/>
         <source>Can&apos;t start PulseAudio. Using Alsa as default</source>
         <translation type="unfinished"></translation>
     </message>
@@ -107,21 +115,21 @@ version: 0.0.1</source>
 version: 0.0.1</translation>
     </message>
     <message>
-        <location filename="../popupwindow.cpp" line="445"/>
-        <location filename="../popupwindow.cpp" line="455"/>
-        <source>Card: </source>
-        <translation>Card: </translation>
-    </message>
-    <message>
-        <location filename="../popupwindow.cpp" line="458"/>
-        <source>Mixer: </source>
-        <translation>Mixer: </translation>
-    </message>
-    <message>
-        <location filename="../popupwindow.cpp" line="447"/>
+        <location filename="../popupwindow.cpp" line="451"/>
         <location filename="../popupwindow.cpp" line="461"/>
+        <source>Card: </source>
+        <translation type="unfinished">Card: </translation>
+    </message>
+    <message>
+        <location filename="../popupwindow.cpp" line="464"/>
+        <source>Mixer: </source>
+        <translation type="unfinished">Mixer: </translation>
+    </message>
+    <message>
+        <location filename="../popupwindow.cpp" line="453"/>
+        <location filename="../popupwindow.cpp" line="467"/>
         <source>Volume: </source>
-        <translation>Volume: </translation>
+        <translation type="unfinished">Volume: </translation>
     </message>
 </context>
 <context>
