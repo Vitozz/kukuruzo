@@ -64,7 +64,9 @@ private:
 	void initActions();
 	void updateTrayMenu();
 	void doAction();
-	QString getTimeString(int seconds);
+	void calculateTimeOffset();
+	void showTrayMessage(const QString &msg);
+	QString getTimeString(int seconds) const;
 #ifdef HAVE_DBUS
 	bool getBoolReply(const QDBusMessage &message);
 #endif

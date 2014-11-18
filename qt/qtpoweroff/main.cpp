@@ -55,7 +55,7 @@ int main(int argc, char *argv[])
 		}
 	}
 	if (!QSystemTrayIcon::isSystemTrayAvailable()) {
-		QMessageBox::critical(0, QObject::tr("Systray"), QObject::tr("System tray not detected"));
+		QMessageBox::critical(0, QObject::tr("Error"), QObject::tr("System tray not detected\nExiting..."));
 		return 1;
 	}
 	QApplication::setQuitOnLastWindowClosed(false);

@@ -36,6 +36,10 @@
 #include <QDebug>
 #endif
 
+static const int secsInDay = 24*3600;
+static const int secsInHour = 3600;
+static const int secsInMin = 60;
+
 MainWindow::MainWindow(QWidget *parent)
 : QMainWindow(parent),
   ui(new Ui::MainWindow),
@@ -43,7 +47,7 @@ MainWindow::MainWindow(QWidget *parent)
   poffTimer_(new QTimer(this)),
   time_(new QDateTime()),
   terminate_(new QAction(tr("Terminate"), this)),
-  about_(new QAction(tr("About QtPowerOff"), this)),
+  about_(new QAction(tr("About %1").arg(APP_TITLE), this)),
   aboutQt_(new QAction(tr("About Qt"), this)),
   exit_(new QAction(tr("Exit"), this)),
   popupMenu_(new QMenu(this)),
@@ -70,7 +74,7 @@ MainWindow::MainWindow(QWidget *parent)
 	connect(trayIcon_, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, SLOT(iconActivated(QSystemTrayIcon::ActivationReason)));
 	trayIcon_->show();
 	ReadSettings();
-	SetTrayToolTip(QString("QtPowerOff-%1").arg(APP_VERSION));
+	SetTrayToolTip(QString("%1-%2").arg(APP_TITLE, APP_VERSION));
 	ui->actionTerminate->setEnabled(false);
 	terminate_->setEnabled(false);
 }
@@ -131,7 +135,7 @@ void MainWindow::onAbout()
 				   "<a href=\"http://sites.google.com/site/thesomeprojects/\">Program WebSite</a>"
 				   "<p>version: <b>%1</b></p></body></html>").arg(APP_VERSION);
 	QMessageBox aboutDialog;
-	aboutDialog.setWindowTitle(tr("About QtPowerOff"));
+	aboutDialog.setWindowTitle(tr("About %1").arg(APP_TITLE));
 	aboutDialog.setText(message);
 	aboutDialog.setIconPixmap(QPixmap(":/images/poweroff.png"));
 	aboutDialog.setWindowIcon(this->windowIcon());
@@ -140,15 +144,12 @@ void MainWindow::onAbout()
 
 void MainWindow::onMinSpin(int mins)
 {
-	offset_ = mins*60;
+	offset_ = mins*secsInMin;
 }
 
-QString MainWindow::getTimeString(int seconds)
+QString MainWindow::getTimeString(int seconds) const
 {
 	int secs = seconds;
-	const int secsInDay = 24*3600;
-	const int secsInHour = 3600;
-	const int secsInMin = 60;
 	const int day = secs / secsInDay;
 	secs -= day * secsInDay;
 	const int hour = secs / secsInHour;
@@ -165,37 +166,48 @@ QString MainWindow::getTimeString(int seconds)
 	return (tr("%1 days %2:%3:%4").arg(dayStr, hourStr, minStr, secStr));
 }
 
-void MainWindow::onPowerOffClicked()
+void MainWindow::calculateTimeOffset()
 {
-	if (!poffTimer_->isActive()) {
-		QDateTime currentDate = QDateTime::currentDateTime();
-		if (isMinutes_) {
-			time_ = new QDateTime(currentDate.addSecs(offset_));
+	if (isMinutes_) {
+		time_ = new QDateTime(time_->currentDateTime().addSecs(offset_));
+#ifdef IS_DEBUG
+		qDebug() << "Time - " << time_->toString("dd-MM-yyyy hh:mm:ss");
+		qDebug() << "Offset " << offset_;
+#endif
+	}
+	else {
+		if(!time_->isNull()) {
+			offset_ = time_->currentDateTime().secsTo(*time_);
 #ifdef IS_DEBUG
 			qDebug() << "Time - " << time_->toString("dd-MM-yyyy hh:mm:ss");
 			qDebug() << "Offset " << offset_;
 #endif
 		}
-		else {
-			if(!time_->isNull()) {
-				offset_ = currentDate.secsTo(*time_);
-#ifdef IS_DEBUG
-				qDebug() << "Time - " << time_->toString("dd-MM-yyyy hh:mm:ss");
-				qDebug() << "Offset " << offset_;
-#endif
-			}
-		}
+	}
+}
+
+void MainWindow::showTrayMessage(const QString &msg)
+{
+	const QString title = (isReboot_) ? tr("Reboot") : tr("Shutdown");
+	trayIcon_->showMessage(title, msg);
+}
+
+void MainWindow::onPowerOffClicked()
+{
+	if (!poffTimer_->isActive()) {
+		calculateTimeOffset();
 		const QString timeStr = tr("%1 at %2").arg(time_->toString("dd-MM-yyyy"),
 							   time_->toString("hh:mm:ss"));
 		QMessageBox box;
-		const QString poffType2 = (isReboot_) ? tr("reboot") : tr("shutdown");
+		const QString poffType = (isReboot_) ? tr("reboot") : tr("shutdown");
 		box.setWindowTitle(tr("Please Confirm Your Choice"));
 		box.setIcon(QMessageBox::Question);
 		box.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
-		box.setText(tr("Do You realy whant to %1 your PC\n %2").arg(poffType2, timeStr));
+		box.setText(tr("Do You realy whant to %1 your PC\n %2").arg(poffType, timeStr));
 		if (box.exec() == QMessageBox::Ok) {
 			ui->actionTerminate->setEnabled(true);
 			terminate_->setEnabled(true);
+			showTrayMessage(timeStr);
 			poffTimer_->start(TIME_INTERVAL);
 		}
 	}
@@ -220,7 +232,8 @@ void MainWindow::onTerminate()
 		poffTimer_->stop();
 		ui->actionTerminate->setEnabled(false);
 		terminate_->setEnabled(false);
-		setWindowTitle("QtPowerOff");
+		setWindowTitle(APP_TITLE);
+		showTrayMessage(tr("Terminated"));
 	}
 }
 
@@ -237,8 +250,7 @@ void MainWindow::onTimeChecked(bool toggled)
 
 void MainWindow::onTimer()
 {
-	QDateTime *currentTime = new QDateTime(QDateTime::currentDateTime());
-	int deltaTime = time_->toTime_t() - currentTime->toTime_t();
+	int deltaTime = time_->toTime_t() - time_->currentDateTime().toTime_t();//currentTime->toTime_t();
 	if (deltaTime == 0 || offset_ == 0) {
 		doAction();
 #ifdef IS_DEBUG
@@ -254,9 +266,8 @@ void MainWindow::onTimer()
 		const QString poffType = (isReboot_) ? tr("Reboot") : tr("Shutdown");
 		const QString tip = tr("%1 at - %2").arg(poffType, timeStr);
 		SetTrayToolTip(tip);
-		setWindowTitle(QString("QtPowerOff - %1").arg(tip));
+		setWindowTitle(QString("%1 - %2").arg(APP_TITLE, tip));
 	}
-	delete currentTime;
 }
 
 void MainWindow::closeEvent(QCloseEvent *)
@@ -277,9 +288,7 @@ void MainWindow::iconActivated(QSystemTrayIcon::ActivationReason reason)
 		}
 		break;
 	case QSystemTrayIcon::MiddleClick:
-		if (poffTimer_->isActive()) {
-			onTerminate();
-		}
+		onTerminate();
 		break;
 	default:
 	;
