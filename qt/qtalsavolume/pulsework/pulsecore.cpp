@@ -27,7 +27,7 @@
 
 //Callbacks
 void state_cb(pa_context* context, void* raw) {
-	PulseCore *state = (PulseCore*) raw;
+	PulseCore *state = static_cast<PulseCore*>(raw);
 	switch(pa_context_get_state(context)) {
 		case PA_CONTEXT_READY:
 			state->pState = CONNECTED;
@@ -47,20 +47,20 @@ void state_cb(pa_context* context, void* raw) {
 void sink_list_cb(pa_context *c, const pa_sink_info *i, int eol, void *raw) {
 	Q_UNUSED(c);
 	if (eol != 0) return;
-	PulseDevicePtrList* sinks = (PulseDevicePtrList*) raw;
+	PulseDevicePtrList* sinks = static_cast<PulseDevicePtrList*>(raw);
 	sinks->push_back(PulseDevice::Ptr(new PulseDevice(i)));
 }
 
 void source_list_cb(pa_context *c, const pa_source_info *i, int eol, void *raw) {
 	Q_UNUSED(c);
 	if (eol != 0) return;
-	PulseDevicePtrList* sources = (PulseDevicePtrList*) raw;
+	PulseDevicePtrList* sources = static_cast<PulseDevicePtrList*>(raw);
 	sources->push_back(PulseDevice::Ptr(new PulseDevice(i)));
 }
 
 void server_info_cb(pa_context* c, const pa_server_info* i, void* raw) {
 	Q_UNUSED(c);
-	ServerInfo* info = (ServerInfo*) raw;
+	ServerInfo* info = static_cast<ServerInfo*>(raw);
 	info->defaultSinkName = QString(i->default_sink_name);
 	info->defaultSourceName = QString(i->default_source_name);
 }
@@ -138,7 +138,7 @@ void PulseCore::getSources()
 
 PulseDevice::Ptr PulseCore::getSink(int index)
 {
-	if (index >= 0 && (int)index < sinks_.size()) {
+	if (index >= 0 && index < sinks_.size()) {
 		return sinks_.at(index);
 	}
 	else {

@@ -57,14 +57,14 @@ void AlsaWork::setCurrentMixer(int id)
 	currentAlsaDevice_->setCurrentMixer(id);
 }
 
-void AlsaWork::setAlsaVolume(double volume)
+void AlsaWork::setAlsaVolume(int volume)
 {
-	currentAlsaDevice_->setDeviceVolume(volume);
+	currentAlsaDevice_->setDeviceVolume(static_cast<double>(volume));
 }
 
-double AlsaWork::getAlsaVolume()
+int AlsaWork::getAlsaVolume()
 {
-	return currentAlsaDevice_->getVolume();
+	return int(currentAlsaDevice_->getVolume());
 }
 
 const QString AlsaWork::getCardName(int index)

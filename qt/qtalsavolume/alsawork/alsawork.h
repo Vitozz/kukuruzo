@@ -40,8 +40,8 @@ public:
 	void setCurrentCard(int cardId);
 	void setCurrentMixer(const QString &mixer);
 	void setCurrentMixer(int id);
-	void setAlsaVolume(double volume);
-	double getAlsaVolume();
+	void setAlsaVolume(int volume);
+	int getAlsaVolume();
 	const QString getCardName(int index);
 	QString getCurrentMixerName() const;
 	const QStringList &getCardsList() const;

@@ -425,30 +425,32 @@ void PopupWindow::mouseMoveEvent(QMouseEvent *event)
 
 void PopupWindow::setVolume(int value)
 {
-	volumeValue_ += value*2;
-	if (volumeValue_ <= 0) {
-		volumeValue_ = 0;
+	int volume = volumeSlider_->value();
+	volume += value*2;
+	if (volume <= 0) {
+		volume = 0;
 	}
-	if (volumeValue_ >100) {
-		volumeValue_ = 100;
+	if (volume >100) {
+		volume = 100;
 	}
-	volumeSlider_->setValue(volumeValue_);
+	volumeSlider_->setValue(volume);
 }
 
 void PopupWindow::onSlider(int value)
 {
+	volumeValue_ = value;
 #ifdef USE_PULSE
 	if (isPulse_ && pulse_) {
-		pulse_->setVolume(value);
+		pulse_->setVolume(volumeValue_);
 	}
 #endif
 	if (!isPulse_) {
-		alsaWork_->setAlsaVolume(value);
+		alsaWork_->setAlsaVolume(volumeValue_);
+		volumeValue_ = alsaWork_->getAlsaVolume();
 	}
-	volumeValue_ = value;
-	volumeLabel_->setText(QString::number(value));
-	setTrayIcon(value);
-	setIconToolTip(value);
+	volumeLabel_->setText(QString::number(volumeValue_));
+	setTrayIcon(volumeValue_);
+	setIconToolTip(volumeValue_);
 }
 
 void PopupWindow::setIconToolTip(int value)
@@ -617,7 +619,7 @@ QString PopupWindow::getResPath(const QString &fileName) const
 void PopupWindow::onTimeout()
 {
 	if (!isPulse_) {
-		const int volume = static_cast<int>(alsaWork_->getAlsaVolume());
+		const int volume = alsaWork_->getAlsaVolume();
 		bool ismute = alsaWork_->getMute();
 		if (volumeValue_ != volume) {
 			volumeValue_ = volume;
