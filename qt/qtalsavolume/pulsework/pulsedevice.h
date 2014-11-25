@@ -41,7 +41,7 @@ public:
 	const QString &name() const;
 	const QString &description() const;
 	pa_cvolume volume;
-	int volume_percent() const;
+	int volume_percent();
 	bool mute() const;
 	double round(double value) const;
 private:
@@ -51,7 +51,6 @@ private:
 	device_type type_;
 	QString name_;
 	QString description_;
-	int volume_percent_;
 	bool mute_;
 };
 

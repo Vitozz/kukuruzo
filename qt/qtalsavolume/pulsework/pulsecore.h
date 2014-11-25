@@ -51,7 +51,7 @@ public:
 	const QString getDeviceDescription(const QString &name);
 	const QString getDeviceNameByIndex(int index);
 	int getCurrentDeviceIndex() const;
-	int getVolume() const;
+	int getVolume();
 	bool getMute();
 	void setVolume(int value);
 	void setMute(bool mute);
@@ -69,17 +69,21 @@ private:
 	PulseDevice::Ptr getDefaultSource();
 	PulseDevice::Ptr getDeviceByName(const QString &name);
 	PulseDevice::Ptr getDeviceByIndex(int index);
+	int getDeviceIndexByName(const QString &name);
 	void setVolume_(const PulseDevice::Ptr &device, int value);
 	void setMute_(const PulseDevice::Ptr &device, bool mute);
 	void iterate(pa_operation* op);
 	void onError(const QString &message);
 	void updateDevices();
+	void clearLists();
 private:
 	pa_mainloop* mainLoop_;
 	pa_mainloop_api* mainLoopApi_;
 	pa_context* context_;
 	int retval_;
-	PulseDevice::Ptr currentDevice_;
+	//PulseDevice::Ptr currentDevice_;
+	QString currentDeviceName_;
+	int currentDeviceIndex_;
 	QStringList sinksDescriptions_;
 	QStringList sourcesDescriptions_;
 	QStringList deviceNames_;

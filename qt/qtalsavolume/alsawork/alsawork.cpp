@@ -106,7 +106,7 @@ void AlsaWork::setMute(bool enabled)
 
 bool AlsaWork::getMute()
 {
-	return currentAlsaDevice_->getMute();
+	return !currentAlsaDevice_->getMute();
 }
 
 void AlsaWork::setSwitch(const QString &mixer, int id, bool enabled)

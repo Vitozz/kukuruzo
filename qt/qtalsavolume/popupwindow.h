@@ -24,6 +24,7 @@
 #include <QSystemTrayIcon>
 #include <QDialog>
 #include <QVBoxLayout>
+#include <QTimer>
 
 #include "alsawork/alsawork.h"
 #ifdef USE_PULSE
@@ -68,6 +69,7 @@ protected slots:
 	void onCapture(const QString &name, bool isIt);
 	void onEnum(const QString &name, bool isIt);
 	void onSoundSystem(bool isIt);
+	void onTimeout();
 
 private:
 	void setTrayIcon(int value);
@@ -104,6 +106,7 @@ private:
 	QVBoxLayout *mainLayout_;
 	QSlider *volumeSlider_;
 	QLabel *volumeLabel_;
+	QTimer *pollingTimer_;
 	SettingsDialog *settingsDialog_;
 	QString cardName_;
 	QStringList cardList_;

@@ -120,7 +120,7 @@ if( UNIX AND NOT (APPLE OR CYGWIN) )
 			${QT_QTGUI_LIBRARY}
 		)
 	endif( ${USE_QT5} )
-	add_executable( ${PROJECT} ${CPP_FILES} ${UIS} ${RSCS} ${TRS} ${MOCS} )
+	add_executable( ${PROJECT} ${CPP_FILES} ${UIS} ${RSCS} ${TRS} ${MOCS} "defines.h")
 	target_link_libraries(
 		${PROJECT}
 		${QT_DEPLIBS}

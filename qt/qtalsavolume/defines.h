@@ -23,7 +23,7 @@
 
 #define APP_NAME "qtalsavolume"
 #define APP_ORG "thesomeprojects"
-#define APP_VERSION "0.1.0"
+#define APP_VERSION "0.1.1"
 
 #define CARD_INDEX "Main/card"
 #define MIXER_NAME "Main/mixer"
@@ -31,6 +31,8 @@
 #define ICOSTYLE "Main/style"
 #define LAST_SINK "Pulse/sink"
 #define PULSE "Main/pulse"
+//Polling timer interval
+#define POLLING_INTERVAL 2000
 
 #include <QPair>
 #include <QString>

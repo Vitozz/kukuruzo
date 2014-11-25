@@ -80,6 +80,7 @@ PopupWindow::PopupWindow()
   mainLayout_(new QVBoxLayout()),
   volumeSlider_(new QSlider(Qt::Vertical, this)),
   volumeLabel_(new QLabel(this)),
+  pollingTimer_(new QTimer(this)),
   settingsDialog_(new SettingsDialog(this)),
   cardName_(QString()),
   cardList_(QStringList()),
@@ -175,7 +176,7 @@ PopupWindow::PopupWindow()
 	cardName_ = alsaWork_->getCardName(cardIndex_);
 	if (!isPulse_) {
 		volumeValue_ = alsaWork_->getAlsaVolume();
-		isMuted_ = !alsaWork_->getMute();
+		isMuted_ = alsaWork_->getMute();
 	}
 	switchList_ = new MixerSwitches(alsaWork_->getSwitchList());
 	updateSwitches();
@@ -216,12 +217,19 @@ PopupWindow::PopupWindow()
 	connect(volumeSlider_, SIGNAL(valueChanged(int)), this, SLOT(onSlider(int)));
 	trayIcon_->installEventFilter(this);
 	trayIcon_->show();
+	pollingTimer_->setInterval(POLLING_INTERVAL);
+	connect(pollingTimer_, SIGNAL(timeout()), this, SLOT(onTimeout()));
+	pollingTimer_->start();
 }
 
 PopupWindow::~PopupWindow()
 {
 
 	delete settingsDialog_;
+	if (pollingTimer_->isActive()) {
+		pollingTimer_->stop();
+	}
+	delete pollingTimer_;
 	delete volumeLabel_;
 	delete volumeSlider_;
 	delete mainLayout_;
@@ -604,6 +612,36 @@ QString PopupWindow::getResPath(const QString &fileName) const
 		}
 	}
 	return QString();
+}
+
+void PopupWindow::onTimeout()
+{
+	if (!isPulse_) {
+		const int volume = static_cast<int>(alsaWork_->getAlsaVolume());
+		bool ismute = alsaWork_->getMute();
+		if (volumeValue_ != volume) {
+			volumeValue_ = volume;
+			volumeSlider_->setValue(volumeValue_);
+		}
+		if (isMuted_ != ismute) {
+			isMuted_ = ismute;
+			mute_->setChecked(isMuted_);
+		}
+	}
+#ifdef USE_PULSE
+	if (isPulse_ && pulse_) {
+		const int volume = pulse_->getVolume();
+		bool ismute = pulse_->getMute();
+		if (volumeValue_ != volume) {
+			volumeValue_ = volume;
+			volumeSlider_->setValue(volumeValue_);
+		}
+		if (isMuted_ != ismute) {
+			isMuted_ = ismute;
+			mute_->setChecked(isMuted_);
+		}
+	}
+#endif
 }
 
 void PopupWindow::onSoundSystem(bool isIt)
