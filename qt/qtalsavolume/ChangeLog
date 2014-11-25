@@ -1,3 +1,9 @@
+2014-11-25
+v.0.1.1
+  + Fixed calculations of Alsa volume
+  + Fixed device update in Pulseaudio
+  + Added timer to monitor system devices activity
+
 2014-11-07
 v.0.1.0
   + Adde popupwindow stay on top
