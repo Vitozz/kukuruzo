@@ -113,6 +113,7 @@ private:
 	QString pulseCardName_;
 	QStringList pulseCardList_;
 	int volumeValue_;
+	int pollingVolume_;
 	bool isMuted_;
 	bool isAutorun_;
 	bool isLightStyle_;

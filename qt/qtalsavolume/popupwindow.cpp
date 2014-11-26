@@ -87,6 +87,7 @@ PopupWindow::PopupWindow()
   pulseCardName_(QString()),
   pulseCardList_(QStringList()),
   volumeValue_(0),
+  pollingVolume_(0),
   isMuted_(false),
   isAutorun_(false),
   isLightStyle_(false),
@@ -209,6 +210,7 @@ PopupWindow::PopupWindow()
 	createDesktopFile();
 	//Finish of tray icon initialization
 	mute_->setChecked(isMuted_);
+	pollingVolume_ = volumeValue_;
 	volumeSlider_->setValue(volumeValue_);
 	volumeLabel_->setText(QString::number(volumeValue_));
 	setIconToolTip(volumeValue_);
@@ -425,20 +427,20 @@ void PopupWindow::mouseMoveEvent(QMouseEvent *event)
 
 void PopupWindow::setVolume(int value)
 {
-	int volume = volumeSlider_->value();
-	volume += value*2;
-	if (volume <= 0) {
-		volume = 0;
+	volumeValue_ += value*2;
+	if (volumeValue_ <= 0) {
+		volumeValue_ = 0;
 	}
-	if (volume >100) {
-		volume = 100;
+	if (volumeValue_ >100) {
+		volumeValue_ = 100;
 	}
-	volumeSlider_->setValue(volume);
+	volumeSlider_->setValue(volumeValue_);
 }
 
 void PopupWindow::onSlider(int value)
 {
 	volumeValue_ = value;
+	pollingVolume_ = value;
 #ifdef USE_PULSE
 	if (isPulse_ && pulse_) {
 		pulse_->setVolume(volumeValue_);
@@ -446,7 +448,7 @@ void PopupWindow::onSlider(int value)
 #endif
 	if (!isPulse_) {
 		alsaWork_->setAlsaVolume(volumeValue_);
-		volumeValue_ = alsaWork_->getAlsaVolume();
+		pollingVolume_ = alsaWork_->getAlsaVolume();
 	}
 	volumeLabel_->setText(QString::number(volumeValue_));
 	setTrayIcon(volumeValue_);
@@ -621,9 +623,9 @@ void PopupWindow::onTimeout()
 	if (!isPulse_) {
 		const int volume = alsaWork_->getAlsaVolume();
 		bool ismute = alsaWork_->getMute();
-		if (volumeValue_ != volume) {
-			volumeValue_ = volume;
-			volumeSlider_->setValue(volumeValue_);
+		if (pollingVolume_ != volume) {
+			pollingVolume_ = volume;
+			volumeSlider_->setValue(pollingVolume_);
 		}
 		if (isMuted_ != ismute) {
 			isMuted_ = ismute;
@@ -634,9 +636,9 @@ void PopupWindow::onTimeout()
 	if (isPulse_ && pulse_) {
 		const int volume = pulse_->getVolume();
 		bool ismute = pulse_->getMute();
-		if (volumeValue_ != volume) {
-			volumeValue_ = volume;
-			volumeSlider_->setValue(volumeValue_);
+		if (pollingVolume_ != volume) {
+			pollingVolume_ = volume;
+			volumeSlider_->setValue(pollingVolume_);
 		}
 		if (isMuted_ != ismute) {
 			isMuted_ = ismute;
