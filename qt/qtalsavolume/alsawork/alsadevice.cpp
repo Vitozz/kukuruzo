@@ -126,9 +126,9 @@ snd_mixer_elem_t *AlsaDevice::initMixerElement(snd_mixer_t *handle, const char *
 
 snd_mixer_t *AlsaDevice::getMixerHanlde(int id)
 {
-	std::string card(formatCardName(id));
+	const QString card(formatCardName(id));
 	snd_ctl_t *ctl;
-	checkError(snd_ctl_open(&ctl, card.c_str(), SND_CTL_NONBLOCK));
+	checkError(snd_ctl_open(&ctl, card.toStdString().c_str(), SND_CTL_NONBLOCK));
 	snd_hctl_t *hctl;
 	checkError(snd_hctl_open_ctl(&hctl, ctl));
 	snd_mixer_t *handle;
@@ -393,12 +393,9 @@ bool AlsaDevice::getMute()
 	return true;
 }
 
-std::string AlsaDevice::formatCardName(int id)
+QString AlsaDevice::formatCardName(int id)
 {
-	size_t size = 64;
-	char *name = (char*)malloc(size);
-	sprintf(name, "hw:%d", id);
-	return std::string(name);
+	return QString("hw:%1").arg(QString::number(id));
 }
 
 void AlsaDevice::setCurrentMixer(int id)

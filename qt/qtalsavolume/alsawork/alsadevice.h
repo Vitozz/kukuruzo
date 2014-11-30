@@ -47,7 +47,7 @@ public:
 	void setCurrentMixer(const QString &mixer);
 	void setSwitch(const QString &mixer, int id, bool enabled);
 	void setMute(bool enabled);
-	static std::string formatCardName(int id);
+	static QString formatCardName(int id);
 
 private:
 	snd_mixer_t *getMixerHanlde(int id);

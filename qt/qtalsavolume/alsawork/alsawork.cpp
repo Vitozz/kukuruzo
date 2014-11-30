@@ -69,9 +69,9 @@ int AlsaWork::getAlsaVolume()
 
 const QString AlsaWork::getCardName(int index)
 {
-	std::string card(AlsaDevice::formatCardName(index));
+	const QString card(AlsaDevice::formatCardName(index));
 	snd_ctl_t *ctl;
-	checkError(snd_ctl_open(&ctl, card.c_str(), SND_CTL_NONBLOCK));
+	checkError(snd_ctl_open(&ctl, card.toStdString().c_str(), SND_CTL_NONBLOCK));
 	snd_ctl_card_info_t *cardInfo;
 	snd_ctl_card_info_alloca(&cardInfo);
 	checkError(snd_ctl_card_info(ctl, cardInfo));
