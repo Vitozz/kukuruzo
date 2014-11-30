@@ -7,14 +7,13 @@ inherit cmake-utils git-2
 
 IUSE="qt4 qt5"
 
-REQUIRED_USE="qt4? ( !qt5 )"
-REQUIRED_USE="qt5? ( !qt4 )"
+REQUIRED_USE="^^ ( qt4 qt5 )"
 
 DEPEND="
 	qt4? (
-		dev-qt/qtcore
-		dev-qt/qtgui
-		dev-qt/qtdbus
+		dev-qt/qtcore:4
+		dev-qt/qtgui:4
+		dev-qt/qtdbus:4
 	)
 	qt5? (
 		dev-qt/qtcore:5
@@ -35,10 +34,9 @@ SLOT="0"
 KEYWORDS="~amd64 ~x86 ~amd64-linux ~x86-linux"
 LICENSE="GPL-2"
 
-use qt5 && QT_FLAG="ON"
-use qt4 && QT_FLAG="OFF"
-
 src_configure() {
+	use qt5 && QT_FLAG="ON"
+	use qt4 && QT_FLAG="OFF"
 	mycmakeargs="${mycmakeargs}
 				-DUSE_QT5='${QT_FLAG}'
 				"
