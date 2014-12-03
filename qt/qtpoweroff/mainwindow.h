@@ -70,6 +70,10 @@ private:
 #ifdef HAVE_DBUS
 	bool getBoolReply(const QDBusMessage &message);
 #endif
+#ifdef Q_OS_WIN
+	void doProcessRun();
+	bool doShutdown();
+#endif
 
 private:
 	Ui::MainWindow *ui;

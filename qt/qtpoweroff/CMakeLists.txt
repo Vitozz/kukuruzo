@@ -113,6 +113,7 @@ if( UNIX AND NOT (APPLE OR CYGWIN) )
 		${UIS}
 		${RSCS}
 		${TRS}
+		"defines.h"
 	)
 	target_link_libraries ( ${PROJECT_NAME}
 				${QT_DEPLIBS}
@@ -135,6 +136,7 @@ if( ${WIN32} )
 		${RSCS}
 		${TRS}
 		${qtpoweroff_RC}
+		"defines.h"
 	)
 	target_link_libraries ( ${PROJECT_NAME}
 				${QT_DEPLIBS}

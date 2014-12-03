@@ -30,6 +30,7 @@
 #include <QtDBus/QDBusInterface>
 #endif
 #ifdef Q_OS_WIN
+#include "qt_windows.h"
 #include <QProcess>
 #endif
 #ifdef IS_DEBUG
@@ -374,9 +375,63 @@ void MainWindow::doAction()
 	}
 #endif
 #ifdef Q_OS_WIN
+	if (!doShutdown()) {
+		doProcessRun();
+	}
+	onExit();
+}
+
+void MainWindow::doProcessRun()
+{
 	const QString method = (isReboot_) ? "/r" : "/s";
 	QProcess process;
 	process.startDetached("shutdown", QStringList() << method);
-	onExit();
+}
+
+bool MainWindow::doShutdown()
+{
+	HANDLE hToken;
+	TOKEN_PRIVILEGES tkp;
+	LUID luid;
+	uint flags = (isReboot_)? EWX_REBOOT : EWX_SHUTDOWN;
+	DWORD reason = SHTDN_REASON_MINOR_MAINTENANCE
+		       | SHTDN_REASON_FLAG_PLANNED;
+	if (!OpenProcessToken(GetCurrentProcess(),
+			      TOKEN_ADJUST_PRIVILEGES
+			      | TOKEN_QUERY, &hToken)) {
+		return false;
+	}
+	LookupPrivilegeValue(NULL, SE_SHUTDOWN_NAME, &luid);
+	tkp.PrivilegeCount = 1;
+	tkp.Privileges[0].Luid = luid;
+	tkp.Privileges[0].Attributes = SE_PRIVILEGE_ENABLED;
+	AdjustTokenPrivileges(hToken,
+			      false,
+			      &tkp,
+			      0,
+			      (PTOKEN_PRIVILEGES)NULL,
+			      0);
+	DWORD error = GetLastError();
+	if (error == ERROR_NOT_ALL_ASSIGNED
+	    || error != ERROR_SUCCESS) {
+		QMessageBox::critical(this,
+				      tr("Error"),
+				      tr("Can't get privileges"));
+		return false;
+	}
+	bool result = ExitWindowsEx(flags, reason);
+#ifdef IS_DEBUG
+	qDebug() << result;
+	qDebug() << GetLastError();
+#endif
+	tkp.Privileges[0].Attributes = 0;
+	AdjustTokenPrivileges(hToken,
+			      false,
+			      &tkp,
+			      0,
+			      (PTOKEN_PRIVILEGES)NULL,
+			      0);
+	CloseHandle(hToken);
+	return result;
 #endif
 }
