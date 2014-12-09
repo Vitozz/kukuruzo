@@ -21,6 +21,9 @@ run_with_steam ()
 
 run_with_binary ()
 {
+	if [ ! -f "${inst_dir}/steam_appid.txt" ]; then
+		echo ${appid}>"${inst_dir}"/steam_appid.txt
+	fi
 	# 32-bit operating systems
 	if [ "${ARCH}" != "x86_64" -a -e "${inst_dir}/Amnesia.bin.x86" ]; then 
 		"${inst_dir}"/Amnesia.bin.x86 ${mod_main_init}
