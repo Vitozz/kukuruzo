@@ -52,7 +52,7 @@ static const QString dFile = "[Desktop Entry]\n"
 			     qApp->applicationVersion() +
 			     "\n"
 			     "Type=Application\n"
-			     "Comment=Changes the volume of ALSA from the system tray\n
+			     "Comment=Changes the volume of ALSA from the system tray\n"
 			     "X-LXQt-Need-Tray=true";
 static const int POPUP_HEIGHT = 140;
 static const int POPUP_WIDTH = 30;
