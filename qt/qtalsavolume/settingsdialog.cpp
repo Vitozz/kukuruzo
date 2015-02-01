@@ -108,6 +108,7 @@ void SettingsDialog::connectSignals()
 	connect(ui->mixerBox, SIGNAL(currentIndexChanged(QString)), this, SLOT(onMixer(QString)));
 	connect(ui->isAutorun, SIGNAL(toggled(bool)), this, SLOT(onAutorun(bool)));
 	connect(ui->usePulseaudio, SIGNAL(toggled(bool)), this, SLOT(onPulseSoundSystem(bool)));
+	connect(ui->useScrollBox, SIGNAL(toggled(bool)), this, SLOT(onUseScrollChanged(bool)));
 }
 
 void SettingsDialog::disconnectSignals()
@@ -121,6 +122,7 @@ void SettingsDialog::disconnectSignals()
 	ui->mixerBox->disconnect(SIGNAL(currentIndexChanged(QString)));
 	ui->isAutorun->disconnect(SIGNAL(toggled(bool)));
 	ui->usePulseaudio->disconnect(SIGNAL(toggled(bool)));
+	ui->useScrollBox->disconnect(SIGNAL(toggled(bool)));
 }
 
 void SettingsDialog::onSoundCard(int changed)
@@ -324,4 +326,14 @@ void SettingsDialog::setPulseAvailable(bool available)
 		ui->usePulseaudio->setEnabled(true);
 	}
 
+}
+
+void SettingsDialog::setUseScroll(bool isScroll)
+{
+	ui->useScrollBox->setChecked(isScroll);
+}
+
+void SettingsDialog::onUseScrollChanged(bool toggled)
+{
+	emit useScrollChanged(toggled);
 }

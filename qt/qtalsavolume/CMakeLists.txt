@@ -10,6 +10,9 @@ if( UNIX AND NOT (APPLE OR CYGWIN) )
 	find_package( PkgConfig REQUIRED )
 	pkg_check_modules( ALSA REQUIRED alsa )
 	link_directories( ${ALSA_LIBRARY_DIRS} )
+	if( "${DCMAKE_BUILD_TYPE}" STREQUAL "Debug" )
+		add_definitions( -DISDEBUG )
+	endif( "${DCMAKE_BUILD_TYPE}" STREQUAL "Debug" )
 	set( DEPLIBS
 		${ALSA_LIBRARIES}
 	)

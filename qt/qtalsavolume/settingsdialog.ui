@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>332</width>
-    <height>395</height>
+    <height>404</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -115,6 +115,16 @@
            </property>
            <property name="text">
             <string>Enable Pulseaudio</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="useScrollBox">
+           <property name="text">
+            <string>Use mouse scroll to control sound volume</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
            </property>
           </widget>
          </item>

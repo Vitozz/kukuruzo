@@ -93,6 +93,7 @@ PopupWindow::PopupWindow()
   isAutorun_(false),
   isLightStyle_(false),
   isPulse_(false),
+  isScroll_(true),
   title_(tr("About QtAlsaVolume")),
 #ifdef USE_PULSE
   message_(QString(tr("<!DOCTYPE html><html><body>"
@@ -139,6 +140,7 @@ PopupWindow::PopupWindow()
 	QSettings setts_;
 	isLightStyle_ = setts_.value(ICOSTYLE, true).toBool();
 	isAutorun_ = setts_.value(ISAUTO, false).toBool();
+	isScroll_ = setts_.value(ISSCROLL, true).toBool();
 #ifdef USE_PULSE
 	const QString pulseIsMissing(tr("Can't start PulseAudio. Using Alsa as default"));
 	isPulse_ = setts_.value(PULSE, false).toBool();
@@ -202,7 +204,8 @@ PopupWindow::PopupWindow()
 	connect(settingsDialog_, SIGNAL(captChanged(QString,bool)), this, SLOT(onCapture(QString,bool)));
 	connect(settingsDialog_, SIGNAL(enumChanged(QString,bool)), this, SLOT(onEnum(QString,bool)));
 	connect(settingsDialog_, SIGNAL(autorunChanged(bool)), this, SLOT(onAutorun(bool)));
-	connect(settingsDialog_,SIGNAL(styleChanged(bool)), this, SLOT(onStyleChanged(bool)));
+	connect(settingsDialog_, SIGNAL(styleChanged(bool)), this, SLOT(onStyleChanged(bool)));
+	connect(settingsDialog_, SIGNAL(useScrollChanged(bool)), this, SLOT(onUseScroll(bool)));
 #ifdef USE_PULSE
 	if (pulse_) {
 		connect(settingsDialog_, SIGNAL(soundSystemChanged(bool)), this, SLOT(onSoundSystem(bool)));
@@ -276,8 +279,8 @@ void PopupWindow::onAbout()
 void PopupWindow::showPopup()
 {
 	if (!this->isVisible() && trayIcon_->isVisible()) {
-		setPopupPosition(QCursor::pos());
 		this->show();
+		setPopupPosition(QCursor::pos());
 	}
 	else {
 		this->hide();
@@ -316,6 +319,7 @@ void PopupWindow::setTrayIcon(int value)
 void PopupWindow::showSettings()
 {
 	settingsDialog_->setIconStyle(isLightStyle_);
+	settingsDialog_->setUseScroll(isScroll_);
 #ifdef USE_PULSE
 	if (isPulse_ && pulse_) {
 		settingsDialog_->blockSignals(true);
@@ -364,6 +368,7 @@ void PopupWindow::closeEvent(QCloseEvent *)
 	setts_.setValue(MIXER_NAME, mixerName_);
 	setts_.setValue(ISAUTO, isAutorun_);
 	setts_.setValue(ICOSTYLE, isLightStyle_);
+	setts_.setValue(ISSCROLL, isScroll_);
 	qApp->quit();
 }
 
@@ -403,7 +408,7 @@ void PopupWindow::setPopupPosition(const QPoint &point)
 bool PopupWindow::eventFilter(QObject *object, QEvent *event)
 {
 	if (object == trayIcon_) {
-		if (event->type() == QEvent::Wheel) {
+		if (event->type() == QEvent::Wheel && isScroll_) {
 			QWheelEvent *wheelEvent = static_cast<QWheelEvent*>(event);
 #ifdef ISDEBUG
 			qDebug() << "Delta " << wheelEvent->delta();
@@ -667,4 +672,12 @@ void PopupWindow::onSoundSystem(bool isIt)
 		settingsDialog_->setSoundCards(cardList_);
 		settingsDialog_->setCurrentCard(cardIndex_);
 	}
+}
+
+void PopupWindow::onUseScroll(bool isIt)
+{
+	isScroll_ = isIt;
+#ifdef ISDEBUG
+	qDebug() << "Use scroll" << isIt;
+#endif
 }

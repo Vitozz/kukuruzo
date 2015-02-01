@@ -56,7 +56,6 @@ int main(int argc, char *argv[])
 	}
 	QApplication::setQuitOnLastWindowClosed(false);
 	PopupWindow w;
-	w.show();
 	w.hide();
 	QSharedMemory sharedMemory;
 	sharedMemory.setKey("QtAlsaVolume");

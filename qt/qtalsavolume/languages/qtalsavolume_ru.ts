@@ -8,42 +8,42 @@
         <translation type="obsolete">&amp;Восстановить</translation>
     </message>
     <message>
-        <location filename="../popupwindow.cpp" line="73"/>
+        <location filename="../popupwindow.cpp" line="74"/>
         <source>&amp;Settings</source>
         <translation>&amp;Настройки</translation>
     </message>
     <message>
-        <location filename="../popupwindow.cpp" line="74"/>
+        <location filename="../popupwindow.cpp" line="75"/>
         <source>&amp;Mute</source>
         <translation>&amp;Заглушить</translation>
     </message>
     <message>
-        <location filename="../popupwindow.cpp" line="75"/>
+        <location filename="../popupwindow.cpp" line="76"/>
         <source>&amp;About...</source>
         <translation>&amp;О программе...</translation>
     </message>
     <message>
-        <location filename="../popupwindow.cpp" line="76"/>
+        <location filename="../popupwindow.cpp" line="77"/>
         <source>About Qt</source>
         <translation>О Qt</translation>
     </message>
     <message>
-        <location filename="../popupwindow.cpp" line="77"/>
+        <location filename="../popupwindow.cpp" line="78"/>
         <source>&amp;Quit</source>
         <translation>&amp;Выход</translation>
     </message>
     <message>
-        <location filename="../popupwindow.cpp" line="93"/>
+        <location filename="../popupwindow.cpp" line="97"/>
         <source>About QtAlsaVolume</source>
         <translation>О QtAlsaVolume</translation>
     </message>
     <message>
-        <location filename="../popupwindow.cpp" line="95"/>
+        <location filename="../popupwindow.cpp" line="99"/>
         <source>&lt;!DOCTYPE html&gt;&lt;html&gt;&lt;body&gt;&lt;p&gt;&lt;b&gt;Tray Alsa Volume Changer written using Qt&lt;/b&gt;&lt;/p&gt;&lt;p&gt;With Pulseaudio support&lt;/p&gt;&lt;p&gt;2014 (c) Vitaly Tonkacheyev &lt;address&gt;&lt;a href=&quot;mailto:thetvg@gmail.com&quot;&gt;&amp;lt;EMail&amp;gt;&lt;/a&gt;&lt;/address&gt;&lt;/p&gt;&lt;a href=&quot;http://sites.google.com/site/thesomeprojects/&quot;&gt;Program WebSite&lt;/a&gt;&lt;p&gt;version: &lt;b&gt;%1&lt;/b&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;!DOCTYPE html&gt;&lt;html&gt;&lt;body&gt;&lt;p&gt;&lt;b&gt;Регулятор громкости Alsa в трее на Qt&lt;/b&gt;&lt;/p&gt;&lt;p&gt;С поддержкой Pulseaudio&lt;/p&gt;&lt;p&gt;2014 (c) Виталий Тонкачеев &lt;address&gt;&lt;a href=&quot;mailto:thetvg@gmail.com&quot;&gt;&amp;lt;EMail&amp;gt;&lt;/a&gt;&lt;/address&gt;&lt;/p&gt;&lt;a href=&quot;http://sites.google.com/site/thesomeprojects/&quot;&gt;Web-сайт программы&lt;/a&gt;&lt;p&gt;версия: &lt;b&gt;%1&lt;/b&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../popupwindow.cpp" line="102"/>
+        <location filename="../popupwindow.cpp" line="106"/>
         <source>&lt;!DOCTYPE html&gt;&lt;html&gt;&lt;body&gt;&lt;p&gt;&lt;b&gt;Tray Alsa Volume Changer written using Qt&lt;/b&gt;&lt;/p&gt;&lt;p&gt;2014 (c) Vitaly Tonkacheyev &lt;address&gt;&lt;a href=&quot;mailto:thetvg@gmail.com&quot;&gt;&amp;lt;EMail&amp;gt;&lt;/a&gt;&lt;/address&gt;&lt;/p&gt;&lt;a href=&quot;http://sites.google.com/site/thesomeprojects/&quot;&gt;Program WebSite&lt;/a&gt;&lt;p&gt;version: &lt;b&gt;%1&lt;/b&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;!DOCTYPE html&gt;&lt;html&gt;&lt;body&gt;&lt;p&gt;&lt;b&gt;Регулятор громкости Alsa в трее на Qt&lt;/b&gt;&lt;/p&gt;&lt;p&gt;2014 (c) Виталий Тонкачеев &lt;address&gt;&lt;a href=&quot;mailto:thetvg@gmail.com&quot;&gt;&amp;lt;EMail&amp;gt;&lt;/a&gt;&lt;/address&gt;&lt;/p&gt;&lt;a href=&quot;http://sites.google.com/site/thesomeprojects/&quot;&gt;Web-сайт программы&lt;/a&gt;&lt;p&gt;версия: &lt;b&gt;%1&lt;/b&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
@@ -76,17 +76,17 @@ version: %1</source>
 версия: %1</translation>
     </message>
     <message>
-        <location filename="../popupwindow.cpp" line="113"/>
+        <location filename="../popupwindow.cpp" line="117"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
     <message>
-        <location filename="../popupwindow.cpp" line="114"/>
+        <location filename="../popupwindow.cpp" line="118"/>
         <source>System tray is not available. Exiting...</source>
         <translation>Системный трей недоступен. Выходим...</translation>
     </message>
     <message>
-        <location filename="../popupwindow.cpp" line="140"/>
+        <location filename="../popupwindow.cpp" line="145"/>
         <source>Can&apos;t start PulseAudio. Using Alsa as default</source>
         <translation>Невозможно запустить PulseAudio. Используем по-умолчанию Alsa</translation>
     </message>
@@ -115,19 +115,19 @@ version: 0.0.1</source>
 версия: 0.0.1</translation>
     </message>
     <message>
-        <location filename="../popupwindow.cpp" line="451"/>
-        <location filename="../popupwindow.cpp" line="461"/>
+        <location filename="../popupwindow.cpp" line="469"/>
+        <location filename="../popupwindow.cpp" line="479"/>
         <source>Card: </source>
         <translation>Карта: </translation>
     </message>
     <message>
-        <location filename="../popupwindow.cpp" line="464"/>
+        <location filename="../popupwindow.cpp" line="482"/>
         <source>Mixer: </source>
         <translation>Микшер: </translation>
     </message>
     <message>
-        <location filename="../popupwindow.cpp" line="453"/>
-        <location filename="../popupwindow.cpp" line="467"/>
+        <location filename="../popupwindow.cpp" line="471"/>
+        <location filename="../popupwindow.cpp" line="485"/>
         <source>Volume: </source>
         <translation>Громкость: </translation>
     </message>
@@ -192,42 +192,47 @@ version: 0.0.1</source>
         <translation>Использовать Pulseaudio</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.ui" line="130"/>
+        <location filename="../settingsdialog.ui" line="124"/>
+        <source>Use mouse scroll to control sound volume</source>
+        <translation>Колесо мыши регулирует громкость</translation>
+    </message>
+    <message>
+        <location filename="../settingsdialog.ui" line="140"/>
         <source>Start program on system startup</source>
         <translation>Запускать программу при старте системы</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.ui" line="133"/>
+        <location filename="../settingsdialog.ui" line="143"/>
         <source>Autorun program on system start</source>
         <translation>Автозапуск программы при старте системы</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.ui" line="140"/>
+        <location filename="../settingsdialog.ui" line="150"/>
         <source>Icon Style</source>
         <translation>Стиль иконки</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.ui" line="161"/>
+        <location filename="../settingsdialog.ui" line="171"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Light style of tray icon&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Светлый стиль иконки в трее&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.ui" line="164"/>
+        <location filename="../settingsdialog.ui" line="174"/>
         <source>Light Style</source>
         <translation>Светлый стиль</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.ui" line="180"/>
+        <location filename="../settingsdialog.ui" line="190"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Dark style of tray icon&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Тёмный стиль иконки в трее&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.ui" line="183"/>
+        <location filename="../settingsdialog.ui" line="193"/>
         <source>Dark Style</source>
         <translation>Тёмный стиль</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.ui" line="207"/>
+        <location filename="../settingsdialog.ui" line="217"/>
         <source>Switchers</source>
         <translation>Переключатели</translation>
     </message>
