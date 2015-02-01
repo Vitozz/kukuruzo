@@ -1,3 +1,8 @@
+2015-02-01
+v.0.1.2
+  + Fixed disapearing of popup window
+  + Added option to disable mouse scroll
+
 2014-11-25
 v.0.1.1
   + Fixed calculations of Alsa volume
