@@ -52,7 +52,6 @@ public:
 	void setUsePulse(bool isPulse);
 	void hideAlsaElements(bool isHide);
 	void setPulseAvailable(bool available);
-	void setUseScroll(bool isScroll);
 
 protected:
 	void closeEvent(QCloseEvent *);
@@ -69,7 +68,6 @@ protected slots:
 	void onDarkStyle(bool toggled);
 	void onLightStyle(bool toggled);
 	void onPulseSoundSystem(bool toggled);
-	void onUseScrollChanged(bool toggled);
 signals:
 	void soundCardChanged(int card);
 	void mixerChanged(const QString &mixer);
@@ -79,7 +77,6 @@ signals:
 	void enumChanged(const QString &check, bool isIt);
 	void styleChanged(bool isLight);
 	void soundSystemChanged(bool isAlsa);
-	void useScrollChanged(bool isScroll);
 
 private:
 	void disconnectSignals();

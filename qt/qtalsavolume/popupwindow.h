@@ -51,7 +51,6 @@ public:
 protected:
 	void closeEvent(QCloseEvent *);
 	bool eventFilter(QObject *object, QEvent *event);
-	void mouseMoveEvent(QMouseEvent *event);
 
 protected slots:
 	void iconActivated(QSystemTrayIcon::ActivationReason reason);
@@ -70,7 +69,6 @@ protected slots:
 	void onEnum(const QString &name, bool isIt);
 	void onSoundSystem(bool isIt);
 	void onTimeout();
-	void onUseScroll(bool isIt);
 
 private:
 	void setTrayIcon(int value);
@@ -97,6 +95,7 @@ private:
 	QList<switcher> playBackItems_;
 	QList<switcher> captureItems_;
 	QList<switcher> enumItems_;
+	QAction *restore_;
 	QAction *settings_;
 	QAction *mute_;
 	QAction *about_;
@@ -119,7 +118,6 @@ private:
 	bool isAutorun_;
 	bool isLightStyle_;
 	bool isPulse_;
-	bool isScroll_;
 	QString title_;
 	QString message_;
 };

@@ -71,6 +71,7 @@ PopupWindow::PopupWindow()
   playBackItems_(QList<switcher>()),
   captureItems_(QList<switcher>()),
   enumItems_(QList<switcher>()),
+  restore_(new QAction(tr("&Restore"), this)),
   settings_(new QAction(tr("&Settings"), this)),
   mute_(new QAction(tr("&Mute"), this)),
   about_(new QAction(tr("&About..."), this)),
@@ -93,19 +94,18 @@ PopupWindow::PopupWindow()
   isAutorun_(false),
   isLightStyle_(false),
   isPulse_(false),
-  isScroll_(true),
   title_(tr("About QtAlsaVolume")),
 #ifdef USE_PULSE
   message_(QString(tr("<!DOCTYPE html><html><body>"
 		      "<p><b>Tray Alsa Volume Changer written using Qt</b></p>"
 		      "<p>With Pulseaudio support</p>"
-		      "<p>2014 (c) Vitaly Tonkacheyev <address><a href=\"mailto:thetvg@gmail.com\">&lt;EMail&gt;</a></address></p>"
+		      "<p>2015 (c) Vitaly Tonkacheyev <address><a href=\"mailto:thetvg@gmail.com\">&lt;EMail&gt;</a></address></p>"
 		      "<a href=\"http://sites.google.com/site/thesomeprojects/\">Program WebSite</a>"
 		      "<p>version: <b>%1</b></p></body></html>")).arg(APP_VERSION))
 #else
   message_(QString(tr("<!DOCTYPE html><html><body>"
 		      "<p><b>Tray Alsa Volume Changer written using Qt</b></p>"
-		      "<p>2014 (c) Vitaly Tonkacheyev <address><a href=\"mailto:thetvg@gmail.com\">&lt;EMail&gt;</a></address></p>"
+		      "<p>2015 (c) Vitaly Tonkacheyev <address><a href=\"mailto:thetvg@gmail.com\">&lt;EMail&gt;</a></address></p>"
 		      "<a href=\"http://sites.google.com/site/thesomeprojects/\">Program WebSite</a>"
 		      "<p>version: <b>%1</b></p></body></html>")).arg(APP_VERSION))
 #endif
@@ -115,7 +115,7 @@ PopupWindow::PopupWindow()
 	initActions();
 	updateTrayMenu();
 	const QString errorHeader(tr("Error"));
-	const QString systrayMissing(tr("System tray is not available. Exiting..."));
+	const QString systrayMissing(tr("System tray is not available"));
 	if(!trayIcon_->isSystemTrayAvailable()) {
 		QMessageBox::critical(this, errorHeader, systrayMissing);
 	}
@@ -135,12 +135,10 @@ PopupWindow::PopupWindow()
 	setMinimumHeight(POPUP_HEIGHT);
 	setMinimumWidth(POPUP_WIDTH);
 	setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
-	this->setMouseTracking(true);
 	//Reading settings and alsa variables
 	QSettings setts_;
 	isLightStyle_ = setts_.value(ICOSTYLE, true).toBool();
 	isAutorun_ = setts_.value(ISAUTO, false).toBool();
-	isScroll_ = setts_.value(ISSCROLL, true).toBool();
 #ifdef USE_PULSE
 	const QString pulseIsMissing(tr("Can't start PulseAudio. Using Alsa as default"));
 	isPulse_ = setts_.value(PULSE, false).toBool();
@@ -205,7 +203,6 @@ PopupWindow::PopupWindow()
 	connect(settingsDialog_, SIGNAL(enumChanged(QString,bool)), this, SLOT(onEnum(QString,bool)));
 	connect(settingsDialog_, SIGNAL(autorunChanged(bool)), this, SLOT(onAutorun(bool)));
 	connect(settingsDialog_, SIGNAL(styleChanged(bool)), this, SLOT(onStyleChanged(bool)));
-	connect(settingsDialog_, SIGNAL(useScrollChanged(bool)), this, SLOT(onUseScroll(bool)));
 #ifdef USE_PULSE
 	if (pulse_) {
 		connect(settingsDialog_, SIGNAL(soundSystemChanged(bool)), this, SLOT(onSoundSystem(bool)));
@@ -222,6 +219,7 @@ PopupWindow::PopupWindow()
 	connect(trayIcon_, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, SLOT(iconActivated(QSystemTrayIcon::ActivationReason)));
 	connect(volumeSlider_, SIGNAL(valueChanged(int)), this, SLOT(onSlider(int)));
 	trayIcon_->installEventFilter(this);
+	installEventFilter(this);
 	trayIcon_->show();
 	pollingTimer_->setInterval(POLLING_INTERVAL);
 	connect(pollingTimer_, SIGNAL(timeout()), this, SLOT(onTimeout()));
@@ -246,12 +244,14 @@ PopupWindow::~PopupWindow()
 	delete about_;
 	delete mute_;
 	delete settings_;
+	delete restore_;
 	delete switchList_;
 	delete alsaWork_;
 }
 
 void PopupWindow::initActions()
 {
+	connect(restore_, SIGNAL(triggered()), this, SLOT(showPopup()));
 	connect(settings_, SIGNAL(triggered()), this, SLOT(showSettings()));
 	mute_->setCheckable(true);
 	connect(mute_, SIGNAL(toggled(bool)), this, SLOT(onMute(bool)));
@@ -262,6 +262,8 @@ void PopupWindow::initActions()
 
 void PopupWindow::updateTrayMenu()
 {
+	trayMenu_->addAction(restore_);
+	trayMenu_->addSeparator();
 	trayMenu_->addAction(settings_);
 	trayMenu_->addAction(mute_);
 	trayMenu_->addSeparator();
@@ -319,7 +321,6 @@ void PopupWindow::setTrayIcon(int value)
 void PopupWindow::showSettings()
 {
 	settingsDialog_->setIconStyle(isLightStyle_);
-	settingsDialog_->setUseScroll(isScroll_);
 #ifdef USE_PULSE
 	if (isPulse_ && pulse_) {
 		settingsDialog_->blockSignals(true);
@@ -368,7 +369,6 @@ void PopupWindow::closeEvent(QCloseEvent *)
 	setts_.setValue(MIXER_NAME, mixerName_);
 	setts_.setValue(ISAUTO, isAutorun_);
 	setts_.setValue(ICOSTYLE, isLightStyle_);
-	setts_.setValue(ISSCROLL, isScroll_);
 	qApp->quit();
 }
 
@@ -408,27 +408,26 @@ void PopupWindow::setPopupPosition(const QPoint &point)
 bool PopupWindow::eventFilter(QObject *object, QEvent *event)
 {
 	if (object == trayIcon_) {
-		if (event->type() == QEvent::Wheel && isScroll_) {
+		if (event->type() == QEvent::Wheel) {
 			QWheelEvent *wheelEvent = static_cast<QWheelEvent*>(event);
 #ifdef ISDEBUG
-			qDebug() << "Delta " << wheelEvent->delta();
+			qDebug() << "WheelEvent:Delta " << wheelEvent->delta();
 #endif
-			const int steps = (wheelEvent->delta()>0) ? 1 : -1;
+			const int steps = (wheelEvent->delta()>0) ? 1 : (wheelEvent->delta()<0) ? -1: 0;
 			setVolume(steps);
 			return true;
 		}
 	}
-	return false;
-}
-
-void PopupWindow::mouseMoveEvent(QMouseEvent *event)
-{
-	const int x = event->x();
-	const int y = event->y();
-	const int w = this->geometry().width();
-	if ( ((x - DELTA) <= 0 || (x + DELTA) >= w || (y - DELTA) <= 0 ) && this->isVisible()) {
-		this->hide();
+	if (object == this) {
+		if (event->type() == QEvent::Leave) {
+#ifdef ISDEBUG
+			qDebug() << "Mouse Leave";
+#endif
+			this->hide();
+			return true;
+		}
 	}
+	return false;
 }
 
 void PopupWindow::setVolume(int value)
@@ -672,12 +671,4 @@ void PopupWindow::onSoundSystem(bool isIt)
 		settingsDialog_->setSoundCards(cardList_);
 		settingsDialog_->setCurrentCard(cardIndex_);
 	}
-}
-
-void PopupWindow::onUseScroll(bool isIt)
-{
-	isScroll_ = isIt;
-#ifdef ISDEBUG
-	qDebug() << "Use scroll" << isIt;
-#endif
 }

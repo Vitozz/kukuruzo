@@ -1,3 +1,10 @@
+2015-02-02
+v.0.1.3
+  + Fixed error in logic of mouse scroll
+  + Changes in mouse leave event
+  + Removed option to disable mouse scroll as unused
+  + Reverted "Restore" action to popup menu
+
 2015-02-01
 v.0.1.2
   + Fixed disapearing of popup window

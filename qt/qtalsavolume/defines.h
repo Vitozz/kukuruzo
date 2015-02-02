@@ -23,7 +23,7 @@
 
 #define APP_NAME "qtalsavolume"
 #define APP_ORG "thesomeprojects"
-#define APP_VERSION "0.1.2"
+#define APP_VERSION "0.1.3"
 
 #define CARD_INDEX "Main/card"
 #define MIXER_NAME "Main/mixer"
@@ -31,7 +31,6 @@
 #define ICOSTYLE "Main/style"
 #define LAST_SINK "Pulse/sink"
 #define PULSE "Main/pulse"
-#define ISSCROLL "Main/usescroll"
 
 //Polling timer interval
 #define POLLING_INTERVAL 2000
