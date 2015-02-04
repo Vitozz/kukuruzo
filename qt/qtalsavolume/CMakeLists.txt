@@ -1,5 +1,5 @@
 set(PROJECT qtalsavolume )
-cmake_minimum_required( VERSION 2.8.11 )
+cmake_minimum_required( VERSION 2.8.7 )
 if( UNIX AND NOT (APPLE OR CYGWIN) )
 	add_definitions( -Wall )
 	set( CMAKE_AUTOMOC ON )

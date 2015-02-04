@@ -140,7 +140,7 @@ PopupWindow::PopupWindow()
 	isLightStyle_ = setts_.value(ICOSTYLE, true).toBool();
 	isAutorun_ = setts_.value(ISAUTO, false).toBool();
 #ifdef USE_PULSE
-	const QString pulseIsMissing(tr("Can't start PulseAudio. Using Alsa as default"));
+	const QString pulseIsMissing(tr("Can't start PulseAudio. Using Alsa by default"));
 	isPulse_ = setts_.value(PULSE, false).toBool();
 	if (pulse_->available()) {
 		pulseCardList_ = pulse_->getCardList();
@@ -452,8 +452,10 @@ void PopupWindow::onSlider(int value)
 	}
 #endif
 	if (!isPulse_) {
-		alsaWork_->setAlsaVolume(volumeValue_);
-		pollingVolume_ = alsaWork_->getAlsaVolume();
+		if (alsaWork_->haveVolumeMixers()) {
+			alsaWork_->setAlsaVolume(volumeValue_);
+			pollingVolume_ = alsaWork_->getAlsaVolume();
+		}
 	}
 	volumeLabel_->setText(QString::number(volumeValue_));
 	setTrayIcon(volumeValue_);
@@ -626,15 +628,17 @@ QString PopupWindow::getResPath(const QString &fileName) const
 void PopupWindow::onTimeout()
 {
 	if (!isPulse_) {
-		const int volume = alsaWork_->getAlsaVolume();
-		bool ismute = alsaWork_->getMute();
-		if (pollingVolume_ != volume) {
-			pollingVolume_ = volume;
-			volumeSlider_->setValue(pollingVolume_);
-		}
-		if (isMuted_ != ismute) {
-			isMuted_ = ismute;
-			mute_->setChecked(isMuted_);
+		if (alsaWork_->haveVolumeMixers()) {
+			const int volume = alsaWork_->getAlsaVolume();
+			bool ismute = alsaWork_->getMute();
+			if (pollingVolume_ != volume) {
+				pollingVolume_ = volume;
+				volumeSlider_->setValue(pollingVolume_);
+			}
+			if (isMuted_ != ismute) {
+				isMuted_ = ismute;
+				mute_->setChecked(isMuted_);
+			}
 		}
 	}
 #ifdef USE_PULSE

@@ -127,7 +127,7 @@ bool AlsaWork::checkCardId(int cardId)
 void AlsaWork::checkError (int errorIndex)
 {
 	if (errorIndex < 0) {
-		QMessageBox::critical(0, ERROR_TITLE, QString(snd_strerror(errorIndex)));
+		QMessageBox::critical(0, ERROR_TITLE, QString::fromLocal8Bit(snd_strerror(errorIndex)));
 	}
 }
 

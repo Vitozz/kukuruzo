@@ -298,7 +298,7 @@ void AlsaDevice::setNormVolume(snd_mixer_elem_t *element, double volume)
 
 void AlsaDevice::setDeviceVolume(double volume)
 {
-	if (!currentMixerName_.isEmpty()) {
+	if (!currentMixerName_.isEmpty() && !mixers_.isEmpty()) {
 		snd_mixer_t *handle = getMixerHanlde(id_);
 		snd_mixer_elem_t *element = initMixerElement(handle, currentMixerName_.toStdString().c_str());
 		setNormVolume(element, volume/100);
@@ -311,7 +311,7 @@ void AlsaDevice::setDeviceVolume(double volume)
 
 double AlsaDevice::getVolume()
 {
-	if (!currentMixerName_.isEmpty()) {
+	if (!currentMixerName_.isEmpty() && !mixers_.isEmpty()) {
 		snd_mixer_t *handle = getMixerHanlde(id_);
 		snd_mixer_elem_t *elem = initMixerElement(handle, currentMixerName_.toStdString().c_str());
 		double volume = getNormVolume(elem)*100;
@@ -367,7 +367,7 @@ void AlsaDevice::setMute(bool enabled)
 
 bool AlsaDevice::getMute()
 {
-	if (!currentMixerName_.isEmpty()) {
+	if (!currentMixerName_.isEmpty() && !mixers_.isEmpty()) {
 		snd_mixer_t *handle = getMixerHanlde(id_);
 		snd_mixer_elem_t* elem = initMixerElement(handle, currentMixerName_.toStdString().c_str());
 		snd_mixer_selem_channel_id_t channel = checkMixerChannels(elem);
