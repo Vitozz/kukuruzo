@@ -31,6 +31,7 @@
 #define ICOSTYLE "Main/style"
 #define LAST_SINK "Pulse/sink"
 #define PULSE "Main/pulse"
+#define ISPOLL "Main/polling"
 
 //Polling timer interval
 #define POLLING_INTERVAL 2000

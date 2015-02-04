@@ -94,6 +94,7 @@ PopupWindow::PopupWindow()
   isAutorun_(false),
   isLightStyle_(false),
   isPulse_(false),
+  isPoll_(true),
   title_(tr("About QtAlsaVolume")),
 #ifdef USE_PULSE
   message_(QString(tr("<!DOCTYPE html><html><body>"
@@ -139,6 +140,7 @@ PopupWindow::PopupWindow()
 	QSettings setts_;
 	isLightStyle_ = setts_.value(ICOSTYLE, true).toBool();
 	isAutorun_ = setts_.value(ISAUTO, false).toBool();
+	isPoll_ = setts_.value(ISPOLL, true).toBool();
 #ifdef USE_PULSE
 	const QString pulseIsMissing(tr("Can't start PulseAudio. Using Alsa by default"));
 	isPulse_ = setts_.value(PULSE, false).toBool();
@@ -203,6 +205,7 @@ PopupWindow::PopupWindow()
 	connect(settingsDialog_, SIGNAL(enumChanged(QString,bool)), this, SLOT(onEnum(QString,bool)));
 	connect(settingsDialog_, SIGNAL(autorunChanged(bool)), this, SLOT(onAutorun(bool)));
 	connect(settingsDialog_, SIGNAL(styleChanged(bool)), this, SLOT(onStyleChanged(bool)));
+	connect(settingsDialog_, SIGNAL(timerEnabled(bool)), this, SLOT(enablePolling(bool)));
 #ifdef USE_PULSE
 	if (pulse_) {
 		connect(settingsDialog_, SIGNAL(soundSystemChanged(bool)), this, SLOT(onSoundSystem(bool)));
@@ -369,6 +372,7 @@ void PopupWindow::closeEvent(QCloseEvent *)
 	setts_.setValue(MIXER_NAME, mixerName_);
 	setts_.setValue(ISAUTO, isAutorun_);
 	setts_.setValue(ICOSTYLE, isLightStyle_);
+	setts_.setValue(ISPOLL, isPoll_);
 	qApp->quit();
 }
 
@@ -627,10 +631,25 @@ QString PopupWindow::getResPath(const QString &fileName) const
 
 void PopupWindow::onTimeout()
 {
-	if (!isPulse_) {
-		if (alsaWork_->haveVolumeMixers()) {
-			const int volume = alsaWork_->getAlsaVolume();
-			bool ismute = alsaWork_->getMute();
+	if(isPoll_) {
+		if (!isPulse_) {
+			if (alsaWork_->haveVolumeMixers()) {
+				const int volume = alsaWork_->getAlsaVolume();
+				bool ismute = alsaWork_->getMute();
+				if (pollingVolume_ != volume) {
+					pollingVolume_ = volume;
+					volumeSlider_->setValue(pollingVolume_);
+				}
+				if (isMuted_ != ismute) {
+					isMuted_ = ismute;
+					mute_->setChecked(isMuted_);
+				}
+			}
+		}
+#ifdef USE_PULSE
+		if (isPulse_ && pulse_) {
+			const int volume = pulse_->getVolume();
+			bool ismute = pulse_->getMute();
 			if (pollingVolume_ != volume) {
 				pollingVolume_ = volume;
 				volumeSlider_->setValue(pollingVolume_);
@@ -640,21 +659,8 @@ void PopupWindow::onTimeout()
 				mute_->setChecked(isMuted_);
 			}
 		}
-	}
-#ifdef USE_PULSE
-	if (isPulse_ && pulse_) {
-		const int volume = pulse_->getVolume();
-		bool ismute = pulse_->getMute();
-		if (pollingVolume_ != volume) {
-			pollingVolume_ = volume;
-			volumeSlider_->setValue(pollingVolume_);
-		}
-		if (isMuted_ != ismute) {
-			isMuted_ = ismute;
-			mute_->setChecked(isMuted_);
-		}
-	}
 #endif
+	}
 }
 
 void PopupWindow::onSoundSystem(bool isIt)
@@ -675,4 +681,9 @@ void PopupWindow::onSoundSystem(bool isIt)
 		settingsDialog_->setSoundCards(cardList_);
 		settingsDialog_->setCurrentCard(cardIndex_);
 	}
+}
+
+void PopupWindow::enablePolling(bool isIt)
+{
+	isPoll_ = isIt;
 }

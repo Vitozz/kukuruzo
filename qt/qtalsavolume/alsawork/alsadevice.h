@@ -36,7 +36,7 @@ public:
 	const QString &name() const;
 	int id() const;
 	const QStringList &mixers() const;
-	const MixerSwitches &switches() const;
+	MixerSwitches &switches();
 	const QString &currentMixer() const;
 	int currentMixerId() const;
 	bool haveMixers();
@@ -60,6 +60,7 @@ private:
 	double getExp10(double value);
 	bool useLinearDb(long min, long max);
 	void setNormVolume(snd_mixer_elem_t *element, double volume);
+	void updateElements();
 
 private:
 	int id_;

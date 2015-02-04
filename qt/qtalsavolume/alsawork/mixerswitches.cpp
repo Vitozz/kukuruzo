@@ -83,6 +83,19 @@ void MixerSwitches::clear(SwitchType sType)
 	}
 }
 
+void MixerSwitches::clearAll()
+{
+	if (!playbackSwitchList_.isEmpty()) {
+		playbackSwitchList_.clear();
+	}
+	if (!captureSwitchList_.isEmpty()) {
+		captureSwitchList_.clear();
+	}
+	if (!enumSwitchList_.isEmpty()) {
+		enumSwitchList_.clear();
+	}
+}
+
 const QList<switcher> &MixerSwitches::captureSwitchList() const
 {
 	return captureSwitchList_;

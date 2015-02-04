@@ -64,7 +64,11 @@ void AlsaWork::setAlsaVolume(int volume)
 
 int AlsaWork::getAlsaVolume()
 {
-	return int(currentAlsaDevice_->getVolume());
+	getCards();
+	if (cardExists(currentAlsaDevice_->id())) {
+		return int(currentAlsaDevice_->getVolume());
+	}
+	return 0;
 }
 
 const QString AlsaWork::getCardName(int index)
@@ -76,6 +80,7 @@ const QString AlsaWork::getCardName(int index)
 	snd_ctl_card_info_alloca(&cardInfo);
 	checkError(snd_ctl_card_info(ctl, cardInfo));
 	const char *cardName = snd_ctl_card_info_get_name(cardInfo);
+	checkError(snd_ctl_close(ctl));
 	return QString::fromLocal8Bit(cardName);
 }
 
@@ -106,7 +111,11 @@ void AlsaWork::setMute(bool enabled)
 
 bool AlsaWork::getMute()
 {
-	return !currentAlsaDevice_->getMute();
+	getCards();
+	if (cardExists(currentAlsaDevice_->id())) {
+		return !currentAlsaDevice_->getMute();
+	}
+	return false;
 }
 
 void AlsaWork::setSwitch(const QString &mixer, int id, bool enabled)

@@ -69,6 +69,7 @@ protected slots:
 	void onEnum(const QString &name, bool isIt);
 	void onSoundSystem(bool isIt);
 	void onTimeout();
+	void enablePolling(bool isIt);
 
 private:
 	void setTrayIcon(int value);
@@ -118,6 +119,7 @@ private:
 	bool isAutorun_;
 	bool isLightStyle_;
 	bool isPulse_;
+	bool isPoll_;
 	QString title_;
 	QString message_;
 };

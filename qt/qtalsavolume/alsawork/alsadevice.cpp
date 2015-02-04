@@ -39,7 +39,26 @@ AlsaDevice::AlsaDevice(int id, const QString &card)
   currentMixerId_(0),
   currentMixerName_(QString())
 {
-	snd_mixer_t *handle = getMixerHanlde(id);
+	updateElements();
+}
+
+AlsaDevice::~AlsaDevice()
+{
+	delete switches_;
+}
+
+void AlsaDevice::updateElements()
+{
+	if (!volumeMixers_.isEmpty()) {
+		volumeMixers_.clear();
+	}
+	if (!captureMixers_.isEmpty()) {
+		captureMixers_.clear();
+	}
+	if (!switches_->isEmpty()) {
+		switches_->clearAll();
+	}
+	snd_mixer_t *handle = getMixerHanlde(id_);
 	snd_mixer_selem_id_t *smid;
 	snd_mixer_selem_id_alloca(&smid);
 	QString deviceName;
@@ -50,7 +69,6 @@ AlsaDevice::AlsaDevice(int id, const QString &card)
 		snd_mixer_selem_get_id(element, smid);
 		deviceName = QString::fromLocal8Bit(snd_mixer_selem_id_get_name(smid));
 		snd_mixer_selem_channel_id_t channel = checkMixerChannels(element);
-
 		if (snd_mixer_selem_has_playback_volume(element)
 		    || snd_mixer_selem_has_playback_volume_joined(element)
 		    || snd_mixer_selem_has_common_volume(element)) {
@@ -87,11 +105,6 @@ AlsaDevice::AlsaDevice(int id, const QString &card)
 	initMixerList();
 }
 
-AlsaDevice::~AlsaDevice()
-{
-	delete switches_;
-}
-
 void AlsaDevice::initMixerList()
 {
 	bool isplay = !volumeMixers_.isEmpty();
@@ -126,14 +139,9 @@ snd_mixer_elem_t *AlsaDevice::initMixerElement(snd_mixer_t *handle, const char *
 
 snd_mixer_t *AlsaDevice::getMixerHanlde(int id)
 {
-	const QString card(formatCardName(id));
-	snd_ctl_t *ctl;
-	checkError(snd_ctl_open(&ctl, card.toStdString().c_str(), SND_CTL_NONBLOCK));
-	snd_hctl_t *hctl;
-	checkError(snd_hctl_open_ctl(&hctl, ctl));
 	snd_mixer_t *handle;
 	checkError(snd_mixer_open(&handle, 0));
-	checkError(snd_mixer_attach_hctl(handle, hctl));
+	checkError(snd_mixer_attach(handle, formatCardName(id).toStdString().c_str()));
 	checkError(snd_mixer_selem_register(handle, NULL, NULL));
 	checkError(snd_mixer_load(handle));
 	return handle;
@@ -433,6 +441,10 @@ const QStringList &AlsaDevice::mixers() const
 void AlsaDevice::checkError (int errorIndex)
 {
 	if (errorIndex < 0) {
+#ifdef ISDEBUG
+		qDebug() << "Error index = " << errorIndex;
+		qDebug() << snd_strerror(errorIndex);
+#endif
 		QMessageBox::critical(0, ERROR_TITLE, QString::fromLocal8Bit(snd_strerror(errorIndex)));
 	}
 }
@@ -449,8 +461,9 @@ bool AlsaDevice::haveMixers()
 	return !mixers_.isEmpty();
 }
 
-const MixerSwitches &AlsaDevice::switches() const
+MixerSwitches &AlsaDevice::switches()
 {
+	updateElements();
 	return *switches_;
 }
 

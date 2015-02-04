@@ -35,6 +35,7 @@ public:
 	void setPlaybackSwitchList(const QList<switcher> &list);
 	void setEnumSwitchList(const QList<switcher> &list);
 	void clear(SwitchType sType);
+	void clearAll();
 	const QList<switcher> &captureSwitchList() const;
 	const QList<switcher> &playbackSwitchList() const;
 	const QList<switcher> &enumSwitchList() const;

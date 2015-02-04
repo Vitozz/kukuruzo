@@ -125,6 +125,16 @@
           </widget>
          </item>
          <item>
+          <widget class="QCheckBox" name="enableTimer">
+           <property name="text">
+            <string>Enable sound volume monitoring</string>
+           </property>
+           <property name="checked">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
           <widget class="QCheckBox" name="isAutorun">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
