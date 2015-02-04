@@ -324,6 +324,7 @@ void PopupWindow::setTrayIcon(int value)
 void PopupWindow::showSettings()
 {
 	settingsDialog_->setIconStyle(isLightStyle_);
+	settingsDialog_->setUsePolling(isPoll_);
 #ifdef USE_PULSE
 	if (isPulse_ && pulse_) {
 		settingsDialog_->blockSignals(true);
