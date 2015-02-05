@@ -47,6 +47,7 @@ public:
 	void setCurrentMixer(const QString &mixer);
 	void setSwitch(const QString &mixer, int id, bool enabled);
 	void setMute(bool enabled);
+	void updateElements();
 	static QString formatCardName(int id);
 
 private:
@@ -60,7 +61,6 @@ private:
 	double getExp10(double value);
 	bool useLinearDb(long min, long max);
 	void setNormVolume(snd_mixer_elem_t *element, double volume);
-	void updateElements();
 
 private:
 	int id_;
