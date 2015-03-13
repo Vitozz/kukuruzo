@@ -4,6 +4,7 @@ set( CMAKE_AUTOMOC ON )
 set( CMAKE_INCLUDE_CURRENT_DIR ON )
 set( USE_QT5 OFF CACHE BOOL "Use Qt5" )
 set( BUILD_TRANSLATIONS ON CACHE BOOL "Build project translations")
+set( BUILD_STATIC OFF CACHE BOOL "Build program with static linking" )
 include_directories(
 	${CMAKE_SOURCE_DIR}
 	${CMAKE_CURRENT_BINARY_DIR}
@@ -72,8 +73,8 @@ else( ${USE_QT5} )
 	find_package( Qt4 REQUIRED )
 	include( ${QT_USE_FILE} )
 	include_directories(
-		${QT_QTCORE_INCLUDE_DIR}
 		${QT_QTGUI_INCLUDE_DIR}
+		${QT_QTCORE_INCLUDE_DIR}
 	)
 	QT4_WRAP_UI( UIS ${qtpoweroff_UI} )
 	QT4_ADD_RESOURCES( RSCS ${qtpoweroff_QRC} )
@@ -128,6 +129,11 @@ if( ${WIN32} )
 	if( NOT "${CMAKE_BUILD_TYPE}" STREQUAL "Debug" )
 		add_definitions( -DQT_NO_DEBUG )
 	endif( NOT "${CMAKE_BUILD_TYPE}" STREQUAL "Debug" )
+	if( ${BUILD_STATIC} )
+		set( START_STATIC -Wl,-Bstatic )
+		set( END_STATIC -Wl,-Bdynamic ws2_32 winmm imm32 )
+		list( APPEND CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++" )
+	endif( ${BUILD_STATIC} )
 	set ( CMAKE_BUILD_WITH_INSTALL_RPATH FALSE )
 	add_executable( ${PROJECT_NAME}
 		WIN32
@@ -139,7 +145,9 @@ if( ${WIN32} )
 		"defines.h"
 	)
 	target_link_libraries ( ${PROJECT_NAME}
+				${START_STATIC}
 				${QT_DEPLIBS}
+				${END_STATIC}
 	)
 	INSTALL( TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX} )
 	INSTALL( FILES ${TRS} DESTINATION ${CMAKE_INSTALL_PREFIX}/${LANG_PATH} )
