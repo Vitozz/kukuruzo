@@ -59,7 +59,7 @@ static const int POPUP_WIDTH = 30;
 static const int DELTA = 2;
 
 PopupWindow::PopupWindow()
-: alsaWork_(new AlsaWork),
+: alsaWork_(AlsaWork::Ptr(new AlsaWork())),
 #ifdef USE_PULSE
   pulse_(PulseCore::Ptr(new PulseCore(APP_NAME))),
   deviceIndex_(0),
@@ -67,7 +67,7 @@ PopupWindow::PopupWindow()
   mixerName_(QString()),
   cardIndex_(0),
   mixerList_(QStringList()),
-  switchList_(new MixerSwitches()),
+  switchList_(MixerSwitches::Ptr()),
   playBackItems_(QList<switcher>()),
   captureItems_(QList<switcher>()),
   enumItems_(QList<switcher>()),
@@ -182,7 +182,6 @@ PopupWindow::PopupWindow()
 		volumeValue_ = alsaWork_->getAlsaVolume();
 		isMuted_ = alsaWork_->getMute();
 	}
-	switchList_ = new MixerSwitches(alsaWork_->getSwitchList());
 	updateSwitches();
 	if (!isPulse_) {
 		settingsDialog_->setSoundCards(cardList_);
@@ -248,8 +247,6 @@ PopupWindow::~PopupWindow()
 	delete mute_;
 	delete settings_;
 	delete restore_;
-	delete switchList_;
-	delete alsaWork_;
 }
 
 void PopupWindow::initActions()
@@ -516,7 +513,6 @@ void PopupWindow::onCardChanged(int card)
 		alsaWork_->setCurrentCard(cardIndex_);
 		mixerList_ = alsaWork_->getVolumeMixers();
 		settingsDialog_->setMixers(mixerList_);
-		switchList_ = new MixerSwitches(alsaWork_->getSwitchList());
 		updateSwitches();
 		settingsDialog_->setPlaybackChecks(playBackItems_);
 		settingsDialog_->setCaptureChecks(captureItems_);
@@ -536,7 +532,8 @@ void PopupWindow::onMixerChanged(const QString &mixer)
 
 void PopupWindow::updateSwitches()
 {
-	if (!switchList_->isEmpty()) {
+	switchList_ = alsaWork_->getSwitchList();
+	if (switchList_ && !switchList_->isEmpty()) {
 		playBackItems_ = switchList_->playbackSwitchList();
 		captureItems_ = switchList_->captureSwitchList();
 		enumItems_ = switchList_->enumSwitchList();

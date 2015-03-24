@@ -89,7 +89,6 @@ private:
 	QStringList soundCards_;
 	QStringList mixers_;
 	bool isAutorun_;
-	bool itemsAdded_;
 	bool pulseAvailable_;
 	QListWidget *playbacks_;
 	QListWidget *captures_;

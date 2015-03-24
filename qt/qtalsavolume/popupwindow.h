@@ -84,7 +84,7 @@ private:
 	void setPopupPosition(const QPoint &point);
 
 private:
-	AlsaWork *alsaWork_;
+	AlsaWork::Ptr alsaWork_;
 #ifdef USE_PULSE
 	PulseCore::Ptr pulse_;
 	int deviceIndex_;
@@ -92,7 +92,7 @@ private:
 	QString mixerName_;
 	int cardIndex_;
 	QStringList mixerList_;
-	MixerSwitches *switchList_;
+	MixerSwitches::Ptr switchList_;
 	QList<switcher> playBackItems_;
 	QList<switcher> captureItems_;
 	QList<switcher> enumItems_;

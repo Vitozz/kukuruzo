@@ -81,7 +81,6 @@ private:
 	pa_mainloop_api* mainLoopApi_;
 	pa_context* context_;
 	int retval_;
-	//PulseDevice::Ptr currentDevice_;
 	QString currentDeviceName_;
 	int currentDeviceIndex_;
 	QStringList sinksDescriptions_;

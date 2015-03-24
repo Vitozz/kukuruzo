@@ -36,7 +36,7 @@ public:
 	const QString &name() const;
 	int id() const;
 	const QStringList &mixers() const;
-	MixerSwitches &switches();
+	MixerSwitches::Ptr switches();
 	const QString &currentMixer() const;
 	int currentMixerId() const;
 	bool haveMixers();
@@ -68,7 +68,7 @@ private:
 	QStringList volumeMixers_;
 	QStringList captureMixers_;
 	QStringList mixers_;
-	MixerSwitches *switches_;
+	MixerSwitches::Ptr switches_;
 	int currentMixerId_;
 	QString currentMixerName_;
 

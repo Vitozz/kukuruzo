@@ -34,7 +34,7 @@ AlsaDevice::AlsaDevice(int id, const QString &card)
   volumeMixers_(QStringList()),
   captureMixers_(QStringList()),
   mixers_(QStringList()),
-  switches_(new MixerSwitches()),
+  switches_(MixerSwitches::Ptr(new MixerSwitches())),
   currentMixerId_(0),
   currentMixerName_(QString())
 {
@@ -43,7 +43,6 @@ AlsaDevice::AlsaDevice(int id, const QString &card)
 
 AlsaDevice::~AlsaDevice()
 {
-	delete switches_;
 }
 
 void AlsaDevice::updateElements()
@@ -475,10 +474,10 @@ bool AlsaDevice::haveMixers()
 	return !mixers_.isEmpty();
 }
 
-MixerSwitches &AlsaDevice::switches()
+MixerSwitches::Ptr AlsaDevice::switches()
 {
 	updateElements();
-	return *switches_;
+	return switches_;
 }
 
 int AlsaDevice::currentMixerId() const

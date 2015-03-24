@@ -37,7 +37,6 @@ SettingsDialog::SettingsDialog(QWidget *parent)
   soundCards_(QStringList()),
   mixers_(QStringList()),
   isAutorun_(false),
-  itemsAdded_(false),
   pulseAvailable_(false),
   playbacks_(new QListWidget(this)),
   captures_(new QListWidget(this)),
@@ -168,9 +167,7 @@ void SettingsDialog::onCancel()
 
 void SettingsDialog::onAutorun(bool toggle)
 {
-	if (itemsAdded_) {
-		emit autorunChanged(toggle);
-	}
+	emit autorunChanged(toggle);
 }
 
 void SettingsDialog::closeEvent(QCloseEvent *)
@@ -180,7 +177,6 @@ void SettingsDialog::closeEvent(QCloseEvent *)
 
 void SettingsDialog::setPlaybackChecks(const QList<switcher> &pbList)
 {
-	//itemsAdded_ = false;
 	if (playbacks_->count() > 0) {
 		playbacks_->clear();
 	}
@@ -199,13 +195,10 @@ void SettingsDialog::setPlaybackChecks(const QList<switcher> &pbList)
 	playbacks_->show();
 	playbacks_->setVisible(playbacks_->count() > 0);
 	l1_->setVisible(playbacks_->count() > 0);
-	//itemsAdded_ = true;
-
 }
 
 void SettingsDialog::setCaptureChecks(const QList<switcher> &cList)
 {
-	//itemsAdded_ = false;
 	if (captures_->count() > 0 ){
 		captures_->clear();
 	}
@@ -224,13 +217,10 @@ void SettingsDialog::setCaptureChecks(const QList<switcher> &cList)
 	captures_->show();
 	captures_->setVisible(captures_->count() > 0);
 	l2_->setVisible(captures_->count() > 0);
-	//itemsAdded_ = true;
-
 }
 
 void SettingsDialog::setEnumChecks(const QList<switcher> &eList)
 {
-	//itemsAdded_ = false;
 	if (enums_->count() > 0 ){
 		enums_->clear();
 	}
@@ -248,41 +238,32 @@ void SettingsDialog::setEnumChecks(const QList<switcher> &eList)
 	enums_->show();
 	enums_->setVisible(enums_->count() > 0);
 	l3_->setVisible(enums_->count() > 0);
-	//itemsAdded_ = true;
 }
 
 void SettingsDialog::setAutorun(bool isAutorun)
 {
-	//itemsAdded_ = false;
 	ui->isAutorun->setChecked(isAutorun);
-	//itemsAdded_ = true;
 }
 
 void SettingsDialog::onPBAction(QListWidgetItem *item)
 {
-	//if (itemsAdded_) {
-		const QString name = item->text();
-		const Qt::CheckState checked = item->checkState();
-		emit playChanged(name, (checked == Qt::Checked));
-	//}
+	const QString name = item->text();
+	const Qt::CheckState checked = item->checkState();
+	emit playChanged(name, (checked == Qt::Checked));
 }
 
 void SettingsDialog::onCPAction(QListWidgetItem *item)
 {
-	//if (itemsAdded_) {
-		const QString name = item->text();
-		const Qt::CheckState checked = item->checkState();
-		emit captChanged(name, (checked == Qt::Checked));
-	//}
+	const QString name = item->text();
+	const Qt::CheckState checked = item->checkState();
+	emit captChanged(name, (checked == Qt::Checked));
 }
 
 void SettingsDialog::onENAction(QListWidgetItem *item)
 {
-	//if (itemsAdded_) {
-		const QString name = item->text();
-		const Qt::CheckState checked = item->checkState();
-		emit enumChanged(name, (checked == Qt::Checked));
-	//}
+	const QString name = item->text();
+	const Qt::CheckState checked = item->checkState();
+	emit enumChanged(name, (checked == Qt::Checked));
 }
 
 void SettingsDialog::onDarkStyle(bool toggled)

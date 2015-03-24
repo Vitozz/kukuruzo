@@ -37,6 +37,7 @@ public:
 	AlsaWork();
 	AlsaWork(AlsaWork const &);
 	~AlsaWork();
+	typedef QSharedPointer<AlsaWork> Ptr;
 	void setCurrentCard(int cardId);
 	void setCurrentMixer(const QString &mixer);
 	void setCurrentMixer(int id);
@@ -46,7 +47,7 @@ public:
 	QString getCurrentMixerName() const;
 	const QStringList &getCardsList() const;
 	const QStringList &getVolumeMixers() const;
-	const MixerSwitches &getSwitchList() const;
+	MixerSwitches::Ptr getSwitchList() const;
 	void setSwitch(const QString& mixer, int id, bool enabled);
 	void setMute(bool enabled);
 	bool getMute();

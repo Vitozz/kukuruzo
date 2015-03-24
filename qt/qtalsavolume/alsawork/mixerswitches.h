@@ -23,6 +23,7 @@
 
 #include "defines.h"
 #include <QList>
+#include <QSharedPointer>
 
 class MixerSwitches
 {
@@ -30,6 +31,7 @@ public:
 	MixerSwitches();
 	MixerSwitches(const MixerSwitches &ms);
 	~MixerSwitches();
+	typedef QSharedPointer<MixerSwitches> Ptr;
 	void pushBack(SwitchType sType, switcher &item);
 	void setCaptureSwitchList(const QList<switcher> &list);
 	void setPlaybackSwitchList(const QList<switcher> &list);
