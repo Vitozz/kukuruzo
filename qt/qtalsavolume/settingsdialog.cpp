@@ -191,10 +191,10 @@ void SettingsDialog::setPlaybackChecks(const QList<switcher> &pbList)
 		}
 		playbacks_->addItem(cb);
 	}
-	if(playbacks_->count() > 0) {}
+	bool hasItems = playbacks_->count() > 0;
 	playbacks_->show();
-	playbacks_->setVisible(playbacks_->count() > 0);
-	l1_->setVisible(playbacks_->count() > 0);
+	playbacks_->setVisible(hasItems);
+	l1_->setVisible(hasItems);
 }
 
 void SettingsDialog::setCaptureChecks(const QList<switcher> &cList)
@@ -213,10 +213,10 @@ void SettingsDialog::setCaptureChecks(const QList<switcher> &cList)
 		}
 		captures_->addItem(cb);
 	}
-	if(captures_->count() > 0) {}
+	bool hasItems = captures_->count() > 0;
 	captures_->show();
-	captures_->setVisible(captures_->count() > 0);
-	l2_->setVisible(captures_->count() > 0);
+	captures_->setVisible(hasItems);
+	l2_->setVisible(hasItems);
 }
 
 void SettingsDialog::setEnumChecks(const QList<switcher> &eList)
@@ -236,8 +236,9 @@ void SettingsDialog::setEnumChecks(const QList<switcher> &eList)
 		enums_->addItem(cb);
 	}
 	enums_->show();
-	enums_->setVisible(enums_->count() > 0);
-	l3_->setVisible(enums_->count() > 0);
+	bool hasItems = enums_->count() > 0;
+	enums_->setVisible(hasItems);
+	l3_->setVisible(hasItems);
 }
 
 void SettingsDialog::setAutorun(bool isAutorun)
