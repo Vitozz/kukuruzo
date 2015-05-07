@@ -1,6 +1,6 @@
 /*
  * popupwindow.cpp
- * Copyright (C) 2013-2014 Vitaly Tonkacheyev
+ * Copyright (C) 2013-2015 Vitaly Tonkacheyev
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -28,9 +28,8 @@
 #include <QAction>
 #include <QMenu>
 #include <QMessageBox>
-#ifdef HAVE_QT5
-#include <QScreen>
-#endif
+#include <QDesktopWidget>
+
 #ifdef ISDEBUG
 #include <QDebug>
 #endif
@@ -44,16 +43,15 @@ static const QStringList icoPrefix = QStringList()
 				     << "tb_icon100.png"; //5
 static const QString autoStartPath = ".config/autostart";
 static const QString fName = QDir::home().absolutePath() + "/.config/autostart/qtalsavolume.desktop";
-static const QString dFile = "[Desktop Entry]\n"
-			     "Encoding=UTF-8\n"
-			     "Name=QtAlsaVolume\n"
-			     "Exec=qtalsavolume\n"
-			     "Version=" +
-			     qApp->applicationVersion() +
-			     "\n"
-			     "Type=Application\n"
-			     "Comment=Changes the volume of ALSA from the system tray\n"
-			     "X-LXQt-Need-Tray=true";
+static const QString dFile = QString("%1%2%3%4%5%6%7%8").arg(
+			     "[Desktop Entry]\n",
+			     "Encoding=UTF-8\n",
+			     "Name=QtAlsaVolume\n",
+			     "Exec=qtalsavolume\n",
+			     QString("%1%2%3").arg("Version=",APP_VERSION,"\n"),
+			     "Type=Application\n",
+			     "Comment=Changes the sound volume from the system tray\n",
+			     "X-LXQt-Need-Tray=true");
 static const int POPUP_HEIGHT = 140;
 static const int POPUP_WIDTH = 30;
 static const int DELTA = 2;
@@ -314,7 +312,7 @@ void PopupWindow::setTrayIcon(int value)
 	if (isMuted_) {
 		pathSuffix = icoPrefix.at(0);
 	}
-	const QString fullPath = getResPath(pathPrefix + pathSuffix);
+	const QString fullPath = getResPath(QString("%1%2").arg(pathPrefix,pathSuffix));
 	trayIcon_->setIcon(QIcon(fullPath));
 }
 
@@ -379,13 +377,9 @@ void PopupWindow::setPopupPosition(const QPoint &point)
 	const QRect trayGeometry = trayIcon_->geometry();
 	QPoint to;
 	Position position;
-#ifdef HAVE_QT5
-	const int screenHeight = qApp->primaryScreen()->availableGeometry().height();
-	const int screenTop = qApp->primaryScreen()->availableGeometry().top();
-#else
-	const int screenHeight = qApp->desktop()->availableGeometry().height();
-	const int screenTop = qApp->desktop()->availableGeometry().top();
-#endif
+	QDesktopWidget desktopWidget;
+	const int screenHeight = desktopWidget.availableGeometry(this).height();
+	const int screenTop = desktopWidget.availableGeometry(this).top();
 	if (!trayGeometry.isEmpty()) {
 		position = trayGeometry.top() > screenHeight/2 ? BOTTOM : TOP;
 		to.setX(trayGeometry.left() + trayGeometry.width()/2 - width()/2);
@@ -434,13 +428,8 @@ bool PopupWindow::eventFilter(QObject *object, QEvent *event)
 
 void PopupWindow::setVolume(int value)
 {
-	volumeValue_ += value*2;
-	if (volumeValue_ <= 0) {
-		volumeValue_ = 0;
-	}
-	if (volumeValue_ >100) {
-		volumeValue_ = 100;
-	}
+	volumeValue_ += value*DELTA_VOLUME;
+	volumeValue_ = (volumeValue_ <= 0) ? 0 : (volumeValue_ > 100) ? 100 : volumeValue_;
 	volumeSlider_->setValue(volumeValue_);
 }
 
@@ -466,27 +455,25 @@ void PopupWindow::onSlider(int value)
 
 void PopupWindow::setIconToolTip(int value)
 {
-	if (isPulse_) {
 #ifdef USE_PULSE
+	if (isPulse_) {
 		if (pulse_) {
-			const QString message = tr("Card: ")
-						+ pulse_->getDeviceDescription(pulseCardName_)
-						+ "\n"+ tr("Volume: ")
-						+ QString::number(value);
+			const QString message = tr("Card: %1%2%3").arg(
+									pulse_->getDeviceDescription(pulseCardName_),
+									"\n",
+									tr("Volume: %1").arg(QString::number(value))
+						);
 			trayIcon_->setToolTip(message);
 		}
-#endif
-		//
 	}
-	else {
-		const QString message = tr("Card: ")
-					+ cardName_
-					+ "\n"
-					+ tr("Mixer: ")
-					+ mixerName_
-					+ "\n"
-					+ tr("Volume: ")
-					+ QString::number(value);
+#endif
+	if (!isPulse_) {
+		const QString message = tr("Card: %1%2%3%4").arg(
+								 cardName_,
+								 "\n",
+								 tr("Mixer: %1%2").arg(mixerName_,"\n"),
+								 tr("Volume: ").arg(QString::number(value))
+					);
 		trayIcon_->setToolTip(message);
 	}
 }
@@ -619,7 +606,7 @@ QString PopupWindow::getResPath(const QString &fileName) const
 				    << QString(QDir::home().absolutePath() + "/.local/share/%1").arg(APP_NAME)
 				    << QString(QDir::currentPath().left(QDir::currentPath().lastIndexOf("/")) + "/share/%1").arg(APP_NAME);
 	foreach(const QString &dir, resDirs){
-		const QString fullName = dir + "/" + fileName;
+		const QString fullName = QString("%1%2%3").arg(dir,"/",fileName);
 		if (QFile::exists(fullName)) {
 			return fullName;
 		}

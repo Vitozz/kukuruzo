@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Vitaly Tonkacheyev <thetvg@gmail.com>
+ * Copyright (C) 2014-2015 Vitaly Tonkacheyev <thetvg@gmail.com>
  *
  * Big thanks to Clément Démoulins <clement@archivel.fr>
  *
