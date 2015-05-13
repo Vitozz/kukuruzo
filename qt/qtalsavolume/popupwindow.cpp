@@ -34,14 +34,8 @@
 #include <QDebug>
 #endif
 
-static const QStringList icoPrefix = QStringList()
-				     << "tb_icon0.png" //0
-				     << "tb_icon20.png" //1
-				     << "tb_icon40.png" //2
-				     << "tb_icon60.png" //3
-				     << "tb_icon80.png" //4
-				     << "tb_icon100.png"; //5
-static const QString autoStartPath = ".config/autostart";
+static const QString appLogo(":/images/Logo");
+static const QString autoStartPath(".config/autostart");
 static const QString fName = QDir::home().absolutePath() + "/.config/autostart/qtalsavolume.desktop";
 static const QString dFile = QString("%1%2%3%4%5%6%7%8").arg(
 			     "[Desktop Entry]\n",
@@ -109,7 +103,7 @@ PopupWindow::PopupWindow()
 		      "<p>version: <b>%1</b></p></body></html>")).arg(APP_VERSION))
 #endif
 {
-	setWindowIcon(QIcon(":/images/icons/volume_ico.png"));
+	setWindowIcon(QIcon(appLogo));
 	//Start of tray icon initialization
 	initActions();
 	updateTrayMenu();
@@ -290,29 +284,23 @@ void PopupWindow::showPopup()
 void PopupWindow::setTrayIcon(int value)
 {
 	const QString pathPrefix = (isLightStyle_) ? "icons/light/" : "icons/dark/";
-	QString pathSuffix = icoPrefix.at(5);
+	int number = 100;
+	value = (value <= 0) ? 0 : (value > 100) ? 100 : value;
+	number = (value < 10) ? 10 : int(value/10)*10;
 	if (value <= 0) {
-		pathSuffix = icoPrefix.at(0);
-	}
-	if (value >0 && (value < 40)) {
-		pathSuffix = icoPrefix.at(1);
-	}
-	if (value >=40 && (value < 60)) {
-		pathSuffix = icoPrefix.at(2);
-	}
-	if (value >=60 && (value < 80)) {
-		pathSuffix = icoPrefix.at(3);
-	}
-	if (value >=80 && (value < 100)) {
-		pathSuffix = icoPrefix.at(4);
-	}
-	if (value >= 100) {
-		pathSuffix = icoPrefix.at(5);
+		number = 0;
 	}
 	if (isMuted_) {
-		pathSuffix = icoPrefix.at(0);
+		number = 0;
 	}
+	QString pathSuffix = QString("tb_icon%1.png").arg(QString::number(number));
 	const QString fullPath = getResPath(QString("%1%2").arg(pathPrefix,pathSuffix));
+#ifdef ISDEBUG
+	qDebug() << "val " << value;
+	qDebug() << "num " << number;
+	qDebug() << "Suffix " << pathSuffix;
+	qDebug() << "Icon path " << fullPath;
+#endif
 	trayIcon_->setIcon(QIcon(fullPath));
 }
 

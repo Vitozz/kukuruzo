@@ -68,17 +68,27 @@ unix{
 		     icons/volume_ico.png
 	licons.path = $$DATADIR/icons/light
 	licons.files = icons/light/tb_icon0.png \
+		       icons/light/tb_icon10.png \
 		       icons/light/tb_icon20.png \
+		       icons/light/tb_icon30.png \
 		       icons/light/tb_icon40.png \
+		       icons/light/tb_icon50.png \
 		       icons/light/tb_icon60.png \
+		       icons/light/tb_icon70.png \
 		       icons/light/tb_icon80.png \
+		       icons/light/tb_icon90.png \
 		       icons/light/tb_icon100.png
 	dicons.path = $$DATADIR/icons/dark
 	dicons.files = icons/dark/tb_icon0.png \
+		       icons/dark/tb_icon10.png \
 		       icons/dark/tb_icon20.png \
+		       icons/dark/tb_icon30.png \
 		       icons/dark/tb_icon40.png \
+		       icons/dark/tb_icon50.png \
 		       icons/dark/tb_icon60.png \
+		       icons/dark/tb_icon70.png \
 		       icons/dark/tb_icon80.png \
+		       icons/dark/tb_icon90.png \
 		       icons/dark/tb_icon100.png
 
 	INSTALLS += dt \

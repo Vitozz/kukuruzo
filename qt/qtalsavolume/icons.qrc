@@ -1,5 +1,5 @@
 <RCC>
     <qresource prefix="/images">
-        <file>icons/volume_ico.png</file>
+        <file alias="Logo">icons/volume_ico.png</file>
     </qresource>
 </RCC>
