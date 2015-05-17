@@ -403,7 +403,7 @@ bool PopupWindow::eventFilter(QObject *object, QEvent *event)
 		}
 	}
 	if (object == this) {
-		if (event->type() == QEvent::Leave) {
+		if (event->type() == QEvent::Leave || event->type() == QEvent::WindowDeactivate) {
 #ifdef ISDEBUG
 			qDebug() << "Mouse Leave";
 #endif
