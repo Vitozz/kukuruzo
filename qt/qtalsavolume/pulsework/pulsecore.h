@@ -42,7 +42,7 @@ typedef QList<PulseDevice::Ptr> PulseDevicePtrList;
 class PulseCore
 {
 public:
-	PulseCore(const char *clientName);
+	explicit PulseCore(const char *clientName);
 	~PulseCore();
 	typedef QSharedPointer<PulseCore> Ptr;
 	state pState;
