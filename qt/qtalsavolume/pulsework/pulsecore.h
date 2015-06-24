@@ -52,6 +52,7 @@ public:
 	const QString getDeviceNameByIndex(int index);
 	int getCurrentDeviceIndex() const;
 	int getVolume();
+	int getCardIndex();
 	bool getMute();
 	void setVolume(int value);
 	void setMute(bool mute);

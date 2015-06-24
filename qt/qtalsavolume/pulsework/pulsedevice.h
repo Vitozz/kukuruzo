@@ -37,6 +37,7 @@ public:
 	explicit PulseDevice(const pa_sink_info* i);
 	typedef QSharedPointer<PulseDevice> Ptr;
 	uint32_t index() const;
+	uint32_t card() const;
 	device_type type() const;
 	const QString &name() const;
 	const QString &description() const;
@@ -48,6 +49,7 @@ private:
 	int percent(pa_cvolume& volume) const;
 private:
 	uint32_t index_;
+	uint32_t card_;
 	device_type type_;
 	QString name_;
 	QString description_;

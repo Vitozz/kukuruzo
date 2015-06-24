@@ -346,6 +346,11 @@ int PulseCore::getVolume()
 	return getDeviceByIndex(currentDeviceIndex_)->volume_percent();
 }
 
+int PulseCore::getCardIndex()
+{
+	return getDeviceByIndex(currentDeviceIndex_)->card();
+}
+
 bool PulseCore::getMute()
 {
 	return getDeviceByIndex(currentDeviceIndex_)->mute();

@@ -80,6 +80,7 @@ private:
 	void createDesktopFile();
 	void readDesktopFile();
 	QString getResPath(const QString &fileName) const;
+	void updateAlsa(int card);
 	void updateSwitches();
 	void setPopupPosition(const QPoint &point);
 

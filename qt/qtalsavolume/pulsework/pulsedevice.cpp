@@ -22,9 +22,17 @@
 #ifdef ISDEBUG
 #include <QDebug>
 #endif
+#define ALSA_CARDID_PROPERTY "alsa.card"
+
+static int getCardId(pa_proplist *pl)
+{
+	const QString cardId = pa_proplist_gets(pl, ALSA_CARDID_PROPERTY);
+	return (!cardId.isNull()) ? cardId.toInt() : 0;
+}
 
 PulseDevice::PulseDevice()
 : index_(0),
+  card_(0),
   type_(SINK),
   name_(QString()),
   description_(QString()),
@@ -34,6 +42,7 @@ PulseDevice::PulseDevice()
 
 PulseDevice::PulseDevice(const pa_source_info* i)
 : index_(i->index),
+  card_(getCardId(i->proplist)),
   type_(SOURCE),
   name_(QString(i->name)),
   description_(QString::fromLocal8Bit(i->description))
@@ -48,6 +57,7 @@ PulseDevice::PulseDevice(const pa_source_info* i)
 
 PulseDevice::PulseDevice(const pa_sink_info* i)
 : index_(i->index),
+  card_(getCardId(i->proplist)),
   type_(SINK),
   name_(QString(i->name)),
   description_(QString::fromLocal8Bit(i->description))
@@ -73,6 +83,11 @@ double PulseDevice::round(double value) const
 uint32_t PulseDevice::index() const
 {
 	return index_;
+}
+
+uint32_t PulseDevice::card() const
+{
+	return card_;
 }
 
 device_type PulseDevice::type() const

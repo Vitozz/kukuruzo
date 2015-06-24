@@ -470,6 +470,7 @@ void PopupWindow::onCardChanged(int card)
 {
 #ifdef USE_PULSE
 	if (isPulse_ && pulse_) {
+		const QString oldCard = pulseCardName_;
 		pulseCardName_ = pulse_->getDeviceNameByIndex(card);
 		pulse_->setCurrentDevice(pulseCardName_);
 		pulseCardList_ = pulse_->getCardList();
@@ -480,18 +481,13 @@ void PopupWindow::onCardChanged(int card)
 		deviceIndex_ = pulse_->getCurrentDeviceIndex();
 		volumeValue_ = pulse_->getVolume();
 		volumeSlider_->setValue(volumeValue_);
+		if (oldCard != pulseCardName_) {
+			updateAlsa(pulse_->getCardIndex());
+		}
 	}
 #endif
 	if (!isPulse_) {
-		cardIndex_ = alsaWork_->cardExists(card) ? card : 0;
-		cardName_ = alsaWork_->getCardName(cardIndex_);
-		alsaWork_->setCurrentCard(cardIndex_);
-		mixerList_ = alsaWork_->getVolumeMixers();
-		settingsDialog_->setMixers(mixerList_);
-		updateSwitches();
-		settingsDialog_->setPlaybackChecks(playBackItems_);
-		settingsDialog_->setCaptureChecks(captureItems_);
-		settingsDialog_->setEnumChecks(enumItems_);
+		updateAlsa(card);
 	}
 }
 
@@ -503,6 +499,19 @@ void PopupWindow::onMixerChanged(const QString &mixer)
 		volumeValue_ = alsaWork_->getAlsaVolume();
 		volumeSlider_->setValue(volumeValue_);
 	}
+}
+
+void PopupWindow::updateAlsa(int card)
+{
+	cardIndex_ = alsaWork_->cardExists(card) ? card : 0;
+	cardName_ = alsaWork_->getCardName(cardIndex_);
+	alsaWork_->setCurrentCard(cardIndex_);
+	mixerList_ = alsaWork_->getVolumeMixers();
+	settingsDialog_->setMixers(mixerList_);
+	updateSwitches();
+	settingsDialog_->setPlaybackChecks(playBackItems_);
+	settingsDialog_->setCaptureChecks(captureItems_);
+	settingsDialog_->setEnumChecks(enumItems_);
 }
 
 void PopupWindow::updateSwitches()
