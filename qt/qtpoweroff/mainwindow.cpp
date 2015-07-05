@@ -46,7 +46,7 @@ MainWindow::MainWindow(QWidget *parent)
   ui(new Ui::MainWindow),
   trayIcon_(new QSystemTrayIcon(QIcon(":/images/tb_icon.png"), this)),
   poffTimer_(new QTimer(this)),
-  time_(new QDateTime()),
+  time_(QDateTimePtr(new QDateTime())),
   terminate_(new QAction(tr("Terminate"), this)),
   about_(new QAction(tr("About %1").arg(APP_TITLE), this)),
   aboutQt_(new QAction(tr("About Qt"), this)),
@@ -87,7 +87,6 @@ MainWindow::~MainWindow()
 	delete exit_;
 	delete aboutQt_;
 	delete about_;
-	delete time_;
 	delete poffTimer_;
 	delete trayIcon_;
 }
@@ -170,7 +169,7 @@ QString MainWindow::getTimeString(int seconds) const
 void MainWindow::calculateTimeOffset()
 {
 	if (isMinutes_) {
-		time_ = new QDateTime(time_->currentDateTime().addSecs(offset_));
+		time_ = QDateTimePtr(new QDateTime(time_->currentDateTime().addSecs(offset_)));
 #ifdef IS_DEBUG
 		qDebug() << "Time - " << time_->toString("dd-MM-yyyy hh:mm:ss");
 		qDebug() << "Offset " << offset_;
@@ -240,7 +239,7 @@ void MainWindow::onTerminate()
 
 void MainWindow::onTimeChange(const QDateTime &time)
 {
-	time_= new QDateTime(time);
+	time_= QDateTimePtr(new QDateTime(time));
 }
 
 void MainWindow::onTimeChecked(bool toggled)

@@ -24,9 +24,12 @@
 #include <QSystemTrayIcon>
 #include <QTimer>
 #include <QDateTime>
+#include <QSharedPointer>
 #ifdef HAVE_DBUS
 #include <QDBusMessage>
 #endif
+
+typedef QSharedPointer<QDateTime> QDateTimePtr;
 
 namespace Ui {
 class MainWindow;
@@ -79,7 +82,7 @@ private:
 	Ui::MainWindow *ui;
 	QSystemTrayIcon *trayIcon_;
 	QTimer *poffTimer_;
-	QDateTime *time_;
+	QDateTimePtr time_;
 	QAction *terminate_;
 	QAction *about_;
 	QAction *aboutQt_;

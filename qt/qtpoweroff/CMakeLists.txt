@@ -2,9 +2,9 @@ project( qtpoweroff )
 cmake_minimum_required( VERSION 2.8.7 )
 set( CMAKE_AUTOMOC ON )
 set( CMAKE_INCLUDE_CURRENT_DIR ON )
-set( USE_QT5 OFF CACHE BOOL "Use Qt5" )
-set( BUILD_TRANSLATIONS ON CACHE BOOL "Build project translations")
-set( BUILD_STATIC OFF CACHE BOOL "Build program with static linking" )
+option( USE_QT5 "Use Qt5" OFF )
+option( BUILD_TRANSLATIONS "Build project translations" ON )
+option( BUILD_STATIC "Build program with static linking" OFF )
 include_directories(
 	${CMAKE_SOURCE_DIR}
 	${CMAKE_CURRENT_BINARY_DIR}
