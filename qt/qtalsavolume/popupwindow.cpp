@@ -460,7 +460,7 @@ void PopupWindow::setIconToolTip(int value)
 								 cardName_,
 								 "\n",
 								 tr("Mixer: %1%2").arg(mixerName_,"\n"),
-								 tr("Volume: ").arg(QString::number(value))
+								 tr("Volume: %1").arg(QString::number(value))
 					);
 		trayIcon_->setToolTip(message);
 	}
