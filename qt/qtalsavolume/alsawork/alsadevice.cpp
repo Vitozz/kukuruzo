@@ -384,6 +384,7 @@ void AlsaDevice::setMute(bool enabled)
 
 bool AlsaDevice::getMute()
 {
+	bool isMute = true;
 	if (!currentMixerName_.isEmpty() && !mixers_.isEmpty()) {
 		snd_mixer_t *handle = getMixerHanlde(id_);
 		snd_mixer_elem_t* elem = initMixerElement(handle, currentMixerName_.toStdString().c_str());
@@ -394,7 +395,7 @@ bool AlsaDevice::getMute()
 				int value = 0;
 				checkError(snd_mixer_selem_get_playback_switch(elem, channel, &value));
 				checkError(snd_mixer_close(handle));
-				return bool(value);
+				isMute = bool(value);
 			}
 			if (snd_mixer_selem_has_capture_switch(elem)
 			    || snd_mixer_selem_has_common_switch(elem)
@@ -403,7 +404,7 @@ bool AlsaDevice::getMute()
 				int value = 0;
 				checkError(snd_mixer_selem_get_capture_switch(elem, channel, &value));
 				checkError(snd_mixer_close(handle));
-				return bool(value);
+				isMute = bool(value);
 			}
 		}
 		checkError(snd_mixer_close(handle));
