@@ -5,9 +5,11 @@ EAPI=5
 
 inherit cmake-utils git-2
 
-IUSE="pulseaudio qt4 qt5"
+IUSE="kde pulseaudio qt4 qt5"
 
 REQUIRED_USE="^^ ( qt4 qt5 )"
+REQUIRED_USE="qt4? ( !kde )"
+REQUIRED_USE="kde? ( qt5 )"
 
 DEPEND="
 	qt4? (
@@ -18,6 +20,9 @@ DEPEND="
 		dev-qt/qtcore:5
 		dev-qt/qtgui:5
 		dev-qt/qtwidgets:5
+		kde? (
+			kde-frameworks/knotifications
+		)
 	)
 	media-libs/alsa-lib
 	pulseaudio? ( media-sound/pulseaudio )
@@ -35,12 +40,15 @@ LICENSE="GPL-2"
 
 src_configure() {
 	PULSE_FLAG="OFF"
+	KDE_FLAG="OFF"
 	use pulseaudio && PULSE_FLAG="ON"
 	use qt5 && QT_FLAG="ON"
 	use qt4 && QT_FLAG="OFF"
+	use kde && KDE_FLAG="ON"
 	mycmakeargs="${mycmakeargs}
 				-DUSE_PULSE='${PULSE_FLAG}'
 				-DUSE_QT5='${QT_FLAG}'
+				-DUSE_KDE5='${KDE_FLAG}'
 				"
 	cmake-utils_src_configure
 }

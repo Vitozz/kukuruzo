@@ -60,3 +60,4 @@ Some usefull cmake flags:
 -DUSE_QT5=ON / OFF (default)
 -DUSE_PULSE=ON / OFF (default)
 -DBUILD_TRANSLATIONS=ON (default) / OFF
+-DUSE_KDE5=ON / OFF (default)

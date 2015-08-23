@@ -23,7 +23,7 @@
 
 #define APP_NAME "qtalsavolume"
 #define APP_ORG "thesomeprojects"
-#define APP_VERSION "0.1.7"
+#define APP_VERSION "0.1.8"
 
 #define CARD_INDEX "Main/card"
 #define MIXER_NAME "Main/mixer"
@@ -54,6 +54,15 @@ enum SwitchType {
 	PLAYBACK = 0,
 	CAPTURE = 1,
 	ENUM = 2
+};
+enum ActivationReason {
+	RESTORE = 0,
+	ABOUT = 1,
+	SETTINGS = 2,
+	ABOUTQT = 3,
+	WHEELUP = 4,
+	WHEELDOWN = 5,
+	EXIT = 6
 };
 
 #endif // DEFINES_H

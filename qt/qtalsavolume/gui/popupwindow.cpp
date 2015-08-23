@@ -19,6 +19,7 @@
  */
 
 #include "popupwindow.h"
+#include "defines.h"
 
 #include <QtGui>
 #include <QDesktopWidget>
@@ -29,6 +30,7 @@
 #include <QMenu>
 #include <QMessageBox>
 #include <QDesktopWidget>
+#include <QApplication>
 
 #ifdef ISDEBUG
 #include <QDebug>
@@ -63,14 +65,7 @@ PopupWindow::PopupWindow()
   playBackItems_(QList<switcher>()),
   captureItems_(QList<switcher>()),
   enumItems_(QList<switcher>()),
-  restore_(new QAction(tr("&Restore"), this)),
-  settings_(new QAction(tr("&Settings"), this)),
-  mute_(new QAction(tr("&Mute"), this)),
-  about_(new QAction(tr("&About..."), this)),
-  aboutQt_(new QAction(tr("About Qt"), this)),
-  exit_(new QAction(tr("&Quit"), this)),
-  trayMenu_(new QMenu(this)),
-  trayIcon_(new QSystemTrayIcon(this)),
+  trayIcon_(new TrayIcon()),
   mainLayout_(new QVBoxLayout()),
   volumeSlider_(new QSlider(Qt::Vertical, this)),
   volumeLabel_(new QLabel(this)),
@@ -105,14 +100,11 @@ PopupWindow::PopupWindow()
 {
 	setWindowIcon(QIcon(appLogo));
 	//Start of tray icon initialization
-	initActions();
-	updateTrayMenu();
 	const QString errorHeader(tr("Error"));
 	const QString systrayMissing(tr("System tray is not available"));
-	if(!trayIcon_->isSystemTrayAvailable()) {
+	if(!trayIcon_->isAvailable()) {
 		QMessageBox::critical(this, errorHeader, systrayMissing);
 	}
-	trayIcon_->setContextMenu(trayMenu_);
 	//Adding QLabel and QSlider to PopupWindow
 	volumeSlider_->setRange(0,100);
 	volumeSlider_->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
@@ -204,17 +196,16 @@ PopupWindow::PopupWindow()
 #endif
 	createDesktopFile();
 	//Finish of tray icon initialization
-	mute_->setChecked(isMuted_);
 	pollingVolume_ = volumeValue_;
 	volumeSlider_->setValue(volumeValue_);
 	volumeLabel_->setText(QString::number(volumeValue_));
 	setIconToolTip(volumeValue_);
 	setTrayIcon(volumeValue_);
-	connect(trayIcon_, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, SLOT(iconActivated(QSystemTrayIcon::ActivationReason)));
+	connect(trayIcon_, SIGNAL(activated(ActivationReason)), this, SLOT(iconActivated(ActivationReason)));
+	connect(trayIcon_, SIGNAL(muted(bool)), this, SLOT(onMute(bool)));
+	trayIcon_->setMute(isMuted_);
 	connect(volumeSlider_, SIGNAL(valueChanged(int)), this, SLOT(onSlider(int)));
-	trayIcon_->installEventFilter(this);
 	installEventFilter(this);
-	trayIcon_->show();
 	pollingTimer_->setInterval(POLLING_INTERVAL);
 	connect(pollingTimer_, SIGNAL(timeout()), this, SLOT(onTimeout()));
 	pollingTimer_->start();
@@ -232,37 +223,6 @@ PopupWindow::~PopupWindow()
 	delete volumeSlider_;
 	delete mainLayout_;
 	delete trayIcon_;
-	delete trayMenu_;
-	delete exit_;
-	delete aboutQt_;
-	delete about_;
-	delete mute_;
-	delete settings_;
-	delete restore_;
-}
-
-void PopupWindow::initActions()
-{
-	connect(restore_, SIGNAL(triggered()), this, SLOT(showPopup()));
-	connect(settings_, SIGNAL(triggered()), this, SLOT(showSettings()));
-	mute_->setCheckable(true);
-	connect(mute_, SIGNAL(toggled(bool)), this, SLOT(onMute(bool)));
-	connect(about_, SIGNAL(triggered()), this, SLOT(onAbout()));
-	connect(aboutQt_, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
-	connect(exit_, SIGNAL(triggered()), this, SLOT(onQuit()));
-}
-
-void PopupWindow::updateTrayMenu()
-{
-	trayMenu_->addAction(restore_);
-	trayMenu_->addSeparator();
-	trayMenu_->addAction(settings_);
-	trayMenu_->addAction(mute_);
-	trayMenu_->addSeparator();
-	trayMenu_->addAction(about_);
-	trayMenu_->addAction(aboutQt_);
-	trayMenu_->addSeparator();
-	trayMenu_->addAction(exit_);
 }
 
 void PopupWindow::onAbout()
@@ -272,9 +232,9 @@ void PopupWindow::onAbout()
 
 void PopupWindow::showPopup()
 {
-	if (!this->isVisible() && trayIcon_->isVisible()) {
+	if (!this->isVisible()) {
 		this->show();
-		setPopupPosition(QCursor::pos());
+		setPopupPosition();
 	}
 	else {
 		this->hide();
@@ -301,7 +261,7 @@ void PopupWindow::setTrayIcon(int value)
 	qDebug() << "Suffix " << pathSuffix;
 	qDebug() << "Icon path " << fullPath;
 #endif
-	trayIcon_->setIcon(QIcon(fullPath));
+	trayIcon_->setTrayIcon(fullPath);
 }
 
 void PopupWindow::showSettings()
@@ -360,10 +320,11 @@ void PopupWindow::closeEvent(QCloseEvent *)
 	qApp->quit();
 }
 
-void PopupWindow::setPopupPosition(const QPoint &point)
+void PopupWindow::setPopupPosition()
 {
-	const QRect trayGeometry = trayIcon_->geometry();
+	const QRect trayGeometry = trayIcon_->iconGeometery();
 	QPoint to;
+	QPoint point = trayIcon_->iconPosition();
 	Position position;
 	QDesktopWidget desktopWidget;
 	const int screenHeight = desktopWidget.availableGeometry(this).height();
@@ -374,7 +335,11 @@ void PopupWindow::setPopupPosition(const QPoint &point)
 	}
 	else {
 		position = (point.y() > screenHeight/2) ? BOTTOM : TOP;
+#ifdef USE_KDE5
+		to.setX(point.x());
+#else
 		to.setX(point.x() - width()/2);
+#endif
 	}
 	switch (position) {
 	case TOP:
@@ -386,22 +351,14 @@ void PopupWindow::setPopupPosition(const QPoint &point)
 	default:
 		break;
 	}
+#ifdef ISDEBUG
+	qDebug() << "TO = " << to;
+#endif
 	this->setGeometry(to.x(), to.y(), width(), height());
 }
 
 bool PopupWindow::eventFilter(QObject *object, QEvent *event)
 {
-	if (object == trayIcon_) {
-		if (event->type() == QEvent::Wheel) {
-			QWheelEvent *wheelEvent = static_cast<QWheelEvent*>(event);
-#ifdef ISDEBUG
-			qDebug() << "WheelEvent:Delta " << wheelEvent->delta();
-#endif
-			const int steps = (wheelEvent->delta()>0) ? 1 : (wheelEvent->delta()<0) ? -1: 0;
-			setVolume(steps);
-			return true;
-		}
-	}
 	if (object == this) {
 		if (event->type() == QEvent::Leave || event->type() == QEvent::WindowDeactivate) {
 #ifdef ISDEBUG
@@ -539,15 +496,29 @@ void PopupWindow::onEnum(const QString &name, bool isIt)
 	alsaWork_->setSwitch(name, ENUM, isIt);
 }
 
-void PopupWindow::iconActivated(QSystemTrayIcon::ActivationReason reason)
+void PopupWindow::iconActivated(ActivationReason reason)
 {
 	switch (reason) {
-	case QSystemTrayIcon::Trigger:
-	case QSystemTrayIcon::DoubleClick:
+	case ABOUT:
+		onAbout();
+		break;
+	case ABOUTQT:
+		QApplication::aboutQt();
+		break;
+	case RESTORE:
 		showPopup();
 		break;
-	case QSystemTrayIcon::MiddleClick:
-		mute_->setChecked(!mute_->isChecked());
+	case SETTINGS:
+		showSettings();
+		break;
+	case EXIT:
+		onQuit();
+		break;
+	case WHEELUP:
+		setVolume(1);
+		break;
+	case WHEELDOWN:
+		setVolume(-1);
 		break;
 	default:
 	;
@@ -624,7 +595,7 @@ void PopupWindow::onTimeout()
 				}
 				if (isMuted_ != ismute) {
 					isMuted_ = ismute;
-					mute_->setChecked(isMuted_);
+					trayIcon_->setMute(isMuted_);
 				}
 			}
 		}
@@ -638,7 +609,7 @@ void PopupWindow::onTimeout()
 			}
 			if (isMuted_ != ismute) {
 				isMuted_ = ismute;
-				mute_->setChecked(isMuted_);
+				trayIcon_->setMute(isMuted_);
 			}
 		}
 #endif

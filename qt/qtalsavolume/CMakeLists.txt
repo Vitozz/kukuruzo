@@ -6,6 +6,7 @@ if( UNIX AND NOT (APPLE OR CYGWIN) )
 	option( USE_PULSE "Set pulseaudio usage" OFF )
 	option( USE_QT5 "Use Qt5" OFF )
 	option( BUILD_TRANSLATIONS "Build project translations" ON )
+	option( USE_KDE5 "Use Kde5 integration" OFF )
 	find_package( PkgConfig REQUIRED )
 	pkg_check_modules( ALSA REQUIRED alsa )
 	link_directories( ${ALSA_LIBRARY_DIRS} )
@@ -28,14 +29,15 @@ if( UNIX AND NOT (APPLE OR CYGWIN) )
 	)
 	set( CPP_FILES
 		main.cpp
-		popupwindow.cpp
+		gui/popupwindow.cpp
 		alsawork/alsawork.cpp
 		alsawork/mixerswitches.cpp
 		alsawork/alsadevice.cpp
-		settingsdialog.cpp
+		gui/settingsdialog.cpp
+		gui/trayicon.cpp
 	)
 	set( UI_FILES
-		settingsdialog.ui
+		gui/settingsdialog.ui
 	)
 	set( QRC_FILES
 		icons.qrc
@@ -115,6 +117,14 @@ if( UNIX AND NOT (APPLE OR CYGWIN) )
 		set( QT_DEPLIBS
 			Qt5::Widgets
 		)
+		if( ${USE_KDE5} )
+			add_definitions( -DUSE_KDE5 )
+			find_package( KF5Notifications REQUIRED )
+			set( DEPLIBS
+				${DEPLIBS}
+				KF5::Notifications
+			)
+		endif( ${USE_KDE5} )
 	else( ${USE_QT5} )
 		find_package( Qt4 REQUIRED )
 		include( ${QT_USE_FILE} )

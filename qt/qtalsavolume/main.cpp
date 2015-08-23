@@ -18,7 +18,7 @@
  *
  */
 
-#include "popupwindow.h"
+#include "gui/popupwindow.h"
 #include "defines.h"
 
 #include <QApplication>

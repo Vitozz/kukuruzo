@@ -7,15 +7,20 @@ include(conf.pri)
 
 QT       += core gui
 
+#CONFIG += pulseaudio
+#CONFIG += kde
+
 greaterThan(QT_MAJOR_VERSION, 4){
 	QT += widgets gui
 	DEFINES += HAVE_QT5
+	kde {
+		QT += KNotifications
+		DEFINES += USE_KDE5
+	}
 }
 
 TARGET = qtalsavolume
 TEMPLATE = app
-
-#CONFIG += pulseaudio
 
 CONFIG += link_pkgconfig
 PKGCONFIG += alsa
@@ -30,21 +35,23 @@ pulseaudio {
 }
 
 SOURCES += main.cpp\
-	   popupwindow.cpp \
-	   settingsdialog.cpp \
+	   gui/popupwindow.cpp \
+	   gui/settingsdialog.cpp \
+	   gui/trayicon.cpp \
 	   alsawork/alsawork.cpp \
 	   alsawork/mixerswitches.cpp \
 	   alsawork/alsadevice.cpp
 
-HEADERS  += settingsdialog.h \
+HEADERS  += gui/settingsdialog.h \
 	    defines.h \
-	    popupwindow.h \
+	    gui/popupwindow.h \
+	    gui/trayicon.h \
 	    alsawork/alsawork.h \
 	    alsawork/mixerswitches.h \
 	    alsawork/alsadevice.h
 
 FORMS    += \
-	    settingsdialog.ui
+	    gui/settingsdialog.ui
 
 RESOURCES += \
 	    icons.qrc

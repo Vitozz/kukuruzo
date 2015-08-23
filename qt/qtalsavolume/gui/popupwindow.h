@@ -21,17 +21,17 @@
 #ifndef POPUPWINDOW_H
 #define POPUPWINDOW_H
 
-#include <QSystemTrayIcon>
 #include <QDialog>
 #include <QVBoxLayout>
 #include <QTimer>
 
-#include "alsawork/alsawork.h"
+#include "../alsawork/alsawork.h"
 #ifdef USE_PULSE
-#include "pulsework/pulsecore.h"
+#include "../pulsework/pulsecore.h"
 #endif
+#include "trayicon.h"
 #include "settingsdialog.h"
-#include "defines.h"
+#include "../defines.h"
 
 class QAction;
 class QMenu;
@@ -53,7 +53,7 @@ protected:
 	bool eventFilter(QObject *object, QEvent *event);
 
 protected slots:
-	void iconActivated(QSystemTrayIcon::ActivationReason reason);
+	void iconActivated(ActivationReason reason);
 	void showPopup();
 	void showSettings();
 	void onMute(bool isToggled);
@@ -73,8 +73,6 @@ protected slots:
 
 private:
 	void setTrayIcon(int value);
-	void initActions();
-	void updateTrayMenu();
 	void setVolume(int value);
 	void setIconToolTip(int value);
 	void createDesktopFile();
@@ -82,7 +80,7 @@ private:
 	QString getResPath(const QString &fileName) const;
 	void updateAlsa(int card);
 	void updateSwitches();
-	void setPopupPosition(const QPoint &point);
+	void setPopupPosition();
 
 private:
 	AlsaWork::Ptr alsaWork_;
@@ -97,14 +95,7 @@ private:
 	QList<switcher> playBackItems_;
 	QList<switcher> captureItems_;
 	QList<switcher> enumItems_;
-	QAction *restore_;
-	QAction *settings_;
-	QAction *mute_;
-	QAction *about_;
-	QAction *aboutQt_;
-	QAction *exit_;
-	QMenu *trayMenu_;
-	QSystemTrayIcon *trayIcon_;
+	TrayIcon *trayIcon_;
 	QVBoxLayout *mainLayout_;
 	QSlider *volumeSlider_;
 	QLabel *volumeLabel_;

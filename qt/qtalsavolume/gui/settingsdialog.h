@@ -21,7 +21,7 @@
 #ifndef SETTINGSDIALOG_H
 #define SETTINGSDIALOG_H
 
-#include "defines.h"
+#include "../defines.h"
 #include <QDialog>
 #include <QLabel>
 

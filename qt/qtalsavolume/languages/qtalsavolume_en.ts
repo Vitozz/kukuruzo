@@ -1,80 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="en_US">
+<TS version="2.1" language="en_US">
 <context>
     <name>PopupWindow</name>
     <message>
-        <location filename="../popupwindow.cpp" line="72"/>
         <source>&amp;Restore</source>
-        <translation>&amp;Restore</translation>
+        <translation type="vanished">&amp;Restore</translation>
     </message>
     <message>
-        <location filename="../popupwindow.cpp" line="73"/>
         <source>&amp;Settings</source>
-        <translation>&amp;Settings</translation>
+        <translation type="vanished">&amp;Settings</translation>
     </message>
     <message>
-        <location filename="../popupwindow.cpp" line="74"/>
         <source>&amp;Mute</source>
-        <translation>&amp;Mute</translation>
+        <translation type="vanished">&amp;Mute</translation>
     </message>
     <message>
-        <location filename="../popupwindow.cpp" line="75"/>
         <source>&amp;About...</source>
-        <translation>&amp;About...</translation>
+        <translation type="vanished">&amp;About...</translation>
     </message>
     <message>
-        <location filename="../popupwindow.cpp" line="76"/>
         <source>About Qt</source>
-        <translation>About Qt</translation>
+        <translation type="vanished">About Qt</translation>
     </message>
     <message>
-        <location filename="../popupwindow.cpp" line="77"/>
         <source>&amp;Quit</source>
-        <translation>&amp;Quit</translation>
+        <translation type="vanished">&amp;Quit</translation>
     </message>
     <message>
-        <location filename="../popupwindow.cpp" line="96"/>
+        <location filename="../gui/popupwindow.cpp" line="85"/>
         <source>About QtAlsaVolume</source>
         <translation>About QtAlsaVolume</translation>
     </message>
     <message>
-        <location filename="../popupwindow.cpp" line="98"/>
+        <location filename="../gui/popupwindow.cpp" line="87"/>
         <source>&lt;!DOCTYPE html&gt;&lt;html&gt;&lt;body&gt;&lt;p&gt;&lt;b&gt;Tray Alsa Volume Changer written using Qt&lt;/b&gt;&lt;/p&gt;&lt;p&gt;With Pulseaudio support&lt;/p&gt;&lt;p&gt;2015 (c) Vitaly Tonkacheyev &lt;address&gt;&lt;a href=&quot;mailto:thetvg@gmail.com&quot;&gt;&amp;lt;EMail&amp;gt;&lt;/a&gt;&lt;/address&gt;&lt;/p&gt;&lt;a href=&quot;http://sites.google.com/site/thesomeprojects/&quot;&gt;Program WebSite&lt;/a&gt;&lt;p&gt;version: &lt;b&gt;%1&lt;/b&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;!DOCTYPE html&gt;&lt;html&gt;&lt;body&gt;&lt;p&gt;&lt;b&gt;Tray Alsa Volume Changer written using Qt&lt;/b&gt;&lt;/p&gt;&lt;p&gt;With Pulseaudio support&lt;/p&gt;&lt;p&gt;2015 (c) Vitaly Tonkacheyev &lt;address&gt;&lt;a href=&quot;mailto:thetvg@gmail.com&quot;&gt;&amp;lt;EMail&amp;gt;&lt;/a&gt;&lt;/address&gt;&lt;/p&gt;&lt;a href=&quot;http://sites.google.com/site/thesomeprojects/&quot;&gt;Program WebSite&lt;/a&gt;&lt;p&gt;version: &lt;b&gt;%1&lt;/b&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../popupwindow.cpp" line="105"/>
+        <location filename="../gui/popupwindow.cpp" line="94"/>
         <source>&lt;!DOCTYPE html&gt;&lt;html&gt;&lt;body&gt;&lt;p&gt;&lt;b&gt;Tray Alsa Volume Changer written using Qt&lt;/b&gt;&lt;/p&gt;&lt;p&gt;2015 (c) Vitaly Tonkacheyev &lt;address&gt;&lt;a href=&quot;mailto:thetvg@gmail.com&quot;&gt;&amp;lt;EMail&amp;gt;&lt;/a&gt;&lt;/address&gt;&lt;/p&gt;&lt;a href=&quot;http://sites.google.com/site/thesomeprojects/&quot;&gt;Program WebSite&lt;/a&gt;&lt;p&gt;version: &lt;b&gt;%1&lt;/b&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;!DOCTYPE html&gt;&lt;html&gt;&lt;body&gt;&lt;p&gt;&lt;b&gt;Tray Alsa Volume Changer written using Qt&lt;/b&gt;&lt;/p&gt;&lt;p&gt;2015 (c) Vitaly Tonkacheyev &lt;address&gt;&lt;a href=&quot;mailto:thetvg@gmail.com&quot;&gt;&amp;lt;EMail&amp;gt;&lt;/a&gt;&lt;/address&gt;&lt;/p&gt;&lt;a href=&quot;http://sites.google.com/site/thesomeprojects/&quot;&gt;Program WebSite&lt;/a&gt;&lt;p&gt;version: &lt;b&gt;%1&lt;/b&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../popupwindow.cpp" line="117"/>
+        <location filename="../gui/popupwindow.cpp" line="104"/>
         <source>System tray is not available</source>
         <translation>System tray is not available</translation>
     </message>
     <message>
-        <location filename="../popupwindow.cpp" line="143"/>
+        <location filename="../gui/popupwindow.cpp" line="129"/>
         <source>Can&apos;t start PulseAudio. Using Alsa by default</source>
         <translation>Can&apos;t start PulseAudio. Using Alsa by default</translation>
     </message>
     <message>
-        <location filename="../popupwindow.cpp" line="461"/>
+        <location filename="../gui/popupwindow.cpp" line="406"/>
         <source>Card: %1%2%3</source>
         <translation>Card: %1%2%3</translation>
     </message>
     <message>
-        <location filename="../popupwindow.cpp" line="464"/>
+        <location filename="../gui/popupwindow.cpp" line="409"/>
+        <location filename="../gui/popupwindow.cpp" line="420"/>
         <source>Volume: %1</source>
         <translation>Volume: %1</translation>
     </message>
     <message>
-        <location filename="../popupwindow.cpp" line="471"/>
+        <location filename="../gui/popupwindow.cpp" line="416"/>
         <source>Card: %1%2%3%4</source>
         <translation>Card: %1%2%3%4</translation>
     </message>
     <message>
-        <location filename="../popupwindow.cpp" line="474"/>
+        <location filename="../gui/popupwindow.cpp" line="419"/>
         <source>Mixer: %1%2</source>
         <translation>Mixer: %1%2</translation>
     </message>
@@ -115,7 +110,7 @@ version: %1</source>
 version: %1</translation>
     </message>
     <message>
-        <location filename="../popupwindow.cpp" line="116"/>
+        <location filename="../gui/popupwindow.cpp" line="103"/>
         <source>Error</source>
         <translation>Error</translation>
     </message>
@@ -160,9 +155,8 @@ version: 0.0.1</translation>
         <translation type="obsolete">Mixer: </translation>
     </message>
     <message>
-        <location filename="../popupwindow.cpp" line="475"/>
         <source>Volume: </source>
-        <translation>Volume: </translation>
+        <translation type="vanished">Volume: </translation>
     </message>
 </context>
 <context>
@@ -179,32 +173,32 @@ version: 0.0.1</translation>
 <context>
     <name>SettingsDialog</name>
     <message>
-        <location filename="../settingsdialog.ui" line="26"/>
+        <location filename="../gui/settingsdialog.ui" line="26"/>
         <source>Dialog</source>
         <translation>Settings</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.ui" line="59"/>
+        <location filename="../gui/settingsdialog.ui" line="59"/>
         <source>Main</source>
         <translation>Main</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.ui" line="71"/>
+        <location filename="../gui/settingsdialog.ui" line="71"/>
         <source>Sound Cards</source>
         <translation>Sound Cards</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.ui" line="90"/>
+        <location filename="../gui/settingsdialog.ui" line="90"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select Sound Card&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select Sound Card&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.ui" line="97"/>
+        <location filename="../gui/settingsdialog.ui" line="97"/>
         <source>Mixers</source>
         <translation>Mixers</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.ui" line="113"/>
+        <location filename="../gui/settingsdialog.ui" line="113"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select Mixer&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select Mixer&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
@@ -213,12 +207,12 @@ version: 0.0.1</translation>
         <translation type="obsolete">Pulseaudio</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.ui" line="120"/>
+        <location filename="../gui/settingsdialog.ui" line="120"/>
         <source>Use PulseAudio volume control</source>
         <translation>Use PulseAudio volume control</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.ui" line="123"/>
+        <location filename="../gui/settingsdialog.ui" line="123"/>
         <source>Enable Pulseaudio</source>
         <translation>Enable Pulseaudio</translation>
     </message>
@@ -227,79 +221,112 @@ version: 0.0.1</translation>
         <translation type="obsolete">Use mouse scroll to control sound volume</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.ui" line="130"/>
+        <location filename="../gui/settingsdialog.ui" line="130"/>
         <source>Enable sound volume monitoring</source>
         <translation>Enable sound volume monitoring</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.ui" line="146"/>
+        <location filename="../gui/settingsdialog.ui" line="146"/>
         <source>Start program on system startup</source>
         <translation>Enable Pulseaudio</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.ui" line="149"/>
+        <location filename="../gui/settingsdialog.ui" line="149"/>
         <source>Autorun program on system start</source>
         <translation>Autorun program on system start</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.ui" line="156"/>
+        <location filename="../gui/settingsdialog.ui" line="156"/>
         <source>Icon Style</source>
         <translation>Icon Style</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.ui" line="177"/>
+        <location filename="../gui/settingsdialog.ui" line="177"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Light style of tray icon&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Light style of tray icon&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.ui" line="180"/>
+        <location filename="../gui/settingsdialog.ui" line="180"/>
         <source>Light Style</source>
         <translation>Light Style</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.ui" line="196"/>
+        <location filename="../gui/settingsdialog.ui" line="196"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Dark style of tray icon&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Dark style of tray icon&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.ui" line="199"/>
+        <location filename="../gui/settingsdialog.ui" line="199"/>
         <source>Dark Style</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Dark style of tray icon&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.ui" line="223"/>
+        <location filename="../gui/settingsdialog.ui" line="223"/>
         <source>Switchers</source>
         <translation>Switchers</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="44"/>
+        <location filename="../gui/settingsdialog.cpp" line="44"/>
         <source>Playback Switches</source>
         <translation>Playback Switches</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="45"/>
+        <location filename="../gui/settingsdialog.cpp" line="45"/>
         <source>Capture Switches</source>
         <translation>Capture Switches</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="46"/>
+        <location filename="../gui/settingsdialog.cpp" line="46"/>
         <source>Enum Switches</source>
         <translation>Enum Switches</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="51"/>
+        <location filename="../gui/settingsdialog.cpp" line="51"/>
         <source>Enable/Disable Alsa&apos;s Playback Switch</source>
         <translation>Enable/Disable Alsa&apos;s Playback Switch</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="52"/>
+        <location filename="../gui/settingsdialog.cpp" line="52"/>
         <source>Enable/Disable Alsa&apos;s Capture Switch</source>
         <translation>Enable/Disable Alsa&apos;s Playback Switch</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="53"/>
+        <location filename="../gui/settingsdialog.cpp" line="53"/>
         <source>Enable/Disable Alsa&apos;s Enumerated Switch</source>
         <translation>Enable/Disable Alsa&apos;s Other Switch</translation>
+    </message>
+</context>
+<context>
+    <name>TrayIcon</name>
+    <message>
+        <location filename="../gui/trayicon.cpp" line="38"/>
+        <source>&amp;Restore</source>
+        <translation type="unfinished">&amp;Restore</translation>
+    </message>
+    <message>
+        <location filename="../gui/trayicon.cpp" line="39"/>
+        <source>&amp;Settings</source>
+        <translation type="unfinished">&amp;Settings</translation>
+    </message>
+    <message>
+        <location filename="../gui/trayicon.cpp" line="40"/>
+        <source>&amp;Mute</source>
+        <translation type="unfinished">&amp;Mute</translation>
+    </message>
+    <message>
+        <location filename="../gui/trayicon.cpp" line="41"/>
+        <source>&amp;About...</source>
+        <translation type="unfinished">&amp;About...</translation>
+    </message>
+    <message>
+        <location filename="../gui/trayicon.cpp" line="42"/>
+        <source>About Qt</source>
+        <translation type="unfinished">About Qt</translation>
+    </message>
+    <message>
+        <location filename="../gui/trayicon.cpp" line="43"/>
+        <source>&amp;Quit</source>
+        <translation type="unfinished">&amp;Quit</translation>
     </message>
 </context>
 </TS>
