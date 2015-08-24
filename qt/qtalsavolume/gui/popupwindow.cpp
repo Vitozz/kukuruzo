@@ -70,7 +70,7 @@ PopupWindow::PopupWindow()
   volumeSlider_(new QSlider(Qt::Vertical, this)),
   volumeLabel_(new QLabel(this)),
   pollingTimer_(new QTimer(this)),
-  settingsDialog_(new SettingsDialog(this)),
+  settingsDialog_(new SettingsDialog()),
   cardName_(QString()),
   cardList_(QStringList()),
   pulseCardName_(QString()),
@@ -200,8 +200,8 @@ PopupWindow::PopupWindow()
 	pollingVolume_ = volumeValue_;
 	volumeSlider_->setValue(volumeValue_);
 	volumeLabel_->setText(QString::number(volumeValue_));
-	setIconToolTip(volumeValue_);
 	setTrayIcon(volumeValue_);
+	setIconToolTip(volumeValue_);
 	connect(trayIcon_, SIGNAL(activated(ActivationReason)), this, SLOT(iconActivated(ActivationReason)));
 	connect(trayIcon_, SIGNAL(muted(bool)), this, SLOT(onMute(bool)));
 	trayIcon_->setMute(isMuted_);
@@ -228,7 +228,12 @@ PopupWindow::~PopupWindow()
 
 void PopupWindow::onAbout()
 {
-	QMessageBox::about(this, title_, message_);
+	QMessageBox about;
+	about.setIconPixmap(QPixmap(appLogo));
+	about.setWindowIcon(this->windowIcon());
+	about.setText(message_);
+	about.setWindowTitle(title_);
+	about.exec();
 }
 
 void PopupWindow::showPopup()

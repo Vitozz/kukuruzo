@@ -73,10 +73,10 @@ TrayIcon::TrayIcon()
 			this, SLOT(iconActivated(QSystemTrayIcon::ActivationReason)));
 		legacyTrayIcon_->setContextMenu(trayMenu_);
 		legacyTrayIcon_->installEventFilter(this);
+		trayMenu_->addAction(restore_.data());
+		connect(restore_.data(), SIGNAL(triggered()), this, SLOT(onRestore()));
+		trayMenu_->addSeparator();
 	}
-	trayMenu_->addAction(restore_.data());
-	connect(restore_.data(), SIGNAL(triggered()), this, SLOT(onRestore()));
-	trayMenu_->addSeparator();
 	trayMenu_->addAction(settings_.data());
 	connect(settings_.data(), SIGNAL(triggered()), this, SLOT(onSettings()));
 	trayMenu_->addAction(mute_.data());
