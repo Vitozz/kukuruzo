@@ -48,28 +48,28 @@
         <translation>System tray is not available</translation>
     </message>
     <message>
-        <location filename="../gui/popupwindow.cpp" line="129"/>
+        <location filename="../gui/popupwindow.cpp" line="130"/>
         <source>Can&apos;t start PulseAudio. Using Alsa by default</source>
         <translation>Can&apos;t start PulseAudio. Using Alsa by default</translation>
     </message>
     <message>
-        <location filename="../gui/popupwindow.cpp" line="406"/>
+        <location filename="../gui/popupwindow.cpp" line="407"/>
         <source>Card: %1%2%3</source>
         <translation>Card: %1%2%3</translation>
     </message>
     <message>
-        <location filename="../gui/popupwindow.cpp" line="409"/>
-        <location filename="../gui/popupwindow.cpp" line="420"/>
+        <location filename="../gui/popupwindow.cpp" line="410"/>
+        <location filename="../gui/popupwindow.cpp" line="421"/>
         <source>Volume: %1</source>
         <translation>Volume: %1</translation>
     </message>
     <message>
-        <location filename="../gui/popupwindow.cpp" line="416"/>
+        <location filename="../gui/popupwindow.cpp" line="417"/>
         <source>Card: %1%2%3%4</source>
         <translation>Card: %1%2%3%4</translation>
     </message>
     <message>
-        <location filename="../gui/popupwindow.cpp" line="419"/>
+        <location filename="../gui/popupwindow.cpp" line="420"/>
         <source>Mixer: %1%2</source>
         <translation>Mixer: %1%2</translation>
     </message>
@@ -299,32 +299,32 @@ version: 0.0.1</translation>
 <context>
     <name>TrayIcon</name>
     <message>
-        <location filename="../gui/trayicon.cpp" line="38"/>
+        <location filename="../gui/trayicon.cpp" line="39"/>
         <source>&amp;Restore</source>
         <translation type="unfinished">&amp;Restore</translation>
     </message>
     <message>
-        <location filename="../gui/trayicon.cpp" line="39"/>
+        <location filename="../gui/trayicon.cpp" line="40"/>
         <source>&amp;Settings</source>
         <translation type="unfinished">&amp;Settings</translation>
     </message>
     <message>
-        <location filename="../gui/trayicon.cpp" line="40"/>
+        <location filename="../gui/trayicon.cpp" line="41"/>
         <source>&amp;Mute</source>
         <translation type="unfinished">&amp;Mute</translation>
     </message>
     <message>
-        <location filename="../gui/trayicon.cpp" line="41"/>
+        <location filename="../gui/trayicon.cpp" line="42"/>
         <source>&amp;About...</source>
         <translation type="unfinished">&amp;About...</translation>
     </message>
     <message>
-        <location filename="../gui/trayicon.cpp" line="42"/>
+        <location filename="../gui/trayicon.cpp" line="43"/>
         <source>About Qt</source>
         <translation type="unfinished">About Qt</translation>
     </message>
     <message>
-        <location filename="../gui/trayicon.cpp" line="43"/>
+        <location filename="../gui/trayicon.cpp" line="44"/>
         <source>&amp;Quit</source>
         <translation type="unfinished">&amp;Quit</translation>
     </message>

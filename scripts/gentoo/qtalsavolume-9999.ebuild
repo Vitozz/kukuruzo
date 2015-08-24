@@ -22,6 +22,7 @@ DEPEND="
 		dev-qt/qtwidgets:5
 		kde? (
 			kde-frameworks/knotifications
+			dev-qt/qtdbus:5
 		)
 	)
 	media-libs/alsa-lib

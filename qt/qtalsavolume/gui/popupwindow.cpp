@@ -104,6 +104,7 @@ PopupWindow::PopupWindow()
 	const QString systrayMissing(tr("System tray is not available"));
 	if(!trayIcon_->isAvailable()) {
 		QMessageBox::critical(this, errorHeader, systrayMissing);
+		onQuit();
 	}
 	//Adding QLabel and QSlider to PopupWindow
 	volumeSlider_->setRange(0,100);

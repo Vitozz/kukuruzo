@@ -14,7 +14,7 @@ greaterThan(QT_MAJOR_VERSION, 4){
 	QT += widgets gui
 	DEFINES += HAVE_QT5
 	kde {
-		QT += KNotifications
+		QT += KNotifications dbus
 		DEFINES += USE_KDE5
 	}
 }

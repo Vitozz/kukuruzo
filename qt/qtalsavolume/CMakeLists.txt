@@ -1,15 +1,17 @@
 set(PROJECT qtalsavolume )
-cmake_minimum_required( VERSION 2.8.7 )
+cmake_minimum_required( VERSION 2.8.8 )
 if( UNIX AND NOT (APPLE OR CYGWIN) )
 	set( CMAKE_AUTOMOC ON )
 	set( CMAKE_INCLUDE_CURRENT_DIR ON )
 	option( USE_PULSE "Set pulseaudio usage" OFF )
 	option( USE_QT5 "Use Qt5" OFF )
 	option( BUILD_TRANSLATIONS "Build project translations" ON )
-	option( USE_KDE5 "Use Kde5 integration" OFF )
-	find_package( PkgConfig REQUIRED )
-	pkg_check_modules( ALSA REQUIRED alsa )
-	link_directories( ${ALSA_LIBRARY_DIRS} )
+	option( USE_KDE5 "Use Kde5 integration. Needs Qt5" OFF )
+	if( ${USE_KDE5} AND NOT ${USE_QT5} )
+		message( WARNING "Kde5 Integration requires Qt5 libraries. USE_QT5 flag will be set to ON" )
+		set( USE_QT5 ON )
+	endif( ${USE_KDE5} AND NOT ${USE_QT5} )
+	find_package( ALSA REQUIRED )
 	if( "${DCMAKE_BUILD_TYPE}" STREQUAL "Debug" )
 		add_definitions( -DISDEBUG )
 	endif( "${DCMAKE_BUILD_TYPE}" STREQUAL "Debug" )
@@ -82,9 +84,8 @@ if( UNIX AND NOT (APPLE OR CYGWIN) )
 		add_definitions( -DISDEBUG )
 	endif( "${CMAKE_BUILD_TYPE}" STREQUAL "Debug" )
 	if( ${USE_PULSE} )
-		pkg_check_modules( PULSE REQUIRED libpulse )
-		link_directories( ${PULSE_LIBRARY_DIRS} )
-		include_directories( ${PULSE_INCLUDE_DIRS} )
+		find_package( PulseAudio REQUIRED )
+		include_directories( ${PULSEAUDIO_INCLUDE_DIR} )
 		add_definitions( -DUSE_PULSE )
 		set( HEADERS
 			${HEADERS}
@@ -98,7 +99,7 @@ if( UNIX AND NOT (APPLE OR CYGWIN) )
 		)
 		set( DEPLIBS
 			${DEPLIBS}
-			${PULSE_LIBRARIES}
+			${PULSEAUDIO_LIBRARY}
 		)
 	endif( ${USE_PULSE} )
 	if( ${USE_QT5} )
@@ -120,26 +121,27 @@ if( UNIX AND NOT (APPLE OR CYGWIN) )
 		if( ${USE_KDE5} )
 			add_definitions( -DUSE_KDE5 )
 			find_package( KF5Notifications REQUIRED )
+			find_package( Qt5DBus REQUIRED )
 			set( DEPLIBS
 				${DEPLIBS}
 				KF5::Notifications
 			)
+			set( QT_DEPLIBS
+				${QT_DEPLIBS}
+				Qt5::DBus
+			)
 		endif( ${USE_KDE5} )
 	else( ${USE_QT5} )
-		find_package( Qt4 REQUIRED )
+		find_package( Qt4 COMPONENTS QtGui QtCore REQUIRED )
 		include( ${QT_USE_FILE} )
-		include_directories(
-			${QT_QTCORE_INCLUDE_DIR}
-			${QT_QTGUI_INCLUDE_DIR}
-		)
 		QT4_WRAP_UI( UIS ${UI_FILES} )
 		QT4_ADD_RESOURCES( RSCS ${QRC_FILES} )
 		if( ${BUILD_TRANSLATIONS} )
 			QT4_ADD_TRANSLATION( TRS ${qtalsavolume_TRS} )
 		endif( ${BUILD_TRANSLATIONS} )
 		set ( QT_DEPLIBS
-			${QT_QTCORE_LIBRARY}
-			${QT_QTGUI_LIBRARY}
+			Qt4::QtCore
+			Qt4::QtGui
 		)
 	endif( ${USE_QT5} )
 	add_executable( ${PROJECT} ${CPP_FILES} ${UIS} ${RSCS} ${TRS} ${MOCS} "defines.h")

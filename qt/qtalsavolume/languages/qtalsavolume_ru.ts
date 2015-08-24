@@ -1,31 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="ru_RU">
+<TS version="2.1" language="ru_RU">
 <context>
     <name>PopupWindow</name>
     <message>
         <source>&amp;Restore</source>
-        <translation>&amp;Восстановить</translation>
+        <translation type="vanished">&amp;Восстановить</translation>
     </message>
     <message>
         <source>&amp;Settings</source>
-        <translation>&amp;Настройки</translation>
+        <translation type="vanished">&amp;Настройки</translation>
     </message>
     <message>
         <source>&amp;Mute</source>
-        <translation>&amp;Заглушить</translation>
+        <translation type="vanished">&amp;Заглушить</translation>
     </message>
     <message>
         <source>&amp;About...</source>
-        <translation>&amp;О программе...</translation>
+        <translation type="vanished">&amp;О программе...</translation>
     </message>
     <message>
         <source>About Qt</source>
-        <translation>О Qt</translation>
+        <translation type="vanished">О Qt</translation>
     </message>
     <message>
         <source>&amp;Quit</source>
-        <translation>&amp;Выход</translation>
+        <translation type="vanished">&amp;Выход</translation>
     </message>
     <message>
         <location filename="../gui/popupwindow.cpp" line="85"/>
@@ -48,28 +48,28 @@
         <translation>Системный трей не найден</translation>
     </message>
     <message>
-        <location filename="../gui/popupwindow.cpp" line="129"/>
+        <location filename="../gui/popupwindow.cpp" line="130"/>
         <source>Can&apos;t start PulseAudio. Using Alsa by default</source>
         <translation>Невозможно запустить PulseAudio. Используем по-умолчанию Alsa</translation>
     </message>
     <message>
-        <location filename="../gui/popupwindow.cpp" line="406"/>
+        <location filename="../gui/popupwindow.cpp" line="407"/>
         <source>Card: %1%2%3</source>
         <translation>Карта: %1%2%3</translation>
     </message>
     <message>
-        <location filename="../gui/popupwindow.cpp" line="409"/>
-        <location filename="../gui/popupwindow.cpp" line="420"/>
+        <location filename="../gui/popupwindow.cpp" line="410"/>
+        <location filename="../gui/popupwindow.cpp" line="421"/>
         <source>Volume: %1</source>
         <translation>Громкость: %1</translation>
     </message>
     <message>
-        <location filename="../gui/popupwindow.cpp" line="416"/>
+        <location filename="../gui/popupwindow.cpp" line="417"/>
         <source>Card: %1%2%3%4</source>
         <translation>Карта: %1%2%3%4</translation>
     </message>
     <message>
-        <location filename="../gui/popupwindow.cpp" line="419"/>
+        <location filename="../gui/popupwindow.cpp" line="420"/>
         <source>Mixer: %1%2</source>
         <translation>Микшер: %1%2</translation>
     </message>
@@ -156,7 +156,7 @@ version: 0.0.1</source>
     </message>
     <message>
         <source>Volume: </source>
-        <translation>Громкость: </translation>
+        <translation type="vanished">Громкость: </translation>
     </message>
 </context>
 <context>
@@ -299,32 +299,32 @@ version: 0.0.1</source>
 <context>
     <name>TrayIcon</name>
     <message>
-        <location filename="../gui/trayicon.cpp" line="38"/>
+        <location filename="../gui/trayicon.cpp" line="39"/>
         <source>&amp;Restore</source>
         <translation>&amp;Восстановить</translation>
     </message>
     <message>
-        <location filename="../gui/trayicon.cpp" line="39"/>
+        <location filename="../gui/trayicon.cpp" line="40"/>
         <source>&amp;Settings</source>
         <translation>&amp;Настройки</translation>
     </message>
     <message>
-        <location filename="../gui/trayicon.cpp" line="40"/>
+        <location filename="../gui/trayicon.cpp" line="41"/>
         <source>&amp;Mute</source>
         <translation>&amp;Заглушить</translation>
     </message>
     <message>
-        <location filename="../gui/trayicon.cpp" line="41"/>
+        <location filename="../gui/trayicon.cpp" line="42"/>
         <source>&amp;About...</source>
         <translation>&amp;О программе...</translation>
     </message>
     <message>
-        <location filename="../gui/trayicon.cpp" line="42"/>
+        <location filename="../gui/trayicon.cpp" line="43"/>
         <source>About Qt</source>
         <translation>О Qt</translation>
     </message>
     <message>
-        <location filename="../gui/trayicon.cpp" line="43"/>
+        <location filename="../gui/trayicon.cpp" line="44"/>
         <source>&amp;Quit</source>
         <translation>&amp;Выход</translation>
     </message>

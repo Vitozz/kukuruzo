@@ -25,15 +25,21 @@
 
 #ifdef USE_KDE5
 #include <KStatusNotifierItem>
-#else
+#endif
+#include <QSharedPointer>
 #include <QSystemTrayIcon>
 #include <QEvent>
-#endif
-
 #include <QString>
 #include <QRect>
 #include <QPoint>
 #include <QMenu>
+
+typedef QSharedPointer<QAction> QActionPtr;
+#ifdef USE_KDE5
+typedef QSharedPointer<KStatusNotifierItem> KStatusNotifierItemPtr;
+#endif
+typedef QSharedPointer<QSystemTrayIcon> QSystemTrayIconPtr;
+
 
 class TrayIcon : public QObject
 {
@@ -41,7 +47,6 @@ class TrayIcon : public QObject
 
 public:
 	TrayIcon();
-	~TrayIcon();
 	void setTrayIcon(const QString &icon);
 	void setToolTip(const QString &tooltip);
 	void setMute(bool isMuted);
@@ -64,34 +69,28 @@ protected slots:
 	void iconActivated(bool isIt, QPoint point);
 	void iconActivatedSecondary(QPoint point);
 	void onScroll(int value,Qt::Orientation orientation);
-#else
-	void iconActivated(QSystemTrayIcon::ActivationReason reason);
 #endif
+	void iconActivated(QSystemTrayIcon::ActivationReason reason);
 
-#ifndef USE_KDE5
 protected:
 	bool eventFilter(QObject *object, QEvent *event);
 
-#endif
 private:
-	void disconnectAll();
-
-private:
-#ifdef USE_KDE5
-	KStatusNotifierItem *trayIcon_;
-#else
-	QSystemTrayIcon *trayIcon_;
-#endif
 	QMenu *trayMenu_;
-	QAction *restore_;
-	QAction *settings_;
-	QAction *mute_;
-	QAction *about_;
-	QAction *aboutQt_;
-	QAction *exit_;
+	QActionPtr restore_;
+	QActionPtr settings_;
+	QActionPtr mute_;
+	QActionPtr about_;
+	QActionPtr aboutQt_;
+	QActionPtr exit_;
 	QString currentIcon_;
 	QRect geometery_;
 	QPoint iconPosition_;
+	bool newInterface_;
+#ifdef USE_KDE5
+	KStatusNotifierItemPtr newTrayIcon_;
+#endif
+	QSystemTrayIconPtr legacyTrayIcon_;
 };
 
 #endif // TRAYICON_H

@@ -12,7 +12,7 @@ Available features:
 	- enable or disable sound card switches in settings dialog
 	- initial Pulseaudio support if application builded with Pulseaudio support
 	- both Qt4 and Qt5 support
-	- not xembed tray support (optionally, needs KDE5 libs)
+	- not xembed tray support (optionally, needs KDE5 and Qt5 libs)
 
 TODO
 Alsa and Pulseaudio monitors

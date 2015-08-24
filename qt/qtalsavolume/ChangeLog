@@ -1,6 +1,6 @@
-2015-08-23
+2015-08-24
 v.0.1.8
-  + Added StatusNotifier support using (optionally / uses KDE)
+  + Added StatusNotifier support (optionally / uses KDE5 libs)
   + gui modules moved to gui directory
 
 2015-08-15
