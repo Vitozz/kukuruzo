@@ -86,7 +86,6 @@ private:
 	QString currentIcon_;
 	QRect geometery_;
 	QPoint iconPosition_;
-	bool newInterface_;
 #ifdef USE_KDE5
 	KStatusNotifierItemPtr newTrayIcon_;
 #endif

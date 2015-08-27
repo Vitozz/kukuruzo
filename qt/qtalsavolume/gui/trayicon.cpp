@@ -26,7 +26,6 @@
 static const QString ICON_TITLE = "QtAlsaVolume";
 
 #ifdef USE_KDE5
-#include <QDBusConnection>
 #include <QDBusInterface>
 
 static const QString KSNI_SERVICE = "org.kde.StatusNotifierWatcher";
@@ -45,16 +44,16 @@ TrayIcon::TrayIcon()
   currentIcon_(QString()),
   geometery_(QRect()),
   iconPosition_(QCursor::pos()),
-  newInterface_(false),
 #ifdef USE_KDE5
   newTrayIcon_(KStatusNotifierItemPtr()),
 #endif
   legacyTrayIcon_(QSystemTrayIconPtr())
 {
+	bool newInterface = false;
 #ifdef USE_KDE5
 	QDBusInterface iface(KSNI_SERVICE, KSNI_PATH, KSNI_IFACE);
 	if (iface.isValid()) {
-		newInterface_ = true;
+		newInterface = true;
 		newTrayIcon_ = KStatusNotifierItemPtr(new KStatusNotifierItem(APP_NAME, this));
 		newTrayIcon_->setStatus(KStatusNotifierItem::Active);
 		newTrayIcon_->setTitle(ICON_TITLE);
@@ -65,9 +64,9 @@ TrayIcon::TrayIcon()
 	}
 #endif
 #ifdef ISDEBUG
-	qDebug() << "NewIcon " << newInterface_;
+	qDebug() << "NewIcon " << newInterface;
 #endif
-	if (!newInterface_) {
+	if (!newInterface) {
 		legacyTrayIcon_ = QSystemTrayIconPtr(new QSystemTrayIcon(this));
 		connect(legacyTrayIcon_.data(), SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
 			this, SLOT(iconActivated(QSystemTrayIcon::ActivationReason)));
@@ -87,7 +86,7 @@ TrayIcon::TrayIcon()
 	connect(about_.data(), SIGNAL(triggered()), this, SLOT(onAbout()));
 	trayMenu_->addAction(aboutQt_.data());
 	connect(aboutQt_.data(), SIGNAL(triggered()), this, SLOT(onAboutQt()));
-	if (!newInterface_) {
+	if (legacyTrayIcon_) {
 		trayMenu_->addSeparator();
 		trayMenu_->addAction(exit_.data());
 		connect(exit_.data(), SIGNAL(triggered()), this, SLOT(onExit()));
@@ -96,7 +95,7 @@ TrayIcon::TrayIcon()
 
 void TrayIcon::setTrayIcon(const QString &icon)
 {
-	if (!newInterface_) {
+	if (legacyTrayIcon_) {
 		legacyTrayIcon_->setIcon(QIcon(icon));
 		if (!legacyTrayIcon_->isVisible())
 			legacyTrayIcon_->show();
@@ -112,7 +111,7 @@ void TrayIcon::setTrayIcon(const QString &icon)
 
 bool TrayIcon::isAvailable()
 {
-	return newInterface_ ? true : legacyTrayIcon_->isSystemTrayAvailable();
+	return legacyTrayIcon_.isNull() ? true : legacyTrayIcon_->isSystemTrayAvailable();
 }
 
 void TrayIcon::setMute(bool isMuted)
@@ -122,7 +121,7 @@ void TrayIcon::setMute(bool isMuted)
 
 void TrayIcon::setToolTip(const QString &tooltip)
 {
-	if (!newInterface_) {
+	if (legacyTrayIcon_) {
 		legacyTrayIcon_->setToolTip(tooltip);
 	}
 #ifdef USE_KDE5
@@ -182,18 +181,16 @@ void TrayIcon::iconActivated(QSystemTrayIcon::ActivationReason reason)
 
 bool TrayIcon::eventFilter(QObject *object, QEvent *event)
 {
-	if (object == legacyTrayIcon_.data()) {
-		if (event->type() == QEvent::Wheel) {
-			QWheelEvent *wheelEvent = static_cast<QWheelEvent*>(event);
-			const int steps = (wheelEvent->delta()>0) ? 1 : (wheelEvent->delta()<0) ? -1: 0;
-			if (steps > 0) {
-				emit activated(WHEELUP);
-			}
-			else {
-				emit activated(WHEELDOWN);
-			}
-			return true;
+	if (object == legacyTrayIcon_.data() && event->type() == QEvent::Wheel) {
+		QWheelEvent *wheelEvent = static_cast<QWheelEvent*>(event);
+		const int steps = (wheelEvent->delta()>0) ? 1 : (wheelEvent->delta()<0) ? -1: 0;
+		if (steps > 0) {
+			emit activated(WHEELUP);
 		}
+		else {
+			emit activated(WHEELDOWN);
+		}
+		return true;
 	}
 	return false;
 }
