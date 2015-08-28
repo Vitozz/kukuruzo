@@ -8,7 +8,6 @@ inherit cmake-utils git-2
 IUSE="kde pulseaudio qt4 qt5"
 
 REQUIRED_USE="^^ ( qt4 qt5 )"
-REQUIRED_USE="qt4? ( !kde )"
 
 DEPEND="
 	qt4? (
