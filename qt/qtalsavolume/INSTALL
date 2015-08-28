@@ -3,7 +3,7 @@ Build Deps:
 - Qt4 / Qt5
 - alsa/asoundlib (libasound2-dev package in Ubuntu)
 - Pulseaudio (libpulse) to build With Pulseaudio support
-- knotifications to build with KDE5 support
+- knotifications to build with KDE4 / Plasma5 support
 =========================================================
 
 Howto build application:
@@ -62,3 +62,4 @@ Some usefull cmake flags:
 -DUSE_PULSE=ON / OFF (default)
 -DBUILD_TRANSLATIONS=ON (default) / OFF
 -DUSE_KDE5=ON / OFF (default) - Automatically enables USE_QT5 flag
+-DUSE_KDE=ON / OFF (default) - Automatically disables USE_QT5 flag

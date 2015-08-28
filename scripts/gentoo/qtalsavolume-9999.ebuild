@@ -9,12 +9,15 @@ IUSE="kde pulseaudio qt4 qt5"
 
 REQUIRED_USE="^^ ( qt4 qt5 )"
 REQUIRED_USE="qt4? ( !kde )"
-REQUIRED_USE="kde? ( qt5 )"
 
 DEPEND="
 	qt4? (
 		dev-qt/qtcore:4
 		dev-qt/qtgui:4
+		kde? (
+			kde-base/kdelibs:4
+			dev-qt/qtdbus:4
+		)
 	)
 	qt5? (
 		dev-qt/qtcore:5
@@ -43,13 +46,22 @@ src_configure() {
 	PULSE_FLAG="OFF"
 	KDE_FLAG="OFF"
 	use pulseaudio && PULSE_FLAG="ON"
-	use qt5 && QT_FLAG="ON"
-	use qt4 && QT_FLAG="OFF"
-	use kde && KDE_FLAG="ON"
+	if use qt5;then  
+		QT_FLAG="ON"
+		if use kde; then
+			KDE_FLAG="-DUSE_KDE5=ON"
+		fi
+	fi
+	if use qt4;then  
+		QT_FLAG="OFF"
+		if use kde; then
+			KDE_FLAG="-DUSE_KDE=ON"
+		fi
+	fi
 	mycmakeargs="${mycmakeargs}
 				-DUSE_PULSE='${PULSE_FLAG}'
 				-DUSE_QT5='${QT_FLAG}'
-				-DUSE_KDE5='${KDE_FLAG}'
+				'${KDE_FLAG}'
 				"
 	cmake-utils_src_configure
 }

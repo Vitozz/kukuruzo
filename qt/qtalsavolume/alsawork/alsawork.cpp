@@ -21,6 +21,7 @@
 #include "mixerswitches.h"
 #include "alsawork.h"
 #include <QMessageBox>
+#include <QString>
 
 static const QString ERROR_TITLE = "Error in alsawork.cpp";
 
@@ -73,9 +74,9 @@ int AlsaWork::getAlsaVolume()
 
 const QString AlsaWork::getCardName(int index)
 {
-	const QString card(AlsaDevice::formatCardName(index));
+	QString card(AlsaDevice::formatCardName(index));
 	snd_ctl_t *ctl;
-	checkError(snd_ctl_open(&ctl, card.toStdString().c_str(), SND_CTL_NONBLOCK));
+	checkError(snd_ctl_open(&ctl, card.toLocal8Bit(), SND_CTL_NONBLOCK));
 	snd_ctl_card_info_t *cardInfo;
 	snd_ctl_card_info_alloca(&cardInfo);
 	checkError(snd_ctl_card_info(ctl, cardInfo));

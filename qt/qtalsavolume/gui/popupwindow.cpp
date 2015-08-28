@@ -341,7 +341,7 @@ void PopupWindow::setPopupPosition()
 	}
 	else {
 		position = (point.y() > screenHeight/2) ? BOTTOM : TOP;
-#ifdef USE_KDE5
+#ifdef HAVE_KDE
 		to.setX(point.x());
 #else
 		to.setX(point.x() - width()/2);

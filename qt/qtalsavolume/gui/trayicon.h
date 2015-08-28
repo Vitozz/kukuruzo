@@ -26,6 +26,9 @@
 #ifdef USE_KDE5
 #include <KStatusNotifierItem>
 #endif
+#ifdef USE_KDE
+#include <kstatusnotifieritem.h>
+#endif
 #include <QSharedPointer>
 #include <QSystemTrayIcon>
 #include <QEvent>
@@ -35,7 +38,7 @@
 #include <QMenu>
 
 typedef QSharedPointer<QAction> QActionPtr;
-#ifdef USE_KDE5
+#ifdef HAVE_KDE
 typedef QSharedPointer<KStatusNotifierItem> KStatusNotifierItemPtr;
 #endif
 typedef QSharedPointer<QSystemTrayIcon> QSystemTrayIconPtr;
@@ -65,7 +68,7 @@ protected slots:
 	void onMute();
 	void onSettings();
 	void onExit();
-#ifdef USE_KDE5
+#ifdef HAVE_KDE
 	void iconActivated(bool isIt, QPoint point);
 	void iconActivatedSecondary(QPoint point);
 	void onScroll(int value,Qt::Orientation orientation);
@@ -76,7 +79,6 @@ protected:
 	bool eventFilter(QObject *object, QEvent *event);
 
 private:
-	QMenu *trayMenu_;
 	QActionPtr restore_;
 	QActionPtr settings_;
 	QActionPtr mute_;
@@ -86,7 +88,7 @@ private:
 	QString currentIcon_;
 	QRect geometery_;
 	QPoint iconPosition_;
-#ifdef USE_KDE5
+#ifdef HAVE_KDE
 	KStatusNotifierItemPtr newTrayIcon_;
 #endif
 	QSystemTrayIconPtr legacyTrayIcon_;

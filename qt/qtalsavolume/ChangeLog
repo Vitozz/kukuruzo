@@ -1,6 +1,10 @@
+2015-08-28
+v.0.1.9
+  + Added KStatusNotifierItem support for KDE4 (optionally)
+
 2015-08-24
 v.0.1.8
-  + Added StatusNotifier support (optionally / uses KDE5 libs)
+  + Added KStatusNotifierItem support (optionally / uses KDE5 libs)
   + gui modules moved to gui directory
 
 2015-08-15

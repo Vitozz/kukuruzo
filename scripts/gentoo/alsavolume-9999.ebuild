@@ -20,6 +20,9 @@ DEPEND="
 		)
 	media-libs/alsa-lib
 	pulseaudio? ( media-sound/pulseaudio )
+	dev-util/intltool
+	virtual/libintl
+	sys-devel/gettext
 "
 RDEPEND="
 	${DEPEND}

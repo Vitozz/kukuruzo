@@ -142,7 +142,7 @@ snd_mixer_t *AlsaDevice::getMixerHanlde(int id)
 {
 	snd_mixer_t *handle;
 	checkError(snd_mixer_open(&handle, 0));
-	checkError(snd_mixer_attach(handle, formatCardName(id).toStdString().c_str()));
+	checkError(snd_mixer_attach(handle, formatCardName(id).toLocal8Bit()));
 	checkError(snd_mixer_selem_register(handle, NULL, NULL));
 	checkError(snd_mixer_load(handle));
 	return handle;
@@ -309,7 +309,7 @@ void AlsaDevice::setDeviceVolume(double volume)
 {
 	if (!currentMixerName_.isEmpty() && !mixers_.isEmpty()) {
 		snd_mixer_t *handle = getMixerHanlde(id_);
-		snd_mixer_elem_t *element = initMixerElement(handle, currentMixerName_.toStdString().c_str());
+		snd_mixer_elem_t *element = initMixerElement(handle, currentMixerName_.toLocal8Bit());
 		if (!snd_mixer_elem_empty(element)) {
 			setNormVolume(element, volume/100);
 		}
@@ -325,7 +325,7 @@ double AlsaDevice::getVolume()
 	double volume = ZERO;
 	if (!currentMixerName_.isEmpty() && !mixers_.isEmpty()) {
 		snd_mixer_t *handle = getMixerHanlde(id_);
-		snd_mixer_elem_t *elem = initMixerElement(handle, currentMixerName_.toStdString().c_str());
+		snd_mixer_elem_t *elem = initMixerElement(handle, currentMixerName_.toLocal8Bit());
 		if (!snd_mixer_elem_empty(elem)) {
 			volume = getNormVolume(elem)*100;
 		}
@@ -340,7 +340,7 @@ double AlsaDevice::getVolume()
 void AlsaDevice::setSwitch(const QString &mixer, int id, bool enabled)
 {
 	snd_mixer_t *handle = getMixerHanlde(id_);
-	snd_mixer_elem_t* elem = initMixerElement(handle, mixer.toStdString().c_str());
+	snd_mixer_elem_t* elem = initMixerElement(handle, mixer.toLocal8Bit());
 	if (!snd_mixer_elem_empty(elem)) {
 		switch (id) {
 		case PLAYBACK:
@@ -362,7 +362,7 @@ void AlsaDevice::setMute(bool enabled)
 {
 	if (!currentMixerName_.isEmpty()) {
 		snd_mixer_t *handle = getMixerHanlde(id_);
-		snd_mixer_elem_t* elem = initMixerElement(handle, currentMixerName_.toStdString().c_str());
+		snd_mixer_elem_t* elem = initMixerElement(handle, currentMixerName_.toLocal8Bit());
 		if (!snd_mixer_elem_empty(elem)) {
 			if (snd_mixer_selem_has_playback_switch(elem)
 			    || snd_mixer_selem_has_playback_switch_joined(elem)) {
@@ -386,7 +386,7 @@ bool AlsaDevice::getMute()
 {
 	if (!currentMixerName_.isEmpty() && !mixers_.isEmpty()) {
 		snd_mixer_t *handle = getMixerHanlde(id_);
-		snd_mixer_elem_t* elem = initMixerElement(handle, currentMixerName_.toStdString().c_str());
+		snd_mixer_elem_t* elem = initMixerElement(handle, currentMixerName_.toLocal8Bit());
 		if (!snd_mixer_elem_empty(elem)) {
 			snd_mixer_selem_channel_id_t channel = checkMixerChannels(elem);
 			if (snd_mixer_selem_has_playback_switch(elem)
