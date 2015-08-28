@@ -60,7 +60,11 @@ TrayIcon::TrayIcon()
 		newTrayIcon_ = KStatusNotifierItemPtr(new KStatusNotifierItem(APP_NAME, this));
 		newTrayIcon_->setStatus(KStatusNotifierItem::Active);
 		newTrayIcon_->setTitle(ICON_TITLE);
+#ifdef USE_KDE
 		newTrayIcon_->setContextMenu(static_cast<KMenu*>(trayMenu));
+#else
+		newTrayIcon_->setContextMenu(trayMenu);
+#endif
 		connect(newTrayIcon_.data(), SIGNAL(activateRequested(bool,QPoint)), this, SLOT(iconActivated(bool,QPoint)));
 		connect(newTrayIcon_.data(), SIGNAL(secondaryActivateRequested(QPoint)), this, SLOT(iconActivatedSecondary(QPoint)));
 		connect(newTrayIcon_.data(), SIGNAL(scrollRequested(int,Qt::Orientation)), this, SLOT(onScroll(int,Qt::Orientation)));

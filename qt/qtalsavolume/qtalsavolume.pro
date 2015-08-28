@@ -15,7 +15,14 @@ greaterThan(QT_MAJOR_VERSION, 4){
 	DEFINES += HAVE_QT5
 	kde {
 		QT += KNotifications dbus
-		DEFINES += USE_KDE5
+		DEFINES += USE_KDE5 HAVE_KDE
+	}
+} else {
+	kde {
+		QT += dbus
+		INCLUDEPATH += /usr/include/KDE
+		LIBS += -lkdeui -lkdecore
+		DEFINES += USE_KDE HAVE_KDE
 	}
 }
 
