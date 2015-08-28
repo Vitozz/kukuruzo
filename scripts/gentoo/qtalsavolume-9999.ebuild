@@ -60,7 +60,7 @@ src_configure() {
 	mycmakeargs="${mycmakeargs}
 				-DUSE_PULSE='${PULSE_FLAG}'
 				-DUSE_QT5='${QT_FLAG}'
-				'${KDE_FLAG}'
+				${KDE_FLAG}
 				"
 	cmake-utils_src_configure
 }
