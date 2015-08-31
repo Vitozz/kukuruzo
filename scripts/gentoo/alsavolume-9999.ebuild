@@ -5,7 +5,7 @@ EAPI=5
 
 inherit cmake-utils git-2
 
-IUSE="appindicator gtk2 gtk3 pulseaudio"
+IUSE="appindicator gtk2 gtk3 kde pulseaudio"
 
 REQUIRED_USE="^^ ( gtk2 gtk3 )"
 
@@ -39,13 +39,16 @@ src_configure() {
 	PULSE_FLAG="OFF"
 	GTK3_FLAG="ON"
 	APPIND_FLAG="OFF"
+	KDE_FLAG="OFF"
 	use pulseaudio && PULSE_FLAG="ON"
 	use gtk2 && GTK3_FLAG="OFF"
 	use appindicator && APPIND_FLAG="ON"
+	use kde && KDE_FLAG="ON"
 	mycmakeargs="${mycmakeargs}
 				-DUSE_PULSE='${PULSE_FLAG}'
 				-DUSE_GTK3='${GTK3_FLAG}'
 				-DUSE_APPINDICATOR='${APPIND_FLAG}'
+				-DUSE_KDE='${KDE_FLAG}'
 				"
 	cmake-utils_src_configure
 }
