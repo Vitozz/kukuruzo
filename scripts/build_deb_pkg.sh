@@ -127,14 +127,17 @@ quit ()
 #
 prepare_specs ()
 {
-changelog="${project} (${ver}-${build_count}) ${oscodename}; urgency=low
+if [ -z $APP_NAME ]; then
+	APP_NAME=${project}
+fi
+changelog="${APP_NAME} (${ver}-${build_count}) ${oscodename}; urgency=low
 
   * new upsream release
 
  -- ${username} <${username}@gmail.com>  ${data}"
 
 compat="7"
-control="Source: ${project}
+control="Source: ${APP_NAME}
 Section: ${section}
 Priority: extra
 Maintainer: ${Maintainer}
@@ -142,7 +145,7 @@ Build-Depends: ${builddep}
 Standards-Version: 3.8.1
 Homepage: http://sites.google.com/site/thesomeprojects/
 
-Package: ${project}
+Package: ${APP_NAME}
 Architecture: ${arch}
 ${addit}
 Depends: ${depends}
@@ -528,6 +531,7 @@ build_avolume ()
 {
 	run_resloader get_avolume
 	project="alsavolume"
+	APP_NAME=${project}
 	dirname="cppAlsaVolume"
 	build_count=1
 	ver=$(cat ${srcdir}/${dirname}/version.txt)
@@ -538,24 +542,24 @@ build_avolume ()
 	echo -e "${blue}Enable pulseaudio support${nocolor} ${pink}[y/n(default)]${nocolor}"
 	read ispulse
 	if [ "${ispulse}" == "y" ]; then
-		project="${project}-pulse"
+		APP_NAME="${APP_NAME}-pulse"
 		cmake_flags="-DUSE_PULSE=ON"
 		builddep="${builddep}, libpulse-dev"
 	fi
 	echo -e "${blue}Enable GTK+2 support${nocolor} ${pink}[y/n(default)]${nocolor}"
 	read isgtk
 	if [ "${isgtk}" == "y" ]; then
-		project="${project}-gtk2"
+		APP_NAME="${APP_NAME}-gtk2"
 		cmake_flags="${cmake_flags} -DUSE_GTK3=OFF"
 		builddep="${builddep}, libgtkmm-2.4-dev"
 	else
-		project="${project}-gtk3"
+		APP_NAME="${APP_NAME}-gtk3"
 		builddep="${builddep}, libgtkmm-3.0-dev"
 	fi
 		echo -e "${blue}Enable KDE tray support${nocolor} ${pink}[y/n(default)]${nocolor}"
 	read iskde
 	if [ "${iskde}" == "y" ]; then
-		project="${project}-kde"
+		APP_NAME="${APP_NAME}-kde"
 		cmake_flags="${cmake_flags} -DUSE_KDE=ON"
 	fi
 	echo -e "${blue}Enable AppIndicator support${nocolor} ${pink}[y/n(default)]${nocolor}"
@@ -563,10 +567,10 @@ build_avolume ()
 	if [ "${iskde}" == "y" ]; then
 		cmake_flags="${cmake_flags} -DUSE_APPINDICATOR=ON"
 		if [ "${isgtk}" == "y" ]; then
- 			project="${project}-appind"
+ 			APP_NAME="${APP_NAME}-appind"
 			builddep="${builddep}, libappindicator-dev"
 		else
-			project="${project}-appind3"
+			APP_NAME="${APP_NAME}-appind3"
 			builddep="${builddep}, libappindicator3-dev"
 		fi
 	fi
@@ -598,6 +602,7 @@ usr/share/applications"
 build_qtavolume ()
 {
 	project="qtalsavolume"
+	APP_NAME=${project}
 	dirname="qt/qtalsavolume"
 	build_count=1
 	ver=$(cat ${srcdir}/${dirname}/version.txt)
@@ -608,21 +613,21 @@ build_qtavolume ()
 	echo -e "${blue}Enable pulseaudio support${nocolor} ${pink}[y/n(default)]${nocolor}"
 	read ispulse
 	if [ "${ispulse}" == "y" ]; then
-		project="${project}-pulse"
+		APP_NAME="${APP_NAME}-pulse"
 		cmake_flags="-DUSE_PULSE=ON"
 		builddep="${builddep}, libpulse-dev"
 	fi
 	echo -e "${blue}Enable KDE4 support${nocolor} ${pink}[y/n(default)]${nocolor}"
 	read iskde4
 	if [ "${iskde4}" == "y" ]; then
-		project="${project}-kde4"
+		APP_NAME="${APP_NAME}-kde4"
 		cmake_flags="-DUSE_KDE=ON"
 		#builddep="${builddep}, kdelibs-dev" #FIXME
 	fi
 	echo -e "${blue}Enable KDE5 support${nocolor} ${pink}[y/n(default)]${nocolor}"
 	read iskde5
 	if [ "${iskde5}" == "y" ]; then
-		project="${project}-kde5"
+		APP_NAME="${APP_NAME}-kde5"
 		cmake_flags="-DUSE_KDE5=ON"
 		#builddep="${builddep}, libkdeui5-dev" #FIXME
 	fi
