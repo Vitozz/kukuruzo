@@ -529,6 +529,7 @@ build_avolume ()
 	run_resloader get_avolume
 	project="alsavolume"
 	dirname="cppAlsaVolume"
+	build_count=1
 	ver=$(cat ${srcdir}/${dirname}/version.txt)
 	debdir=${builddir}/${project}-${ver}
 	prepare
@@ -537,21 +538,37 @@ build_avolume ()
 	echo -e "${blue}Enable pulseaudio support${nocolor} ${pink}[y/n(default)]${nocolor}"
 	read ispulse
 	if [ "${ispulse}" == "y" ]; then
-		build_count=1
+		project="${project}-pulse"
 		cmake_flags="-DUSE_PULSE=ON"
 		builddep="${builddep}, libpulse-dev"
-	else
-		build_count=2
 	fi
 	echo -e "${blue}Enable GTK+2 support${nocolor} ${pink}[y/n(default)]${nocolor}"
 	read isgtk
 	if [ "${isgtk}" == "y" ]; then
-		build_count=2
+		project="${project}-gtk2"
 		cmake_flags="${cmake_flags} -DUSE_GTK3=OFF"
 		builddep="${builddep}, libgtkmm-2.4-dev"
 	else
-		build_count=1
+		project="${project}-gtk3"
 		builddep="${builddep}, libgtkmm-3.0-dev"
+	fi
+		echo -e "${blue}Enable KDE tray support${nocolor} ${pink}[y/n(default)]${nocolor}"
+	read iskde
+	if [ "${iskde}" == "y" ]; then
+		project="${project}-kde"
+		cmake_flags="${cmake_flags} -DUSE_KDE=ON"
+	fi
+	echo -e "${blue}Enable AppIndicator support${nocolor} ${pink}[y/n(default)]${nocolor}"
+	read iskde
+	if [ "${iskde}" == "y" ]; then
+		cmake_flags="${cmake_flags} -DUSE_APPINDICATOR=ON"
+		if [ "${isgtk}" == "y" ]; then
+ 			project="${project}-appind"
+			builddep="${builddep}, libappindicator-dev"
+		else
+			project="${project}-appind3"
+			builddep="${builddep}, libappindicator3-dev"
+		fi
 	fi
 	section="sound"
 	arch="any"	
@@ -582,6 +599,7 @@ build_qtavolume ()
 {
 	project="qtalsavolume"
 	dirname="qt/qtalsavolume"
+	build_count=1
 	ver=$(cat ${srcdir}/${dirname}/version.txt)
 	debdir=${builddir}/${project}-${ver}
 	prepare
@@ -590,11 +608,23 @@ build_qtavolume ()
 	echo -e "${blue}Enable pulseaudio support${nocolor} ${pink}[y/n(default)]${nocolor}"
 	read ispulse
 	if [ "${ispulse}" == "y" ]; then
-		build_count=1
+		project="${project}-pulse"
 		cmake_flags="-DUSE_PULSE=ON"
 		builddep="${builddep}, libpulse-dev"
-	else
-		build_count=2
+	fi
+	echo -e "${blue}Enable KDE4 support${nocolor} ${pink}[y/n(default)]${nocolor}"
+	read iskde4
+	if [ "${iskde4}" == "y" ]; then
+		project="${project}-kde4"
+		cmake_flags="-DUSE_KDE=ON"
+		#builddep="${builddep}, kdelibs-dev" #FIXME
+	fi
+	echo -e "${blue}Enable KDE5 support${nocolor} ${pink}[y/n(default)]${nocolor}"
+	read iskde5
+	if [ "${iskde5}" == "y" ]; then
+		project="${project}-kde5"
+		cmake_flags="-DUSE_KDE5=ON"
+		#builddep="${builddep}, libkdeui5-dev" #FIXME
 	fi
 	section="sound"
 	arch="any"
