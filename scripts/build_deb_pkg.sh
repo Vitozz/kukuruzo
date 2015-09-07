@@ -532,6 +532,7 @@ build_avolume ()
 	run_resloader get_avolume
 	project="alsavolume"
 	APP_NAME=${project}
+	addit="Replaces: ${project}, ${project}3, ${project}-pulse, ${project}3-pulse, ${project}-kde-pulse, ${project}3-kde-pulse, ${project}-unity-pulse, ${project}3-unity-pulse, ${project}-unity, ${project}3-unity, ${project}3-kde, ${project}-kde"
 	dirname="cppAlsaVolume"
 	build_count=1
 	ver=$(cat ${srcdir}/${dirname}/version.txt)
@@ -539,21 +540,13 @@ build_avolume ()
 	prepare
 	cd ${debdir}
 	builddep="debhelper (>= 7), cdbs, libasound2-dev, pkg-config, cmake, intltool, gettext"
-	echo -e "${blue}Enable pulseaudio support${nocolor} ${pink}[y/n(default)]${nocolor}"
-	read ispulse
-	if [ "${ispulse}" == "y" ]; then
-		APP_NAME="${APP_NAME}-pulse"
-		cmake_flags="-DUSE_PULSE=ON"
-		builddep="${builddep}, libpulse-dev"
-	fi
 	echo -e "${blue}Enable GTK+2 support${nocolor} ${pink}[y/n(default)]${nocolor}"
 	read isgtk
 	if [ "${isgtk}" == "y" ]; then
-		APP_NAME="${APP_NAME}-gtk2"
 		cmake_flags="${cmake_flags} -DUSE_GTK3=OFF"
 		builddep="${builddep}, libgtkmm-2.4-dev"
 	else
-		APP_NAME="${APP_NAME}-gtk3"
+		APP_NAME="${APP_NAME}3"
 		builddep="${builddep}, libgtkmm-3.0-dev"
 	fi
 		echo -e "${blue}Enable KDE tray support${nocolor} ${pink}[y/n(default)]${nocolor}"
@@ -563,23 +556,47 @@ build_avolume ()
 		cmake_flags="${cmake_flags} -DUSE_KDE=ON"
 	fi
 	echo -e "${blue}Enable AppIndicator support${nocolor} ${pink}[y/n(default)]${nocolor}"
-	read iskde
-	if [ "${iskde}" == "y" ]; then
+	read isapp
+	if [ "${isapp}" == "y" ] && [ "${iskde}" != "y" ]; then
 		cmake_flags="${cmake_flags} -DUSE_APPINDICATOR=ON"
+		APP_NAME="${APP_NAME}-unity"
 		if [ "${isgtk}" == "y" ]; then
- 			APP_NAME="${APP_NAME}-appind"
 			builddep="${builddep}, libappindicator-dev"
 		else
-			APP_NAME="${APP_NAME}-appind3"
 			builddep="${builddep}, libappindicator3-dev"
 		fi
 	fi
+	echo -e "${blue}Enable pulseaudio support${nocolor} ${pink}[y/n(default)]${nocolor}"
+	read ispulse
+	if [ "${ispulse}" == "y" ]; then
+		APP_NAME="${APP_NAME}-pulse"
+		cmake_flags="${cmake_flags} -DUSE_PULSE=ON"
+		builddep="${builddep}, libpulse-dev"
+	fi
 	section="sound"
 	arch="any"	
-	addit="#"
 	depends="\${shlibs:Depends}, \${misc:Depends}, libasound2, libc6 (>=2.7-1), libgcc1 (>=1:4.1.1), libstdc++6 (>=4.1.1), libx11-6, zlib1g (>=1:1.1.4)"
 	description="Tray ALSA volume changer"
-	descriptionlong='Simple programm to change the volume of one of the ALSA mixer from the system tray.'
+	descriptionlong="Simple programm to change the volume of one of the ALSA mixers from the system tray."
+	if [ "${isgtk}" == "y" ]; then
+		descriptionlong="${descriptionlong}
+ GTK2 version"
+	else
+		descriptionlong="${descriptionlong}
+ GTK3 version"
+	fi
+	if [ "${iskde}" == "y" ]; then
+		descriptionlong="${descriptionlong}
+ With KDE StatusNotifierItem support"
+	fi
+	if [ "${isapp}" == "y" ] && [ "${iskde}" != "y" ]; then
+		descriptionlong="${descriptionlong}
+ With AppIndicator support"
+	fi
+	if [ "${ispulse}" == "y" ]; then
+		descriptionlong="${descriptionlong}
+ With PulseAudio support"
+	fi
 	docfiles=""
 	dirs="usr/bin
 usr/share/alsavolume
@@ -605,38 +622,51 @@ build_qtavolume ()
 	APP_NAME=${project}
 	dirname="qt/qtalsavolume"
 	build_count=1
+	addit="Replaces: ${project}, ${project}-pulse, ${project}4, ${project}5, ${project}4-pulse, ${project}5-pulse"
 	ver=$(cat ${srcdir}/${dirname}/version.txt)
 	debdir=${builddir}/${project}-${ver}
 	prepare
 	cd ${debdir}
 	builddep="debhelper (>= 7), cdbs, libqt4-dev, libasound2-dev, pkg-config, cmake"
+	echo -e "${blue}Enable KDE4 support${nocolor} ${pink}[y/n(default)]${nocolor}"
+	read iskde4
+	if [ "${iskde4}" == "y" ]; then
+		APP_NAME="${APP_NAME}4"
+		cmake_flags="${cmake_flags} -DUSE_KDE=ON"
+		#builddep="${builddep}, kdelibs-dev" #FIXME
+	else
+		echo -e "${blue}Enable KDE5 support${nocolor} ${pink}[y/n(default)]${nocolor}"
+		read iskde5
+		if [ "${iskde5}" == "y" ]; then
+			APP_NAME="${APP_NAME}5"
+			cmake_flags="${cmake_flags} -DUSE_KDE5=ON"
+			#builddep="${builddep}, libkdeui5-dev" #FIXME
+		fi
+	fi
 	echo -e "${blue}Enable pulseaudio support${nocolor} ${pink}[y/n(default)]${nocolor}"
 	read ispulse
 	if [ "${ispulse}" == "y" ]; then
 		APP_NAME="${APP_NAME}-pulse"
-		cmake_flags="-DUSE_PULSE=ON"
+		cmake_flags="${cmake_flags} -DUSE_PULSE=ON"
 		builddep="${builddep}, libpulse-dev"
-	fi
-	echo -e "${blue}Enable KDE4 support${nocolor} ${pink}[y/n(default)]${nocolor}"
-	read iskde4
-	if [ "${iskde4}" == "y" ]; then
-		APP_NAME="${APP_NAME}-kde4"
-		cmake_flags="-DUSE_KDE=ON"
-		#builddep="${builddep}, kdelibs-dev" #FIXME
-	fi
-	echo -e "${blue}Enable KDE5 support${nocolor} ${pink}[y/n(default)]${nocolor}"
-	read iskde5
-	if [ "${iskde5}" == "y" ]; then
-		APP_NAME="${APP_NAME}-kde5"
-		cmake_flags="-DUSE_KDE5=ON"
-		#builddep="${builddep}, libkdeui5-dev" #FIXME
 	fi
 	section="sound"
 	arch="any"
-	addit="#"
 	depends="\${shlibs:Depends}, \${misc:Depends}, libasound2, libc6 (>=2.7-1), libgcc1 (>=1:4.1.1), libstdc++6 (>=4.1.1), libx11-6, zlib1g (>=1:1.1.4)"
 	description="Tray ALSA volume changer"
-	descriptionlong='Simple programm to change the volume of one of the ALSA mixer from the system tray.'
+	descriptionlong='Simple programm to change the volume of one of the ALSA mixers from the system tray.'
+	if [ "${iskde4}" == "y" ]; then
+		descriptionlong="${descriptionlong}
+ With KDE4 StatusNotifierItem support"
+	fi
+	if [ "${iskde5}" == "y" ] && [ "${iskde4}" != "y" ]; then
+		descriptionlong="${descriptionlong}
+ With KDE5 StatusNotifierItem support"
+	fi
+	if [ "${ispulse}" == "y" ]; then
+		descriptionlong="${descriptionlong}
+ With PulseAudio support"
+	fi
 	docfiles=""
 	dirs="usr/bin
 usr/share/qtalsavolume
@@ -764,8 +794,8 @@ build_all_qtalsa ()
 	project="qtalsavolume"
 	dirname="qt/qtalsavolume"
 	ver=$(cat ${srcdir}/${dirname}/version.txt)
-	package_name=${project}_${ver}
 	build_qtavolume
+	package_name=${APP_NAME}_${ver}
 	build_i386 ${package_name}
 }
 
@@ -774,8 +804,8 @@ build_all_alsa ()
 	project="alsavolume"
 	dirname="cppAlsaVolume"
 	ver=$(cat ${srcdir}/${dirname}/version.txt)
-	package_name=${project}_${ver}
 	build_avolume
+	package_name=${APP_NAME}_${ver}
 	build_i386 ${package_name}
 }
 
@@ -808,6 +838,19 @@ ${pink}[c]${nocolor} - Build qtalsavolume debian package
 ${pink}[d]${nocolor} - Build psi-history-merger debian package
 ${pink}[e]${nocolor} - Build qtpoweroff debian package
 ${pink}[0]${nocolor} - Exit"
+}
+
+print_help ()
+{
+	echo -e "${blue}Additional commands!${nocolor}
+${pink}[f]${nocolor} - Build all qregexptest packages
+${pink}[g]${nocolor} - Build all alsavolume packages
+${pink}[h]${nocolor} - Build all qtalsavolume packages
+${pink}[j]${nocolor} - Build all qtpoweroff packages
+${pink}[ra]${nocolor} - Remove all
+${pink}[ga]${nocolor} - Fetch all
+${pink}[help]${nocolor} - Print this help
+"
 }
 
 choose_action ()
@@ -844,6 +887,7 @@ choose_action ()
 		"0" ) quit;;
 		"ra" ) rm_all;;
 		"ga" ) get_all;;
+		"help" ) print_help;;
 	esac
 }
 
