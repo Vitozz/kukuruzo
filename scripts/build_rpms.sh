@@ -445,13 +445,13 @@ build_hismerger (){
 
 build_avolume ()
 {
+	app_name="alsavolume"
 	project="alsavolume"
 	dirname="cppAlsaVolume"
 	addit=""
 	build_count=1
 	run_resloader get_avolume
 	ver=$(cat ${srcdir}/${dirname}/version.txt)
-	prepare ${dirname}
 	builddep="alsa-devel, intltool, gettext-tools"
 	echo -e "${blue}Enable KDE support${nocolor} ${pink}[y/n(default)]${nocolor}"
 	read iskde
@@ -460,15 +460,16 @@ build_avolume ()
 		addit="${addit}
 With KDE systray support"
 		project="${project}_kde"
-	fi
-	echo -e "${blue}Enable AppIndicator support${nocolor} ${pink}[y/n(default)]${nocolor}"
-	read isapp
-	if [ "${isapp}" == "y" ]; then
-		cmake_flags="${cmake_flags} -DUSE_APPINDICATOR=ON"
-		builddep="${builddep}, libappindicator-devel"
-		addit="${addit}
+	else
+		echo -e "${blue}Enable AppIndicator support${nocolor} ${pink}[y/n(default)]${nocolor}"
+		read isapp
+		if [ "${isapp}" == "y" ]; then
+			cmake_flags="${cmake_flags} -DUSE_APPINDICATOR=ON"
+			builddep="${builddep}, libappindicator3-devel"
+			addit="${addit}
 With AppIndicator support"
-		project="${project}_unity"
+			project="${project}_unity"
+		fi
 	fi
 	echo -e "${blue}Enable pulseaudio support${nocolor} ${pink}[y/n(default)]${nocolor}"
 	read ispulse
@@ -481,6 +482,7 @@ With PulseAudio support"
 	else
 		cmake_flags="-DUSE_PULSE=OFF"
 	fi
+	prepare ${dirname}
         regspecfile="Summary: AlsaVolume
 Name: ${project}
 Version: ${ver}
@@ -511,31 +513,31 @@ cmake -DCMAKE_INSTALL_PREFIX=%{buildroot}/usr ${cmake_flags} .
 %{__make} install INSTALL_ROOT=\"%{buildroot}\"
 
 mkdir -p %{buildroot}/usr/bin
-mkdir -p %{buildroot}/usr/share/%{name}
+mkdir -p %{buildroot}/usr/share/${app_name}
 mkdir -p %{buildroot}/usr/share/applications
-mkdir -p %{buildroot}/usr/share/%{name}/icons
-mkdir -p %{buildroot}/usr/share/%{name}/gladefiles
-mkdir -p %{buildroot}/usr/share/%{name}/locale
-mkdir -p %{buildroot}/usr/share/%{name}/locale/ru
-mkdir -p %{buildroot}/usr/share/%{name}/locale/ru/LC_MESSAGES
-mkdir -p %{buildroot}/usr/share/%{name}/locale/uk
-mkdir -p %{buildroot}/usr/share/%{name}/locale/uk/LC_MESSAGES
+mkdir -p %{buildroot}/usr/share/${app_name}/icons
+mkdir -p %{buildroot}/usr/share/${app_name}/gladefiles
+mkdir -p %{buildroot}/usr/share/${app_name}/locale
+mkdir -p %{buildroot}/usr/share/${app_name}/locale/ru
+mkdir -p %{buildroot}/usr/share/${app_name}/locale/ru/LC_MESSAGES
+mkdir -p %{buildroot}/usr/share/${app_name}/locale/uk
+mkdir -p %{buildroot}/usr/share/${app_name}/locale/uk/LC_MESSAGES
 
-%{__install} -c -m 755 icons/tb_icon*.png %{buildroot}/usr/share/%{name}/icons/
-%{__install} -c -m 755 icons/volume*.png %{buildroot}/usr/share/%{name}/icons/
-%{__install} -c -m 755 gladefiles/* %{buildroot}/usr/share/%{name}/gladefiles/
-%{__install} -c -m 755 %{name} %{buildroot}/usr/bin/
-%{__install} -c -m 755 %{name}.desktop %{buildroot}/usr/share/applications
+%{__install} -c -m 755 icons/tb_icon*.png %{buildroot}/usr/share/${app_name}/icons/
+%{__install} -c -m 755 icons/volume*.png %{buildroot}/usr/share/${app_name}/icons/
+%{__install} -c -m 755 gladefiles/* %{buildroot}/usr/share/${app_name}/gladefiles/
+%{__install} -c -m 755 ${app_name} %{buildroot}/usr/bin/
+%{__install} -c -m 755 ${app_name}.desktop %{buildroot}/usr/share/applications
 
 %clean
 [ \"%{buildroot}\" != \"/\" ] && rm -rf %{buildroot}
 
 %files
 %defattr(-, root, root, 0755)
-%{_bindir}/%{name}
-%{_datadir}/%{name}/icons/
-%{_datadir}/%{name}/gladefiles/
-%{_datadir}/%{name}/locale/
+%{_bindir}/${app_name}
+%{_datadir}/${app_name}/icons/
+%{_datadir}/${app_name}/gladefiles/
+%{_datadir}/${app_name}/locale/
 %{_datadir}/applications/"
         echo "${regspecfile}" > ${specfiles}/"alsavolume.spec"
 	rpmbuild -ba ${specfiles}/"alsavolume.spec"
@@ -547,6 +549,7 @@ build_qtavolume ()
 {
 	project="qtalsavolume"
 	dirname="qt/qtalsavolume"
+	APP_NAME=${project}
 	addit=""
 	build_count=1
 	ver=$(cat ${srcdir}/${dirname}/version.txt)
@@ -567,7 +570,7 @@ With KDE4 support"
 			builddep="${builddep}, plasma-framework-devel"
 			addit="${addit}
 With KDE5 support"
-			project="${project}5"
+			project="${project}5"		
 		fi
 	fi
 	echo -e "${blue}Enable pulseaudio support${nocolor} ${pink}[y/n(default)]${nocolor}"
@@ -612,30 +615,30 @@ cmake -DCMAKE_INSTALL_PREFIX=%{buildroot}/usr ${cmake_flags} .
 %{__make} install INSTALL_ROOT=\"%{buildroot}\"
 
 mkdir -p %{buildroot}/usr/bin
-mkdir -p %{buildroot}/usr/share/%{name}
+mkdir -p %{buildroot}/usr/share/%{APP_NAME}
 mkdir -p %{buildroot}/usr/share/applications
-mkdir -p %{buildroot}/usr/share/%{name}/icons
-mkdir -p %{buildroot}/usr/share/%{name}/icons/light
-mkdir -p %{buildroot}/usr/share/%{name}/icons/dark
-mkdir -p %{buildroot}/usr/share/%{name}/languages
+mkdir -p %{buildroot}/usr/share/%{APP_NAME}/icons
+mkdir -p %{buildroot}/usr/share/%{APP_NAME}/icons/light
+mkdir -p %{buildroot}/usr/share/%{APP_NAME}/icons/dark
+mkdir -p %{buildroot}/usr/share/%{APP_NAME}/languages
 
-%{__install} -c -m 755 icons/light/tb_icon*.png %{buildroot}/usr/share/%{name}/icons/light/
-%{__install} -c -m 755 icons/dark/tb_icon*.png %{buildroot}/usr/share/%{name}/icons/dark/
-%{__install} -c -m 755 icons/volume*.png %{buildroot}/usr/share/%{name}/icons/
-#%{__install} -c -m 755 languages/*.qm %{buildroot}/usr/share/%{name}/languages/
-%{__install} -c -m 755 %{name} %{buildroot}/usr/bin/
-%{__install} -c -m 755 %{name}.desktop %{buildroot}/usr/share/applications
+%{__install} -c -m 755 icons/light/tb_icon*.png %{buildroot}/usr/share/%{APP_NAME}/icons/light/
+%{__install} -c -m 755 icons/dark/tb_icon*.png %{buildroot}/usr/share/%{APP_NAME}/icons/dark/
+%{__install} -c -m 755 icons/volume*.png %{buildroot}/usr/share/%{APP_NAME}/icons/
+#%{__install} -c -m 755 languages/*.qm %{buildroot}/usr/share/%{APP_NAME}/languages/
+%{__install} -c -m 755 %{APP_NAME} %{buildroot}/usr/bin/
+%{__install} -c -m 755 %{APP_NAME}.desktop %{buildroot}/usr/share/applications
 
 %clean
 [ \"%{buildroot}\" != \"/\" ] && rm -rf %{buildroot}
 
 %files
 %defattr(-, root, root, 0755)
-%{_bindir}/%{name}
-%{_datadir}/%{name}/icons/
-%{_datadir}/%{name}/icons/light/
-%{_datadir}/%{name}/icons/dark/
-%{_datadir}/%{name}/languages/
+%{_bindir}/%{APP_NAME}
+%{_datadir}/%{APP_NAME}/icons/
+%{_datadir}/%{APP_NAME}/icons/light/
+%{_datadir}/%{APP_NAME}/icons/dark/
+%{_datadir}/%{APP_NAME}/languages/
 %{_datadir}/applications/"
         echo "${regspecfile}" > ${specfiles}/"qtalsavolume.spec"
 	rpmbuild -ba ${specfiles}/"qtalsavolume.spec"
