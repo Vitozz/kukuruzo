@@ -270,6 +270,18 @@ void MainWindow::onTimer()
 	}
 }
 
+void MainWindow::changeEvent(QEvent *e)
+{
+	QMainWindow::changeEvent(e);
+	switch (e->type()) {
+	case QEvent::LanguageChange:
+		ui->retranslateUi(this);
+		break;
+	default:
+		break;
+	}
+}
+
 void MainWindow::closeEvent(QCloseEvent *)
 {
 	SaveSettings();

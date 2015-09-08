@@ -58,6 +58,7 @@ protected slots:
 	void iconActivated(QSystemTrayIcon::ActivationReason reason);
 
 protected:
+	void changeEvent(QEvent *e);
 	void closeEvent(QCloseEvent *);
 
 private:

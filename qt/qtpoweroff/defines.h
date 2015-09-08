@@ -23,7 +23,7 @@
 
 #define APP_NAME "qtpoweroff"
 #define APP_ORG "thesomeprojects"
-#define APP_VERSION "0.0.2"
+#define APP_VERSION "0.0.3"
 #define APP_TITLE "QtPowerOff"
 
 #define TIME_INTERVAL 1000
