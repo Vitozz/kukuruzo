@@ -79,10 +79,10 @@ TrayIcon::TrayIcon()
 			this, SLOT(iconActivated(QSystemTrayIcon::ActivationReason)));
 		legacyTrayIcon_->setContextMenu(trayMenu);
 		legacyTrayIcon_->installEventFilter(this);
-		trayMenu->addAction(restore_.data());
-		connect(restore_.data(), SIGNAL(triggered()), this, SLOT(onRestore()));
-		trayMenu->addSeparator();
 	}
+	trayMenu->addAction(restore_.data());
+	connect(restore_.data(), SIGNAL(triggered()), this, SLOT(onRestore()));
+	trayMenu->addSeparator();
 	trayMenu->addAction(settings_.data());
 	connect(settings_.data(), SIGNAL(triggered()), this, SLOT(onSettings()));
 	trayMenu->addAction(mute_.data());
@@ -224,6 +224,9 @@ void TrayIcon::onMute()
 
 void TrayIcon::onRestore()
 {
+	if (!legacyTrayIcon_) {
+		iconPosition_ = QCursor::pos();
+	}
 	emit activated(RESTORE);
 }
 
