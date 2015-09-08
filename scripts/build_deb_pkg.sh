@@ -640,7 +640,7 @@ build_qtavolume ()
 		if [ "${iskde5}" == "y" ]; then
 			APP_NAME="${APP_NAME}5"
 			cmake_flags="${cmake_flags} -DUSE_KDE5=ON"
-			builddep="${builddep}, libkf5notifications-dev"
+			builddep="${builddep}, libkf5notifications-dev, qttools5-dev"
 		fi
 	fi
 	echo -e "${blue}Enable pulseaudio support${nocolor} ${pink}[y/n(default)]${nocolor}"
