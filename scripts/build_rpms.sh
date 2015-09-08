@@ -447,22 +447,42 @@ build_avolume ()
 {
 	project="alsavolume"
 	dirname="cppAlsaVolume"
+	addit=""
+	build_count=1
 	run_resloader get_avolume
 	ver=$(cat ${srcdir}/${dirname}/version.txt)
 	prepare ${dirname}
 	builddep="alsa-devel, intltool, gettext-tools"
+	echo -e "${blue}Enable KDE support${nocolor} ${pink}[y/n(default)]${nocolor}"
+	read iskde
+	if [ "${iskde}" == "y" ]; then
+		cmake_flags="${cmake_flags} -DUSE_KDE=ON"
+		addit="${addit}
+With KDE systray support"
+		project="${project}_kde"
+	fi
+	echo -e "${blue}Enable AppIndicator support${nocolor} ${pink}[y/n(default)]${nocolor}"
+	read isapp
+	if [ "${isapp}" == "y" ]; then
+		cmake_flags="${cmake_flags} -DUSE_APPINDICATOR=ON"
+		builddep="${builddep}, libappindicator-devel"
+		addit="${addit}
+With AppIndicator support"
+		project="${project}_unity"
+	fi
 	echo -e "${blue}Enable pulseaudio support${nocolor} ${pink}[y/n(default)]${nocolor}"
 	read ispulse
 	if [ "${ispulse}" == "y" ]; then
-		build_count=1
-		cmake_flags="-DUSE_PULSE=ON"
+		cmake_flags="${cmake_flags} -DUSE_PULSE=ON"
 		builddep="${builddep}, libpulse-devel"
+		addit="${addit}
+With PulseAudio support"
+		project="${project}_pulse"
 	else
 		cmake_flags="-DUSE_PULSE=OFF"
-		build_count=2
 	fi
         regspecfile="Summary: AlsaVolume
-Name: alsavolume
+Name: ${project}
 Version: ${ver}
 Release: ${build_count}
 License: GPL-2
@@ -476,6 +496,7 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-build
 
 %description
 Simple tool written using gtkmm-3 library to set the levels of alsa mixers
+${addit}
 
 %prep
 %setup
@@ -526,21 +547,43 @@ build_qtavolume ()
 {
 	project="qtalsavolume"
 	dirname="qt/qtalsavolume"
+	addit=""
+	build_count=1
 	ver=$(cat ${srcdir}/${dirname}/version.txt)
 	builddep="alsa-devel"
+	echo -e "${blue}Enable KDE4 support${nocolor} ${pink}[y/n(default)]${nocolor}"
+	read iskde4
+	if [ "${iskde4}" == "y" ]; then
+		cmake_flags="-DUSE_KDE=ON"
+		builddep="${builddep}, libkde4-devel"
+		addit="${addit}
+With KDE4 support"
+		project="${project}4"
+	else
+		echo -e "${blue}Enable KDE5 support${nocolor} ${pink}[y/n(default)]${nocolor}"
+		read iskde5
+		if [ "${iskde5}" == "y" ]; then
+			cmake_flags="-DUSE_KDE5=ON"
+			builddep="${builddep}, plasma-framework-devel"
+			addit="${addit}
+With KDE5 support"
+			project="${project}5"
+		fi
+	fi
 	echo -e "${blue}Enable pulseaudio support${nocolor} ${pink}[y/n(default)]${nocolor}"
 	read ispulse
 	if [ "${ispulse}" == "y" ]; then
-		build_count=1
 		cmake_flags="-DUSE_PULSE=ON"
 		builddep="${builddep}, libpulse-devel"
+		addit="${addit}
+With PulseAudio support"
+		project="${project}_pulse"
 	else
 		cmake_flags="-DUSE_PULSE=OFF"
-		build_count=2
 	fi
 	prepare ${dirname}
         regspecfile="Summary: QtAlsaVolume
-Name: qtalsavolume
+Name: ${project}
 Version: ${ver}
 Release: ${build_count}
 License: GPL-2
@@ -554,6 +597,7 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-build
 
 %description
 Simple tool written using Qt4 library to set the levels of alsa mixers
+${addit}
 
 %prep
 %setup
