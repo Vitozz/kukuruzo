@@ -557,7 +557,7 @@ build_qtavolume ()
 	echo -e "${blue}Enable KDE4 support${nocolor} ${pink}[y/n(default)]${nocolor}"
 	read iskde4
 	if [ "${iskde4}" == "y" ]; then
-		cmake_flags="-DUSE_KDE=ON"
+		cmake_flags="${cmake_flags} -DUSE_KDE=ON"
 		builddep="${builddep}, libkde4-devel"
 		addit="${addit}
 With KDE4 support"
@@ -566,7 +566,7 @@ With KDE4 support"
 		echo -e "${blue}Enable KDE5 support${nocolor} ${pink}[y/n(default)]${nocolor}"
 		read iskde5
 		if [ "${iskde5}" == "y" ]; then
-			cmake_flags="-DUSE_KDE5=ON"
+			cmake_flags="${cmake_flags} -DUSE_KDE5=ON"
 			builddep="${builddep}, plasma-framework-devel"
 			addit="${addit}
 With KDE5 support"
@@ -576,13 +576,11 @@ With KDE5 support"
 	echo -e "${blue}Enable pulseaudio support${nocolor} ${pink}[y/n(default)]${nocolor}"
 	read ispulse
 	if [ "${ispulse}" == "y" ]; then
-		cmake_flags="-DUSE_PULSE=ON"
+		cmake_flags="${cmake_flags} -DUSE_PULSE=ON"
 		builddep="${builddep}, libpulse-devel"
 		addit="${addit}
 With PulseAudio support"
 		project="${project}_pulse"
-	else
-		cmake_flags="-DUSE_PULSE=OFF"
 	fi
 	prepare ${dirname}
         regspecfile="Summary: QtAlsaVolume
