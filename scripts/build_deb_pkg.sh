@@ -633,7 +633,7 @@ build_qtavolume ()
 	if [ "${iskde4}" == "y" ]; then
 		APP_NAME="${APP_NAME}4"
 		cmake_flags="${cmake_flags} -DUSE_KDE=ON"
-		#builddep="${builddep}, kdelibs-dev" #FIXME
+		builddep="${builddep}, kdelibs5-dev"
 	else
 		echo -e "${blue}Enable KDE5 support${nocolor} ${pink}[y/n(default)]${nocolor}"
 		read iskde5

@@ -214,7 +214,7 @@ PopupWindow::PopupWindow()
 
 PopupWindow::~PopupWindow()
 {
-
+	saveSettings();
 	delete settingsDialog_;
 	if (pollingTimer_->isActive()) {
 		pollingTimer_->stop();
@@ -309,7 +309,17 @@ void PopupWindow::onMute(bool isToggled)
 	setTrayIcon(volumeValue_);
 }
 
-void PopupWindow::closeEvent(QCloseEvent *)
+void PopupWindow::closeEvent(QCloseEvent *event)
+{
+	saveSettings();
+	event->accept();
+#ifdef ISDEBUG
+	qDebug() << "CloseEvent accepted";
+#endif
+	qApp->quit();
+}
+
+void PopupWindow::saveSettings()
 {
 	QSettings setts_;
 #ifdef USE_PULSE
@@ -323,7 +333,6 @@ void PopupWindow::closeEvent(QCloseEvent *)
 	setts_.setValue(ISAUTO, isAutorun_);
 	setts_.setValue(ICOSTYLE, isLightStyle_);
 	setts_.setValue(ISPOLL, isPoll_);
-	qApp->quit();
 }
 
 void PopupWindow::setPopupPosition()

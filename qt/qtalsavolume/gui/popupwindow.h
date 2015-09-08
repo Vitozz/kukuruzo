@@ -49,7 +49,7 @@ public:
 	~PopupWindow();
 
 protected:
-	void closeEvent(QCloseEvent *);
+	void closeEvent(QCloseEvent *event);
 	bool eventFilter(QObject *object, QEvent *event);
 
 protected slots:
@@ -81,6 +81,7 @@ private:
 	void updateAlsa(int card);
 	void updateSwitches();
 	void setPopupPosition();
+	void saveSettings();
 
 private:
 	AlsaWork::Ptr alsaWork_;
