@@ -123,24 +123,26 @@ void MainWindow::writeSettings(){
 QString MainWindow::GetRegexpList(const QList<QStringList> &matches, const int &parm, const int &pos) const
 {
 	QString result;
+	const QString matchWildcard = tr("<u><a style=\"color:red\">Match # </a><b>%1</b></u><br>");
+	const QString groupWildcard = tr("<a style=\"color:blue\">Group # </a><b>%1: </b><i>%2</i><br>");
 	if(!matches.isEmpty()){
 		foreach(const QStringList &group, matches) {
-			result += tr("<u><a style=\"color:red\">Match # </a>") + "<b>"+ QString::number(matches.indexOf(group)+1) + "</b></u><br>";
+			result += matchWildcard.arg(QString::number(matches.indexOf(group)+1));
 			if(parm == CHECK_ALL){
 				foreach (const QString &item, group) {
 #ifdef HAVE_QT5
-					result += tr("<a style=\"color:blue\">Group # </a>")+ "<b>"+QString::number(group.indexOf(item))+ ": </b>"+"<i>" + item.toHtmlEscaped() + "</i><br>";
+					result += groupWildcard.arg(QString::number(group.indexOf(item)),item.toHtmlEscaped());
 #else
-					result += tr("<a style=\"color:blue\">Group # </a>")+ "<b>"+QString::number(group.indexOf(item))+ ": </b>"+"<i>" + Qt::escape(item) + "</i><br>";
+					result += groupWildcard.arg(QString::number(group.indexOf(item)), Qt::escape(item));
 #endif
 				}
 			}
 			else if(parm == CHECK_POS) {
 				if(pos < group.length()) {
 #ifdef HAVE_QT5
-					result += tr("<a style=\"color:blue\">Group # </a>")+ "<b>"+ QString::number(pos)+ ": </b>"+"<i>" + group[pos].toHtmlEscaped() + "</i><br>";
+					result += groupWildcard.arg(QString::number(pos), group[pos].toHtmlEscaped());
 #else
-					result += tr("<a style=\"color:blue\">Group # </a>")+ "<b>"+ QString::number(pos)+ ": </b>"+"<i>" + Qt::escape(group[pos]) + "</i><br>";
+					result += groupWildcard.arg(QString::number(pos), Qt::escape(group[pos]));
 #endif
 				}
 			}
@@ -168,7 +170,7 @@ QList <QStringList> MainWindow::CheckExpression(const QString &regexp, const QSt
 		return result;
 	}
 	else if (!rx.isValid()) {
-		QMessageBox::critical(0, "Regexp error", rx.errorString());
+		QMessageBox::critical(0, tr("Regexp error"), rx.errorString());
 	}
 	return result;
 }
@@ -198,12 +200,13 @@ QString MainWindow::LoadTextFile(const QString &filename){
 
 void MainWindow::RunOnlineHelp()
 {
-	QString helpdir;
+	QString helpdir, url;
 	const QStringList dirs = QStringList() << "/usr/share/doc/regexptest/html"
 					       << "/usr/local/share/doc/regexptest/html"
 					       << "/usr/share/doc/regexptest/html"
-					       << QDir::homePath() + "/.local/share/doc/regexptest/html"
-					       << qApp->applicationDirPath() + "/docs";
+					       << QString("%1/.local/share/doc/regexptest/html").arg(QDir::homePath())
+					       << QString("%1/inst/docs").arg(qApp->applicationDirPath())
+					       << QString("%1/docs").arg(qApp->applicationDirPath());
 	foreach (const QString &item, dirs) {
 		QDir _dir(item);
 		if (_dir.exists()) {
@@ -211,8 +214,13 @@ void MainWindow::RunOnlineHelp()
 			break;
 		}
 	}
-	if (!QDesktopServices::openUrl(QUrl("file://"+helpdir+ "/regexp_help.html",QUrl::TolerantMode))){
-		QMessageBox::warning(this,"Error","Unable to open regexp_help.html");
+#ifdef Q_OS_WIN
+	url = QString("file:///%1/regexp_help.html").arg(helpdir);
+#else
+	url = QString("file://%1/regexp_help.html").arg(helpdir);
+#endif
+	if (!QDesktopServices::openUrl(QUrl(url,QUrl::TolerantMode))){
+		QMessageBox::warning(this,tr("Error"),tr("Unable to open regexp_help.html"));
 	}
 }
 
@@ -296,7 +304,8 @@ void MainWindow::on_openFile_clicked()
 	}
 }
 
-QString MainWindow::getDirName(const QString &filename) const{
+QString MainWindow::getDirName(const QString &filename) const
+{
 	QString result;
 	QRegExp dirregexp("(.*)/(?:.*|\\..*)$");
 	if (dirregexp.isValid()){

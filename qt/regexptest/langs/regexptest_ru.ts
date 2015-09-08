@@ -149,25 +149,45 @@
         <translation>Ctrl+O</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="128"/>
         <source>&lt;u&gt;&lt;a style=&quot;color:red&quot;&gt;Match # &lt;/a&gt;</source>
-        <translation>&lt;u&gt;&lt;a style=&quot;color:red&quot;&gt;Совпадение # &lt;/a&gt;</translation>
+        <translation type="obsolete">&lt;u&gt;&lt;a style=&quot;color:red&quot;&gt;Совпадение # &lt;/a&gt;</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="132"/>
-        <location filename="../mainwindow.cpp" line="134"/>
-        <location filename="../mainwindow.cpp" line="141"/>
-        <location filename="../mainwindow.cpp" line="143"/>
         <source>&lt;a style=&quot;color:blue&quot;&gt;Group # &lt;/a&gt;</source>
-        <translation>&lt;a style=&quot;color:blue&quot;&gt;Группа # &lt;/a&gt;</translation>
+        <translation type="obsolete">&lt;a style=&quot;color:blue&quot;&gt;Группа # &lt;/a&gt;</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="286"/>
+        <location filename="../mainwindow.cpp" line="126"/>
+        <source>&lt;u&gt;&lt;a style=&quot;color:red&quot;&gt;Match # &lt;/a&gt;&lt;b&gt;%1&lt;/b&gt;&lt;/u&gt;&lt;br&gt;</source>
+        <translation>&lt;u&gt;&lt;a style=&quot;color:red&quot;&gt;Совпадение # &lt;/a&gt;&lt;b&gt;%1&lt;/b&gt;&lt;/u&gt;&lt;br&gt;</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="127"/>
+        <source>&lt;a style=&quot;color:blue&quot;&gt;Group # &lt;/a&gt;&lt;b&gt;%1: &lt;/b&gt;&lt;i&gt;%2&lt;/i&gt;&lt;br&gt;</source>
+        <translation>&lt;a style=&quot;color:blue&quot;&gt;Группа # &lt;/a&gt;&lt;b&gt;%1: &lt;/b&gt;&lt;i&gt;%2&lt;/i&gt;&lt;br&gt;</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="173"/>
+        <source>Regexp error</source>
+        <translation>Неверное регулярное выражение</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="223"/>
+        <source>Error</source>
+        <translation>Ошибка</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="223"/>
+        <source>Unable to open regexp_help.html</source>
+        <translation>Невозможно открыть regexp_help.html</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="294"/>
         <source>Open File...</source>
         <translation>Открыть файл...</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="288"/>
+        <location filename="../mainwindow.cpp" line="296"/>
         <source>All Files (*);;Text Files (*.txt)</source>
         <translation>Все файлы (*);;Текстовые файлы (*.txt)</translation>
     </message>
