@@ -613,30 +613,30 @@ cmake -DCMAKE_INSTALL_PREFIX=%{buildroot}/usr ${cmake_flags} .
 %{__make} install INSTALL_ROOT=\"%{buildroot}\"
 
 mkdir -p %{buildroot}/usr/bin
-mkdir -p %{buildroot}/usr/share/%{APP_NAME}
+mkdir -p %{buildroot}/usr/share/${APP_NAME}
 mkdir -p %{buildroot}/usr/share/applications
-mkdir -p %{buildroot}/usr/share/%{APP_NAME}/icons
-mkdir -p %{buildroot}/usr/share/%{APP_NAME}/icons/light
-mkdir -p %{buildroot}/usr/share/%{APP_NAME}/icons/dark
-mkdir -p %{buildroot}/usr/share/%{APP_NAME}/languages
+mkdir -p %{buildroot}/usr/share/${APP_NAME}/icons
+mkdir -p %{buildroot}/usr/share/${APP_NAME}/icons/light
+mkdir -p %{buildroot}/usr/share/${APP_NAME}/icons/dark
+mkdir -p %{buildroot}/usr/share/${APP_NAME}/languages
 
-%{__install} -c -m 755 icons/light/tb_icon*.png %{buildroot}/usr/share/%{APP_NAME}/icons/light/
-%{__install} -c -m 755 icons/dark/tb_icon*.png %{buildroot}/usr/share/%{APP_NAME}/icons/dark/
-%{__install} -c -m 755 icons/volume*.png %{buildroot}/usr/share/%{APP_NAME}/icons/
-#%{__install} -c -m 755 languages/*.qm %{buildroot}/usr/share/%{APP_NAME}/languages/
-%{__install} -c -m 755 %{APP_NAME} %{buildroot}/usr/bin/
-%{__install} -c -m 755 %{APP_NAME}.desktop %{buildroot}/usr/share/applications
+%{__install} -c -m 755 icons/light/tb_icon*.png %{buildroot}/usr/share/${APP_NAME}/icons/light/
+%{__install} -c -m 755 icons/dark/tb_icon*.png %{buildroot}/usr/share/${APP_NAME}/icons/dark/
+%{__install} -c -m 755 icons/volume*.png %{buildroot}/usr/share/${APP_NAME}/icons/
+#%{__install} -c -m 755 languages/*.qm %{buildroot}/usr/share/${APP_NAME}/languages/
+%{__install} -c -m 755 ${APP_NAME} %{buildroot}/usr/bin/
+%{__install} -c -m 755 ${APP_NAME}.desktop %{buildroot}/usr/share/applications
 
 %clean
 [ \"%{buildroot}\" != \"/\" ] && rm -rf %{buildroot}
 
 %files
 %defattr(-, root, root, 0755)
-%{_bindir}/%{APP_NAME}
-%{_datadir}/%{APP_NAME}/icons/
-%{_datadir}/%{APP_NAME}/icons/light/
-%{_datadir}/%{APP_NAME}/icons/dark/
-%{_datadir}/%{APP_NAME}/languages/
+%{_bindir}/${APP_NAME}
+%{_datadir}/${APP_NAME}/icons/
+%{_datadir}/${APP_NAME}/icons/light/
+%{_datadir}/${APP_NAME}/icons/dark/
+%{_datadir}/${APP_NAME}/languages/
 %{_datadir}/applications/"
         echo "${regspecfile}" > ${specfiles}/"qtalsavolume.spec"
 	rpmbuild -ba ${specfiles}/"qtalsavolume.spec"
