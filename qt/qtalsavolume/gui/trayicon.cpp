@@ -43,6 +43,7 @@ TrayIcon::TrayIcon()
   about_(new QAction(tr("&About..."), this)),
   aboutQt_(new QAction(tr("About Qt"), this)),
   exit_(new QAction(tr("&Quit"), this)),
+  trayMenu_(new QMenu()),
   currentIcon_(QString()),
   geometery_(QRect()),
   iconPosition_(QCursor::pos()),
@@ -52,7 +53,6 @@ TrayIcon::TrayIcon()
   legacyTrayIcon_(QSystemTrayIconPtr())
 {
 	bool newInterface = false;
-	QMenu *trayMenu = new QMenu();
 #ifdef HAVE_KDE
 	QDBusInterface iface(KSNI_SERVICE, KSNI_PATH, KSNI_IFACE);
 	if (iface.isValid()) {
@@ -61,9 +61,9 @@ TrayIcon::TrayIcon()
 		newTrayIcon_->setStatus(KStatusNotifierItem::Active);
 		newTrayIcon_->setTitle(ICON_TITLE);
 #ifdef USE_KDE
-		newTrayIcon_->setContextMenu(static_cast<KMenu*>(trayMenu));
+		newTrayIcon_->setContextMenu(static_cast<KMenu*>(trayMenu_));
 #else
-		newTrayIcon_->setContextMenu(trayMenu);
+		newTrayIcon_->setContextMenu(trayMenu_);
 #endif
 		connect(newTrayIcon_.data(), SIGNAL(activateRequested(bool,QPoint)), this, SLOT(iconActivated(bool,QPoint)));
 		connect(newTrayIcon_.data(), SIGNAL(secondaryActivateRequested(QPoint)), this, SLOT(iconActivatedSecondary(QPoint)));
@@ -77,26 +77,33 @@ TrayIcon::TrayIcon()
 		legacyTrayIcon_ = QSystemTrayIconPtr(new QSystemTrayIcon(this));
 		connect(legacyTrayIcon_.data(), SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
 			this, SLOT(iconActivated(QSystemTrayIcon::ActivationReason)));
-		legacyTrayIcon_->setContextMenu(trayMenu);
+		legacyTrayIcon_->setContextMenu(trayMenu_);
 		legacyTrayIcon_->installEventFilter(this);
 	}
-	trayMenu->addAction(restore_.data());
+	trayMenu_->addAction(restore_.data());
 	connect(restore_.data(), SIGNAL(triggered()), this, SLOT(onRestore()));
-	trayMenu->addSeparator();
-	trayMenu->addAction(settings_.data());
+	trayMenu_->addSeparator();
+	trayMenu_->addAction(settings_.data());
 	connect(settings_.data(), SIGNAL(triggered()), this, SLOT(onSettings()));
-	trayMenu->addAction(mute_.data());
+	trayMenu_->addAction(mute_.data());
 	mute_->setCheckable(true);
 	connect(mute_.data(), SIGNAL(toggled(bool)), this, SLOT(onMute()));
-	trayMenu->addSeparator();
-	trayMenu->addAction(about_.data());
+	trayMenu_->addSeparator();
+	trayMenu_->addAction(about_.data());
 	connect(about_.data(), SIGNAL(triggered()), this, SLOT(onAbout()));
-	trayMenu->addAction(aboutQt_.data());
+	trayMenu_->addAction(aboutQt_.data());
 	connect(aboutQt_.data(), SIGNAL(triggered()), this, SLOT(onAboutQt()));
 	if (legacyTrayIcon_) {
-		trayMenu->addSeparator();
-		trayMenu->addAction(exit_.data());
+		trayMenu_->addSeparator();
+		trayMenu_->addAction(exit_.data());
 		connect(exit_.data(), SIGNAL(triggered()), this, SLOT(onExit()));
+	}
+}
+
+TrayIcon::~TrayIcon()
+{
+	if(legacyTrayIcon_) {
+		delete trayMenu_;
 	}
 }
 

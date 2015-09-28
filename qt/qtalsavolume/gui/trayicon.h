@@ -50,6 +50,7 @@ class TrayIcon : public QObject
 
 public:
 	TrayIcon();
+	~TrayIcon();
 	void setTrayIcon(const QString &icon);
 	void setToolTip(const QString &tooltip);
 	void setMute(bool isMuted);
@@ -85,6 +86,7 @@ private:
 	QActionPtr about_;
 	QActionPtr aboutQt_;
 	QActionPtr exit_;
+	QMenu *trayMenu_;
 	QString currentIcon_;
 	QRect geometery_;
 	QPoint iconPosition_;
