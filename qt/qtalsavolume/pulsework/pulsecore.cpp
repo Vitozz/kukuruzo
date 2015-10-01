@@ -365,7 +365,7 @@ PulseDevice::Ptr PulseCore::getDeviceByIndex(int index)
 {
 	updateDevices();
 	const int deltaIndex = sinksDescriptions_.size() - index;
-	PulseDevice::Ptr device = (deltaIndex != 0 && deltaIndex >0) ? getSink(index) : getSource(abs(deltaIndex));
+	PulseDevice::Ptr device = (deltaIndex >0) ? getSink(index) : getSource(abs(deltaIndex));
 	return device;
 }
 
