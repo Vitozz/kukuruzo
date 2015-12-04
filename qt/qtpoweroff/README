@@ -2,9 +2,9 @@ QtPowerOff - simple tool to sheduled power off / reboot your PC
 
 Written on Qt4/Qt5.
 
-On Linux systems works with DBUS
+On Linux systems it works with DBUS
 
-On Windows with shutdown app (Needs Administrator rights)
+On Windows it uses WinAPI or shutdown command
 
 ---------------
 Howto build app:
