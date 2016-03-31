@@ -36,6 +36,7 @@ if( UNIX AND NOT (APPLE OR CYGWIN) )
 		alsawork/alsadevice.h
 		defines.h
 	)
+	include_regular_expression("\\.h$")
 	set( CPP_FILES
 		main.cpp
 		gui/popupwindow.cpp

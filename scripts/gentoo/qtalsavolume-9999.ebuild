@@ -42,26 +42,18 @@ KEYWORDS="~amd64 ~x86 ~amd64-linux ~x86-linux"
 LICENSE="GPL-2"
 
 src_configure() {
-	PULSE_FLAG="OFF"
 	KDE_FLAG="OFF"
-	use pulseaudio && PULSE_FLAG="ON"
-	if use qt5;then  
-		QT_FLAG="ON"
-		if use kde; then
+	if use qt5 && use kde; then
 			KDE_FLAG="-DUSE_KDE5=ON"
-		fi
 	fi
-	if use qt4;then  
-		QT_FLAG="OFF"
-		if use kde; then
+	if use qt4 && use kde; then
 			KDE_FLAG="-DUSE_KDE=ON"
-		fi
 	fi
-	mycmakeargs="${mycmakeargs}
-				-DUSE_PULSE='${PULSE_FLAG}'
-				-DUSE_QT5='${QT_FLAG}'
-				${KDE_FLAG}
-				"
+	local mycmakeargs=(
+		$(cmake-utils_use_use pulseaudio PULSE)
+		$(cmake-utils_use_use qt5 QT5)
+		$(echo ${KDE_FLAG})
+	)
 	cmake-utils_src_configure
 }
 

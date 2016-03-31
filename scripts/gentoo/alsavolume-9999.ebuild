@@ -36,19 +36,11 @@ KEYWORDS="~amd64 ~x86 ~amd64-linux ~x86-linux"
 LICENSE="GPL-2"
 
 src_configure() {
-	PULSE_FLAG="OFF"
-	GTK3_FLAG="ON"
-	APPIND_FLAG="OFF"
-	KDE_FLAG="OFF"
-	use pulseaudio && PULSE_FLAG="ON"
-	use gtk2 && GTK3_FLAG="OFF"
-	use appindicator && APPIND_FLAG="ON"
-	use kde && KDE_FLAG="ON"
-	mycmakeargs="${mycmakeargs}
-				-DUSE_PULSE='${PULSE_FLAG}'
-				-DUSE_GTK3='${GTK3_FLAG}'
-				-DUSE_APPINDICATOR='${APPIND_FLAG}'
-				-DUSE_KDE='${KDE_FLAG}'
-				"
+	local mycmakeargs=(
+		$(cmake-utils_use_use pulseaudio PULSE)
+		$(cmake-utils_use_use appindicator APPINDICATOR)
+		$(cmake-utils_use_use kde KDE)
+		$(cmake-utils_use_use gtk3 GTK3)
+	)
 	cmake-utils_src_configure
 }

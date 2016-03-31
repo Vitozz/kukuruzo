@@ -35,11 +35,9 @@ KEYWORDS="~amd64 ~x86 ~amd64-linux ~x86-linux"
 LICENSE="GPL-2"
 
 src_configure() {
-	use qt5 && QT_FLAG="ON"
-	use qt4 && QT_FLAG="OFF"
-	mycmakeargs="${mycmakeargs}
-				-DUSE_QT5='${QT_FLAG}'
-				"
+	local mycmakeargs=(
+		$(cmake-utils_use_use qt5 QT5)
+	)
 	cmake-utils_src_configure
 }
 
