@@ -505,6 +505,7 @@ build_regext ()
 	cmake_flags=""
 	section="x11"
 	arch="any"
+	check_deps "debhelper cdbs libqt4-dev cmake"
 	builddep="debhelper (>= 7), cdbs, libqt4-dev, cmake"
 	addit="#"
 	depends="\${shlibs:Depends}, \${misc:Depends}, libx11-6, zlib1g (>=1:1.1.4)"
@@ -578,7 +579,7 @@ build_avolume ()
 		builddep="${builddep}, libpulse-dev"
 		deps="${deps} libpulse-dev"
 	fi
-	check_deps ${deps}
+	check_deps "${deps}"
 	section="sound"
 	arch="any"	
 	depends="\${shlibs:Depends}, \${misc:Depends}, libasound2, libx11-6, zlib1g (>=1:1.1.4)"
@@ -633,7 +634,7 @@ build_qtavolume ()
 	debdir=${builddir}/${project}-${ver}
 	prepare
 	cd ${debdir}
-	deps="libasound2-dev pkg-config cmake"
+	deps="libasound2-dev libqt4-dev pkg-config cmake"
 	builddep="debhelper (>= 7), cdbs, libqt4-dev, libasound2-dev, pkg-config, cmake"
 	echo -e "${blue}Enable KDE4 support${nocolor} ${pink}[y/n(default)]${nocolor}"
 	read iskde4
@@ -641,7 +642,7 @@ build_qtavolume ()
 		APP_NAME="${APP_NAME}4"
 		cmake_flags="${cmake_flags} -DUSE_KDE=ON"
 		builddep="${builddep}, kdelibs5-dev"
-		deps="${deps} kdelibs5-dev"
+		deps="${deps} libqt4-dev kdelibs5-dev"
 	else
 		echo -e "${blue}Enable KDE5 support${nocolor} ${pink}[y/n(default)]${nocolor}"
 		read iskde5
@@ -660,7 +661,7 @@ build_qtavolume ()
 		builddep="${builddep}, libpulse-dev"
 		deps="${deps} libpulse-dev"
 	fi
-	check_deps ${deps}
+	check_deps "${deps}"
 	section="sound"
 	arch="any"
 	depends="\${shlibs:Depends}, \${misc:Depends}, libasound2, libx11-6, zlib1g (>=1:1.1.4)"
@@ -918,18 +919,21 @@ die() { echo "$@"; exit 1; }
 check_deps()
 {
 	if [ ! -z "$1" ]; then
-		for dependency in ${1}; do
+		instdep=""
+		for dependency in $1; do
+			echo "${dependency}"
 			local result=$(dpkg --get-selections | grep ${dependency})
 			if [ -z "${result}" ]; then
-				echo -e"${blue}Package ${dependency} not installed. Trying to install...${nocolor}"
-				sudo apt-get install ${dependency}
+				echo -e "${blue}Package ${dependency} not installed. Trying to install...${nocolor}"
+				instdep="${instdep} ${dependency}"
 			fi
 		done
+		sudo apt-get install ${instdep}
 	fi
 }
 
 clear
-check_deps ${needed_packages}
+check_deps "${needed_packages}"
 run_resloader get_src
 run_resloader "check_dir ${srcdir}"
 run_resloader "check_dir ${builddir}"
