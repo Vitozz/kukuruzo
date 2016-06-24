@@ -928,7 +928,9 @@ check_deps()
 				instdep="${instdep} ${dependency}"
 			fi
 		done
-		sudo apt-get install ${instdep}
+		if [ ! -z "${instdep}" ]; then
+			sudo apt-get install ${instdep}
+		fi
 	fi
 }
 
