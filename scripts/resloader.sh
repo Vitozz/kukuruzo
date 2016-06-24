@@ -24,8 +24,12 @@ check_dir ()
 		then
 			tmpdir=$1			
 			echo -e "${blue}creating directory${nocolor} ${pink}$tmpdir...${nocolor}"
-			cd ${builddir}
-			mkdir "$tmpdir"
+			if [ -d "${builddir}" ]; then
+				cd ${builddir}
+			else
+				mkdir -pv ${builddir}
+			fi
+			mkdir -pv "$tmpdir"
 		fi
 	fi
 }
