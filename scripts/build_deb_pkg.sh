@@ -36,6 +36,7 @@ addit=""
 builddep=""
 docfiles=""
 dirs=""
+needed_packages="cdbs debhelper dpkg-dev devscripts"
 if [ "$(lsb_release -is)" == "Ubuntu" ]; then
 	oscodename=$(lsb_release -cs)
 else
@@ -142,7 +143,7 @@ Section: ${section}
 Priority: extra
 Maintainer: ${Maintainer}
 Build-Depends: ${builddep}
-Standards-Version: 3.8.1
+Standards-Version: 3.9.7
 Homepage: http://sites.google.com/site/thesomeprojects/
 
 Package: ${APP_NAME}
@@ -160,7 +161,7 @@ It was downloaded from:
 
     http://sites.google.com/site/thesomeprojects/
 
-Upstream Author(s):
+Upstream Author:
 
     Vitaly Tonkacheyev <thetvg@gmail.com>
 
@@ -187,9 +188,6 @@ The Debian packaging is:
     Copyright (C) ${year} ${Maintainer} 
 
 and is licensed under the GPL version 3, see above.
-
-# Please also look if there are files or directories which have a
-# different copyright/license attached and list them here.
 "
 docs=${docfiles}
 
@@ -202,7 +200,7 @@ fi
 
 # End automatically added section
 
-LIST=`find /home -wholename '*/.config/autostart/pyalsavolume.desktop'`
+LIST=$(find /home -wholename '*/.config/autostart/pyalsavolume.desktop')
 
 for ONE_OF_LIST in $LIST
 do
@@ -285,7 +283,8 @@ prepare_sound_python ()
 	section="sound"
 	arch="all"
 	builddep="cdbs, debhelper (>= 7), python-support (>= 0.6)"
-	addit="XB-Python-Version: \${python:Versions}"	
+	addit="XB-Python-Version: \${python:Versions}"
+	check_deps "python-support"
 }
 
 build_erp ()
@@ -508,7 +507,7 @@ build_regext ()
 	arch="any"
 	builddep="debhelper (>= 7), cdbs, libqt4-dev, cmake"
 	addit="#"
-	depends="\${shlibs:Depends}, \${misc:Depends}, libc6 (>=2.7-1), libgcc1 (>=1:4.1.1), libqtcore4 (>=4.4.3), libqtgui4 (>=4.4.3), libstdc++6 (>=4.1.1), libx11-6, zlib1g (>=1:1.1.4)"
+	depends="\${shlibs:Depends}, \${misc:Depends}, libx11-6, zlib1g (>=1:1.1.4)"
 	description="RegExp Tester"
 	descriptionlong='Simple tool written on Qt to test regular expressions'
 	docfiles=""
@@ -539,15 +538,18 @@ build_avolume ()
 	debdir=${builddir}/${project}-${ver}
 	prepare
 	cd ${debdir}
+	deps="libasound2-dev pkg-config cmake intltool gettext"
 	builddep="debhelper (>= 7), cdbs, libasound2-dev, pkg-config, cmake, intltool, gettext"
 	echo -e "${blue}Enable GTK+2 support${nocolor} ${pink}[y/n(default)]${nocolor}"
 	read isgtk
 	if [ "${isgtk}" == "y" ]; then
 		cmake_flags="${cmake_flags} -DUSE_GTK3=OFF"
 		builddep="${builddep}, libgtkmm-2.4-dev"
+		deps="${deps} libgtkmm-2.4-dev"
 	else
 		APP_NAME="${APP_NAME}3"
 		builddep="${builddep}, libgtkmm-3.0-dev"
+		deps="${deps} libgtkmm-3.0-dev"
 	fi
 		echo -e "${blue}Enable KDE tray support${nocolor} ${pink}[y/n(default)]${nocolor}"
 	read iskde
@@ -562,8 +564,10 @@ build_avolume ()
 		APP_NAME="${APP_NAME}-unity"
 		if [ "${isgtk}" == "y" ]; then
 			builddep="${builddep}, libappindicator-dev"
+			deps="${deps} libappindicator-dev"
 		else
 			builddep="${builddep}, libappindicator3-dev"
+			deps="${deps} libappindicator3-dev"
 		fi
 	fi
 	echo -e "${blue}Enable pulseaudio support${nocolor} ${pink}[y/n(default)]${nocolor}"
@@ -572,10 +576,12 @@ build_avolume ()
 		APP_NAME="${APP_NAME}-pulse"
 		cmake_flags="${cmake_flags} -DUSE_PULSE=ON"
 		builddep="${builddep}, libpulse-dev"
+		deps="${deps} libpulse-dev"
 	fi
+	check_deps ${deps}
 	section="sound"
 	arch="any"	
-	depends="\${shlibs:Depends}, \${misc:Depends}, libasound2, libc6 (>=2.7-1), libgcc1 (>=1:4.1.1), libstdc++6 (>=4.1.1), libx11-6, zlib1g (>=1:1.1.4)"
+	depends="\${shlibs:Depends}, \${misc:Depends}, libasound2, libx11-6, zlib1g (>=1:1.1.4)"
 	description="Tray ALSA volume changer"
 	descriptionlong="Simple programm to change the volume of one of the ALSA mixers from the system tray."
 	if [ "${isgtk}" == "y" ]; then
@@ -627,6 +633,7 @@ build_qtavolume ()
 	debdir=${builddir}/${project}-${ver}
 	prepare
 	cd ${debdir}
+	deps="libasound2-dev pkg-config cmake"
 	builddep="debhelper (>= 7), cdbs, libqt4-dev, libasound2-dev, pkg-config, cmake"
 	echo -e "${blue}Enable KDE4 support${nocolor} ${pink}[y/n(default)]${nocolor}"
 	read iskde4
@@ -634,6 +641,7 @@ build_qtavolume ()
 		APP_NAME="${APP_NAME}4"
 		cmake_flags="${cmake_flags} -DUSE_KDE=ON"
 		builddep="${builddep}, kdelibs5-dev"
+		deps="${deps} kdelibs5-dev"
 	else
 		echo -e "${blue}Enable KDE5 support${nocolor} ${pink}[y/n(default)]${nocolor}"
 		read iskde5
@@ -641,6 +649,7 @@ build_qtavolume ()
 			APP_NAME="${APP_NAME}5"
 			cmake_flags="${cmake_flags} -DUSE_KDE5=ON"
 			builddep="debhelper (>= 7), cdbs, libasound2-dev, pkg-config, cmake, libkf5notifications-dev, qttools5-dev"
+			deps="${deps} libkf5notifications-dev qttools5-dev"
 		fi
 	fi
 	echo -e "${blue}Enable pulseaudio support${nocolor} ${pink}[y/n(default)]${nocolor}"
@@ -649,10 +658,12 @@ build_qtavolume ()
 		APP_NAME="${APP_NAME}-pulse"
 		cmake_flags="${cmake_flags} -DUSE_PULSE=ON"
 		builddep="${builddep}, libpulse-dev"
+		deps="${deps} libpulse-dev"
 	fi
+	check_deps ${deps}
 	section="sound"
 	arch="any"
-	depends="\${shlibs:Depends}, \${misc:Depends}, libasound2, libc6 (>=2.7-1), libgcc1 (>=1:4.1.1), libstdc++6 (>=4.1.1), libx11-6, zlib1g (>=1:1.1.4)"
+	depends="\${shlibs:Depends}, \${misc:Depends}, libasound2, libx11-6, zlib1g (>=1:1.1.4)"
 	description="Tray ALSA volume changer"
 	descriptionlong='Simple programm to change the volume of one of the ALSA mixers from the system tray.'
 	if [ "${iskde4}" == "y" ]; then
@@ -692,6 +703,7 @@ build_qtpoweroff ()
 	prepare
 	cd ${debdir}
 	builddep="debhelper (>= 7), cdbs, libqt4-dev, cmake"
+	check_deps "libqt4-dev cmake"
 	section="misc"
 	arch="any"
 	addit="#"
@@ -751,6 +763,7 @@ build_hismerger ()
 	section="misc"
 	arch="all"
 	builddep="cdbs, debhelper (>= 7), python-support (>= 0.6), pyqt4-dev-tools"
+	check_deps "pyqt4-dev-tools"
 	addit="XB-Python-Version: \${python:Versions}"
 	depends="\${python:Depends}, python-qt4, python-sip"
 	description="Psi/Psi+ History files merger"
@@ -771,12 +784,21 @@ build_i386 ()
 {
 	if [ ! -z "$1" ]
 	then
-		build_arch=i386
-		cowbdir=/var/cache/pbuilder/${i386_dist}-${build_arch}/result
-		app=$1-${build_count}.dsc
-		sudo DIST=${i386_dist} ARCH=${build_arch} cowbuilder --build ${builddir}/${app} --basepath=/var/cache/pbuilder/${i386_dist}-${build_arch}
-		cp -f ${cowbdir}/${app/.dsc}_${build_arch}.deb	${exitdir}/
+		targetarch=i386
+		nameprefix=$1-${build_count}
+		dscfile=${builddir}/${nameprefix}.dsc
+		srcfile=${builddir}/${nameprefix}.tar.gz
+		if [ -f "${dscfile}" ] && [ -f "${srcfile}" ]; then
+			sudo DIST=${oscodename} ARCH=${targetarch} pbuilder --build ${dscfile}
+			cp -f /var/cache/pbuilder/${oscodename}-${targetarch}/result/${nameprefix}_${targetarch}.deb ${exitdir}/
+		fi
 	fi
+}
+
+prepare_pbuilder ()
+{
+	targetarch=i386
+	sudo DIST=${oscodename} ARCH=${targetarch} pbuilder --create
 }
 
 build_all_regexp ()
@@ -891,7 +913,23 @@ choose_action ()
 	esac
 }
 
+die() { echo "$@"; exit 1; }
+
+check_deps()
+{
+	if [ ! -z "$1" ]; then
+		for dependency in ${1}; do
+			local result=$(dpkg --get-selections | grep ${dependency})
+			if [ -z "${result}" ]; then
+				echo -e"${blue}Package ${dependency} not installed. Trying to install...${nocolor}"
+				sudo apt-get install ${dependency}
+			fi
+		done
+	fi
+}
+
 clear
+check_deps ${needed_packages}
 run_resloader get_src
 run_resloader "check_dir ${srcdir}"
 run_resloader "check_dir ${builddir}"

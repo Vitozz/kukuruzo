@@ -11,6 +11,11 @@ pink="\x1B[01;91m"
 yellow="\x1B[01;93m"
 blue="\x1B[01;94m"
 #
+kukruzo_url="git://github.com/Vitozz/kukuruzo.git"
+pyalsavolume_url="git://github.com/Vitozz/pyalsavolume.git"
+pypoweroff_url="git://github.com/Vitozz/pypoweroff.git"
+cppAlsaVolume_url="git://github.com/Vitozz/cppAlsaVolume.git"
+
 check_dir ()
 {
 	if [ ! -z "$1" ]
@@ -18,7 +23,7 @@ check_dir ()
 		if [ ! -d "$1" ]
 		then
 			tmpdir=$1			
-			echo -e "${blue}making directory${nocolor} ${pink}$tmpdir...${nocolor}"
+			echo -e "${blue}creating directory${nocolor} ${pink}$tmpdir...${nocolor}"
 			cd ${builddir}
 			mkdir "$tmpdir"
 		fi
@@ -36,64 +41,32 @@ set_workdir ()
 
 get_src ()
 {
-	if [ -d "${srcdir}/.git" ]
-	then
-		update_git ${srcdir}
-	else
-		cd ${homedir}
-		git clone "git://github.com/Vitozz/kukuruzo.git"  ${srcdir}
-		cd ${srcdir}
-		git init
-		git pull
-	fi
+	check_dir ${srcdir}
+	update_git ${kukruzo_url} ${srcdir}
 }
 
 get_pyav ()
 {
 	tmp_dir="${srcdir}/pyalsavolume"
 	check_dir ${tmp_dir}
-	if [ -d "${tmp_dir}/.git" ]
-	then
-		update_git ${tmp_dir}
-	else
-		git clone "git://github.com/Vitozz/pyalsavolume.git"  ${tmp_dir}
-		cd ${tmp_dir}
-		git init
-		git pull
-		cd ${srcdir}
-	fi
+	update_git ${pyalsavolume_url} ${tmp_dir}
+	cd ${srcdir}
 }
 
 get_pypoff ()
 {
 	tmp_dir="${srcdir}/pypoweroff"
 	check_dir ${tmp_dir}
-	if [ -d "${tmp_dir}/.git" ]
-	then
-		update_git ${tmp_dir}
-	else
-		git clone "git://github.com/Vitozz/pypoweroff.git"  ${tmp_dir}
-		cd ${tmp_dir}
-		git init
-		git pull
-		cd ${srcdir}
-	fi
+	update_git ${pypoweroff_url} ${tmp_dir}
+	cd ${srcdir}
 }
 
 get_avolume ()
 {
 	tmp_dir="${srcdir}/cppAlsaVolume"
 	check_dir ${tmp_dir}
-	if [ -d "${tmp_dir}/.git" ]
-	then
-		update_git ${tmp_dir}
-	else
-		git clone "git://github.com/Vitozz/cppAlsaVolume.git"  ${tmp_dir}
-		cd ${tmp_dir}
-		git init
-		git pull
-		cd ${srcdir}
-	fi
+	update_git ${cppAlsaVolume_url} ${tmp_dir}
+	cd ${srcdir}
 }
 
 prepare_src ()
@@ -111,15 +84,21 @@ prepare_src ()
 
 update_git ()
 {
-	if [ ! -z "$1" ]
+	curd=$(pwd)
+	if [ ! -z "$2" ]
 	then
-		if [ -d "$1" ]
+		if [ ! -d "$2/.git" ]
 		then
-			cd "$1"
+			git clone $1 $2
+			cd "$2"
+			git init
+		else
+			cd "$2"
 			git reset --hard
 			git init
 			git pull
 		fi
 	fi
+	cd ${curd}
 }
 
