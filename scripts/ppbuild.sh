@@ -415,37 +415,46 @@ build_cmake_plugins ()
 #
 build_deb_package ()
 {
+  local spell_dep=""
+  if [ "${spellchek_engine}" == "hunspell" ]; then
+    spell_dep="libhunspell-1.3-0"
+    check_deps "libhunspell-1.3-0 libhunspell-dev"
+  else
+    spell_dep="libenchant1c2a"
+    check_deps "libenchant1c2a libenchant-dev"
+  fi
+  if [ "${qt_ver}" == "4" ]; then
+    local webkitdep=""
+    if [ ! -z "${iswebkit}" ]; then
+      webkitdep=", libqt4-webkit '(>=4.4.3)'"
+      check_deps "libqt4-webkit"
+    fi
+    qt_deps="libqt4-dbus '(>=4.4.3)', libqt4-network '(>=4.4.3)', libqt4-qt3support '(>=4.4.3)', libqt4-xml '(>=4.4.3)', libqtcore4 '(>=4.4.3)', libqtgui4 '(>=4.4.3)'${webkitdep}"
+    check_deps "libqt4-dev libqjson-dev libqt4-dbus libqt4-network libqt4-qt3support libqt4-xml libqtcore4 libqtgui4 libqca2 libqca2-dev"
+  else
+    local webkitdep=""
+    if [ ! -z "${iswebkit}" ]; then
+      webkitdep=", libqt5webkit5"
+      check_deps "libqt5webkit5 libqt5webkit5-dev"
+    fi
+    qt_deps="libqt5dbus5, libqt5network5, libqt5xml5 , libqt5core5a, libqt5gui5, libqt5widgets5, libqt5x11extras5${webkitdep}"
+    check_deps "libqt5dbus5 libqt5network5 libqt5xml5 libqt5core5a libqt5gui5 libqt5widgets5 libqt5x11extras5 libqt5sql5-sqlite libqca-qt5-2"
+    check_deps "qtmultimedia5-dev qtbase5-dev qttools5-dev qttools5-dev-tools libqt5x11extras5-dev libqt5svg5-dev libqca-qt5-2-dev"
+  fi
+  check_deps "git cmake checkinstall patch zlib1g-dev libidn11-dev libotr5-dev libtidy-dev libgcrypt20-dev libgpg-error-dev"
   compile_psiplus /usr ${orig_src}
   echo "Building Psi+ DEB package with checkinstall"
   local rev=$(cd ${buildpsi}/git-plus/; git describe --tags | cut -d - -f 2)
   local psirev=$(cd ${buildpsi}/git/; git describe --tags | cut -d - -f 2)
   local desc='Psi is a cross-platform powerful Jabber client (Qt, C++) designed for the Jabber power users.
 Psi+ - Psi IM Mod by psi-dev@conference.jabber.ru.'
-  cd ${orig_src}
+  cd ${orig_src}/cbuild
   echo "${desc}" > description-pak
   #make spellcheck
-  local spell_dep=""
-  if [ "${spellchek_engine}" == "hunspell" ]; then
-    spell_dep="libhunspell-1.3-0"
-  else
-    spell_dep="libenchant1c2a"
-  fi
-  if [ "${qt_ver}" == "4" ]; then
-    local webkitdep=""
-    if [ ! -z "${iswebkit}" ]; then
-      webkitdep=", libqt4-webkit '(>=4.4.3)'"
-    fi
-    qt_deps="libqt4-dbus '(>=4.4.3)', libqt4-network '(>=4.4.3)', libqt4-qt3support '(>=4.4.3)', libqt4-xml '(>=4.4.3)', libqtcore4 '(>=4.4.3)', libqtgui4 '(>=4.4.3)'${webkitdep}"
-  else
-    local webkitdep=""
-    if [ ! -z "${iswebkit}" ]; then
-      webkitdep=", libqt5webkit5"
-    fi
-    qt_deps="libqt5dbus5, libqt5network5, libqt5xml5 , libqt5core5a, libqt5gui5, libqt5widgets5, libqt5x11extras5${webkitdep}"
-  fi
+
   local requires=" ${spell_dep}, 'libc6 (>=2.7-1)', 'libgcc1 (>=1:4.1.1)', 'libqca2', ${qt_deps}, 'libstdc++6 (>=4.1.1)', 'libx11-6', 'libxext6', 'libxss1', 'zlib1g (>=1:1.1.4)' "
   sudo checkinstall -D --nodoc --pkgname=psi-plus --pkggroup=net --pkgversion=${psi_version}.${rev}.${psirev} --pkgsource=${orig_src} --maintainer="thetvg@gmail.com" --requires="${requires}"
-  cp -f ${orig_src}/*.deb ${buildpsi}
+  cp -f ${orig_src}/cbuild/*.deb ${buildpsi}
 }
 #
 prepare_spec ()
@@ -795,6 +804,24 @@ debug_psi ()
     gdb ./psi-plus
   else
     echo -e "${red}Psi+ binary not found in ${psi_binary_path}. Try to compile it first.${nocolor}"
+  fi
+}
+#
+check_deps()
+{
+  if [ ! -z "$1" ]; then
+    instdep=""
+    for dependency in $1; do
+      echo -e "${yellow}Check dependency - ${dependency} ${nocolor}"
+      local result=$(dpkg --get-selections | grep ${dependency})
+      if [ -z "${result}" ]; then
+        echo -e "${blue}Package${nocolor} ${pink}${dependency}${nocolor} ${blue}not installed. Trying to install...${nocolor}"
+        instdep="${instdep} ${dependency}"
+      fi
+    done
+    if [ ! -z "${instdep}" ]; then
+      sudo apt-get install ${instdep}
+    fi
   fi
 }
 #
