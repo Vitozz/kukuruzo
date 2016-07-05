@@ -67,7 +67,7 @@ run_resloader ()
 		if [ -f "${CWDIR}/resloader.sh" ]
 		then
 			cd ${CWDIR}
-			. ./resloader.sh
+			. ${CWDIR}/resloader.sh
 			$cmd
 		else
 			echo -e "${pink}No resloder.sh file found. Please download it with this script in the same dir${nocolor}"
@@ -86,24 +86,13 @@ rm_all ()
 	fi
 }
 
-check_qconf ()
-{
-	if [ -f "/usr/bin/qconf" -o -f "/usr/local/bin/qconf" ]
-	then
-		qconfcmd=qconf
-	fi
-	if [ -f "/usr/bin/qt-qconf" -o -f "/usr/local/bin/qt-qconf" ]
-	then
-		qconfcmd=qt-qconf
-	else
-		echo "Install Please qconf utility to continue"
-	fi
-}
-
 prepare_global ()
 {
-	run_resloader "check_dir ${srcdir}"
+	cd ${homedir}
 	run_resloader get_src
+	run_resloader get_pyav
+	run_resloader get_pypoff
+	run_resloader get_avolume
 }
 
 prepare_tarball ()
@@ -118,23 +107,23 @@ prepare_tarball ()
 prepare ()
 {
 	run_resloader "check_dir ${rpmdir}"
-        run_resloader "check_dir ${specfiles}"
-        run_resloader "check_dir ${srcfiles}"
-        run_resloader "check_dir ${builddir}"
-        run_resloader "check_dir ${exitdir}"
-        rm -rf ${builddir}/*
+	run_resloader "check_dir ${specfiles}"
+	run_resloader "check_dir ${srcfiles}"
+	run_resloader "check_dir ${builddir}"
+	run_resloader "check_dir ${exitdir}"
+	rm -rf ${builddir}/*
 	if [ ! -z "$1" ]
 	then
 		run_resloader "set_workdir ${project}-${ver}"
 		run_resloader "prepare_src $1"
-                cd ${builddir}
+		cd ${builddir}
 		run_resloader "check_dir ${project}-${ver}"
 		if [ "${project}" == "pypoweroff" ] && [ "${ver}" \< "1.3" ]
 		then
 			patch -d ${project}-${ver} -p1 < ${project}-${ver}/3_to_2.patch
 		fi
-                prepare_tarball ${project}-${ver}.tar.gz
-                cp -rf ${builddir}/${project}-${ver}.tar.gz ${srcfiles}/
+		prepare_tarball ${project}-${ver}.tar.gz
+		cp -rf ${builddir}/${project}-${ver}.tar.gz ${srcfiles}/
 	fi
 }
 
@@ -205,11 +194,11 @@ build_erp ()
 	depends="python >= 2.6, python-gtk >= 2.0, exaile >= 0.3.2.0"
 	description="Control Exaile via tray icons"
 	descriptionlong='Control Exaile via tray icons.'
-        addit=""
+	addit=""
 	prepare_specs
 	rpmbuild -ba ${specfiles}/${project}.spec
 	cp -f ${rpms}/n*/*.rpm	${exitdir}/
-        cp -f ${srpms}/*.rpm	${exitdir}/
+	cp -f ${srpms}/*.rpm	${exitdir}/
 }
 
 build_etp ()
@@ -222,11 +211,11 @@ build_etp ()
 	depends="python >= 2.6, exaile"
 	description="Exaile Tune To Psi Plugin"
 	descriptionlong='Sends Current Track Information to Psi/Psi+ as Tune.'
-        addit=""
+	addit=""
 	prepare_specs
 	rpmbuild -ba ${specfiles}/${project}.spec
 	cp -f ${rpms}/n*/*.rpm	${exitdir}/
-        cp -f ${srpms}/*.rpm	${exitdir}/
+	cp -f ${srpms}/*.rpm	${exitdir}/
 }
 
 build_pyav ()
@@ -240,11 +229,11 @@ build_pyav ()
 	depends="python >= 2.6, libgtk-3-0, python-gobject >= 3.0.0, pyalsaaudio >= 0.6"
 	description="Tray ALSA volume changer"
 	descriptionlong='Simple programm to change the volume of one of the ALSA mixer from the system tray..'
-        addit=""
+	addit=""
 	prepare_specs
 	rpmbuild -ba ${specfiles}/${project}.spec
 	cp -f ${rpms}/n*/*.rpm	${exitdir}/
-        cp -f ${srpms}/*.rpm	${exitdir}/
+	cp -f ${srpms}/*.rpm	${exitdir}/
 }
 
 build_pypoff ()
@@ -256,18 +245,18 @@ build_pypoff ()
 	else
 		ver=$(cat ${srcdir}/${dirname}/version.txt)
 	fi
-        run_resloader get_pypoff
+	run_resloader get_pypoff
 	prepare ${dirname}
 	section="Applications/System"
 	arch="noarch"
 	builddep="python-devel, python-setuptools"
 	description="Turn-Off Tool"
 	descriptionlong='pyPowerOff - simple sheduled PC shutdown / reboot tool.'
-        addit="%doc COPYING"
+	addit="%doc COPYING"
 	prepare_specs
 	rpmbuild -ba ${specfiles}/${project}.spec
 	cp -f ${rpms}/n*/*.rpm	${exitdir}/
-        cp -f ${srpms}/*.rpm	${exitdir}/
+	cp -f ${srpms}/*.rpm	${exitdir}/
 }
 
 build_pyssh ()
@@ -283,11 +272,11 @@ build_pyssh ()
 	description="SSHFS Connection GUI"
 	descriptionlong='pysshfs - it"s a simple program, that provides a graphical interface to connect to a remote directory using SSHFS.
 	It is written on Python + PyGTK'
-        addit=""
+	addit=""
 	prepare_specs
 	rpmbuild -ba ${specfiles}/${project}.spec
 	cp -f ${rpms}/n*/*.rpm	${exitdir}/
-        cp -f ${srpms}/*.rpm	${exitdir}/
+	cp -f ${srpms}/*.rpm	${exitdir}/
 }
 
 build_rbremp ()
@@ -300,11 +289,11 @@ build_rbremp ()
 	depends="python >= 2.6, python-gtk >= 2.0, python-gconf, rhythmbox"
 	description="Control Rhythmbox via tray icons"
 	descriptionlong='Control Rhythmbox via tray icons'
-        addit=""
+	addit=""
 	prepare_specs
 	rpmbuild -ba ${specfiles}/${project}.spec
 	cp -f ${rpms}/n*/*.rpm	${exitdir}/
-        cp -f ${srpms}/*.rpm	${exitdir}/
+	cp -f ${srpms}/*.rpm	${exitdir}/
 }
 
 build_rbresp ()
@@ -318,11 +307,11 @@ build_rbresp ()
 	description="Rhythmbox restore last item plugin"
 	descriptionlong='Восстанавливает последний воспроизводимый трек при запуске Rhythmbox.
  Restores the last played item when runing Rhythmbox.'
-        addit=""
+	addit=""
 	prepare_specs
 	rpmbuild -ba ${specfiles}/${project}.spec
 	cp -f ${rpms}/n*/*.rpm	${exitdir}/
-        cp -f ${srpms}/*.rpm	${exitdir}/
+	cp -f ${srpms}/*.rpm	${exitdir}/
 }
 
 build_rbtunp ()
@@ -336,11 +325,11 @@ build_rbtunp ()
 	description="Rhythmbox tune to Psi plugin"
 	descriptionlong='Отсылает данные о прослушиваемом треке Jabber-кленту Psi/Psi+
  Sends tune information to Psi or Psi+ jabber client'
-        addit=""
+	addit=""
 	prepare_specs
 	rpmbuild -ba ${specfiles}/${project}.spec
 	cp -f ${rpms}/n*/*.rpm	${exitdir}/
-        cp -f ${srpms}/*.rpm	${exitdir}/
+	cp -f ${srpms}/*.rpm	${exitdir}/
 }
 
 build_regext ()
@@ -350,7 +339,7 @@ build_regext ()
 	dirname="qt/regexptest"
 	ver=$(cat ${srcdir}/${dirname}/version.txt)
 	prepare ${dirname}
-        regspecfile="Summary: RegExp Tester
+	regspecfile="Summary: RegExp Tester
 Name: regexptest
 Version: ${ver}
 Release: 1
@@ -370,24 +359,21 @@ Simple tool written on Qt to test regular expressions
 %setup
 
 %build
-qmake
+%cmake -DCMAKE_INSTALL_PREFIX=/usr -DUSE_QT5=ON
 %{__make} %{?_smp_mflags}  
 
 %install
 [ \"%{buildroot}\" != \"/\"] && rm -rf %{buildroot}
 
-%{__make} install INSTALL_ROOT=\"%{buildroot}\"
+cd build
+
+%{__make} install DESTDIR=\"%{buildroot}\"
 
 mkdir -p %{buildroot}/usr/bin
 mkdir -p %{buildroot}/usr/share/%{name}
 mkdir -p %{buildroot}/usr/share/applications
 mkdir -p %{buildroot}/usr/share/%{name}/icons
 mkdir -p %{buildroot}/usr/share/%{name}/langs
-
-%{__install} -c -m 755 icons/* %{buildroot}/usr/share/%{name}/icons/
-%{__install} -c -m 755 langs/*.qm %{buildroot}/usr/share/%{name}/langs/
-%{__install} -c -m 755 %{name} %{buildroot}/usr/bin/
-%{__install} -c -m 755 %{name}.desktop %{buildroot}/usr/share/applications
 
 %clean
 [ \"%{buildroot}\" != \"/\" ] && rm -rf %{buildroot}
@@ -400,10 +386,10 @@ mkdir -p %{buildroot}/usr/share/%{name}/langs
 %{_datadir}/%{name}/langs/
 %{_datadir}/doc/%{name}/html/regexp_help.html
 %{_datadir}/applications/"
-        echo "${regspecfile}" > ${specfiles}/"regexptest.spec"
+	echo "${regspecfile}" > ${specfiles}/"regexptest.spec"
 	rpmbuild -ba ${specfiles}/"regexptest.spec"
 	cp -f ${rpms}/i*/*.rpm	${exitdir}/
-        cp -f ${srpms}/*.rpm	${exitdir}/
+	cp -f ${srpms}/*.rpm	${exitdir}/
 }
 
 build_html2text ()
@@ -418,11 +404,11 @@ build_html2text ()
 	depends="python >= 2.6, libgtk-3-0, python-gobject >= 3.0.0, python-chardet"
 	description="HTML To TXT File Converter"
 	descriptionlong='Converts ebook-files from HTML to TXT format'
-        addit=""
+	addit=""
 	prepare_specs
 	rpmbuild -ba ${specfiles}/${project}.spec
 	cp -f ${rpms}/n*/*.rpm	${exitdir}/
-        cp -f ${srpms}/*.rpm	${exitdir}/
+	cp -f ${srpms}/*.rpm	${exitdir}/
 }
 
 build_hismerger (){
@@ -436,11 +422,11 @@ build_hismerger (){
 	depends="python >= 2.7, python-qt4, python-sip"
 	description="Psi/Psi+ history merger"
 	descriptionlong='Merges history file of Psi/Psi+ jabber client'
-        addit=""
+	addit=""
 	prepare_specs
 	rpmbuild -ba ${specfiles}/${project}.spec
 	cp -f ${rpms}/n*/*.rpm	${exitdir}/
-        cp -f ${srpms}/*.rpm	${exitdir}/
+	cp -f ${srpms}/*.rpm	${exitdir}/
 }
 
 build_avolume ()
@@ -483,7 +469,7 @@ With PulseAudio support"
 		cmake_flags="-DUSE_PULSE=OFF"
 	fi
 	prepare ${dirname}
-        regspecfile="Summary: AlsaVolume
+	regspecfile="Summary: AlsaVolume
 Name: ${project}
 Version: ${ver}
 Release: ${build_count}
@@ -504,13 +490,15 @@ ${addit}
 %setup
 
 %build
-cmake -DCMAKE_INSTALL_PREFIX=%{buildroot}/usr ${cmake_flags} .
+%cmake -DCMAKE_INSTALL_PREFIX=/usr ${cmake_flags}
 %{__make} %{?_smp_mflags}  
 
 %install
 [ \"%{buildroot}\" != \"/\"] && rm -rf %{buildroot}
 
-%{__make} install INSTALL_ROOT=\"%{buildroot}\"
+cd build
+
+%{__make} install DESTDIR=%{buildroot}
 
 mkdir -p %{buildroot}/usr/bin
 mkdir -p %{buildroot}/usr/share/${app_name}
@@ -523,12 +511,6 @@ mkdir -p %{buildroot}/usr/share/${app_name}/locale/ru/LC_MESSAGES
 mkdir -p %{buildroot}/usr/share/${app_name}/locale/uk
 mkdir -p %{buildroot}/usr/share/${app_name}/locale/uk/LC_MESSAGES
 
-%{__install} -c -m 755 icons/tb_icon*.png %{buildroot}/usr/share/${app_name}/icons/
-%{__install} -c -m 755 icons/volume*.png %{buildroot}/usr/share/${app_name}/icons/
-%{__install} -c -m 755 gladefiles/* %{buildroot}/usr/share/${app_name}/gladefiles/
-%{__install} -c -m 755 ${app_name} %{buildroot}/usr/bin/
-%{__install} -c -m 755 ${app_name}.desktop %{buildroot}/usr/share/applications
-
 %clean
 [ \"%{buildroot}\" != \"/\" ] && rm -rf %{buildroot}
 
@@ -539,10 +521,10 @@ mkdir -p %{buildroot}/usr/share/${app_name}/locale/uk/LC_MESSAGES
 %{_datadir}/${app_name}/gladefiles/
 %{_datadir}/${app_name}/locale/
 %{_datadir}/applications/"
-        echo "${regspecfile}" > ${specfiles}/"alsavolume.spec"
+	echo "${regspecfile}" > ${specfiles}/"alsavolume.spec"
 	rpmbuild -ba ${specfiles}/"alsavolume.spec"
 	cp -f ${rpms}/i*/*.rpm	${exitdir}/
-        cp -f ${srpms}/*.rpm	${exitdir}/
+	cp -f ${srpms}/*.rpm	${exitdir}/
 }
 
 build_qtavolume ()
@@ -583,7 +565,7 @@ With PulseAudio support"
 		project="${project}_pulse"
 	fi
 	prepare ${dirname}
-        regspecfile="Summary: QtAlsaVolume
+	regspecfile="Summary: QtAlsaVolume
 Name: ${project}
 Version: ${ver}
 Release: ${build_count}
@@ -597,20 +579,22 @@ BuildRequires: gcc-c++, ${builddep}
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-build
 
 %description
-Simple tool written using Qt4 library to set the levels of alsa mixers
+Simple tool written using Qt library to set the levels of alsa mixers
 ${addit}
 
 %prep
 %setup
 
 %build
-cmake -DCMAKE_INSTALL_PREFIX=%{buildroot}/usr ${cmake_flags} .
+%cmake -DCMAKE_INSTALL_PREFIX=/usr -DUSE_QT5=ON ${cmake_flags}
 %{__make} %{?_smp_mflags}   
 
 %install
 [ \"%{buildroot}\" != \"/\"] && rm -rf %{buildroot}
 
-%{__make} install INSTALL_ROOT=\"%{buildroot}\"
+cd build
+
+%{__make} install DESTDIR=%{buildroot}
 
 mkdir -p %{buildroot}/usr/bin
 mkdir -p %{buildroot}/usr/share/${APP_NAME}
@@ -619,13 +603,6 @@ mkdir -p %{buildroot}/usr/share/${APP_NAME}/icons
 mkdir -p %{buildroot}/usr/share/${APP_NAME}/icons/light
 mkdir -p %{buildroot}/usr/share/${APP_NAME}/icons/dark
 mkdir -p %{buildroot}/usr/share/${APP_NAME}/languages
-
-%{__install} -c -m 755 icons/light/tb_icon*.png %{buildroot}/usr/share/${APP_NAME}/icons/light/
-%{__install} -c -m 755 icons/dark/tb_icon*.png %{buildroot}/usr/share/${APP_NAME}/icons/dark/
-%{__install} -c -m 755 icons/volume*.png %{buildroot}/usr/share/${APP_NAME}/icons/
-#%{__install} -c -m 755 languages/*.qm %{buildroot}/usr/share/${APP_NAME}/languages/
-%{__install} -c -m 755 ${APP_NAME} %{buildroot}/usr/bin/
-%{__install} -c -m 755 ${APP_NAME}.desktop %{buildroot}/usr/share/applications
 
 %clean
 [ \"%{buildroot}\" != \"/\" ] && rm -rf %{buildroot}
@@ -638,10 +615,10 @@ mkdir -p %{buildroot}/usr/share/${APP_NAME}/languages
 %{_datadir}/${APP_NAME}/icons/dark/
 %{_datadir}/${APP_NAME}/languages/
 %{_datadir}/applications/"
-        echo "${regspecfile}" > ${specfiles}/"qtalsavolume.spec"
+	echo "${regspecfile}" > ${specfiles}/"qtalsavolume.spec"
 	rpmbuild -ba ${specfiles}/"qtalsavolume.spec"
 	cp -f ${rpms}/i*/*.rpm	${exitdir}/
-        cp -f ${srpms}/*.rpm	${exitdir}/
+	cp -f ${srpms}/*.rpm	${exitdir}/
 }
 
 build_qtpoweroff ()
@@ -650,7 +627,7 @@ build_qtpoweroff ()
 	dirname="qt/qtpoweroff"
 	ver=$(cat ${srcdir}/${dirname}/version.txt)
 	prepare ${dirname}
-        regspecfile="Summary: QtPowerOff
+	regspecfile="Summary: QtPowerOff
 Name: qtpoweroff
 Version: ${ver}
 Release: 1
@@ -671,7 +648,7 @@ Simple tool written using Qt4 library to shedules reboot / shutdown PC
 %setup
 
 %build
-cmake -DCMAKE_INSTALL_PREFIX=%{buildroot}/usr ${cmake_flags} .
+%cmake -DCMAKE_INSTALL_PREFIX=/usr -DUSE_QT5=ON ${cmake_flags}
 %{__make} %{?_smp_mflags}   
 
 mkdir -p %{buildroot}/usr/bin
@@ -684,7 +661,9 @@ mkdir -p %{buildroot}/usr/share/%{name}/languages
 %install
 [ \"%{buildroot}\" != \"/\"] && rm -rf %{buildroot}
 
-%{__make} install INSTALL_ROOT=\"%{buildroot}\"
+cd build
+
+%{__make} install DESTDIR=%{buildroot}
 
 %clean
 [ \"%{buildroot}\" != \"/\" ] && rm -rf %{buildroot}
@@ -696,10 +675,10 @@ mkdir -p %{buildroot}/usr/share/%{name}/languages
 %{_datadir}/%{name}/languages/
 %{_datadir}/applications/
 %{_datadir}/doc/%{name}/"
-        echo "${regspecfile}" > ${specfiles}/"qtalsavolume.spec"
+	echo "${regspecfile}" > ${specfiles}/"qtalsavolume.spec"
 	rpmbuild -ba ${specfiles}/"qtalsavolume.spec"
 	cp -f ${rpms}/i*/*.rpm	${exitdir}/
-        cp -f ${srpms}/*.rpm	${exitdir}/
+	cp -f ${srpms}/*.rpm	${exitdir}/
 }
 
 print_menu ()
@@ -756,7 +735,6 @@ choose_action ()
 }
 
 cd ${home}
-run_resloader "check_dir ${srcdir}"
 run_resloader get_src && clear
 while [ ${isloop} = 1 ]
 do
