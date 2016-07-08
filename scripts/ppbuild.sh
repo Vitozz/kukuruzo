@@ -547,7 +547,7 @@ build_rpm_package ()
   prepare_tar
   local rev=$(cd ${buildpsi}/git-plus/; git describe --tags | cut -d - -f 2)
   local psirev=$(cd ${buildpsi}/git/; git describe --tags | cut -d - -f 2)
-  extraflags"${extraflags} -DPSI_PLUS_VERSION=${psi_version}.${rev}.${psirev}"
+  extraflags="${extraflags} -DPSI_PLUS_VERSION=${psi_version}.${rev}.${psirev}"
   local tar_name=psi-plus-${psi_version}.${rev}.${psirev}
   local sources=${rpmsrc}
   if [ -f "${sources}/${tar_name}.tar.gz" ]; then
