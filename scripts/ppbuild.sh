@@ -320,7 +320,7 @@ prepare_tar ()
   cp -r ${orig_src} ${new_src}
   if [ -d ${new_src} ]; then
     cd ${buildpsi}
-    tar -sczf ${tar_name}.tar.gz ${tar_name}
+    tar -czf ${tar_name}.tar.gz ${tar_name}
     rm -r -f ${new_src}
     if [ -d ${rpmsrc} ]; then
       if [ -f "${rpmsrc}/${tar_name}.tar.gz" ]; then
@@ -500,20 +500,16 @@ Psi+ - Psi IM Mod by psi-dev@conference.jabber.ru
 
 
 %build
-cmake -DCMAKE_INSTALL_PREFIX=\"%{_prefix}\" -DCMAKE_BUILD_TYPE=Release ${extraflags} .
+%cmake -DCMAKE_INSTALL_PREFIX=%{_prefix} -DCMAKE_BUILD_TYPE=Release ${extraflags}
 %{__make} %{?_smp_mflags}
 
 
 %install
 %{__rm} -rf %{buildroot}
 
+cd build
 
-%{__make} install INSTALL_ROOT=\"%{buildroot}\"
-
-
-# Install the pixmap for the menu entry
-%{__install} -Dp -m0644 iconsets/system/default/logo_128.png \
-    %{buildroot}%{_datadir}/pixmaps/psi-plus.png ||:               
+%{__make} install DESTDIR=%{buildroot}
 
 mkdir -p %{buildroot}%{_datadir}/psi-plus
 mkdir -p %{buildroot}%{_bindir}
@@ -523,15 +519,12 @@ mkdir -p %{buildroot}%{_datadir}/applications
 touch --no-create %{_datadir}/icons/hicolor || :
 %{_bindir}/gtk-update-icon-cache --quiet %{_datadir}/icons/hicolor || :
 
-
 %postun
 touch --no-create %{_datadir}/icons/hicolor || :
 %{_bindir}/gtk-update-icon-cache --quiet %{_datadir}/icons/hicolor || :
 
-
 %clean
 %{__rm} -rf %{buildroot}
-
 
 %files
 %defattr(-, root, root, 0755)
@@ -541,9 +534,6 @@ touch --no-create %{_datadir}/icons/hicolor || :
 %{_datadir}/psi-plus/
 %{_datadir}/pixmaps/psi-plus.png
 %{_datadir}/applications/psi-plus.desktop
-%{_datadir}/icons/hicolor/*/apps/psi-plus.png
-%exclude %{_datadir}/psi-plus/COPYING
-%exclude %{_datadir}/psi-plus/README
 "
   local tmp_spec=${buildpsi}/test.spec
   usr_spec=${rpmspec}/psi-plus.spec
@@ -557,6 +547,7 @@ build_rpm_package ()
   prepare_tar
   local rev=$(cd ${buildpsi}/git-plus/; git describe --tags | cut -d - -f 2)
   local psirev=$(cd ${buildpsi}/git/; git describe --tags | cut -d - -f 2)
+  extraflags"${extraflags} -DPSI_PLUS_VERSION=${psi_version}.${rev}.${psirev}"
   local tar_name=psi-plus-${psi_version}.${rev}.${psirev}
   local sources=${rpmsrc}
   if [ -f "${sources}/${tar_name}.tar.gz" ]; then
@@ -643,12 +634,15 @@ ${desc}
 %setup
 
 %build
-cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=%{buildroot}%{_libdir} -DUSE_QT5=${USE_QT5} -DONLY_PLUGINS=ON -DPLUGINS_PATH=/psi-plus/plugins .
+%cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=%{_libdir} -DUSE_QT5=${USE_QT5} -DONLY_PLUGINS=ON -DPLUGINS_PATH=/psi-plus/plugins
 %{__make} %{?_smp_mflags} 
 
 %install
 [ \"%{buildroot}\" != \"/\"] && rm -rf %{buildroot}
-%{__make} install INSTALL_ROOT=\"%{buildroot}\"
+
+cd build
+
+%{__make} install DESTDIR=%{buildroot}
 
 if [ \"%{_target_cpu}\" = \"x86_64\" ] && [ -d \"/usr/lib64\" ]; then
   mkdir -p %{buildroot}/usr/lib64
