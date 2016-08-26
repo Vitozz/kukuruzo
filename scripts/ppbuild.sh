@@ -507,7 +507,7 @@ Psi+ - Psi IM Mod by psi-dev@conference.jabber.ru
 %install
 %{__rm} -rf %{buildroot}
 
-cd build
+#cd build
 
 %{__make} install DESTDIR=%{buildroot}
 
@@ -640,7 +640,7 @@ ${desc}
 %install
 [ \"%{buildroot}\" != \"/\"] && rm -rf %{buildroot}
 
-cd build
+#cd build
 
 %{__make} install DESTDIR=%{buildroot}
 
@@ -673,7 +673,7 @@ build_rpm_plugins ()
   local allpluginsdir=${buildpsi}/${progname}-${rpmver}
   local package_name="${progname}-${rpmver}.tar.gz"
   local summary="Plugins for psi-plus-${rpmver}"
-  local breq="libotr2-devel, libtidy-devel, libgcrypt-devel, libgpg-error-devel"
+  local breq="libotr-devel, libtidy-devel, libgcrypt-devel, libgpg-error-devel"
   local urlpath="https://github.com/psi-plus/plugins"
   local group="Applications/Internet"
   local desc="Plugins for jabber-client Psi+"
@@ -946,8 +946,8 @@ ${pink}[2]${nocolor} - Prepare psi+ sources
 ${pink}[3]${nocolor} - Build psi+ binary
 ---${pink}[31]${nocolor} - Build psi+ plugins using CMAKE
 ${pink}[4]${nocolor} - Build Debian package with checkinstall
-${pink}[5]${nocolor} - Build openSUSE RPM-package
----${pink}[51]${nocolor} - Build plugins openSUSE RPM-package
+${pink}[5]${nocolor} - Build psi+ RPM-package
+---${pink}[51]${nocolor} - Build psi+ plugins RPM-package
 ${pink}[6]${nocolor} - Set libpsibuild options
 ${pink}[7]${nocolor} - Prepare psi+ sources for development
 ${pink}[8]${nocolor} - Get help on additional actions
