@@ -30,9 +30,9 @@ static const QString ICON_TITLE = "QtAlsaVolume";
 static const QString KSNI_SERVICE = "org.kde.StatusNotifierWatcher";
 static const QString KSNI_PATH = "/StatusNotifierWatcher";
 static const QString KSNI_IFACE = "org.kde.StatusNotifierWatcher";
-#endif
-#ifdef USE_KDE
+#ifdef KDE_4
 #include <kmenu.h>
+#endif
 #endif
 
 TrayIcon::TrayIcon()
@@ -59,7 +59,7 @@ TrayIcon::TrayIcon()
 		newTrayIcon_ = KStatusNotifierItemPtr(new KStatusNotifierItem(APP_NAME, this));
 		newTrayIcon_->setStatus(KStatusNotifierItem::Active);
 		newTrayIcon_->setTitle(ICON_TITLE);
-#ifdef USE_KDE
+#ifdef KDE_4
 		newTrayIcon_->setContextMenu(static_cast<KMenu*>(trayMenu_));
 #else
 		newTrayIcon_->setContextMenu(trayMenu_);

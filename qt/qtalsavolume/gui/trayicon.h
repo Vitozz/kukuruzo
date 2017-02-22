@@ -22,10 +22,9 @@
 
 #include "../defines.h"
 
-#ifdef USE_KDE5
+#if defined(KDE_5)
 #include <KStatusNotifierItem>
-#endif
-#ifdef USE_KDE
+#elif defined(KDE_4)
 #include <kstatusnotifieritem.h>
 #endif
 #include <QSharedPointer>

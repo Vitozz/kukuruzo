@@ -7,7 +7,11 @@ inherit cmake-utils git-2
 
 IUSE="appindicator gtk2 gtk3 kde pulseaudio"
 
-REQUIRED_USE="^^ ( gtk2 gtk3 )"
+REQUIRED_USE="
+	^^ ( gtk2 gtk3 )
+	appindicator? ( !kde )
+	kde? ( !appindicator )
+	"
 
 DEPEND="
 	gtk3? (

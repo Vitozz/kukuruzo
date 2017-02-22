@@ -1,7 +1,7 @@
 # Copyright 1999-2012 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=5
+EAPI=6
 
 inherit cmake-utils git-2
 
@@ -42,17 +42,10 @@ KEYWORDS="~amd64 ~x86 ~amd64-linux ~x86-linux"
 LICENSE="GPL-2"
 
 src_configure() {
-	KDE_FLAG="OFF"
-	if use qt5 && use kde; then
-			KDE_FLAG="-DUSE_KDE5=ON"
-	fi
-	if use qt4 && use kde; then
-			KDE_FLAG="-DUSE_KDE=ON"
-	fi
 	local mycmakeargs=(
 		$(cmake-utils_use_use pulseaudio PULSE)
 		$(cmake-utils_use_use qt5 QT5)
-		$(echo ${KDE_FLAG})
+		$(cmake-utils_use_use kde KDE)
 	)
 	cmake-utils_src_configure
 }
