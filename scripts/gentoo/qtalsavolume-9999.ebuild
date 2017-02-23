@@ -1,9 +1,9 @@
-# Copyright 1999-2012 Gentoo Foundation
-# Distributed under the terms of the GNU General Public License v2
+# Copyright 2013-2017 Vitaly Tonkacheyev
+# Distributed under the terms of the GNU General Public License v3
 
 EAPI=6
 
-inherit cmake-utils git-2
+inherit cmake-utils git-r3
 
 IUSE="kde pulseaudio qt4 qt5"
 
@@ -43,9 +43,9 @@ LICENSE="GPL-2"
 
 src_configure() {
 	local mycmakeargs=(
-		$(cmake-utils_use_use pulseaudio PULSE)
-		$(cmake-utils_use_use qt5 QT5)
-		$(cmake-utils_use_use kde KDE)
+		use -DUSE_PULSE="$(usex pulseaudio)"
+		use -DUSE_QT5="$(usex qt5)"
+		use -DUSE_KDE="$(usex kde)"
 	)
 	cmake-utils_src_configure
 }

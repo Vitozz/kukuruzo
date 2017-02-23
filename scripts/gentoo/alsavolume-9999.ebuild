@@ -1,9 +1,9 @@
-# Copyright 1999-2012 Gentoo Foundation
-# Distributed under the terms of the GNU General Public License v2
+# Copyright 2013-2017 Vitaly Tonkacheyev
+# Distributed under the terms of the GNU General Public License v3
 
-EAPI=5
+EAPI=6
 
-inherit cmake-utils git-2
+inherit cmake-utils git-r3
 
 IUSE="appindicator gtk2 gtk3 kde pulseaudio"
 
@@ -41,10 +41,10 @@ LICENSE="GPL-2"
 
 src_configure() {
 	local mycmakeargs=(
-		$(cmake-utils_use_use pulseaudio PULSE)
-		$(cmake-utils_use_use appindicator APPINDICATOR)
-		$(cmake-utils_use_use kde KDE)
-		$(cmake-utils_use_use gtk3 GTK3)
+		use -DUSE_PULSE="$(usex pulseaudio)"
+		use -DUSE_APPINDICATOR="$(usex appindicator)"
+		use -DUSE_KDE="$(usex kde)"
+		use -DUSE_GTK3="$(usex gtk3)"
 	)
 	cmake-utils_src_configure
 }
