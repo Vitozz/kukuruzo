@@ -19,7 +19,7 @@
 
 import os, re, time, codecs
 
-from PyQt4.QtCore import QObject, QString, pyqtSignal
+from PyQt5.QtCore import QObject, pyqtSignal
 
 class FileManager(QObject):
 
@@ -54,16 +54,16 @@ class FileManager(QObject):
 							H = int(matchObj.group(4))
 							M = int(matchObj.group(5))
 							S = int(matchObj.group(6))
-							u_time = self.convert_date([Y,M,D,H,M,S,-1,-1,-1])
+							u_time = self.convert_date((Y,M,D,H,M,S,-1,-1,-1))
 							item.append(u_time)
 							item.append(matchObj.group())
 							result.append(item)
 				f.close()
 			else:
 				msg="You have no permissions to read file %s"%fileName
-				self.showinfo.emit(QString(str(msg).decode('UTF-8')))
+				self.showinfo.emit(str(msg))
 		except Exception as error:
-			self.showinfo.emit(QString(str(error).decode('UTF-8')))
+			self.showinfo.emit(str(error))
 		return result
 
 	def writeFile(self, fileName, text):
@@ -79,12 +79,12 @@ class FileManager(QObject):
 				return True
 			elif os.access(dirname, os.F_OK|os.R_OK):
 				msg='Error! Read-only directory %s'%dirname
-				self.showinfo.emit(QString(str(msg).decode('UTF-8')))
+				self.showinfo.emit(str(msg))
 			else:
 				msg='Error! You have no permissions to write into %s'%dirname
-				self.showinfo.emit(QString(str(msg).decode('UTF-8')))
+				self.showinfo.emit(str(msg))
 		except Exception as  error:
-			self.showinfo.emit(QString(str(error).decode('UTF-8')))
+			self.showinfo.emit(str(error))
 			return False
 
 	def backupFile(self, fileName):
@@ -94,7 +94,7 @@ class FileManager(QObject):
 				os.rename(fileName, newname)
 			else:
 				msg='Error! You have no write permissions to %s'%fileName
-				self.showinfo.emit(QString(str(msg).decode('UTF-8')))
+				self.showinfo.emit(str(msg))
 
 	def convert_date(self, data):
 		unix_time = time.mktime(data)
@@ -124,7 +124,7 @@ class FileManager(QObject):
 		nextIndex = 0
 		slist = ilist
 		listlen = len(slist)
-		for index in xrange(listlen):
+		for index in range(listlen):
 			currLine = slist[index]
 			nextIndex = index + 1
 			if nextIndex < listlen:
@@ -144,7 +144,7 @@ class FileManager(QObject):
 			for line in sortf:
 				if line:
 					if line[1]:
-						result.append(line[1].decode('UTF-8'))
+						result.append(line[1])
 		return result
 
 	def setIsBackup(self, state):
@@ -153,7 +153,7 @@ class FileManager(QObject):
 	def getFileList(self, dirname):
 		alist = []
 		result = []
-		if (os.path.exists(dirname) && os.path.isdir(dirname)):
+		if (os.path.exists(dirname) and os.path.isdir(dirname)):
 			alist = os.listdir(dirname)
 			for item in alist:
 				if item:
@@ -182,7 +182,7 @@ class FileManager(QObject):
 	def getDuplicates(self, allFileList):
 		listlen = len(allFileList)
 		result = []
-		for index in xrange(listlen):
+		for index in range(listlen):
 			duplicates=[]
 			current = allFileList[index]
 			next_index = index + 1

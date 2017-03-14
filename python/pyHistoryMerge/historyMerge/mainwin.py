@@ -18,16 +18,18 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 import os
+from PyQt5 import QtCore
+from PyQt5.QtGui import QIcon
+from PyQt5.QtWidgets import QMainWindow, QWidget, QPushButton, QLabel, QListWidget, QMessageBox
+from PyQt5.QtWidgets import QLineEdit, QCheckBox, QVBoxLayout, QHBoxLayout, QFileDialog, QApplication
 
-from PyQt4 import QtCore, QtGui
+from historyMerge.filework import FileManager
+from historyMerge.reswork import loadResFile
 
-from filework import FileManager
-from reswork import loadResFile
-
-class MainWindow(QtGui.QMainWindow):
+class MainWindow(QMainWindow):
 
 	def __init__(self, parent=None):
-		QtGui.QMainWindow.__init__(self, parent)
+		QMainWindow.__init__(self, parent)
 		self.homeDir=None
 		self.envPath=None
 		if str(os.sys.platform) == 'win32':
@@ -44,26 +46,26 @@ class MainWindow(QtGui.QMainWindow):
 		self.setWindowTitle("Psi/Psi+ history merger")
 		self.resloader = loadResFile()
 		iconname = self.resloader.get('psihismerger', 'icon32.png')
-		self.setWindowIcon(QtGui.QIcon(iconname))
+		self.setWindowIcon(QIcon(iconname))
 		#Adding widgets
-		self.main_widget = QtGui.QWidget()
+		self.main_widget = QWidget()
 		self.setCentralWidget(self.main_widget)
-		self.btnOpen = QtGui.QPushButton("Add")
-		self.btnClean = QtGui.QPushButton("Clear")
-		self.btnQuit = QtGui.QPushButton("Exit")
-		self.btnSave = QtGui.QPushButton("Save")
-		self.btnFN = QtGui.QPushButton("Choose")
-		self.label = QtGui.QLabel('Savefile name')
-		self.listV = QtGui.QListWidget()
-		self.textEdit = QtGui.QLineEdit()
-		self.backupCheckBox = QtGui.QCheckBox('Backup output file')
+		self.btnOpen = QPushButton("Add")
+		self.btnClean = QPushButton("Clear")
+		self.btnQuit = QPushButton("Exit")
+		self.btnSave = QPushButton("Save")
+		self.btnFN = QPushButton("Choose")
+		self.label = QLabel('Savefile name')
+		self.listV = QListWidget()
+		self.textEdit = QLineEdit()
+		self.backupCheckBox = QCheckBox('Backup output file')
 		#setup layouts
-		self.main_layout = QtGui.QVBoxLayout()
+		self.main_layout = QVBoxLayout()
 		self.main_widget.setLayout(self.main_layout)
-		self.buttons_layout = QtGui.QHBoxLayout()
-		self.hlayout2 = QtGui.QHBoxLayout()
+		self.buttons_layout = QHBoxLayout()
+		self.hlayout2 = QHBoxLayout()
 		self.main_layout.addWidget(self.listV)
-		self.hlayout3 =QtGui.QHBoxLayout()
+		self.hlayout3 =QHBoxLayout()
 		self.main_layout.addLayout(self.hlayout3)
 		self.hlayout3.addWidget(self.btnOpen)
 		self.hlayout3.addWidget(self.btnClean)
@@ -90,10 +92,11 @@ class MainWindow(QtGui.QMainWindow):
 	def showDialog(self):
 		if self.readed:
 			self.envPath = ""
-		filenames=QtGui.QFileDialog.getOpenFileNames(parent=self, caption='Open files', directory=self.envPath, filter="History files (*.history)", options=QtGui.QFileDialog.DontUseNativeDialog|QtGui.QFileDialog.DontResolveSymlinks)
-		for filename in filenames:
+		filenames=QFileDialog.getOpenFileNames(self, 'Open files', self.envPath, "History files (*.history);; All files (*)",'', QFileDialog.DontUseNativeDialog | QFileDialog.DontResolveSymlinks)
+		print(filenames)
+		for filename in filenames[0]:
 			if filename:
-				self.listV.addItem(filename)
+				self.listV.addItem(str(filename))
 		if self.listV.count()>0:
 			self.readed = True
 			self.enableButtons(self.readed)
@@ -104,7 +107,7 @@ class MainWindow(QtGui.QMainWindow):
 			sfileName = str(self.textEdit.text())
 			if sfileName:
 				files = []
-				for index in xrange(self.listV.count()):
+				for index in range(self.listV.count()):
 					item = self.listV.item(index).text()
 					if item:
 						files.append(self.fm.readFile(str(item)))
@@ -118,12 +121,12 @@ class MainWindow(QtGui.QMainWindow):
 
 
 	def chooseFile(self):
-		filename=QtGui.QFileDialog.getSaveFileName(self, caption='Choose file', options=QtGui.QFileDialog.DontUseNativeDialog)
+		filename=QFileDialog.getSaveFileName(self, caption='Choose file', options=QFileDialog.DontUseNativeDialog)
 		if filename:
-			self.textEdit.setText(filename)
+			self.textEdit.setText(str(filename[0]))
 
 	def showInfo(self, text):
-		reply = QtGui.QMessageBox.warning(self, "Information", text)
+		reply = QMessageBox.warning(self, "Information", text)
 
 	def clearList(self):
 		if self.listV.count() >0 :
@@ -147,4 +150,4 @@ class MainWindow(QtGui.QMainWindow):
 			self.fm.setIsBackup(False)
 
 	def onExit(self):
-		QtGui.QApplication.quit()
+		QApplication.quit()

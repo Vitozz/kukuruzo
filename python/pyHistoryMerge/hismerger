@@ -20,7 +20,7 @@
 import sys
 
 from historyMerge.mainwin import MainWindow
-from PyQt4.QtGui import QApplication
+from PyQt5.QtWidgets import QApplication
 
 if __name__=="__main__":
 	app = QApplication(sys.argv)
