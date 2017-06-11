@@ -2,7 +2,7 @@
 
 #CONSTANTS/КОНСТАНТЫ
 home=${HOME:-/home/$USER} #домашний каталог
-psi_version="0.16" #не менять без необходимости, нужно для пакетирования
+psi_version="1.0" #не менять без необходимости, нужно для пакетирования
 bindirs="/usr/bin
 /usr/local/bin
 ${home}/bin" #список каталогов где могут быть найдены бинарники
@@ -13,9 +13,8 @@ lib_prefixes="/usr/lib
 #guthub repositories
 psi_url="https://github.com/psi-im/psi.git"
 psi_plus_url="https://github.com/psi-plus/main.git"
-plugins_url="https://github.com/psi-plus/plugins.git"
+plugins_url="https://github.com/psi-im/plugins.git"
 langs_url="https://github.com/psi-plus/psi-plus-l10n.git"
-psi_cmake_url="https://github.com/psi-plus/psi-plus-cmake.git"
 def_prefix="/usr" #префикс для сборки пси+
 libpsibuild_url="https://raw.github.com/psi-plus/maintenance/master/scripts/posix/libpsibuild.sh"
 #DEFAULT OPTIONS/ОПЦИИ ПО УМОЛЧАНИЮ
@@ -65,7 +64,6 @@ buildpsi=${default_buildpsi} #инициализация переменной
 orig_src=${buildpsi}/build #рабочий каталог для компиляции psi+
 patches=${buildpsi}/git-plus/patches #путь к патчам psi+, необходим для разработки
 inst_path=${buildpsi}/${inst_suffix} #только для пакетирования
-cmake_files_dir=${buildpsi}/psi-plus-cmake #файлы CMAKE для сборки плагинов
 #
 
 #ENVIRONMENT VARIABLES/ПЕРЕМЕННЫЕ СРЕДЫ
@@ -120,7 +118,6 @@ fetch_all ()
   fetch_url ${psi_plus_url} ${buildpsi}/git-plus
   fetch_url ${plugins_url} ${buildpsi}/plugins
   fetch_url ${langs_url} ${buildpsi}/langs
-  fetch_url ${psi_cmake_url} ${buildpsi}/psi-plus-cmake
 }
 
 find_ccache ()
@@ -162,7 +159,6 @@ read_options ()
       "5" ) spellchek_engine=$(echo ${line});;
       "6" ) buildpsi=$(echo ${line});;
       "7" ) qt_ver=$(echo ${line});;
-      "8" ) qconf_bin=$(echo ${line});;
       esac
       let "inc+=1"
     done < ${config_file}
@@ -186,7 +182,6 @@ update_variables ()
   orig_src=${buildpsi}/build
   patches=${buildpsi}/git-plus/patches
   inst_path=${buildpsi}/${inst_suffix}
-  cmake_files_dir=${buildpsi}/psi-plus-cmake
   if [ "${qt_ver}" == "5" ]; then
     USE_QT5="ON"
   else
@@ -213,7 +208,6 @@ down_all ()
   check_dir ${buildpsi}/git
   check_dir ${buildpsi}/git-plus
   check_dir ${buildpsi}/plugins
-  check_dir ${buildpsi}/psi-plus-cmake
   check_dir ${buildpsi}/langs
   fetch_all
 }
@@ -252,6 +246,19 @@ patch_psi ()
   fi
 }
 #
+get_psi_plus_version()
+{
+  ref_commit=871fac5f74f247df1d28297d5ea3982a8dcfaacc # 1.0 tag
+  local psi_rev=$(${buildpsi}/git/admin/git_revnumber.sh)
+  local plus_rev=$(cd ${buildpsi}/git-plus && git rev-list --count ${ref_commit}..HEAD)
+  local psi_ver=$(cd ${buildpsi}/git-plus && git describe --tags | cut -d - -f1)
+  local sum_commit=$(expr ${psi_rev} + ${plus_rev})
+  psi_package_version="${psi_ver}.${sum_commit}"
+  psi_plus_version=$(${buildpsi}/git-plus/admin/psi-plus-nightly-version ${buildpsi}/git)
+  echo "SHORT_VERSION = $psi_package_version"
+  echo "LONG_VERSION = $psi_plus_version"
+}
+#
 prepare_psi_src ()
 {
   if [ ! -z "$1" ]; then
@@ -274,14 +281,10 @@ prepare_workspace ()
   prepare_psi_src ${orig_src}
   cd ${buildpsi}/plugins
   prepare_psi_src ${orig_src}/src/plugins
-  cd ${buildpsi}/psi-plus-cmake
-  prepare_psi_src ${orig_src}
   cp -a ${buildpsi}/git-plus/iconsets/* ${orig_src}/iconsets/
   cp -a ${buildpsi}/git-plus/app.ico ${orig_src}/win32/
   check_dir ${orig_src}/translations
   cp -a ${buildpsi}/langs/translations/*.ts ${orig_src}/translations/
-  #cp -a ${buildpsi}/plugins/* ${orig_src}/src/plugins/
-  #cp -a ${buildpsi}/psi-plus-cmake/* ${orig_src}/
   cd ${orig_src}
   patch_psi
   echo -e "${blue}Do you want to apply psi-new-history.patch${nocolor} ${pink}[y/n(default)]${nocolor}"
@@ -291,16 +294,14 @@ prepare_workspace ()
     patch_psi 10000 ${patches}/dev/psi-new-history.patch
     cd ${workdir}
   fi
-  local rev="$(cd ${buildpsi}/git-plus/ ; git describe --tags | cut -d - -f 2)"
-  local psirev="$(cd ${buildpsi}/git/ ; git describe --tags | cut -d - -f 2)"
+  get_psi_plus_version
   cd ${buildpsi}/git-plus
   local suffix=""
   local builddate=$(LANG=en date +'%F')
   if [ ! -z "${iswebkit}" ]; then
     suffix="-webkit"
   fi
-  local ver="${psi_version}.${rev}.${psirev}${suffix} (${builddate})"
-  echo $ver > ${orig_src}/version
+  echo $psi_plus_version > ${orig_src}/version
 }
 #
 prepare_src ()
@@ -323,9 +324,8 @@ prepare_tar ()
   check_dir ${rpmsrc}
   check_dir ${rpmspec}
   echo "Preparing Psi+ source package to build RPM..."
-  local rev=$(cd ${buildpsi}/git-plus/; echo $(($(git describe --tags | cut -d - -f 2))))
-  local psirev=$(cd ${buildpsi}/git/; echo $(($(git describe --tags | cut -d - -f 2))))
-  local tar_name=psi-plus-${psi_version}.${rev}.${psirev}
+  get_psi_plus_version
+  local tar_name=psi-plus-${psi_plus_version}
   local new_src=${buildpsi}/${tar_name}
   cp -r ${orig_src} ${new_src}
   if [ -d ${new_src} ]; then
@@ -360,10 +360,7 @@ compile_psiplus ()
   if [ -z "${iswebkit}" ]; then
     flags="${flags} -DENABLE_WEBKIT=OFF"
   fi
-  local rev="$(cd ${buildpsi}/git-plus/ ; git describe --tags | cut -d - -f 2)"
-  local psirev="$(cd ${buildpsi}/git/ ; git describe --tags | cut -d - -f 2)"
   cd ${orig_src}/cbuild
-  flags="${flags} -DPSI_PLUS_VERSION=${psi_version}.${rev}.${psirev}"
   cbuild_path=".."
   if [ ! -z "$2" ]; then
     cbuild_path=$2
@@ -381,13 +378,6 @@ compile_psiplus ()
   cd ${curd}
 }
 #
-fetch_cmake_files ()
-{
-  local repo_url="https://github.com/Vitozz/psi-plus-cmake.git"
-  fetch_url ${repo_url} ${cmake_files_dir}
-  cd ${buildpsi}
-}
-#
 build_cmake_plugins ()
 {
   echo_done() {
@@ -403,8 +393,6 @@ build_cmake_plugins ()
     prepare_src
   fi
   check_dir ${orig_src}
-  fetch_cmake_files
-  cp -rf ${cmake_files_dir}/* ${orig_src}/
   cd ${orig_src}
   local b_dir=${orig_src}/build
   check_dir ${b_dir}
@@ -427,8 +415,6 @@ build_deb_package ()
 {
   compile_psiplus /usr ${orig_src}
   echo "Building Psi+ DEB package with checkinstall"
-  local rev=$(cd ${buildpsi}/git-plus/; git describe --tags | cut -d - -f 2)
-  local psirev=$(cd ${buildpsi}/git/; git describe --tags | cut -d - -f 2)
   local desc='Psi is a cross-platform powerful Jabber client (Qt, C++) designed for the Jabber power users.
 Psi+ - Psi IM Mod by psi-dev@conference.jabber.ru.'
   cd ${orig_src}
@@ -454,21 +440,19 @@ Psi+ - Psi IM Mod by psi-dev@conference.jabber.ru.'
     qt_deps="libqt5dbus5, libqt5network5, libqt5xml5 , libqt5core5a, libqt5gui5, libqt5widgets5, libqt5x11extras5${webkitdep}"
   fi
   local requires=" ${spell_dep}, 'libc6 (>=2.7-1)', 'libgcc1 (>=1:4.1.1)', 'libqca2', ${qt_deps}, 'libstdc++6 (>=4.1.1)', 'libx11-6', 'libxext6', 'libxss1', 'zlib1g (>=1:1.1.4)' "
-  sudo checkinstall -D --nodoc --pkgname=psi-plus --pkggroup=net --pkgversion=${psi_version}.${rev}.${psirev} --pkgsource=${orig_src} --maintainer="thetvg@gmail.com" --requires="${requires}"
+  sudo checkinstall -D --nodoc --pkgname=psi-plus --pkggroup=net --pkgversion=${psi_package_version} --pkgsource=${orig_src} --maintainer="thetvg@gmail.com" --requires="${requires}"
   cp -f ${orig_src}/*.deb ${buildpsi}
 }
 #
 prepare_spec ()
 {
-  local rev=$(cd ${buildpsi}/git-plus/; git describe --tags | cut -d - -f 2)
-  local psirev=$(cd ${buildpsi}/git/; git describe --tags | cut -d - -f 2)
   if [ -z "${iswebkit}" ]; then
     extraflags="-DENABLE_WEBKIT=OFF ${spell_flag}"
   fi
   echo "Creating psi.spec file..."
   local specfile="Summary: Client application for the Jabber network
 Name: psi-plus
-Version: ${psi_version}.${rev}.${psirev}
+Version: ${psi_package_version}
 Release: 1
 License: GPL
 Group: Applications/Internet
@@ -556,9 +540,7 @@ build_rpm_package ()
 {
   prepare_src
   prepare_tar
-  local rev=$(cd ${buildpsi}/git-plus/; git describe --tags | cut -d - -f 2)
-  local psirev=$(cd ${buildpsi}/git/; git describe --tags | cut -d - -f 2)
-  local tar_name=psi-plus-${psi_version}.${rev}.${psirev}
+  local tar_name=psi-plus-${psi_package_version}
   local sources=${rpmsrc}
   if [ -f "${sources}/${tar_name}.tar.gz" ]; then
     prepare_spec
@@ -669,14 +651,11 @@ fi
 build_rpm_plugins ()
 {
   local progname="psi-plus-plugins"
-  fetch_cmake_files
+  #fetch_cmake_files
   prepare_src
   check_dir ${orig_src}
-  cp -rf ${cmake_files_dir}/* ${orig_src}/
   cd ${buildpsi}
-  local rev=$(cd ${buildpsi}/git-plus/; git describe --tags | cut -d - -f 2)
-  local psirev=$(cd ${buildpsi}/git/; git describe --tags | cut -d - -f 2)
-  local rpmver=${psi_version}.${rev}.${psirev}
+  local rpmver=${psi_package_version}
   local allpluginsdir=${buildpsi}/${progname}-${rpmver}
   local package_name="${progname}-${rpmver}.tar.gz"
   local summary="Plugins for psi-plus-${rpmver}"
@@ -814,7 +793,7 @@ prepare_mxe()
 	grep -vi '^EDITOR=\|^HOME=\|^LANG=\|MXE\|^PATH=' | \
 	grep -vi 'PKG_CONFIG\|PROXY\|^PS1=\|^TERM=' | \
 	cut -d '=' -f1 | tr '\n' ' '`
-	export PATH=/home/vitaly/virtualka/mxe/usr/bin:$PATH
+	export PATH="/home/vitaly/virtualka/mxe/usr/bin:$PATH"
 }
 run_mxe_cmake()
 {
@@ -834,37 +813,13 @@ compile_psi_mxe()
   mxe_rootd=${buildpsi}/mxe_builds
   check_dir ${mxe_rootd}
   cd ${orig_src}
-  local rev="$(cd ${buildpsi}/git-plus/ ; git describe --tags | cut -d - -f 2)"
-  local psirev="$(cd ${buildpsi}/git/ ; git describe --tags | cut -d - -f 2)"
   flags="-DENABLE_PLUGINS=ON -DPRODUCTION=ON -DUSE_CCACHE=OFF"
-  flags="${flags} -DPSI_PLUS_VERSION=${psi_version}.${rev}.${psirev}"
-  prepare_libdir=${buildpsi}/mxe_prepare/i386
-  prepare_qt_libdir=${buildpsi}/mxe_prepare/Qt4/i386
-  if [ -z "$1" ]; then
-    1=qt4
-  fi
-  if [ "$1" == "qt4" ];then
-    cmakecmd=run_mxe_cmake
-    qcadir=/home/vitaly/virtualka/mxe/usr/i686-w64-mingw32.shared/qt
-    flags="${flags} -DUSE_QT5=OFF -DBUILD_ARCH=i386 -DQCA_DIR=${qcadir}"
-    prepare_libdir=${buildpsi}/mxe_prepare/i386
-    prepare_qt_libdir=${buildpsi}/mxe_prepare/Qt4/i386
-  elif [ "$1" == "qt4_64" ];then
-    cmakecmd=run_mxe_cmake_64
-    qcadir=/home/vitaly/virtualka/mxe/usr/x86_64-w64-mingw32.shared/qt
-    flags="${flags} -DUSE_QT5=OFF -DBUILD_ARCH=x86_64 -DQCA_DIR=${qcadir}"
-    prepare_libdir=${buildpsi}/mxe_prepare/x86_64
-    prepare_qt_libdir=${buildpsi}/mxe_prepare/Qt4/x86_64
-  elif [ "$1" == "qt5" ];then
+  if [ "$1" == "qt5" ];then
     cmakecmd=run_mxe_cmake
     flags="${flags} -DUSE_QT5=ON -DBUILD_ARCH=i386"
-    prepare_libdir=${buildpsi}/mxe_prepare/i386
-    prepare_qt_libdir=${buildpsi}/mxe_prepare/Qt5/i386
   elif [ "$1" == "qt5_64" ];then
     cmakecmd=run_mxe_cmake_64
     flags="${flags} -DUSE_QT5=ON -DBUILD_ARCH=x86_64"
-    prepare_libdir=${buildpsi}/mxe_prepare/x86_64
-    prepare_qt_libdir=${buildpsi}/mxe_prepare/Qt5/x86_64
   fi
   flags="${flags} -DCMAKE_INSTALL_PREFIX=${mxe_rootd}/$1"
   wrkdir=${orig_src}/cbuild4
@@ -873,29 +828,26 @@ compile_psi_mxe()
   echo "--Starting cmake
   ${cmakecmd} ${flags} ${orig_src}"
   ${cmakecmd} ${flags} ${orig_src}
-  #echo "Press Enter to continue..." && read tmpvar
+  echo 
+  echo "Press Enter to continue..." && read tmpvar
   ${cmakecmd} --build . --target all -- -j${cpu_count}
   ${cmakecmd} --build . --target prepare-bin --
-  ${cmakecmd} --build . --target install --
+  ${cmakecmd} --build . --target prepare-bin-libs --
+  check_dir ${mxe_rootd}/$1
+  cp -rf ${wrkdir}/psi/*  ${mxe_rootd}/$1/
   cp -a ${wrkdir}/psi/translations ${mxe_rootd}/$1/
   cp -a ${buildpsi}/mxe_prepare/myspell ${mxe_rootd}/$1/
-  cp -a ${prepare_libdir}/* ${mxe_rootd}/$1/
-  cp -a ${prepare_qt_libdir}/* ${mxe_rootd}/$1/
   cd ${curd}
 }
 #
 archivate_psi()
 {
-  local rev="$(cd ${buildpsi}/git-plus/ ; git describe --tags | cut -d - -f 2)"
-  local psirev="$(cd ${buildpsi}/git/ ; git describe --tags | cut -d - -f 2)"
   mxe_rootd=${buildpsi}/mxe_builds
-  7z a -mx=9 -m0=LZMA -mmt=on ${mxe_rootd}/psi-plus-webkit-${psi_version}.${rev}.${psirev}-$1.7z ${mxe_rootd}/$1/*
+  7z a -mx=9 -m0=LZMA -mmt=on ${mxe_rootd}/psi-plus-webkit-${psi_package_version}-$1.7z ${mxe_rootd}/$1/*
 }
 #
 build_all_mxe()
 {
-  compile_psi_mxe qt4
-  compile_psi_mxe qt4_64
   compile_psi_mxe qt5
   compile_psi_mxe qt5_64
   archivate_all
@@ -903,8 +855,6 @@ build_all_mxe()
 #
 archivate_all()
 {
-  archivate_psi qt4
-  archivate_psi qt4_64
   archivate_psi qt5
   archivate_psi qt5_64
 }
@@ -1070,12 +1020,10 @@ choose_action ()
   case ${vibor} in
     "1" ) down_all;;
     "2" ) prepare_src;;
-    "3" ) compile_psiplus;;
+    "3" ) compile_psiplus /usr;;
     "31" ) build_cmake_plugins;;
-    "32" ) compile_psi_mxe qt4;;
-    "33" ) compile_psi_mxe qt4_64;;
-    "34" ) compile_psi_mxe qt5;;
-    "35" ) compile_psi_mxe qt5_64;;
+    "32" ) compile_psi_mxe qt5;;
+    "33" ) compile_psi_mxe qt5_64;;
     "4" ) build_deb_package;;
     "5" ) build_rpm_package;;
     "51" ) build_rpm_plugins;;
