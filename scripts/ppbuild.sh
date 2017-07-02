@@ -3,9 +3,6 @@
 #CONSTANTS/КОНСТАНТЫ
 home=${HOME:-/home/$USER} #домашний каталог
 psi_version="1.0" #не менять без необходимости, нужно для пакетирования
-bindirs="/usr/bin
-/usr/local/bin
-${home}/bin" #список каталогов где могут быть найдены бинарники
 lib_prefixes="/usr/lib
 /usr/lib64
 /usr/local/lib
@@ -16,7 +13,6 @@ psi_plus_url="https://github.com/psi-plus/main.git"
 plugins_url="https://github.com/psi-im/plugins.git"
 langs_url="https://github.com/psi-plus/psi-plus-l10n.git"
 def_prefix="/usr" #префикс для сборки пси+
-libpsibuild_url="https://raw.github.com/psi-plus/maintenance/master/scripts/posix/libpsibuild.sh"
 #DEFAULT OPTIONS/ОПЦИИ ПО УМОЛЧАНИЮ
 qt_ver=5
 spell_flag="-DUSE_ENCHANT=OFF -DUSE_HUNSPELL=ON"
@@ -54,15 +50,13 @@ DEF_PLUG_LIST="ALL"
 DEF_CMAKE_BUILD_TYPE="Release"
 #Qt5
 USE_QT5="ON"
-#Use libpsibuild.sh to prepare sources
-USE_LIBPSIBUILD=0
-#Use MXE
-USE_MXE=0
 
 #WARNING: следующие переменные будут изменены в процессе работы скрипта автоматически
 buildpsi=${default_buildpsi} #инициализация переменной
+upstream_src=${buildpsi}/psi #репозиторий Psi
+psiplus_src=${buildpsi}/psi-plus #репозиторий Psi+
 orig_src=${buildpsi}/build #рабочий каталог для компиляции psi+
-patches=${buildpsi}/git-plus/patches #путь к патчам psi+, необходим для разработки
+patches=${buildpsi}/psi-plus/patches #путь к патчам psi+, необходим для разработки
 inst_path=${buildpsi}/${inst_suffix} #только для пакетирования
 #
 
@@ -114,8 +108,8 @@ fetch_url ()
 
 fetch_all ()
 {
-  fetch_url ${psi_url} ${buildpsi}/git
-  fetch_url ${psi_plus_url} ${buildpsi}/git-plus
+  fetch_url ${psi_url} ${upstream_src}
+  fetch_url ${psi_plus_url} ${psiplus_src}
   fetch_url ${plugins_url} ${buildpsi}/plugins
   fetch_url ${langs_url} ${buildpsi}/langs
 }
@@ -179,8 +173,10 @@ read_options ()
 #
 update_variables ()
 {
+  upstream_src=${buildpsi}/psi
+  psiplus_src=${buildpsi}/psi-plus
   orig_src=${buildpsi}/build
-  patches=${buildpsi}/git-plus/patches
+  patches=${buildpsi}/psi-plus/patches
   inst_path=${buildpsi}/${inst_suffix}
   if [ "${qt_ver}" == "5" ]; then
     USE_QT5="ON"
@@ -205,8 +201,8 @@ check_dir ()
 #
 down_all ()
 {
-  check_dir ${buildpsi}/git
-  check_dir ${buildpsi}/git-plus
+  check_dir ${upstream_src}
+  check_dir ${psiplus_src}
   check_dir ${buildpsi}/plugins
   check_dir ${buildpsi}/langs
   fetch_all
@@ -214,7 +210,7 @@ down_all ()
 #
 patch_psi ()
 {
-  local patchlist=$(ls ${buildpsi}/git-plus/patches/ | grep diff)
+  local patchlist=$(ls ${patches}/ | grep diff)
   local patchnumber=10000
   local bdir=$(pwd)
   local msg=""
@@ -238,7 +234,7 @@ patch_psi ()
   if [ -z "$2" ]; then
     for patchfile in ${patchlist}; do
       if [  ${patchfile:0:4} -lt ${patchnumber} ]; then
-        do_patch ${buildpsi}/git-plus/patches/${patchfile}
+        do_patch ${patches}/${patchfile}
       fi
     done
   else
@@ -249,12 +245,12 @@ patch_psi ()
 get_psi_plus_version()
 {
   ref_commit=871fac5f74f247df1d28297d5ea3982a8dcfaacc # 1.0 tag
-  local psi_rev=$(${buildpsi}/git/admin/git_revnumber.sh)
-  local plus_rev=$(cd ${buildpsi}/git-plus && git rev-list --count ${ref_commit}..HEAD)
-  local psi_ver=$(cd ${buildpsi}/git-plus && git describe --tags | cut -d - -f1)
+  local psi_rev=$(${upstream_src}/admin/git_revnumber.sh)
+  local plus_rev=$(cd ${psiplus_src} && git rev-list --count ${ref_commit}..HEAD)
+  local psi_ver=$(cd ${psiplus_src} && git describe --tags | cut -d - -f1)
   local sum_commit=$(expr ${psi_rev} + ${plus_rev})
   psi_package_version="${psi_ver}.${sum_commit}"
-  psi_plus_version=$(${buildpsi}/git-plus/admin/psi-plus-nightly-version ${buildpsi}/git)
+  psi_plus_version=$(${psiplus_src}/admin/psi-plus-nightly-version ${upstream_src})
   echo "SHORT_VERSION = $psi_package_version"
   echo "LONG_VERSION = $psi_plus_version"
 }
@@ -271,18 +267,25 @@ prepare_psi_src ()
   fi
 }
 #
+copy_psiplus_icons()
+{
+  if [ ! -z "$1" ]; then
+    cp -a ${psiplus_src}/iconsets/* $1/iconsets/
+    cp -a ${psiplus_src}/app.ico $1/win32/
+  fi
+}
+#
 prepare_workspace ()
 {
   local last_dir=$(pwd)
   echo "Deleting ${orig_src}"
   rm -rf ${orig_src}
   check_dir ${orig_src}
-  cd ${buildpsi}/git
+  cd ${upstream_src}
   prepare_psi_src ${orig_src}
   cd ${buildpsi}/plugins
   prepare_psi_src ${orig_src}/src/plugins
-  cp -a ${buildpsi}/git-plus/iconsets/* ${orig_src}/iconsets/
-  cp -a ${buildpsi}/git-plus/app.ico ${orig_src}/win32/
+  copy_psiplus_icons ${orig_src}
   check_dir ${orig_src}/translations
   cp -a ${buildpsi}/langs/translations/*.ts ${orig_src}/translations/
   cd ${orig_src}
@@ -295,7 +298,7 @@ prepare_workspace ()
     cd ${workdir}
   fi
   get_psi_plus_version
-  cd ${buildpsi}/git-plus
+  cd ${psiplus_src}
   local suffix=""
   local builddate=$(LANG=en date +'%F')
   if [ ! -z "${iswebkit}" ]; then
@@ -566,10 +569,10 @@ prepare_dev ()
   check_dir ${psidev}
   check_dir ${orig}
   check_dir ${new}
-  if [ ! -d ${buildpsi}/git ]; then
+  if [ ! -d ${upstream_src} ]; then
     down_all
   fi
-  cd ${buildpsi}/git
+  cd ${upstream_src}
   prepare_psi_src ${orig}
   prepare_psi_src ${new}
   cd ${psidev}
@@ -583,7 +586,7 @@ diff -urpN -X "psidiff.ignore" git.orig git | sed '/\(.*айлы.*различа
     echo "${mkpatch}">${psidev}/mkpatch
     chmod u+x ${psidev}/mkpatch
   fi
-  local patchlist=$(ls ${buildpsi}/git-plus/patches/ | grep diff)
+  local patchlist=$(ls ${patches}/ | grep diff)
   cd ${orig}
   echo "---------------------
 Patching original src
@@ -789,10 +792,11 @@ debug_psi ()
 #
 prepare_mxe()
 {
-	unset `env | \
+	OLDPATH=${PATH}
+	unset $(env | \
 	grep -vi '^EDITOR=\|^HOME=\|^LANG=\|MXE\|^PATH=' | \
 	grep -vi 'PKG_CONFIG\|PROXY\|^PS1=\|^TERM=' | \
-	cut -d '=' -f1 | tr '\n' ' '`
+	cut -d '=' -f1 | tr '\n' ' ')
 	export PATH="/home/vitaly/virtualka/mxe/usr/bin:$PATH"
 }
 run_mxe_cmake()
@@ -838,6 +842,9 @@ compile_psi_mxe()
   cp -a ${wrkdir}/psi/translations ${mxe_rootd}/$1/
   cp -a ${buildpsi}/mxe_prepare/myspell ${mxe_rootd}/$1/
   cd ${curd}
+  if [ ! -z "${OLDPATH}" ]; then
+    PATH=${OLDPATH}
+  fi
 }
 #
 archivate_psi()
@@ -998,6 +1005,9 @@ ${pink}[0]${nocolor} - Exit"
 get_help ()
 {
   echo -e "${red}---------------HELP-----------------------${nocolor}
+${pink}[32]${nocolor} - Create win32 32bit-build using MXE
+${pink}[33]${nocolor} - Create win32 64bit-build using MXE
+${pink}[71]${nocolor} - Copy Psi+ icons to test build in ${buildpsi}/psidev/git
 ${pink}[ia]${nocolor} - Install all resources to $psi_datadir
 ${pink}[ii]${nocolor} - Install iconsets to $psi_datadir
 ${pink}[is]${nocolor} - Install skins to $psi_datadir
@@ -1009,6 +1019,8 @@ ${pink}[ur]${nocolor} - Update resources
 ${pink}[bs]${nocolor} - Backup ${buildpsi##*/} directory in ${buildpsi%/*}
 ${pink}[pw]${nocolor} - Prepare psi+ workspace (clean ${buildpsi}/build dir)
 ${pink}[dp]${nocolor} - Run psi-plus binary under gdb debugger
+${pink}[bam]${nocolor} - Build both 32bit and 64bit builds with MXE
+${pink}[aa]${nocolor} - Archivate all MXE-builds
 ${red}-------------------------------------------${nocolor}
 ${blue}Press Enter to continue...${nocolor}"
   read
@@ -1022,13 +1034,14 @@ choose_action ()
     "2" ) prepare_src;;
     "3" ) compile_psiplus /usr;;
     "31" ) build_cmake_plugins;;
-    "32" ) compile_psi_mxe qt5;;
-    "33" ) compile_psi_mxe qt5_64;;
+    "32" ) compile_psi_mxe qt5 && archivate_psi qt5;;
+    "33" ) compile_psi_mxe qt5_64 && archivate_psi qt5_64;;
     "4" ) build_deb_package;;
     "5" ) build_rpm_package;;
     "51" ) build_rpm_plugins;;
     "6" ) set_config;;
     "7" ) prepare_dev;;
+    "71" ) copy_psiplus_icons ${buildpsi}/psidev/git;;
     "8" ) get_help;;
     "9" ) run_psiplus;;
     "ia" ) install_resources;;
