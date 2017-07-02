@@ -51,7 +51,7 @@ TrayIcon::TrayIcon()
 #endif
   legacyTrayIcon_(QSystemTrayIconPtr())
 {
-	bool newInterface = false;
+	bool newInterface(false);
 #ifdef HAVE_KDE
 	QDBusInterface iface(KSNI_SERVICE, KSNI_PATH, KSNI_IFACE);
 	if (iface.isValid()) {

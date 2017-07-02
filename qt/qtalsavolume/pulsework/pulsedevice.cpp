@@ -26,7 +26,7 @@
 
 static int getCardId(pa_proplist *pl)
 {
-	const QString cardId = pa_proplist_gets(pl, ALSA_CARDID_PROPERTY);
+	const QString cardId(pa_proplist_gets(pl, ALSA_CARDID_PROPERTY));
 	return (!cardId.isNull()) ? cardId.toInt() : 0;
 }
 

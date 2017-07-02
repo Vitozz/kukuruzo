@@ -155,10 +155,10 @@ QString MainWindow::getTimeString(int seconds) const
 	secs -= hour * secsInHour;
 	const int mins = secs / secsInMin;
 	secs -= mins * secsInMin;
-	const QString dayStr = (day >= 10) ? QString::number(day) : "0" + QString::number(day);
-	const QString hourStr = (hour >= 10) ? QString::number(hour) : "0" + QString::number(hour);
-	const QString minStr = (mins >= 10) ? QString::number(mins) : "0" + QString::number(mins);
-	const QString secStr = (secs >= 10) ? QString::number(secs) : "0" + QString::number(secs);
+	const QString dayStr((day >= 10) ? QString::number(day) : "0" + QString::number(day));
+	const QString hourStr((hour >= 10) ? QString::number(hour) : "0" + QString::number(hour));
+	const QString minStr((mins >= 10) ? QString::number(mins) : "0" + QString::number(mins));
+	const QString secStr((secs >= 10) ? QString::number(secs) : "0" + QString::number(secs));
 	if (day == 0) {
 		return (tr("%1:%2:%3").arg(hourStr, minStr, secStr));
 	}
@@ -187,7 +187,7 @@ void MainWindow::calculateTimeOffset()
 
 void MainWindow::showTrayMessage(const QString &msg)
 {
-	const QString title = (isReboot_) ? tr("Reboot") : tr("Shutdown");
+	const QString title((isReboot_) ? tr("Reboot") : tr("Shutdown"));
 	trayIcon_->showMessage(title, msg);
 }
 
@@ -195,10 +195,10 @@ void MainWindow::onPowerOffClicked()
 {
 	if (!poffTimer_->isActive()) {
 		calculateTimeOffset();
-		const QString timeStr = tr("%1 at %2").arg(time_->toString("dd-MM-yyyy"),
-							   time_->toString("hh:mm:ss"));
+		const QString timeStr(tr("%1 at %2").arg(time_->toString("dd-MM-yyyy"),
+							   time_->toString("hh:mm:ss")));
 		QMessageBox box;
-		const QString poffType = (isReboot_) ? tr("reboot") : tr("shutdown");
+		const QString poffType((isReboot_) ? tr("reboot") : tr("shutdown"));
 		box.setWindowTitle(tr("Please Confirm Your Choice"));
 		box.setIcon(QMessageBox::Question);
 		box.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
@@ -257,13 +257,13 @@ void MainWindow::onTimer()
 #endif
 	}
 	else {
-		const QString timeStr = getTimeString(deltaTime);
+		const QString timeStr(getTimeString(deltaTime));
 #ifdef IS_DEBUG
 		qDebug() << "CT - " << currentTime->toString("dd-MM-yyyy hh:mm:ss");
 		qDebug() << "T - " << timeStr;
 #endif
-		const QString poffType = (isReboot_) ? tr("Reboot") : tr("Shutdown");
-		const QString tip = tr("%1 at - %2").arg(poffType, timeStr);
+		const QString poffType((isReboot_) ? tr("Reboot") : tr("Shutdown"));
+		const QString tip(tr("%1 at - %2").arg(poffType, timeStr));
 		SetTrayToolTip(tip);
 		setWindowTitle(QString("%1 - %2").arg(APP_TITLE, tip));
 	}
@@ -360,8 +360,8 @@ void MainWindow::doAction()
 				 QDBusConnection::systemBus());
 	bool isError = false;
 	if (interface.isValid()) {
-		const QString method = (isReboot_) ? "Restart" : "Stop";
-		const QString checkMethod = (isReboot_) ? "CanRestart" : "CanStop";
+		const QString method((isReboot_) ? "Restart" : "Stop");
+		const QString checkMethod((isReboot_) ? "CanRestart" : "CanStop");
 		QDBusMessage reply = interface.call(checkMethod.toLatin1());
 		if (getBoolReply(reply)) {
 			interface.call(method.toLatin1());
@@ -393,7 +393,7 @@ void MainWindow::doAction()
 
 void MainWindow::doProcessRun()
 {
-	const QString method = (isReboot_) ? "/r" : "/s";
+	const QString method((isReboot_) ? "/r" : "/s");
 	QProcess process;
 	process.startDetached("shutdown", QStringList() << method);
 }

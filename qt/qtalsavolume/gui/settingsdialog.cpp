@@ -152,7 +152,7 @@ void SettingsDialog::setCurrentMixer(const QString &mixer)
 
 void SettingsDialog::onOk()
 {
-	const QString mixer = ui->mixerBox->currentText();
+	const QString mixer(ui->mixerBox->currentText());
 	const int card = ui->cardBox->currentIndex();
 	emit soundCardChanged(card);
 	emit mixerChanged(mixer);
@@ -190,7 +190,7 @@ void SettingsDialog::setPlaybackChecks(const QList<switcher> &pbList)
 		}
 		playbacks_->addItem(cb);
 	}
-	bool hasItems = playbacks_->count() > 0;
+	bool hasItems(playbacks_->count() > 0);
 	playbacks_->show();
 	playbacks_->setVisible(hasItems);
 	l1_->setVisible(hasItems);
@@ -212,7 +212,7 @@ void SettingsDialog::setCaptureChecks(const QList<switcher> &cList)
 		}
 		captures_->addItem(cb);
 	}
-	bool hasItems = captures_->count() > 0;
+	bool hasItems(captures_->count() > 0);
 	captures_->show();
 	captures_->setVisible(hasItems);
 	l2_->setVisible(hasItems);
@@ -235,7 +235,7 @@ void SettingsDialog::setEnumChecks(const QList<switcher> &eList)
 		enums_->addItem(cb);
 	}
 	enums_->show();
-	bool hasItems = enums_->count() > 0;
+	bool hasItems(enums_->count() > 0);
 	enums_->setVisible(hasItems);
 	l3_->setVisible(hasItems);
 }
@@ -247,23 +247,20 @@ void SettingsDialog::setAutorun(bool isAutorun)
 
 void SettingsDialog::onPBAction(QListWidgetItem *item)
 {
-	const QString name = item->text();
-	const Qt::CheckState checked = item->checkState();
-	emit playChanged(name, (checked == Qt::Checked));
+	const Qt::CheckState checked(item->checkState());
+	emit playChanged(item->text(), (checked == Qt::Checked));
 }
 
 void SettingsDialog::onCPAction(QListWidgetItem *item)
 {
-	const QString name = item->text();
 	const Qt::CheckState checked = item->checkState();
-	emit captChanged(name, (checked == Qt::Checked));
+	emit captChanged(item->text(), (checked == Qt::Checked));
 }
 
 void SettingsDialog::onENAction(QListWidgetItem *item)
 {
-	const QString name = item->text();
 	const Qt::CheckState checked = item->checkState();
-	emit enumChanged(name, (checked == Qt::Checked));
+	emit enumChanged(item->text(), (checked == Qt::Checked));
 }
 
 void SettingsDialog::onDarkStyle(bool toggled)

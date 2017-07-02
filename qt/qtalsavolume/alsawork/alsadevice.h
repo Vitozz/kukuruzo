@@ -57,7 +57,7 @@ private:
 	void checkError (const QString &title, const QString &message);
 	void initMixerList();
 	double getNormVolume(snd_mixer_elem_t *element);
-	double getExp10(double value);
+	double getExp10(double value) const;
 	bool useLinearDb(long min, long max);
 	void setNormVolume(snd_mixer_elem_t *element, double volume);
 

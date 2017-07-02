@@ -107,8 +107,8 @@ void AlsaDevice::updateElements()
 
 void AlsaDevice::initMixerList()
 {
-	bool isplay = !volumeMixers_.isEmpty();
-	bool isrec = !captureMixers_.isEmpty();
+	bool isplay(!volumeMixers_.isEmpty());
+	bool isrec(!captureMixers_.isEmpty());
 	if (!mixers_.isEmpty()) {
 		mixers_.clear();
 	}
@@ -173,7 +173,7 @@ snd_mixer_selem_channel_id_t AlsaDevice::checkMixerChannels(snd_mixer_elem_t *el
 }
 //This part of code from alsa-utils.git/alsamixer/volume_mapping.c
 //Copyright (c) 2010 Clemens Ladisch <clemens@ladisch.de>
-double AlsaDevice::getExp10(double value)
+double AlsaDevice::getExp10(double value) const
 {
 	return exp(value * log(10));
 }
@@ -244,7 +244,7 @@ double AlsaDevice::getNormVolume(snd_mixer_elem_t *element)
 
 bool AlsaDevice::useLinearDb(long min, long max)
 {
-	const long maxDB = 24;
+	const long maxDB(24);
 	return (max - min) <= maxDB*100;
 }
 
@@ -321,7 +321,7 @@ void AlsaDevice::setDeviceVolume(double volume)
 
 double AlsaDevice::getVolume()
 {
-	double volume = ZERO;
+	double volume(ZERO);
 	if (!currentMixerName_.isEmpty() && !mixers_.isEmpty()) {
 		snd_mixer_t *handle = getMixerHanlde(id_);
 		snd_mixer_elem_t *elem = initMixerElement(handle, currentMixerName_.toLocal8Bit());
@@ -428,7 +428,7 @@ void AlsaDevice::setCurrentMixer(int id)
 
 void AlsaDevice::setCurrentMixer(const QString &mixer)
 {
-	int index = mixers_.indexOf(mixer);
+	int index(mixers_.indexOf(mixer));
 	if(index >= 0){
 		currentMixerId_ = index;
 		currentMixerName_ = mixer;

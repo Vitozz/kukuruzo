@@ -22,14 +22,21 @@
 
 SSDisabler::SSDisabler(QWidget *parent)
 : QWidget(parent),
-  suspended_(false)
+  suspended_(false),
+  click_(new QAction(tr("Resume"), this)),
+  exit_( new QAction(tr("E&xit"), this)),
+  trayMenu_(new QMenu(this)),
+  trayIcon_(new QSystemTrayIcon(this))
+
 {
-	createActions();
-	createTrayMenu();
+	connectActions();
+	fillTrayMenu();
 	setWindowIcon(QIcon(":/icons/icon.png"));
-	trayIcon_ = new QSystemTrayIcon(this);
 	trayIcon_->setContextMenu(trayMenu_);
-	connect(trayIcon_, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, SLOT(iconActivated_(QSystemTrayIcon::ActivationReason)));
+	connect(trayIcon_,
+	        SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
+	        this,
+	        SLOT(iconActivated_(QSystemTrayIcon::ActivationReason)));
 	winId_ = "0x"+QString::number((int)winId(),16);
 	suspend();
 	trayIcon_->show();
@@ -43,18 +50,14 @@ SSDisabler::~SSDisabler()
 	delete trayIcon_;
 }
 
-void SSDisabler::createActions()
+void SSDisabler::connectActions()
 {
-	click_ = new QAction(tr("Resume"), this);
 	connect(click_, SIGNAL(triggered()), this, SLOT(onClick_()));
-
-	exit_ = new QAction(tr("E&xit"), this);
 	connect(exit_, SIGNAL(triggered()), this, SLOT(onExit_()));
 }
 
-void SSDisabler::createTrayMenu()
+void SSDisabler::fillTrayMenu()
 {
-	trayMenu_ = new QMenu(this);
 	trayMenu_->addAction(click_);
 	trayMenu_->addSeparator();
 	trayMenu_->addAction(exit_);

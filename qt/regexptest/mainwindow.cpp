@@ -30,6 +30,9 @@
 #include <QFileDialog>
 #include <QDir>
 #include <QSettings>
+#ifdef IS_DEBUG
+#include <QDebug>
+#endif
 
 #define TEXT_OPT "text"
 #define FILENAME_OPT "filename"
@@ -80,7 +83,7 @@ void MainWindow::closeEvent(QCloseEvent *){
 
 void MainWindow::on_runit_clicked()
 {
-	const QList <QStringList> matches = CheckExpression(regExpText_,inputText_);
+	const QList <QStringList> matches(CheckExpression(regExpText_,inputText_));
 	ui->label->document()->setHtml(GetRegexpList(matches,CHECK_ALL,0));
 }
 
@@ -141,27 +144,19 @@ void MainWindow::writeSettings(){
 QString MainWindow::GetRegexpList(const QList<QStringList> &matches, const int &parm, const int &pos) const
 {
 	QString result;
-	const QString matchWildcard = tr("<u><a style=\"color:red\">Match # </a><b>%1</b></u><br>");
-	const QString groupWildcard = tr("<a style=\"color:blue\">Group # </a><b>%1: </b><i>%2</i><br>");
+	const QString matchWildcard(tr("<u><a style=\"color:red\">Match # </a><b>%1</b></u><br>"));
+	const QString groupWildcard(tr("<a style=\"color:blue\">Group # </a><b>%1: </b><i>%2</i><br>"));
 	if(!matches.isEmpty()){
 		foreach(const QStringList &group, matches) {
 			result += matchWildcard.arg(QString::number(matches.indexOf(group)+1));
 			if(parm == CHECK_ALL){
 				foreach (const QString &item, group) {
-#ifdef HAVE_QT5
 					result += groupWildcard.arg(QString::number(group.indexOf(item)),item.toHtmlEscaped());
-#else
-					result += groupWildcard.arg(QString::number(group.indexOf(item)), Qt::escape(item));
-#endif
 				}
 			}
 			else if(parm == CHECK_POS) {
 				if(pos < group.length()) {
-#ifdef HAVE_QT5
 					result += groupWildcard.arg(QString::number(pos), group[pos].toHtmlEscaped());
-#else
-					result += groupWildcard.arg(QString::number(pos), Qt::escape(group[pos]));
-#endif
 				}
 			}
 		}

@@ -1,9 +1,8 @@
 project( regexptest )
-cmake_minimum_required( VERSION 2.8.7 )
+cmake_minimum_required( VERSION 2.8.12 )
 set( CMAKE_AUTOMOC ON )
 set( CMAKE_INCLUDE_CURRENT_DIR ON )
-set( USE_QT5 OFF CACHE BOOL "Use Qt5" )
-set( BUILD_TRANSLATIONS ON CACHE BOOL "Build project translations")
+option( BUILD_TRANSLATIONS "Build project translations" ON )
 include_directories(
 	${CMAKE_SOURCE_DIR}
 	${CMAKE_CURRENT_BINARY_DIR}
@@ -36,43 +35,27 @@ set( DOC_FILES
 set(LICENSE_FILES
 	COPYING
 )
-if( ${USE_QT5} )
-	find_package( Qt5Widgets REQUIRED )
-	include_directories(
-		${Qt5Widgets_INCLUDES}
-	)
-	set( CMAKE_CXX_FLAGS "-std=c++0x ${CMAKE_CXX_FLAGS} ${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}" )
-	add_definitions( -DHAVE_QT5 )
-	qt5_add_resources( RSCS ${regexptest_QRC} )
-	if( ${BUILD_TRANSLATIONS} )
-		find_package( Qt5LinguistTools REQUIRED )
-		qt5_add_translation( TRS ${regexptest_TRS} )
-	endif( ${BUILD_TRANSLATIONS} )
-	qt5_wrap_ui( UIS ${regexptest_UI} )
-	set( QT_DEPLIBS
-		Qt5::Widgets
-	)
-else( ${USE_QT5} )
-	find_package( Qt4 REQUIRED )
-	include( ${QT_USE_FILE} )
-	include_directories(
-		${QT_QTCORE_INCLUDE_DIR}
-		${QT_QTGUI_INCLUDE_DIR}
-	)
-	QT4_WRAP_UI( UIS ${regexptest_UI} )
-	QT4_ADD_RESOURCES( RSCS ${regexptest_QRC} )
-	if( ${BUILD_TRANSLATIONS} )
-		QT4_ADD_TRANSLATION( TRS ${regexptest_TRS} )
-	endif( ${BUILD_TRANSLATIONS} )
-	set( QT_DEPLIBS
-		${QT_QTCORE_LIBRARY}
-		${QT_QTGUI_LIBRARY}
-	)
-endif( ${USE_QT5} )
+if( "${CMAKE_BUILD_TYPE}" STREQUAL "Debug" OR ( "${CMAKE_BUILD_TYPE}" STREQUAL "RelWithDebInfo" ) )
+	add_definitions(-DIS_DEBUG)
+	set(DEBUG_ENABLED ON)
+	set(CMAKE_CXX_FLAGS_DEBUG "-O0 ${CMAKE_CXX_FLAGS_DEBUG}")
+endif()
+
+find_package( Qt5 COMPONENTS Widgets REQUIRED )
+set( CMAKE_CXX_FLAGS "-std=c++0x ${CMAKE_CXX_FLAGS} ${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}" )
+qt5_add_resources( RSCS ${regexptest_QRC} )
+if( ${BUILD_TRANSLATIONS} )
+	find_package( Qt5 COMPONENTS LinguistTools REQUIRED )
+	qt5_add_translation( TRS ${regexptest_TRS} )
+endif( ${BUILD_TRANSLATIONS} )
+qt5_wrap_ui( UIS ${regexptest_UI} )
+set( QT_DEPLIBS
+	Qt5::Widgets
+)
 if( UNIX AND NOT (APPLE OR CYGWIN) )
 	set( DATADIR_PATH ${CMAKE_INSTALL_PREFIX}/share )
 	set( APPDATA_PATH ${DATADIR_PATH}/applications )
-	set( ICON_FILES 
+	set( ICON_FILES
 		icons/72x72.png
 	)
 	set( ICON_PATH
@@ -90,19 +73,17 @@ if( UNIX AND NOT (APPLE OR CYGWIN) )
 		${RSCS}
 		${TRS}
 	)
-	target_link_libraries ( ${PROJECT_NAME}
-				${QT_DEPLIBS}
-	)
+	target_link_libraries ( ${PROJECT_NAME} ${QT_DEPLIBS} )
 	INSTALL( TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin )
 	INSTALL( FILES ${ICON_FILES} DESTINATION ${ICON_PATH} )
 	INSTALL( FILES ${DESKTOP_FILES} DESTINATION ${APPDATA_PATH} )
 	INSTALL( FILES ${DOC_FILES} DESTINATION ${DOCS_PATH} )
 	INSTALL( FILES ${TRS} DESTINATION ${DATADIR_PATH}/${PROJECT_NAME}/${LANG_PATH} )
-endif( UNIX AND NOT (APPLE OR CYGWIN) )
+endif()
 if( ${WIN32} )
-	if( NOT "${CMAKE_BUILD_TYPE}" STREQUAL "Debug" )
+	if( NOT DEBUG_ENABLED )
 		add_definitions( -DQT_NO_DEBUG -pthread )
-	endif( NOT "${CMAKE_BUILD_TYPE}" STREQUAL "Debug" )
+	endif()
 	set ( CMAKE_BUILD_WITH_INSTALL_RPATH FALSE )
 	add_executable( ${PROJECT_NAME}
 		WIN32
@@ -119,4 +100,4 @@ if( ${WIN32} )
 	INSTALL( FILES ${TRS} DESTINATION ${CMAKE_INSTALL_PREFIX}/langs )
 	INSTALL( FILES ${DOC_FILES} DESTINATION ${CMAKE_INSTALL_PREFIX}/docs )
 	INSTALL( FILES ${LICENSE_FILES} DESTINATION ${CMAKE_INSTALL_PREFIX} )
-endif( ${WIN32} )
+endif()

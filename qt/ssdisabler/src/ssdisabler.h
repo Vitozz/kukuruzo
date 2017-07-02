@@ -37,8 +37,8 @@ protected slots:
 	void iconActivated_(QSystemTrayIcon::ActivationReason reason);
 
 private:
-	void createActions();
-	void createTrayMenu();
+	void connectActions();
+	void fillTrayMenu();
 	void changeTrayIcon();
 	void switchScreensaver();
 	void suspend();

@@ -1,13 +1,12 @@
-project ( ssdisable )
-cmake_minimum_required( VERSION 2.6 )
-add_definitions ( -Wall )
-find_package ( Qt4 REQUIRED )
-include ( ${QT_USE_FILE} )
+cmake_minimum_required( VERSION 2.8.12 )
+
+set(CMAKE_AUTOMOC ON)
+
+find_package ( Qt5 COMPONENTS Widgets LinguistTools REQUIRED )
+
 include_directories (
 	${CMAKE_SOURCE_DIR}
 	${CMAKE_CURRENT_BINARY_DIR}
-	${QT_QTCORE_INCLUDE_DIR}
-	${QT_QTGUI_INCLUDE_DIR}
 )
 
 set ( PSOURCES
@@ -16,9 +15,9 @@ set ( PSOURCES
 )
 
 set ( RESOURCES
-	ssdisable.qrc
+	${PROJECT_NAME}.qrc
 )
-QT4_ADD_RESOURCES( RSCS ${RESOURCES} )
+qt5_add_resources( RSCS ${RESOURCES} )
 
 set ( TRS_PATH langs )
 
@@ -27,24 +26,16 @@ set ( TRANSLATIONS
 	${PROJECT_NAME}_ru.ts
 	${PROJECT_NAME}_uk.ts
 )
-QT4_ADD_TRANSLATION( TRS ${TRANSLATIONS} )
+qt5_add_translation( TRS ${TRANSLATIONS} )
 
-set ( MOCFILES
-	ssdisabler.h
-)
-QT4_WRAP_CPP( MOCS ${MOCFILES} )
+add_executable ( ${PROJECT_NAME} ${PSOURCES} ${RSCS} ${TRS} )
 
-add_executable ( ${PROJECT_NAME} ${PSOURCES} ${RSCS} ${TRS} ${MOCS} )
-target_link_libraries ( ${PROJECT_NAME}  ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} )
+target_link_libraries ( ${PROJECT_NAME}  Qt5::Widgets )
 
 set ( ICON_FILES
 	icon.png
 )
 
-set ( DATADIR_PATH 
-	share
-)
-
-INSTALL ( TARGETS ${PROJECT_NAME} RUNTIME DESTINATION bin )
+INSTALL ( TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin )
 INSTALL ( FILES ${ICON_FILES} DESTINATION ${DATADIR_PATH}/${PROJECT_NAME}/icons )
 INSTALL ( FILES ${TRS} DESTINATION ${DATADIR_PATH}/${PROJECT_NAME}/${TRS_PATH} )

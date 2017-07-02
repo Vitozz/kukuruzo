@@ -37,7 +37,7 @@
 
 static const QString appLogo(":/images/Logo");
 static const QString autoStartPath(".config/autostart");
-static const QString fName = QDir::home().absolutePath() + "/.config/autostart/qtalsavolume.desktop";
+static const QString fName(QDir::home().absolutePath() + "/.config/autostart/qtalsavolume.desktop");
 static const QString dFile = QString("%1%2%3%4%5%6%7%8").arg(
 			     "[Desktop Entry]\n",
 			     "Encoding=UTF-8\n",
@@ -109,7 +109,7 @@ PopupWindow::PopupWindow()
 	volumeSlider_->setRange(0,100);
 	volumeSlider_->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
 	volumeLabel_->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
-	QFont font = volumeLabel_->font();
+	QFont font(volumeLabel_->font());
 	font.setBold(true);
 	volumeLabel_->setFont(font);
 	mainLayout_->addWidget(volumeLabel_);
@@ -159,7 +159,7 @@ PopupWindow::PopupWindow()
 		}
 	}
 	mixerList_ = alsaWork_->getVolumeMixers();
-	QString mixer = mixerList_.contains("Master") ? "Master" : mixerList_.at(0);
+	QString mixer(mixerList_.contains("Master") ? "Master" : mixerList_.at(0));
 	mixerName_ = setts_.value(MIXER_NAME, mixer).toString();
 	cardName_ = alsaWork_->getCardName(cardIndex_);
 	if (!isPulse_) {
@@ -248,7 +248,7 @@ void PopupWindow::showPopup()
 
 void PopupWindow::setTrayIcon(int value)
 {
-	const QString pathPrefix = (isLightStyle_) ? "icons/light/" : "icons/dark/";
+	const QString pathPrefix((isLightStyle_) ? "icons/light/" : "icons/dark/");
 	int number = 100;
 	value = (value <= 0) ? 0 : (value > 100) ? 100 : value;
 	number = (value < 10) ? 10 : int(value/10)*10;
@@ -258,8 +258,8 @@ void PopupWindow::setTrayIcon(int value)
 	if (isMuted_) {
 		number = 0;
 	}
-	QString pathSuffix = QString("tb_icon%1.png").arg(QString::number(number));
-	const QString fullPath = getResPath(QString("%1%2").arg(pathPrefix,pathSuffix));
+	QString pathSuffix(QString("tb_icon%1.png").arg(QString::number(number)));
+	const QString fullPath(getResPath(QString("%1%2").arg(pathPrefix,pathSuffix)));
 #ifdef ISDEBUG
 	qDebug() << "val " << value;
 	qDebug() << "num " << number;
@@ -336,9 +336,9 @@ void PopupWindow::saveSettings()
 
 void PopupWindow::setPopupPosition()
 {
-	const QRect trayGeometry = trayIcon_->iconGeometery();
+	const QRect trayGeometry (trayIcon_->iconGeometery());
 	QPoint to;
-	QPoint point = trayIcon_->iconPosition();
+	QPoint point(trayIcon_->iconPosition());
 	Position position;
 	QDesktopWidget desktopWidget;
 	const int screenHeight = desktopWidget.availableGeometry(this).height();
@@ -441,7 +441,7 @@ void PopupWindow::onCardChanged(int card)
 {
 #ifdef USE_PULSE
 	if (isPulse_ && pulse_) {
-		const QString oldCard = pulseCardName_;
+		const QString oldCard(pulseCardName_);
 		pulseCardName_ = pulse_->getDeviceNameByIndex(card);
 		pulse_->setCurrentDevice(pulseCardName_);
 		pulseCardList_ = pulse_->getCardList();
