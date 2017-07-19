@@ -244,7 +244,7 @@ patch_psi ()
 #
 get_psi_plus_version()
 {
-  ref_commit=871fac5f74f247df1d28297d5ea3982a8dcfaacc # 1.0 tag
+  ref_commit=bc58aa0748e85a97a177a05b32854ab006c9e8b9 # 1.0 tag
   local psi_rev=$(${upstream_src}/admin/git_revnumber.sh)
   local plus_rev=$(cd ${psiplus_src} && git rev-list --count ${ref_commit}..HEAD)
   local psi_ver=$(cd ${psiplus_src} && git describe --tags | cut -d - -f1)
