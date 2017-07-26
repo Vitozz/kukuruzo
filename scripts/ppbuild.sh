@@ -244,7 +244,7 @@ patch_psi ()
 #
 get_psi_plus_version()
 {
-  ref_commit=bc58aa0748e85a97a177a05b32854ab006c9e8b9 # 1.0 tag
+  ref_commit=db1a4053ef7aae72ae819eb00eba47bae9530320 # 1.0 tag
   local psi_rev=$(${upstream_src}/admin/git_revnumber.sh)
   local plus_rev=$(cd ${psiplus_src} && git rev-list --count ${ref_commit}..HEAD)
   local psi_ver=$(cd ${psiplus_src} && git describe --tags | cut -d - -f1)
@@ -817,7 +817,7 @@ compile_psi_mxe()
   mxe_rootd=${buildpsi}/mxe_builds
   check_dir ${mxe_rootd}
   cd ${orig_src}
-  flags="-DENABLE_PLUGINS=ON -DPRODUCTION=ON -DUSE_CCACHE=OFF"
+  flags="-DENABLE_PLUGINS=ON -DENABLE_PORTABLE=ON -DVERBOSE_PROGRAM_NAME=ON -DUSE_CCACHE=OFF"
   if [ "$1" == "qt5" ];then
     cmakecmd=run_mxe_cmake
     flags="${flags} -DUSE_QT5=ON -DBUILD_ARCH=i386"
