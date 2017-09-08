@@ -333,7 +333,7 @@ prepare_tar ()
   cp -r ${orig_src} ${new_src}
   if [ -d ${new_src} ]; then
     cd ${buildpsi}
-    tar -sczf ${tar_name}.tar.gz ${tar_name}
+    tar -czf ${tar_name}.tar.gz ${tar_name}
     rm -r -f ${new_src}
     if [ -d ${rpmsrc} ]; then
       if [ -f "${rpmsrc}/${tar_name}.tar.gz" ]; then
