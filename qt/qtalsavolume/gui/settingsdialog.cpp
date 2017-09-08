@@ -45,8 +45,8 @@ SettingsDialog::SettingsDialog(QWidget *parent)
   l3_(new QLabel(tr("Enum Switches"),this))
 {
 	ui->setupUi(this);
-	connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(onOk()));
-	connect(ui->buttonBox, SIGNAL(rejected()), this, SLOT(onCancel()));
+	connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &SettingsDialog::onOk);
+	connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &SettingsDialog::onCancel);
 	playbacks_->setToolTip(tr("Enable/Disable Alsa's Playback Switch"));
 	captures_->setToolTip(tr("Enable/Disable Alsa's Capture Switch"));
 	enums_->setToolTip(tr("Enable/Disable Alsa's Enumerated Switch"));
@@ -97,30 +97,30 @@ void SettingsDialog::setMixers(const QStringList &mixers)
 
 void SettingsDialog::connectSignals()
 {
-	connect(playbacks_, SIGNAL(itemChanged(QListWidgetItem*)), this, SLOT(onPBAction(QListWidgetItem*)));
-	connect(captures_, SIGNAL(itemChanged(QListWidgetItem*)), this, SLOT(onCPAction(QListWidgetItem*)));
-	connect(enums_, SIGNAL(itemChanged(QListWidgetItem*)), this, SLOT(onENAction(QListWidgetItem*)));
-	connect(ui->darkRadio, SIGNAL(toggled(bool)), this, SLOT(onDarkStyle(bool)));
-	connect(ui->lightRadio, SIGNAL(toggled(bool)), this, SLOT(onLightStyle(bool)));
-	connect(ui->cardBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onSoundCard(int)));
-	connect(ui->mixerBox, SIGNAL(currentIndexChanged(QString)), this, SLOT(onMixer(QString)));
-	connect(ui->isAutorun, SIGNAL(toggled(bool)), this, SLOT(onAutorun(bool)));
-	connect(ui->usePulseaudio, SIGNAL(toggled(bool)), this, SLOT(onPulseSoundSystem(bool)));
-	connect(ui->enableTimer, SIGNAL(toggled(bool)), this, SLOT(onEnableTimer(bool)));
+	connect(playbacks_, &QListWidget::itemChanged, this, &SettingsDialog::onPBAction);
+	connect(captures_, &QListWidget::itemChanged, this, &SettingsDialog::onCPAction);
+	connect(enums_, &QListWidget::itemChanged, this, &SettingsDialog::onENAction);
+	connect(ui->darkRadio, &QRadioButton::toggled, this, &SettingsDialog::onDarkStyle);
+	connect(ui->lightRadio, &QRadioButton::toggled, this, &SettingsDialog::onLightStyle);
+	connect(ui->cardBox, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &SettingsDialog::onSoundCard);
+	connect(ui->mixerBox, static_cast<void(QComboBox::*)(const QString &)>(&QComboBox::currentIndexChanged), this, &SettingsDialog::onMixer);
+	connect(ui->isAutorun, &QCheckBox::toggled, this, &SettingsDialog::onAutorun);
+	connect(ui->usePulseaudio, &QCheckBox::toggled, this, &SettingsDialog::onPulseSoundSystem);
+	connect(ui->enableTimer, &QCheckBox::toggled, this, &SettingsDialog::onEnableTimer);
 }
 
 void SettingsDialog::disconnectSignals()
 {
-	playbacks_->disconnect(SIGNAL(itemChanged(QListWidgetItem*)));
-	captures_->disconnect(SIGNAL(itemChanged(QListWidgetItem*)));
-	enums_->disconnect(SIGNAL(itemChanged(QListWidgetItem*)));
-	ui->darkRadio->disconnect(SIGNAL(toggled(bool)));
-	ui->lightRadio->disconnect(SIGNAL(toggled(bool)));
-	ui->cardBox->disconnect(SIGNAL(currentIndexChanged(int)));
-	ui->mixerBox->disconnect(SIGNAL(currentIndexChanged(QString)));
-	ui->isAutorun->disconnect(SIGNAL(toggled(bool)));
-	ui->usePulseaudio->disconnect(SIGNAL(toggled(bool)));
-	ui->enableTimer->disconnect(SIGNAL(toggled(bool)));
+	playbacks_->disconnect();
+	captures_->disconnect();
+	enums_->disconnect();
+	ui->darkRadio->disconnect();
+	ui->lightRadio->disconnect();
+	ui->cardBox->disconnect();
+	ui->mixerBox->disconnect();
+	ui->isAutorun->disconnect();
+	ui->usePulseaudio->disconnect();
+	ui->enableTimer->disconnect();
 }
 
 void SettingsDialog::onSoundCard(int changed)

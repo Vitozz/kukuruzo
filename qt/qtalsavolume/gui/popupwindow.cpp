@@ -181,17 +181,17 @@ PopupWindow::PopupWindow()
 #endif
 	settingsDialog_->setIconStyle(isLightStyle_);
 	settingsDialog_->connectSignals(); //connecting settingsDialog_ internal signals
-	connect(settingsDialog_, SIGNAL(soundCardChanged(int)), this, SLOT(onCardChanged(int)));
-	connect(settingsDialog_, SIGNAL(mixerChanged(QString)), this, SLOT(onMixerChanged(QString)));
-	connect(settingsDialog_, SIGNAL(playChanged(QString,bool)), this, SLOT(onPlayback(QString,bool)));
-	connect(settingsDialog_, SIGNAL(captChanged(QString,bool)), this, SLOT(onCapture(QString,bool)));
-	connect(settingsDialog_, SIGNAL(enumChanged(QString,bool)), this, SLOT(onEnum(QString,bool)));
-	connect(settingsDialog_, SIGNAL(autorunChanged(bool)), this, SLOT(onAutorun(bool)));
-	connect(settingsDialog_, SIGNAL(styleChanged(bool)), this, SLOT(onStyleChanged(bool)));
-	connect(settingsDialog_, SIGNAL(timerEnabled(bool)), this, SLOT(enablePolling(bool)));
+	connect(settingsDialog_, &SettingsDialog::soundCardChanged, this, &PopupWindow::onCardChanged);
+	connect(settingsDialog_, &SettingsDialog::mixerChanged, this, &PopupWindow::onMixerChanged);
+	connect(settingsDialog_, &SettingsDialog::playChanged, this, &PopupWindow::onPlayback);
+	connect(settingsDialog_, &SettingsDialog::captChanged, this, &PopupWindow::onCapture);
+	connect(settingsDialog_, &SettingsDialog::enumChanged, this, &PopupWindow::onEnum);
+	connect(settingsDialog_, &SettingsDialog::autorunChanged, this, &PopupWindow::onAutorun);
+	connect(settingsDialog_, &SettingsDialog::styleChanged, this, &PopupWindow::onStyleChanged);
+	connect(settingsDialog_, &SettingsDialog::timerEnabled, this, &PopupWindow::enablePolling);
 #ifdef USE_PULSE
 	if (pulse_) {
-		connect(settingsDialog_, SIGNAL(soundSystemChanged(bool)), this, SLOT(onSoundSystem(bool)));
+		connect(settingsDialog_, &SettingsDialog::soundSystemChanged, this, &PopupWindow::onSoundSystem);
 	}
 #endif
 	createDesktopFile();
@@ -201,13 +201,13 @@ PopupWindow::PopupWindow()
 	volumeLabel_->setText(QString::number(volumeValue_));
 	setTrayIcon(volumeValue_);
 	setIconToolTip(volumeValue_);
-	connect(trayIcon_, SIGNAL(activated(ActivationReason)), this, SLOT(iconActivated(ActivationReason)));
-	connect(trayIcon_, SIGNAL(muted(bool)), this, SLOT(onMute(bool)));
+	connect(trayIcon_, &TrayIcon::activated, this, &PopupWindow::iconActivated);
+	connect(trayIcon_, &TrayIcon::muted, this, &PopupWindow::onMute);
 	trayIcon_->setMute(isMuted_);
-	connect(volumeSlider_, SIGNAL(valueChanged(int)), this, SLOT(onSlider(int)));
+	connect(volumeSlider_, &QSlider::valueChanged, this, &PopupWindow::onSlider);
 	installEventFilter(this);
 	pollingTimer_->setInterval(POLLING_INTERVAL);
-	connect(pollingTimer_, SIGNAL(timeout()), this, SLOT(onTimeout()));
+	connect(pollingTimer_, &QTimer::timeout, this, &PopupWindow::onTimeout);
 	pollingTimer_->start();
 }
 

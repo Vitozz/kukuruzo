@@ -74,28 +74,32 @@ TrayIcon::TrayIcon()
 #endif
 	if (!newInterface) {
 		legacyTrayIcon_ = QSystemTrayIconPtr(new QSystemTrayIcon(this));
-		connect(legacyTrayIcon_.data(), SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
-			this, SLOT(iconActivated(QSystemTrayIcon::ActivationReason)));
+		connect(legacyTrayIcon_.data(), &QSystemTrayIcon::activated,
+			this, &TrayIcon::iconActivated);
 		legacyTrayIcon_->setContextMenu(trayMenu_);
 		legacyTrayIcon_->installEventFilter(this);
 	}
 	trayMenu_->addAction(restore_.data());
-	connect(restore_.data(), SIGNAL(triggered()), this, SLOT(onRestore()));
+	connect(restore_.data(), &QAction::triggered, this, [this]{
+								if (!legacyTrayIcon_) {
+									iconPosition_ = QCursor::pos();
+								}
+								emit activated(RESTORE);});
 	trayMenu_->addSeparator();
 	trayMenu_->addAction(settings_.data());
-	connect(settings_.data(), SIGNAL(triggered()), this, SLOT(onSettings()));
+	connect(settings_.data(), &QAction::triggered, this, [this]{emit activated(SETTINGS);});
 	trayMenu_->addAction(mute_.data());
 	mute_->setCheckable(true);
-	connect(mute_.data(), SIGNAL(toggled(bool)), this, SLOT(onMute()));
+	connect(mute_.data(), &QAction::toggled, this, [this]{emit muted(mute_->isChecked());});
 	trayMenu_->addSeparator();
 	trayMenu_->addAction(about_.data());
-	connect(about_.data(), SIGNAL(triggered()), this, SLOT(onAbout()));
+	connect(about_.data(), &QAction::triggered, this, [this]{emit activated(ABOUT);});
 	trayMenu_->addAction(aboutQt_.data());
-	connect(aboutQt_.data(), SIGNAL(triggered()), this, SLOT(onAboutQt()));
+	connect(aboutQt_.data(), &QAction::triggered, this, [this]{emit activated(ABOUTQT);});
 	if (legacyTrayIcon_) {
 		trayMenu_->addSeparator();
 		trayMenu_->addAction(exit_.data());
-		connect(exit_.data(), SIGNAL(triggered()), this, SLOT(onExit()));
+		connect(exit_.data(), &QAction::triggered, this, [this]{emit activated(EXIT);});
 	}
 }
 
@@ -208,38 +212,6 @@ bool TrayIcon::eventFilter(QObject *object, QEvent *event)
 	return false;
 }
 
-void TrayIcon::onAbout()
-{
-	emit activated(ABOUT);
-}
-
-void TrayIcon::onAboutQt()
-{
-	emit activated(ABOUTQT);
-}
-
-void TrayIcon::onExit()
-{
-	emit activated(EXIT);
-}
-
-void TrayIcon::onMute()
-{
-	emit muted(mute_->isChecked());
-}
-
-void TrayIcon::onRestore()
-{
-	if (!legacyTrayIcon_) {
-		iconPosition_ = QCursor::pos();
-	}
-	emit activated(RESTORE);
-}
-
-void TrayIcon::onSettings()
-{
-	emit activated(SETTINGS);
-}
 
 QPoint TrayIcon::iconPosition()
 {

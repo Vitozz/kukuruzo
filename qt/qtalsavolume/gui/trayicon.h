@@ -61,12 +61,6 @@ signals:
 	void muted(bool isMuted);
 
 protected slots:
-	void onAbout();
-	void onAboutQt();
-	void onRestore();
-	void onMute();
-	void onSettings();
-	void onExit();
 #ifdef HAVE_KDE
 	void iconActivated(bool isIt, QPoint point);
 	void iconActivatedSecondary(QPoint point);

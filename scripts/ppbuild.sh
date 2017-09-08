@@ -328,7 +328,7 @@ prepare_tar ()
   check_dir ${rpmspec}
   echo "Preparing Psi+ source package to build RPM..."
   get_psi_plus_version
-  local tar_name=psi-plus-${psi_plus_version}
+  local tar_name=psi-plus-${psi_package_version}
   local new_src=${buildpsi}/${tar_name}
   cp -r ${orig_src} ${new_src}
   if [ -d ${new_src} ]; then
@@ -459,7 +459,7 @@ Version: ${psi_package_version}
 Release: 1
 License: GPL
 Group: Applications/Internet
-URL: http://code.google.com/p/psi-dev/
+URL: http://psi-plus.com
 Source0: %{name}-%{version}.tar.gz
 
 
