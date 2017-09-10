@@ -64,9 +64,9 @@ TrayIcon::TrayIcon()
 #else
 		newTrayIcon_->setContextMenu(trayMenu_);
 #endif
-		connect(newTrayIcon_.data(), SIGNAL(activateRequested(bool,QPoint)), this, SLOT(iconActivated(bool,QPoint)));
-		connect(newTrayIcon_.data(), SIGNAL(secondaryActivateRequested(QPoint)), this, SLOT(iconActivatedSecondary(QPoint)));
-		connect(newTrayIcon_.data(), SIGNAL(scrollRequested(int,Qt::Orientation)), this, SLOT(onScroll(int,Qt::Orientation)));
+		connect(newTrayIcon_.data(), &KStatusNotifierItem::activateRequested, this, &TrayIcon::kdeIconActivated);
+		connect(newTrayIcon_.data(), &KStatusNotifierItem::secondaryActivateRequested, this, &TrayIcon::iconActivatedSecondary);
+		connect(newTrayIcon_.data(), &KStatusNotifierItem::scrollRequested, this, &TrayIcon::onScroll);
 	}
 #endif
 #ifdef ISDEBUG
@@ -149,7 +149,7 @@ void TrayIcon::setToolTip(const QString &tooltip)
 }
 
 #ifdef HAVE_KDE
-void TrayIcon::iconActivated(bool isIt, QPoint point)
+void TrayIcon::kdeIconActivated(bool isIt, QPoint point)
 {
 	if (isIt) {
 		iconPosition_ = point;

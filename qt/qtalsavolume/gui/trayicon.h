@@ -62,7 +62,7 @@ signals:
 
 protected slots:
 #ifdef HAVE_KDE
-	void iconActivated(bool isIt, QPoint point);
+	void kdeIconActivated(bool isIt, QPoint point);
 	void iconActivatedSecondary(QPoint point);
 	void onScroll(int value,Qt::Orientation orientation);
 #endif
