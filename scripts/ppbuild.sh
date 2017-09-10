@@ -58,6 +58,7 @@ psiplus_src=${buildpsi}/psi-plus #репозиторий Psi+
 orig_src=${buildpsi}/build #рабочий каталог для компиляции psi+
 patches=${buildpsi}/psi-plus/patches #путь к патчам psi+, необходим для разработки
 inst_path=${buildpsi}/${inst_suffix} #только для пакетирования
+rpm_oscodename=$(lsb_release -is)
 #
 
 #ENVIRONMENT VARIABLES/ПЕРЕМЕННЫЕ СРЕДЫ
@@ -206,6 +207,11 @@ down_all ()
   check_dir ${buildpsi}/plugins
   check_dir ${buildpsi}/langs
   fetch_all
+}
+#
+get_os_codename()
+{
+  rpm_oscodename=$(lsb_release -is)
 }
 #
 patch_psi ()
@@ -449,6 +455,11 @@ Psi+ - Psi IM Mod by psi-dev@conference.jabber.ru.'
 #
 prepare_spec ()
 {
+  if [ "${rpm_oscodename}" == "Fedora" ]; then
+    extramask="#"
+  else
+    extramask=""
+  fi
   if [ -z "${iswebkit}" ]; then
     extraflags="-DENABLE_WEBKIT=OFF ${spell_flag}"
   fi
@@ -496,7 +507,7 @@ cmake -DCMAKE_INSTALL_PREFIX=\"%{_prefix}\" -DCMAKE_BUILD_TYPE=Release ${extrafl
 %{__rm} -rf %{buildroot}
 
 
-%{__make} install INSTALL_ROOT=\"%{buildroot}\"
+%{__make} DESTDIR=\"%{buildroot}\" install
 
 
 # Install the pixmap for the menu entry
@@ -525,13 +536,13 @@ touch --no-create %{_datadir}/icons/hicolor || :
 %defattr(-, root, root, 0755)
 %doc COPYING README TODO
 %{_bindir}/psi-plus
-#%{_bindir}/psi-plus.debug
+${extramask}%{_bindir}/psi-plus.debug
 %{_datadir}/psi-plus/
 %{_datadir}/pixmaps/psi-plus.png
 %{_datadir}/applications/psi-plus.desktop
-%{_datadir}/icons/hicolor/*/apps/psi-plus.png
-%exclude %{_datadir}/psi-plus/COPYING
-%exclude %{_datadir}/psi-plus/README
+${extramask}%{_datadir}/icons/hicolor/*/apps/psi-plus.png
+${extramask}%exclude %{_datadir}/psi-plus/COPYING
+${extramask}%exclude %{_datadir}/psi-plus/README
 "
   local tmp_spec=${buildpsi}/test.spec
   usr_spec=${rpmspec}/psi-plus.spec
@@ -662,7 +673,12 @@ build_rpm_plugins ()
   local allpluginsdir=${buildpsi}/${progname}-${rpmver}
   local package_name="${progname}-${rpmver}.tar.gz"
   local summary="Plugins for psi-plus-${rpmver}"
-  local breq="libotr2-devel, libtidy-devel, libgcrypt-devel, libgpg-error-devel"
+  if [ "${rpm_oscodename}" == "Fedora" ]; then
+    extrasuffix=""
+  else
+    extrasuffix="2"
+  fi
+  local breq="libotr${extrasuffix}-devel, libtidy-devel, libgcrypt-devel, libgpg-error-devel"
   local urlpath="https://github.com/psi-plus/plugins"
   local group="Applications/Internet"
   local desc="Plugins for jabber-client Psi+"
