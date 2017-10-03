@@ -499,7 +499,7 @@ Psi+ - Psi IM Mod by psi-dev@conference.jabber.ru
 
 
 %build
-cmake -DCMAKE_INSTALL_PREFIX=\"%{_prefix}\" -DCMAKE_BUILD_TYPE=Release ${extraflags} .
+cmake -DCMAKE_INSTALL_PREFIX=\"%{_prefix}\" -DLIB_INSTALL_DIR=\"%{_libdir}\" -DCMAKE_BUILD_TYPE=Release ${extraflags} .
 %{__make} %{?_smp_mflags}
 
 
@@ -511,8 +511,8 @@ cmake -DCMAKE_INSTALL_PREFIX=\"%{_prefix}\" -DCMAKE_BUILD_TYPE=Release ${extrafl
 
 
 # Install the pixmap for the menu entry
-%{__install} -Dp -m0644 iconsets/system/default/logo_128.png \
-    %{buildroot}%{_datadir}/pixmaps/psi-plus.png ||:               
+#%{__install} -Dp -m0644 iconsets/system/default/logo_128.png \
+#    %{buildroot}%{_datadir}/pixmaps/psi-plus.png ||:               
 
 mkdir -p %{buildroot}%{_datadir}/psi-plus
 mkdir -p %{buildroot}%{_bindir}
