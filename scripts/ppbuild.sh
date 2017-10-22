@@ -684,9 +684,8 @@ fi
 build_rpm_plugins ()
 {
   local progname="psi-plus-plugins"
-  #fetch_cmake_files
-  #prepare_src
   fetch_all
+  get_psi_plus_version
   local plugdir=${buildpsi}/plugins
   check_dir ${plugdir}
   local b_dir=${buildpsi}/build-plugins
