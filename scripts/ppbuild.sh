@@ -499,7 +499,7 @@ Psi+ - Psi IM Mod by psi-dev@conference.jabber.ru
 
 
 %build
-cmake -DCMAKE_INSTALL_PREFIX=\"%{_prefix}\" -DPSI_LIBDIR=\"%{_libdir}\psi-plus" -DCMAKE_BUILD_TYPE=Release ${extraflags} .
+cmake -DCMAKE_INSTALL_PREFIX=\"%{_prefix}\" -DPSI_LIBDIR=\"%{_libdir}/psi-plus\" -DCMAKE_BUILD_TYPE=Release ${extraflags} .
 %{__make} %{?_smp_mflags}
 
 
