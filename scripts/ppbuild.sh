@@ -35,9 +35,9 @@ blue="\x1B[01;94m"
 
 #VARIABLES/ПЕРЕМЕННЫЕ
 #каталог где будет лежать скрипт libpsibuild.sh и каталог buildpsi(по умолчанию)
-workdir=${home}/github
+githubdir=${home}/github
 #значение переменной buildpsi по умолчанию
-default_buildpsi=${workdir}/psi 
+default_buildpsi=${githubdir}/psi 
 #имя временного каталога для пакетирования
 inst_suffix=tmp
 #префикс CMAKE по умолчанию
@@ -55,7 +55,8 @@ USE_QT5="ON"
 buildpsi=${default_buildpsi} #инициализация переменной
 upstream_src=${buildpsi}/psi #репозиторий Psi
 psiplus_src=${buildpsi}/psi-plus #репозиторий Psi+
-orig_src=${buildpsi}/build #рабочий каталог для компиляции psi+
+workdir=${buildpsi}/worksrc #рабочий каталог для компиляции psi+
+builddir=${buildpsi}/build
 patches=${buildpsi}/psi-plus/patches #путь к патчам psi+, необходим для разработки
 inst_path=${buildpsi}/${inst_suffix} #только для пакетирования
 rpm_oscodename=$(lsb_release -is)
@@ -71,13 +72,15 @@ psi_homeplugdir=${psi_datadir}/plugins
 config_file=${home}/.config/psibuild.cfg
 
 #PLUGINS_BUILD_LOG/ЛОГ ФАЙЛ СБОРКИ ПЛАГИНОВ
-plugbuild_log=${orig_src}/plugins.log
+plugbuild_log=${workdir}/plugins.log
 #
 
 #RPM_VARIABLES/ПЕРЕМЕННЫЕ ДЛЯ СБОРКИ RPM ПАКЕТОВ
 rpmbuilddir=${home}/rpmbuild
 rpmspec=${rpmbuilddir}/SPECS
 rpmsrc=${rpmbuilddir}/SOURCES
+#
+ref_commit=db1a4053ef7aae72ae819eb00eba47bae9530320 # 1.2 tag
 #
 
 fetch_url ()
@@ -176,7 +179,8 @@ update_variables ()
 {
   upstream_src=${buildpsi}/psi
   psiplus_src=${buildpsi}/psi-plus
-  orig_src=${buildpsi}/build
+  workdir=${buildpsi}/worksrc
+  builddir=${buildpsi}/build
   patches=${buildpsi}/psi-plus/patches
   inst_path=${buildpsi}/${inst_suffix}
   if [ "${qt_ver}" == "5" ]; then
@@ -250,7 +254,6 @@ patch_psi ()
 #
 get_psi_plus_version()
 {
-  ref_commit=db1a4053ef7aae72ae819eb00eba47bae9530320 # 1.0 tag
   local psi_rev=$(${upstream_src}/admin/git_revnumber.sh)
   local plus_rev=$(cd ${psiplus_src} && git rev-list --count ${ref_commit}..HEAD)
   local psi_ver=$(cd ${psiplus_src} && git describe --tags | cut -d - -f1)
@@ -284,24 +287,24 @@ copy_psiplus_icons()
 prepare_workspace ()
 {
   local last_dir=$(pwd)
-  echo "Deleting ${orig_src}"
-  rm -rf ${orig_src}
-  check_dir ${orig_src}
+  echo "Deleting ${workdir}"
+  rm -rf ${workdir}
+  check_dir ${workdir}
   cd ${upstream_src}
-  prepare_psi_src ${orig_src}
+  prepare_psi_src ${workdir}
   cd ${buildpsi}/plugins
-  prepare_psi_src ${orig_src}/src/plugins
-  copy_psiplus_icons ${orig_src}
-  check_dir ${orig_src}/translations
-  cp -a ${buildpsi}/langs/translations/*.ts ${orig_src}/translations/
-  cd ${orig_src}
+  prepare_psi_src ${workdir}/src/plugins
+  copy_psiplus_icons ${workdir}
+  check_dir ${workdir}/translations
+  cp -a ${buildpsi}/langs/translations/*.ts ${workdir}/translations/
+  cd ${workdir}
   patch_psi
   echo -e "${blue}Do you want to apply psi-new-history.patch${nocolor} ${pink}[y/n(default)]${nocolor}"
   read ispatch
   if [ "${ispatch}" == "y" ]; then
-    cd ${orig_src}
-    patch_psi 10000 ${patches}/dev/psi-new-history.patch
     cd ${workdir}
+    patch_psi 10000 ${patches}/dev/psi-new-history.patch
+    cd ${githubdir}
   fi
   get_psi_plus_version
   cd ${psiplus_src}
@@ -310,13 +313,25 @@ prepare_workspace ()
   if [ ! -z "${iswebkit}" ]; then
     suffix="-webkit"
   fi
-  echo $psi_plus_version > ${orig_src}/version
+  echo $psi_plus_version > ${workdir}/version
 }
 #
 prepare_src ()
 {
   down_all
   prepare_workspace
+}
+#
+prepare_builddir ()
+{
+  if [ ! -z $1 ]; then
+    local clean_dir=$1
+    check_dir ${clean_dir}
+    if [ -f "${clean_dir}/CMakeCache.txt" ]; then
+      cd ${clean_dir}
+      rm -rf ${clean_dir}/*
+    fi
+  fi
 }
 #
 backup_tar ()
@@ -336,7 +351,7 @@ prepare_tar ()
   get_psi_plus_version
   local tar_name=psi-plus-${psi_package_version}
   local new_src=${buildpsi}/${tar_name}
-  cp -r ${orig_src} ${new_src}
+  cp -r ${workdir} ${new_src}
   if [ -d ${new_src} ]; then
     cd ${buildpsi}
     tar -czf ${tar_name}.tar.gz ${tar_name}
@@ -355,12 +370,12 @@ compile_psiplus ()
 {
   curd=$(pwd)
   prepare_src
-  cd ${orig_src}
+  cd ${workdir}
   local buildlog=${buildpsi}/build.log
   echo "***Build started***">${buildlog}
-  check_dir ${orig_src}/cbuild
-  cd ${orig_src}/cbuild
-  flags="-DCMAKE_BUILD_TYPE=${DEF_CMAKE_BUILD_TYPE} -DUSE_QT5=${USE_QT5}"
+  prepare_builddir ${builddir}
+  cd ${builddir}
+  flags="-DCMAKE_BUILD_TYPE=${DEF_CMAKE_BUILD_TYPE} -DPSI_LIBDIR=${buildpsi}/build-plugins"
   if [ ! -z "$1" ]; then
     flags="${flags} -DCMAKE_INSTALL_PREFIX=$1"
   else
@@ -369,8 +384,8 @@ compile_psiplus ()
   if [ -z "${iswebkit}" ]; then
     flags="${flags} -DENABLE_WEBKIT=OFF"
   fi
-  cd ${orig_src}/cbuild
-  cbuild_path=".."
+  cd ${builddir}
+  cbuild_path=${workdir}
   if [ ! -z "$2" ]; then
     cbuild_path=$2
   fi
@@ -382,7 +397,7 @@ compile_psiplus ()
   echo "***Build finished***">>${buildlog}
   if [ -z "$1" ]; then
     cmake --build . --target prepare-bin
-    echo "Psi+ installed in ${orig_src}/cbuild/psi">>${buildlog}
+    echo "Psi+ installed in ${workdir}/cbuild/psi">>${buildlog}
   fi
   cd ${curd}
 }
@@ -393,40 +408,44 @@ build_cmake_plugins ()
     echo " "
     echo "********************************"
     echo "Plugins installed succesfully!!!"
+    echo "into ${p_inst_path}"
     echo "********************************"
     echo " "
   }
-  local pl_preffix=${DEF_CMAKE_INST_PREFIX}
-  local pl_suffix=${DEF_CMAKE_INST_SUFFIX}
-  if [ ! -f "${orig_src}/psi.pro" ]; then
+  if [ ! -f "${upstream_src}/psi.pro" ]; then
     prepare_src
   fi
-  check_dir ${orig_src}
-  cd ${orig_src}
-  local b_dir=${orig_src}/build
-  check_dir ${b_dir}
+  local plugdir=${buildpsi}/plugins
+  check_dir ${plugdir}
+  local b_dir=${buildpsi}/build-plugins
+  prepare_builddir ${b_dir}
   cd ${b_dir}
+  p_inst_path=${b_dir}/plugins
+  plug_cmake_flags="-DCMAKE_BUILD_TYPE=${DEF_CMAKE_BUILD_TYPE} -DBUILD_PLUGINS=${DEF_PLUG_LIST} -DBUILD_DEV=ON -DPLUGINS_ROOT_DIR=${upstream_src}/src/plugins"
   echo -e "${blue}Do you want to install psi+ plugins into ${psi_homeplugdir}${nocolor} ${pink}[y/n(default)]${nocolor}"
   read isinstall
-  if [ "${isinstall}" != "y" ]; then
-    pl_preffix=${orig_src}
-    pl_suffix="plugins"
+  if [ "${isinstall}" == "y" ]; then
+    local pl_preffix=${DEF_CMAKE_INST_PREFIX}
+    local pl_suffix=${DEF_CMAKE_INST_SUFFIX}
+    plug_cmake_flags="${plug_cmake_flags} -DCMAKE_INSTALL_PREFIX=${pl_preffix} -DPLUGINS_PATH=${pl_suffix}"
+    p_inst_path=${pl_preffix}/${pl_suffix}
   fi  
-  local cmake_flags="-DCMAKE_BUILD_TYPE=${DEF_CMAKE_BUILD_TYPE} -DCMAKE_INSTALL_PREFIX=${pl_preffix} -DONLY_PLUGINS=ON -DPLUGINS_PATH=${pl_suffix} -DBUILD_PLUGINS=${DEF_PLUG_LIST} -DBUILD_DEV=OFF"
   echo " "; echo "Build psi+ plugins using CMAKE started..."; echo " "
-  cmake ${cmake_flags} ..
-  make -j${cpu_count} && make install && echo_done
-  cd ${orig_src}
-  rm -rf ${b_dir}
+  cmake ${plug_cmake_flags} ${plugdir}
+  cmake --build . --target all -- -j${cpu_count} && echo_done
+  if [ "${isinstall}" == "y" ]; then
+    cmake --build . --target install && echo_done
+  fi
+  cd ${workdir}
 }
 #
 build_deb_package ()
 {
-  compile_psiplus /usr ${orig_src}
+  compile_psiplus /usr ${workdir}
   echo "Building Psi+ DEB package with checkinstall"
   local desc='Psi is a cross-platform powerful Jabber client (Qt, C++) designed for the Jabber power users.
 Psi+ - Psi IM Mod by psi-dev@conference.jabber.ru.'
-  cd ${orig_src}
+  cd ${workdir}
   echo "${desc}" > description-pak
   #make spellcheck
   local spell_dep=""
@@ -449,8 +468,8 @@ Psi+ - Psi IM Mod by psi-dev@conference.jabber.ru.'
     qt_deps="libqt5dbus5, libqt5network5, libqt5xml5 , libqt5core5a, libqt5gui5, libqt5widgets5, libqt5x11extras5${webkitdep}"
   fi
   local requires=" ${spell_dep}, 'libc6 (>=2.7-1)', 'libgcc1 (>=1:4.1.1)', 'libqca2', ${qt_deps}, 'libstdc++6 (>=4.1.1)', 'libx11-6', 'libxext6', 'libxss1', 'zlib1g (>=1:1.1.4)' "
-  sudo checkinstall -D --nodoc --pkgname=psi-plus --pkggroup=net --pkgversion=${psi_package_version} --pkgsource=${orig_src} --maintainer="thetvg@gmail.com" --requires="${requires}"
-  cp -f ${orig_src}/*.deb ${buildpsi}
+  sudo checkinstall -D --nodoc --pkgname=psi-plus --pkggroup=net --pkgversion=${psi_package_version} --pkgsource=${workdir} --maintainer="thetvg@gmail.com" --requires="${requires}"
+  cp -f ${workdir}/*.deb ${buildpsi}
 }
 #
 prepare_spec ()
@@ -640,7 +659,7 @@ ${desc}
 %setup
 
 %build
-cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=%{buildroot}%{_libdir} -DONLY_PLUGINS=ON -DPLUGINS_PATH=/psi-plus/plugins .
+cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=%{buildroot}%{_libdir} -DPLUGINS_PATH=/psi-plus/plugins .
 %{__make} %{?_smp_mflags} 
 
 %install
@@ -666,11 +685,15 @@ build_rpm_plugins ()
 {
   local progname="psi-plus-plugins"
   #fetch_cmake_files
-  prepare_src
-  check_dir ${orig_src}
-  cd ${buildpsi}
+  #prepare_src
+  fetch_all
+  local plugdir=${buildpsi}/plugins
+  check_dir ${plugdir}
+  local b_dir=${buildpsi}/build-plugins
+  check_dir ${b_dir}
+  cd ${b_dir}
   local rpmver=${psi_package_version}
-  local allpluginsdir=${buildpsi}/${progname}-${rpmver}
+  local allpluginsdir=${b_dir}/${progname}-${rpmver}
   local package_name="${progname}-${rpmver}.tar.gz"
   local summary="Plugins for psi-plus-${rpmver}"
   if [ "${rpm_oscodename}" == "Fedora" ]; then
@@ -683,8 +706,10 @@ build_rpm_plugins ()
   local group="Applications/Internet"
   local desc="Plugins for jabber-client Psi+"
   check_dir ${allpluginsdir}
-  cp -r ${orig_src}/* ${allpluginsdir}/
-  cd ${buildpsi}
+  cp -a ${upstream_src}/cmake ${allpluginsdir}/
+  cp -a ${upstream_src}/src/plugins/include ${allpluginsdir}/
+  cp -rf ${plugdir}/* ${allpluginsdir}/
+  cd ${b_dir}
   tar -pczf $package_name ${progname}-${rpmver}
   prepare_plugins_spec
   cp -rf ${package_name} ${rpmsrc}/
@@ -786,7 +811,7 @@ install_locales ()
 #
 run_psiplus ()
 {
-  local psi_binary_path=${orig_src}/cbuild/psi
+  local psi_binary_path=${builddir}/psi
   if [ -f "${psi_binary_path}/psi-plus" ];then
     cd ${psi_binary_path}
     ./psi-plus
@@ -797,7 +822,7 @@ run_psiplus ()
 #
 debug_psi ()
 {
-  local psi_binary_path=${orig_src}/cbuild/psi
+  local psi_binary_path=${workdir}/cbuild/psi
   if [ -f "${psi_binary_path}/psi-plus" ];then
     cd ${psi_binary_path}
     gdb ./psi-plus
@@ -830,24 +855,25 @@ compile_psi_mxe()
 {
   curd=$(pwd)
   prepare_src
+  prepare_builddir ${builddir}
   mxe_rootd=${buildpsi}/mxe_builds
   check_dir ${mxe_rootd}
-  cd ${orig_src}
+  cd ${builddir}
   flags="-DENABLE_PLUGINS=ON -DENABLE_PORTABLE=ON -DVERBOSE_PROGRAM_NAME=ON -DUSE_CCACHE=OFF"
   if [ "$1" == "qt5" ];then
     cmakecmd=run_mxe_cmake
-    flags="${flags} -DUSE_QT5=ON -DBUILD_ARCH=i386"
+    flags="${flags} -DBUILD_ARCH=i386"
   elif [ "$1" == "qt5_64" ];then
     cmakecmd=run_mxe_cmake_64
-    flags="${flags} -DUSE_QT5=ON -DBUILD_ARCH=x86_64"
+    flags="${flags} -DBUILD_ARCH=x86_64"
   fi
   flags="${flags} -DCMAKE_INSTALL_PREFIX=${mxe_rootd}/$1"
-  wrkdir=${orig_src}/cbuild4
+  wrkdir=${builddir}
   check_dir ${wrkdir}
   cd ${wrkdir}
   echo "--Starting cmake
-  ${cmakecmd} ${flags} ${orig_src}"
-  ${cmakecmd} ${flags} ${orig_src}
+  ${cmakecmd} ${flags} ${workdir}"
+  ${cmakecmd} ${flags} ${workdir}
   echo 
   echo "Press Enter to continue..." && read tmpvar
   ${cmakecmd} --build . --target all -- -j${cpu_count}
@@ -1077,7 +1103,7 @@ choose_action ()
   esac
 }
 #
-cd ${workdir}
+cd ${githubdir}
 read_options
 if [ ! -f "${config_file}" ]; then
   set_config
