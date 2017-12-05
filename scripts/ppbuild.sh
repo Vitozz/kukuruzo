@@ -474,11 +474,6 @@ Psi+ - Psi IM Mod by psi-dev@conference.jabber.ru.'
 #
 prepare_spec ()
 {
-  if [ "${rpm_oscodename}" == "Fedora" ]; then
-    extramask="#"
-  else
-    extramask=""
-  fi
   if [ -z "${iswebkit}" ]; then
     extraflags="-DENABLE_WEBKIT=OFF ${spell_flag}"
   fi
@@ -518,7 +513,7 @@ Psi+ - Psi IM Mod by psi-dev@conference.jabber.ru
 
 
 %build
-cmake -DCMAKE_INSTALL_PREFIX=\"%{_prefix}\" -DPSI_LIBDIR=\"%{_libdir}/psi-plus\" -DCMAKE_BUILD_TYPE=Release ${extraflags} .
+cmake -DCMAKE_INSTALL_PREFIX=\"%{_prefix}\" -DPSI_LIBDIR=\"%{_libdir}/psi-plus\" -DCMAKE_BUILD_TYPE=RelWithDebInfo ${extraflags} .
 %{__make} %{?_smp_mflags}
 
 
@@ -555,14 +550,19 @@ touch --no-create %{_datadir}/icons/hicolor || :
 %defattr(-, root, root, 0755)
 %doc COPYING README TODO
 %{_bindir}/psi-plus
-${extramask}%{_bindir}/psi-plus.debug
+
 %{_datadir}/psi-plus/
 %{_datadir}/pixmaps/psi-plus.png
 %{_datadir}/applications/psi-plus.desktop
-${extramask}%{_datadir}/icons/hicolor/*/apps/psi-plus.png
-${extramask}%exclude %{_datadir}/psi-plus/COPYING
-${extramask}%exclude %{_datadir}/psi-plus/README
 "
+  if [ "${rpm_oscodename}" != "Fedora" ]; then
+    specfile="$(echo ${specfile})
+%{_bindir}/psi-plus.debug
+%{_datadir}/icons/hicolor/*/apps/psi-plus.png
+%exclude %{_datadir}/psi-plus/COPYING
+%exclude %{_datadir}/psi-plus/README
+"
+  fi
   local tmp_spec=${buildpsi}/test.spec
   usr_spec=${rpmspec}/psi-plus.spec
   echo "${specfile}" > ${tmp_spec}
@@ -659,7 +659,7 @@ ${desc}
 %setup
 
 %build
-cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=%{buildroot}%{_libdir} -DPLUGINS_PATH=/psi-plus/plugins .
+cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_INSTALL_PREFIX=%{buildroot}%{_libdir} -DPLUGINS_PATH=/psi-plus/plugins .
 %{__make} %{?_smp_mflags} 
 
 %install
