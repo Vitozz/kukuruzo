@@ -3,6 +3,62 @@ cmake_minimum_required( VERSION 2.8.12 )
 set( CMAKE_AUTOMOC ON )
 set( CMAKE_INCLUDE_CURRENT_DIR ON )
 option( BUILD_TRANSLATIONS "Build project translations" ON )
+option( USE_CPACK "Enable CPack" OFF )
+
+if(USE_CPACK)
+	set(VER_FILE ${PROJECT_SOURCE_DIR}/version.txt)
+	if(EXISTS "${VER_FILE}")
+		file(STRINGS "${VER_FILE}" VER_LINES)
+		string(REGEX MATCHALL "^([0-9]+)\\.([0-9]+)\\.([0-9]+)" VER_LINE_A ${VER_LINES})
+		if(${CMAKE_MATCH_COUNT} EQUAL 3)
+			set(MAJOR_VERSION "${CMAKE_MATCH_1}")
+			if(CMAKE_MATCH_2)
+				set(MINOR_VERSION "${CMAKE_MATCH_2}")
+			endif()
+			if(CMAKE_MATCH_3)
+				set(PATCH_VERSION "${CMAKE_MATCH_3}")
+			endif()
+		endif()
+		message(STATUS "Version: ${MAJOR_VERSION}.${MINOR_VERSION}.${PATCH_VERSION}")
+	endif()
+
+
+	#CPack section start
+	set(VERSION "${MAJOR_VERSION}.${MINOR_VERSION}")
+	if(PATCH_VERSION)
+		set(VERSION "${VERSION}.${PATCH_VERSION}")
+	endif()
+	set(CPACK_PACKAGE_VERSION ${VERSION})
+	set(CPACK_PACKAGE_VERSION_MAJOR "${MAJOR_VERSION}")
+	set(CPACK_PACKAGE_VERSION_MINOR "${MINOR_VERSION}")
+	if(PATCH_VERSION)
+		set(CPACK_PACKAGE_VERSION_PATCH "${PATCH_VERSION}")
+	endif()
+	set(CPACK_PACKAGE_NAME "${PROJECT_NAME}")
+	set(CPACK_PACKAGE_RELEASE 1)
+	set(CPACK_PACKAGE_CONTACT "Vitaly Tonkacheyev")
+	set(CPACK_PACKAGE_VENDOR "KukuRuzo Inc")
+	set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Tool For Testing Regular Expressions")
+	set(CPACK_RESOURCE_FILE_LICENSE "${PROJECT_SOURCE_DIR}/COPYING")
+	set(CPACK_SOURCE_GENERATOR "TGZ")
+	if(WIN32 AND NOT UNIX)
+		set(CPACK_GENERATOR NSIS)
+		#set(CPACK_PACKAGE_ICON "${CMake_SOURCE_DIR}/Utilities/Release\\\\InstallIcon.bmp")
+		set(CPACK_NSIS_INSTALLED_ICON_NAME "${PROJECT_NAME}.exe")
+		set(CPACK_NSIS_DISPLAY_NAME "${CPACK_PACKAGE_INSTALL_DIRECTORY} RegExpTest")
+		set(CPACK_NSIS_HELP_LINK "https:\\\\\\\\github.com\\\\Vitozz\\\\kukuruzo")
+		set(CPACK_NSIS_URL_INFO_ABOUT "RegExpTest Sources")
+		set(CPACK_NSIS_CONTACT "thetvg@gmail.com")
+		set(CPACK_NSIS_MODIFY_PATH ON)
+	else()
+		set(CPACK_PACKAGING_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX})
+		set(CPACK_GENERATOR "RPM")
+		set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}-${CPACK_PACKAGE_RELEASE}.${CMAKE_SYSTEM_PROCESSOR}")
+	endif()
+	include(CPack)
+#CPack section end
+endif()
+
 include_directories(
 	${CMAKE_SOURCE_DIR}
 	${CMAKE_CURRENT_BINARY_DIR}
@@ -91,7 +147,7 @@ if( ${WIN32} )
 		${UIS}
 		${RSCS}
 		${TRS}
-		regexptest_RC
+		${regexptest_RC}
 	)
 	target_link_libraries ( ${PROJECT_NAME}
 				${QT_DEPLIBS}
