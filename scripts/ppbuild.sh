@@ -907,6 +907,29 @@ archivate_all()
   archivate_psi qt5_64
 }
 #
+check_qt_deps()
+{
+	check_deps "checkinstall qtmultimedia5-dev libqt5multimedia5-plugins qtbase5-dev qttools5-dev qttools5-dev-tools libqca2-dev pkg-config cmake libqt5x11extras5-dev"
+}
+#
+check_deps()
+{
+	if [ ! -z "$1" ]; then
+		instdep=""
+		for dependency in $1; do
+			echo "${dependency}"
+			local result=$(dpkg --get-selections | grep ${dependency})
+			if [ -z "${result}" ]; then
+				echo -e "${blue}Package ${dependency} not installed. Trying to install...${nocolor}"
+				instdep="${instdep} ${dependency}"
+			fi
+		done
+		if [ ! -z "${instdep}" ]; then
+			sudo apt-get install ${instdep}
+		fi
+	fi
+}
+#
 set_config ()
 {
   local use_webkit="n"

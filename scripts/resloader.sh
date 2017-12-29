@@ -45,14 +45,14 @@ set_workdir ()
 
 get_src ()
 {
-	check_dir ${srcdir}
+	#check_dir ${srcdir}
 	update_git ${kukruzo_url} ${srcdir}
 }
 
 get_pyav ()
 {
 	tmp_dir="${srcdir}/pyalsavolume"
-	check_dir ${tmp_dir}
+	#check_dir ${tmp_dir}
 	update_git ${pyalsavolume_url} ${tmp_dir}
 	cd ${srcdir}
 }
@@ -60,7 +60,7 @@ get_pyav ()
 get_pypoff ()
 {
 	tmp_dir="${srcdir}/pypoweroff"
-	check_dir ${tmp_dir}
+	#check_dir ${tmp_dir}
 	update_git ${pypoweroff_url} ${tmp_dir}
 	cd ${srcdir}
 }
@@ -68,7 +68,7 @@ get_pypoff ()
 get_avolume ()
 {
 	tmp_dir="${srcdir}/cppAlsaVolume"
-	check_dir ${tmp_dir}
+	#check_dir ${tmp_dir}
 	update_git ${cppAlsaVolume_url} ${tmp_dir}
 	cd ${srcdir}
 }

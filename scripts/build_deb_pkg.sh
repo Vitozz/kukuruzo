@@ -20,7 +20,7 @@ yellow="\x1B[01;93m"
 blue="\x1B[01;94m"
 #
 homedir=$HOME
-srcdir=${homedir}/kukuruzorepo
+srcdir=${homedir}/build/kukuruzorepo
 builddir=${srcdir}/build
 exitdir=${srcdir}/debians
 data=$(LANG=en date +'%a, %d %b %Y %T %z')
@@ -131,13 +131,15 @@ prepare_specs ()
 if [ -z $APP_NAME ]; then
 	APP_NAME=${project}
 fi
-changelog="${APP_NAME} (${ver}-${build_count}) ${oscodename}; urgency=low
+versuffix="${ver}-0ubuntu1~0ppa${build_count}~${oscodename}"
+
+changelog="${APP_NAME} (${versuffix}) ${oscodename}; urgency=low
 
   * new upsream release
 
  -- ${username} <${username}@gmail.com>  ${data}"
 
-compat="7"
+compat="9"
 control="Source: ${APP_NAME}
 Section: ${section}
 Priority: extra
@@ -163,7 +165,7 @@ It was downloaded from:
 
 Upstream Author:
 
-    Vitaly Tonkacheyev <thetvg@gmail.com>
+    ${Maintainer}
 
 License:
 
@@ -505,8 +507,8 @@ build_regext ()
 	cmake_flags=""
 	section="x11"
 	arch="any"
-	check_deps "debhelper cdbs libqt4-dev cmake"
-	builddep="debhelper (>= 7), cdbs, libqt4-dev, cmake"
+	check_deps "debhelper cdbs qtbase5-dev qttools5-dev qttools5-dev-tools cmake"
+	builddep="debhelper, cdbs, qtbase5-dev, qttools5-dev, qttools5-dev-tools, cmake"
 	addit="#"
 	depends="\${shlibs:Depends}, \${misc:Depends}, libx11-6, zlib1g (>=1:1.1.4)"
 	description="RegExp Tester"
@@ -522,7 +524,6 @@ usr/share/applications"
 	cd ${debdir}/debian
 	prepare_specs
 	cd ${debdir}
-	qmake
 	build_deb
 	cp -f ${builddir}/*.deb	${exitdir}/
 }
@@ -540,7 +541,7 @@ build_avolume ()
 	prepare
 	cd ${debdir}
 	deps="libasound2-dev pkg-config cmake intltool gettext"
-	builddep="debhelper (>= 7), cdbs, libasound2-dev, pkg-config, cmake, intltool, gettext"
+	builddep="debhelper, cdbs, libasound2-dev, pkg-config, cmake, intltool, gettext"
 	echo -e "${blue}Enable GTK+2 support${nocolor} ${pink}[y/n(default)]${nocolor}"
 	read isgtk
 	if [ "${isgtk}" == "y" ]; then
@@ -629,29 +630,20 @@ build_qtavolume ()
 	APP_NAME=${project}
 	dirname="qt/qtalsavolume"
 	build_count=1
-	addit="Replaces: ${project}, ${project}-pulse, ${project}4, ${project}5, ${project}4-pulse, ${project}5-pulse"
+	addit="Replaces: ${project}, ${project}-pulse, ${project}5, ${project}5-pulse"
 	ver=$(cat ${srcdir}/${dirname}/version.txt)
 	debdir=${builddir}/${project}-${ver}
 	prepare
 	cd ${debdir}
 	deps="libasound2-dev libqt4-dev pkg-config cmake"
-	builddep="debhelper (>= 7), cdbs, libqt4-dev, libasound2-dev, pkg-config, cmake"
-	echo -e "${blue}Enable KDE4 support${nocolor} ${pink}[y/n(default)]${nocolor}"
-	read iskde4
-	if [ "${iskde4}" == "y" ]; then
-		APP_NAME="${APP_NAME}4"
-		cmake_flags="${cmake_flags} -DUSE_KDE=ON"
-		builddep="${builddep}, kdelibs5-dev"
-		deps="${deps} libqt4-dev kdelibs5-dev"
-	else
-		echo -e "${blue}Enable KDE5 support${nocolor} ${pink}[y/n(default)]${nocolor}"
-		read iskde5
-		if [ "${iskde5}" == "y" ]; then
-			APP_NAME="${APP_NAME}5"
-			cmake_flags="${cmake_flags} -DUSE_KDE5=ON"
-			builddep="debhelper (>= 7), cdbs, libasound2-dev, pkg-config, cmake, libkf5notifications-dev, qttools5-dev"
-			deps="${deps} libkf5notifications-dev qttools5-dev"
-		fi
+	builddep="debhelper, cdbs, libqt4-dev, libasound2-dev, pkg-config, cmake"
+	echo -e "${blue}Enable KDE5 support${nocolor} ${pink}[y/n(default)]${nocolor}"
+	read iskde5
+	if [ "${iskde5}" == "y" ]; then
+		APP_NAME="${APP_NAME}5"
+		cmake_flags="${cmake_flags} -DUSE_KDE5=ON"
+		builddep="debhelper (>= 9), cdbs, libasound2-dev, pkg-config, cmake, libkf5notifications-dev, qttools5-dev"
+		deps="${deps} libkf5notifications-dev qttools5-dev"
 	fi
 	echo -e "${blue}Enable pulseaudio support${nocolor} ${pink}[y/n(default)]${nocolor}"
 	read ispulse
@@ -667,11 +659,7 @@ build_qtavolume ()
 	depends="\${shlibs:Depends}, \${misc:Depends}, libasound2, libx11-6, zlib1g (>=1:1.1.4)"
 	description="Tray ALSA volume changer"
 	descriptionlong='Simple programm to change the volume of one of the ALSA mixers from the system tray.'
-	if [ "${iskde4}" == "y" ]; then
-		descriptionlong="${descriptionlong}
- With KDE4 StatusNotifierItem support"
-	fi
-	if [ "${iskde5}" == "y" ] && [ "${iskde4}" != "y" ]; then
+	if [ "${iskde5}" == "y" ]; then
 		descriptionlong="${descriptionlong}
  With KDE5 StatusNotifierItem support"
 	fi
@@ -697,14 +685,15 @@ usr/share/applications"
 
 build_qtpoweroff ()
 {
+    check_qt_deps
 	project="qtpoweroff"
 	dirname="qt/qtpoweroff"
 	ver=$(cat ${srcdir}/${dirname}/version.txt)
 	debdir=${builddir}/${project}-${ver}
 	prepare
 	cd ${debdir}
-	builddep="debhelper (>= 7), cdbs, libqt4-dev, cmake"
-	check_deps "libqt4-dev cmake"
+	builddep="debhelper, cdbs, qtbase5-dev, qttools5-dev, qttools5-dev-tools, cmake"
+	check_deps "qtbase5-dev qttools5-dev qttools5-dev-tools cmake"
 	section="misc"
 	arch="any"
 	addit="#"
@@ -736,7 +725,7 @@ build_html2text ()
 	cd ${debdir}
 	section="misc"
 	arch="all"
-	builddep="cdbs, debhelper (>= 7), python-support (>= 0.6)"
+	builddep="cdbs, debhelper, python-support (>= 0.6)"
 	addit="XB-Python-Version: \${python:Versions}"
 	depends="\${python:Depends}, libgtk-3-0, python-gobject (>=3.0.0), python-chardet"
 	description="HTML To TXT File Converter"
@@ -763,7 +752,7 @@ build_hismerger ()
 	cd ${debdir}
 	section="misc"
 	arch="all"
-	builddep="cdbs, debhelper (>= 7), python-support (>= 0.6), pyqt4-dev-tools"
+	builddep="cdbs, debhelper, python-support (>= 0.6), pyqt4-dev-tools"
 	check_deps "pyqt4-dev-tools"
 	addit="XB-Python-Version: \${python:Versions}"
 	depends="\${python:Depends}, python-qt4, python-sip"
@@ -916,6 +905,11 @@ choose_action ()
 
 die() { echo "$@"; exit 1; }
 
+check_qt_deps()
+{
+	check_deps "debhelper cdbs qtbase5-dev qttools5-dev qttools5-dev-tools pkg-config cmake"
+}
+
 check_deps()
 {
 	if [ ! -z "$1" ]; then
@@ -929,7 +923,7 @@ check_deps()
 			fi
 		done
 		if [ ! -z "${instdep}" ]; then
-			sudo apt-get install ${instdep}
+			sudo apt install ${instdep}
 		fi
 	fi
 }
