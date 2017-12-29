@@ -343,7 +343,7 @@ build_regext ()
 Name: regexptest
 Version: ${ver}
 Release: 1
-License: GPL-2
+License: GPL-3
 Group: Development/Tools
 URL: http://sites.google.com/site/thesomeprojects/main-1
 Source0: %{name}-%{version}.tar.gz
@@ -473,7 +473,7 @@ With PulseAudio support"
 Name: ${project}
 Version: ${ver}
 Release: ${build_count}
-License: GPL-2
+License: GPL-3
 Group: Applications/Multimedia
 URL: http://sites.google.com/site/thesomeprojects/main-1
 Source0: %{name}-%{version}.tar.gz
@@ -569,7 +569,7 @@ With PulseAudio support"
 Name: ${project}
 Version: ${ver}
 Release: ${build_count}
-License: GPL-2
+License: GPL-3
 Group: Applications/Multimedia
 URL: http://sites.google.com/site/thesomeprojects/main-1
 Source0: %{name}-%{version}.tar.gz
@@ -631,7 +631,7 @@ build_qtpoweroff ()
 Name: qtpoweroff
 Version: ${ver}
 Release: 1
-License: GPL-2
+License: GPL-3
 Group: Applications/System
 URL: http://sites.google.com/site/thesomeprojects/main-1
 Source0: %{name}-%{version}.tar.gz
