@@ -635,15 +635,16 @@ build_qtavolume ()
 	debdir=${builddir}/${project}-${ver}
 	prepare
 	cd ${debdir}
-	deps="libasound2-dev libqt4-dev pkg-config cmake"
-	builddep="debhelper, cdbs, libqt4-dev, libasound2-dev, pkg-config, cmake"
+	check_qt_deps
+    deps="libasound2-dev"
+	builddep="debhelper, cdbs, libasound2-dev, pkg-config, cmake, qttools5-dev"
 	echo -e "${blue}Enable KDE5 support${nocolor} ${pink}[y/n(default)]${nocolor}"
 	read iskde5
 	if [ "${iskde5}" == "y" ]; then
 		APP_NAME="${APP_NAME}5"
 		cmake_flags="${cmake_flags} -DUSE_KDE5=ON"
-		builddep="debhelper (>= 9), cdbs, libasound2-dev, pkg-config, cmake, libkf5notifications-dev, qttools5-dev"
-		deps="${deps} libkf5notifications-dev qttools5-dev"
+		builddep="${builddep}, libkf5notifications-dev"
+		deps="${deps} libkf5notifications-dev"
 	fi
 	echo -e "${blue}Enable pulseaudio support${nocolor} ${pink}[y/n(default)]${nocolor}"
 	read ispulse
@@ -678,7 +679,6 @@ usr/share/applications"
 	cd ${debdir}/debian
 	prepare_specs
 	cd ${debdir}
-	qmake
 	build_deb
 	cp -f ${builddir}/*.deb	${exitdir}/
 }

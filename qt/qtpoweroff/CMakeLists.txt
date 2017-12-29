@@ -68,7 +68,7 @@ if(USE_CPACK)
             )
             message(STATUS "Build date: ${BUILD_DATE}")
             set(CPACK_DEBIAN_PACKAGE_MAINTAINER "${CPACK_PACKAGE_CONTACT} <thetvg@gmail.com>")
-            set(CPACK_DEBIAN_PACKAGE_SECTION "x11")
+            set(CPACK_DEBIAN_PACKAGE_SECTION "misc")
             exec_program("${DPKG_PATH} --print-architecture"
                 OUTPUT_VARIABLE DEB_PKG_ARCH
             )
