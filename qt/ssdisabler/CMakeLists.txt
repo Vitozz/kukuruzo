@@ -1,5 +1,13 @@
 project ( ssdisable )
-cmake_minimum_required( VERSION 2.8.12 )
+cmake_minimum_required( VERSION 3.1.0 )
+set( CMAKE_AUTOMOC ON )
+set( CMAKE_INCLUDE_CURRENT_DIR ON )
+option( USE_CPACK "Enable CPack" OFF )
+
+if( USE_CPACK )
+    include(version.cmake)
+    include(use_cpack.cmake)
+endif()
 
 subdirs (src)
 
@@ -13,5 +21,13 @@ set ( DATADIR_PATH
 set ( APPDATADIR_PATH
 	${DATADIR_PATH}/applications
 )
+set( DOC_FILES
+    README
+)
 
 INSTALL ( FILES ${DESKTOP_FILES} DESTINATION ${APPDATADIR_PATH} )
+INSTALL( FILES ${DOC_FILES} DESTINATION ${DATADIR_PATH}/doc/${PROJECT_NAME} )
+
+if(USE_CPACK AND DPKG_PATH)
+    INSTALL( FILES ${PROJECT_BINARY_DIR}/copyright DESTINATION ${DATADIR_PATH}/doc/${PROJECT_NAME} )
+endif()
