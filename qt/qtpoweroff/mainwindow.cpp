@@ -40,6 +40,18 @@ static const int secsInDay = 24*3600;
 static const int secsInHour = 3600;
 static const int secsInMin = 60;
 
+static const QString CK_SERVICE = "org.freedesktop.ConsoleKit";
+static const QString CK_PATH = "/org/freedesktop/ConsoleKit/Manager";
+static const QString CK_IFACE = "org.freedesktop.ConsoleKit.Manager";
+static const QString CK_REBOOT = "Restart";
+static const QString CK_POWEROFF = "Stop";
+
+static const QString LD_SERVICE = "org.freedesktop.login1";
+static const QString LD_PATH = "/org/freedesktop/login1";
+static const QString LD_IFACE= "org.freedesktop.login1.Manager";
+static const QString LD_REBOOT = "Reboot";
+static const QString LD_POWEROFF = "PowerOff";
+
 MainWindow::MainWindow(QWidget *parent)
 : QMainWindow(parent),
   ui(new Ui::MainWindow),
@@ -259,7 +271,6 @@ void MainWindow::onTimer()
 	else {
 		const QString timeStr(getTimeString(deltaTime));
 #ifdef IS_DEBUG
-		qDebug() << "CT - " << currentTime->toString("dd-MM-yyyy hh:mm:ss");
 		qDebug() << "T - " << timeStr;
 #endif
 		const QString poffType((isReboot_) ? tr("Reboot") : tr("Shutdown"));
@@ -348,40 +359,46 @@ bool MainWindow::getBoolReply(const QDBusMessage &message)
 	}
 	return false;
 }
+QString MainWindow::getStringReply(const QDBusMessage &message)
+{
+    if (message.type() != QDBusMessage::InvalidMessage && !message.arguments().isEmpty()) {
+        QVariant arg = message.arguments().takeFirst();
+        if (arg.type() == QVariant::String) {
+            return arg.toString();
+        }
+    }
+    return QString();
+}
 #endif
 
 void MainWindow::doAction()
 {
 	onTerminate();
 #ifdef HAVE_DBUS
-	QDBusInterface interface("org.freedesktop.ConsoleKit",
-				 "/org/freedesktop/ConsoleKit/Manager",
-				 "org.freedesktop.ConsoleKit.Manager",
-				 QDBusConnection::systemBus());
-	bool isError = false;
-	if (interface.isValid()) {
-		const QString method((isReboot_) ? "Restart" : "Stop");
-		const QString checkMethod((isReboot_) ? "CanRestart" : "CanStop");
-		QDBusMessage reply = interface.call(checkMethod.toLatin1());
-		if (getBoolReply(reply)) {
-			interface.call(method.toLatin1());
-			onExit();
-		}
-		else {
-			isError = true;
-		}
-
-	}
-	else {
-		isError = true;
+    bool isError = false;
+    if (isIfaceAvailable(CK_SERVICE, CK_PATH, CK_IFACE)) {
+        if (!doDbusAction(CK_SERVICE, CK_PATH, CK_IFACE)) {
+            isError = true;
+        }
+    }
+    else if (isIfaceAvailable(LD_SERVICE, LD_PATH, LD_IFACE)){
+        if (!doDbusAction(LD_SERVICE, LD_PATH, LD_IFACE)) {
+            isError = true;
+        }
+    }
+    else {
+        isError = true;
 	}
 	if (isError) {
 		QMessageBox::critical(this,
 				      tr("Errorr in DBUS"),
 				      tr("Can't establish connection to\n"
 					 "org.freedesktop.ConsoleKit.Manager\n"
+                     "or to\n"
+                     "org.freedesktop.login1.Manager\n"
 					 "May be you have no permissions\n"
-					 "Or service not available"));
+                     "Or consolekit/logind not available"));
+
 	}
 #endif
 #ifdef Q_OS_WIN
@@ -444,4 +461,51 @@ bool MainWindow::doShutdown()
 	CloseHandle(hToken);
 	return result;
 #endif
+}
+
+bool MainWindow::isIfaceAvailable(const QString &service, const QString &path, const QString &iface)
+{
+    QString checkMethod;
+    if (service == CK_SERVICE) {
+        checkMethod = (isReboot_) ? "Can"+CK_REBOOT : "Can"+CK_POWEROFF;
+    }
+    else {
+        checkMethod = (isReboot_) ? "Can"+LD_REBOOT : "Can"+LD_POWEROFF;
+    }
+    QDBusInterface interface(service, path, iface, QDBusConnection::sessionBus());
+    qDebug() << interface.isValid();
+    if(interface.isValid()) {
+#ifdef IS_DEBUG
+        qDebug() << "Interface" << interface.interface() << "isValid";
+        qDebug() << checkMethod;
+#endif
+         QDBusMessage reply = interface.call(checkMethod.toLatin1());
+         if (service == CK_SERVICE) {
+            return getBoolReply(reply);
+         }
+         if (service == LD_SERVICE) {
+#ifdef IS_DEBUG
+            qDebug() << getStringReply(reply);
+#endif
+            return (getStringReply(reply) == "yes");
+         }
+     }
+     return false;
+}
+
+bool MainWindow::doDbusAction(const QString &service, const QString &path, const QString &iface)
+{
+    QString method;
+    if (service == CK_SERVICE) {
+        method = (isReboot_) ? CK_REBOOT : CK_POWEROFF;
+    }
+    else {
+        method = (isReboot_) ? LD_REBOOT : LD_POWEROFF;
+    }
+    QDBusInterface interface(service, path, iface, QDBusConnection::sessionBus());
+    if(interface.isValid()) {
+        interface.call(method.toLatin1(), 1);
+        onExit();
+    }
+    return false;
 }

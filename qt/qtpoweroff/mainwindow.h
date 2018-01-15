@@ -26,6 +26,7 @@
 #include <QSharedPointer>
 #ifdef HAVE_DBUS
 #include <QDBusMessage>
+#include <QDBusInterface>
 #endif
 
 typedef QSharedPointer<QDateTime> QDateTimePtr;
@@ -72,6 +73,9 @@ private:
 	QString getTimeString(int seconds) const;
 #ifdef HAVE_DBUS
 	bool getBoolReply(const QDBusMessage &message);
+    QString getStringReply(const QDBusMessage &message);
+    bool isIfaceAvailable(const QString &service, const QString &path, const QString &iface);
+    bool doDbusAction(const QString &service, const QString &path, const QString &iface);
 #endif
 #ifdef Q_OS_WIN
 	void doProcessRun();
