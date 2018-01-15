@@ -72,8 +72,6 @@ private:
 	void showTrayMessage(const QString &msg);
 	QString getTimeString(int seconds) const;
 #ifdef HAVE_DBUS
-	bool getBoolReply(const QDBusMessage &message);
-    QString getStringReply(const QDBusMessage &message);
     bool isIfaceAvailable(const QString &service, const QString &path, const QString &iface);
     bool doDbusAction(const QString &service, const QString &path, const QString &iface);
 #endif

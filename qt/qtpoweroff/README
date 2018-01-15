@@ -3,6 +3,7 @@ QtPowerOff - simple tool to sheduled power off / reboot your PC
 Written on Qt4/Qt5.
 
 On Linux systems it works with DBUS
+Requires : logind or consolekit
 
 On Windows it uses WinAPI or shutdown command
 
@@ -40,8 +41,6 @@ Using cmake:
 
 Usefull cmake flags:
 
--DUSE_QT5=ON (OFF - Default) --Disable or enable Qt5 support
-
 -DCMAKE_INSTALL_PREFIX=${PREFIX} --Set install prefix
 
 -DBUILD_TRANSLATIONS=OFF (ON - Default) --Build project translations
@@ -52,14 +51,4 @@ Usefull cmake flags:
 Howto Create polkit rules
 -------------------------
 To use this tool on Linux you need to be in "power" group
-And create 10-upower.rules file in /etc/polkit-1/rules.d containing
-
-polkit.addRule(function(action, subject) {
-    if (action.id == "org.freedesktop.consolekit.system.restart" ||
-        action.id == "org.freedesktop.consolekit.system.stop" ||
-        action.id == "org.freedesktop.consolekit.system.restart-multiple-users" ||
-        action.id == "org.freedesktop.consolekit.system.stop-multiple-users" &&
-        subject.isInGroup("power")) {
-        return polkit.Result.YES;
-}
-});
+And copy 10-upower.rules file to /etc/polkit-1/rules.d
