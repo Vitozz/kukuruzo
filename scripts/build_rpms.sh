@@ -359,13 +359,11 @@ Simple tool written on Qt to test regular expressions
 %setup
 
 %build
-%cmake -DCMAKE_INSTALL_PREFIX=/usr -DUSE_QT5=ON
+%cmake -DCMAKE_INSTALL_PREFIX=/usr
 %{__make} %{?_smp_mflags}  
 
 %install
 [ \"%{buildroot}\" != \"/\"] && rm -rf %{buildroot}
-
-cd build
 
 %{__make} install DESTDIR=\"%{buildroot}\"
 
@@ -496,8 +494,6 @@ ${addit}
 %install
 [ \"%{buildroot}\" != \"/\"] && rm -rf %{buildroot}
 
-cd build
-
 %{__make} install DESTDIR=%{buildroot}
 
 mkdir -p %{buildroot}/usr/bin
@@ -536,24 +532,14 @@ build_qtavolume ()
 	build_count=1
 	ver=$(cat ${srcdir}/${dirname}/version.txt)
 	builddep="alsa-devel"
-	echo -e "${blue}Enable KDE4 support${nocolor} ${pink}[y/n(default)]${nocolor}"
-	read iskde4
-	if [ "${iskde4}" == "y" ]; then
-		cmake_flags="${cmake_flags} -DUSE_KDE=ON"
-		builddep="${builddep}, libkde4-devel"
+	echo -e "${blue}Enable KDE5 support${nocolor} ${pink}[y/n(default)]${nocolor}"
+	read iskde5
+	if [ "${iskde5}" == "y" ]; then
+		cmake_flags="${cmake_flags} -DUSE_KDE5=ON"
+		builddep="${builddep}, plasma-framework-devel"
 		addit="${addit}
-With KDE4 support"
-		project="${project}4"
-	else
-		echo -e "${blue}Enable KDE5 support${nocolor} ${pink}[y/n(default)]${nocolor}"
-		read iskde5
-		if [ "${iskde5}" == "y" ]; then
-			cmake_flags="${cmake_flags} -DUSE_KDE5=ON"
-			builddep="${builddep}, plasma-framework-devel"
-			addit="${addit}
 With KDE5 support"
-			project="${project}5"		
-		fi
+		project="${project}5"
 	fi
 	echo -e "${blue}Enable pulseaudio support${nocolor} ${pink}[y/n(default)]${nocolor}"
 	read ispulse
@@ -586,13 +572,11 @@ ${addit}
 %setup
 
 %build
-%cmake -DCMAKE_INSTALL_PREFIX=/usr -DUSE_QT5=ON ${cmake_flags}
+%cmake -DCMAKE_INSTALL_PREFIX=/usr ${cmake_flags}
 %{__make} %{?_smp_mflags}   
 
 %install
 [ \"%{buildroot}\" != \"/\"] && rm -rf %{buildroot}
-
-cd build
 
 %{__make} install DESTDIR=%{buildroot}
 
@@ -642,13 +626,13 @@ Requires: ConsoleKit
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-build
 
 %description
-Simple tool written using Qt4 library to shedules reboot / shutdown PC
+Simple tool written using Qt library to shedules reboot / shutdown PC
 
 %prep
 %setup
 
 %build
-%cmake -DCMAKE_INSTALL_PREFIX=/usr -DUSE_QT5=ON ${cmake_flags}
+%cmake -DCMAKE_INSTALL_PREFIX=/usr ${cmake_flags}
 %{__make} %{?_smp_mflags}   
 
 mkdir -p %{buildroot}/usr/bin
@@ -660,8 +644,6 @@ mkdir -p %{buildroot}/usr/share/%{name}/languages
 
 %install
 [ \"%{buildroot}\" != \"/\"] && rm -rf %{buildroot}
-
-cd build
 
 %{__make} install DESTDIR=%{buildroot}
 
