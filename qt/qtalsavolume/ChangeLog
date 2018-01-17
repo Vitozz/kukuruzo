@@ -1,3 +1,7 @@
+2018-10-17
+v.0.2.1
+  + Added initial cpack support
+
 2017-09-10
 v.0.2.0
   *Removed Qt4 support
