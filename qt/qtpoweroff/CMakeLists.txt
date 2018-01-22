@@ -1,5 +1,8 @@
 project( qtpoweroff )
 cmake_minimum_required( VERSION 3.1.0 )
+if ( NOT CMAKE_VERSION VERSION_LESS 3.10 )
+	cmake_policy(SET CMP0071 OLD)
+endif ()
 set( CMAKE_AUTOMOC ON )
 set( CMAKE_INCLUDE_CURRENT_DIR ON )
 option( BUILD_TRANSLATIONS "Build project translations" ON )

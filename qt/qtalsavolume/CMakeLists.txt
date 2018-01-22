@@ -1,5 +1,8 @@
 project(qtalsavolume )
 cmake_minimum_required( VERSION 2.8.12 )
+if ( NOT CMAKE_VERSION VERSION_LESS 3.10 )
+	cmake_policy(SET CMP0071 OLD)
+endif ()
 if( UNIX AND NOT (APPLE OR CYGWIN) )
     set( CMAKE_AUTOMOC ON )
     set( CMAKE_INCLUDE_CURRENT_DIR ON )
