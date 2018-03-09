@@ -2,7 +2,6 @@
 
 #CONSTANTS/КОНСТАНТЫ
 home=${HOME:-/home/$USER} #домашний каталог
-psi_version="1.0" #не менять без необходимости, нужно для пакетирования
 lib_prefixes="/usr/lib
 /usr/lib64
 /usr/local/lib
@@ -18,6 +17,7 @@ qt_ver=5
 spell_flag="-DUSE_ENCHANT=OFF -DUSE_HUNSPELL=ON"
 spellchek_engine="hunspell"
 iswebkit=""
+issql=""
 use_iconsets="system clients activities moods affiliations roster"
 isoffline=0
 skip_invalid=0
@@ -50,6 +50,12 @@ DEF_PLUG_LIST="ALL"
 DEF_CMAKE_BUILD_TYPE="Release"
 #Qt5
 USE_QT5="ON"
+#MXE PATH
+mxe_root=${githubdir}/mxe
+#i386 mxe prefix
+i386_mxe_prefix=${mxe_root}/usr/i686-w64-mingw32.shared
+x86_64_mxe_prefix=${mxe_root}/usr/x86_64-w64-mingw32.shared
+
 
 #WARNING: следующие переменные будут изменены в процессе работы скрипта автоматически
 buildpsi=${default_buildpsi} #инициализация переменной
@@ -79,8 +85,6 @@ plugbuild_log=${workdir}/plugins.log
 rpmbuilddir=${home}/rpmbuild
 rpmspec=${rpmbuilddir}/SPECS
 rpmsrc=${rpmbuilddir}/SOURCES
-#
-ref_commit=db1a4053ef7aae72ae819eb00eba47bae9530320 # 1.2 tag
 #
 
 fetch_url ()
@@ -254,11 +258,11 @@ patch_psi ()
 #
 get_psi_plus_version()
 {
-  local psi_rev=$(${upstream_src}/admin/git_revnumber.sh)
-  local plus_rev=$(cd ${psiplus_src} && git rev-list --count ${ref_commit}..HEAD)
-  local psi_ver=$(cd ${psiplus_src} && git describe --tags | cut -d - -f1)
-  local sum_commit=$(expr ${psi_rev} + ${plus_rev})
-  psi_package_version="${psi_ver}.${sum_commit}"
+  local plus_tag=$(cd ${psiplus_src} && git describe --tags | cut -d - -f1)
+  local psi_num=$("${upstream_src}/admin/git_revnumber.sh" "${plus_tag}")
+  local plus_num=$(cd ${psiplus_src} && git describe --tags | cut -d - -f2)
+  local sum_commit=$(expr ${psi_num} + ${plus_num})
+  psi_package_version="${plus_tag}.${sum_commit}"
   psi_plus_version=$(${psiplus_src}/admin/psi-plus-nightly-version ${upstream_src})
   echo "SHORT_VERSION = $psi_package_version"
   echo "LONG_VERSION = $psi_plus_version"
@@ -305,6 +309,7 @@ prepare_workspace ()
     cd ${workdir}
     patch_psi 10000 ${patches}/dev/psi-new-history.patch
     cd ${githubdir}
+    issql="y"
   fi
   get_psi_plus_version
   cd ${psiplus_src}
@@ -837,7 +842,7 @@ prepare_mxe()
 	grep -vi '^EDITOR=\|^HOME=\|^LANG=\|MXE\|^PATH=' | \
 	grep -vi 'PKG_CONFIG\|PROXY\|^PS1=\|^TERM=' | \
 	cut -d '=' -f1 | tr '\n' ' ')
-	export PATH="/home/vitaly/virtualka/mxe/usr/bin:$PATH"
+	export PATH="${mxe_root}/usr/bin:$PATH"
 }
 run_mxe_cmake()
 {
@@ -855,18 +860,15 @@ compile_psi_mxe()
   curd=$(pwd)
   prepare_src
   prepare_builddir ${builddir}
-  mxe_rootd=${buildpsi}/mxe_builds
-  check_dir ${mxe_rootd}
+  mxe_outd=${buildpsi}/mxe_builds
+  check_dir ${mxe_outd}
   cd ${builddir}
-  flags="-DENABLE_PLUGINS=ON -DENABLE_PORTABLE=ON -DVERBOSE_PROGRAM_NAME=ON -DUSE_CCACHE=OFF"
+  flags="-DENABLE_PLUGINS=ON -DBUILD_DEV_PLUGINS=ON -DDEV_MODE=ON -DVERBOSE_PROGRAM_NAME=ON -DQt5Keychain_DIR=${x86_64_mxe_prefix}/lib/cmake/Qt5Keychain"
   if [ "$1" == "qt5" ];then
     cmakecmd=run_mxe_cmake
-    flags="${flags} -DBUILD_ARCH=i386"
   elif [ "$1" == "qt5_64" ];then
     cmakecmd=run_mxe_cmake_64
-    flags="${flags} -DBUILD_ARCH=x86_64"
   fi
-  flags="${flags} -DCMAKE_INSTALL_PREFIX=${mxe_rootd}/$1"
   wrkdir=${builddir}
   check_dir ${wrkdir}
   cd ${wrkdir}
@@ -878,10 +880,13 @@ compile_psi_mxe()
   ${cmakecmd} --build . --target all -- -j${cpu_count}
   ${cmakecmd} --build . --target prepare-bin --
   ${cmakecmd} --build . --target prepare-bin-libs --
-  check_dir ${mxe_rootd}/$1
-  cp -rf ${wrkdir}/psi/*  ${mxe_rootd}/$1/
-  cp -a ${wrkdir}/psi/translations ${mxe_rootd}/$1/
-  cp -a ${buildpsi}/mxe_prepare/myspell ${mxe_rootd}/$1/
+  if [ -d "${mxe_outd}/$1" ]; then
+    cd ${mxe_outd} && rm -rf $1
+  fi
+  check_dir ${mxe_outd}/$1
+  cp -rf ${wrkdir}/psi/*  ${mxe_outd}/$1/
+  cp -a ${wrkdir}/psi/translations ${mxe_outd}/$1/
+  cp -rf ${buildpsi}/mxe_prepare/* ${mxe_outd}/$1/
   cd ${curd}
   if [ ! -z "${OLDPATH}" ]; then
     PATH=${OLDPATH}
@@ -890,8 +895,14 @@ compile_psi_mxe()
 #
 archivate_psi()
 {
-  mxe_rootd=${buildpsi}/mxe_builds
-  7z a -mx=9 -m0=LZMA -mmt=on ${mxe_rootd}/psi-plus-webkit-${psi_package_version}-$1.7z ${mxe_rootd}/$1/*
+  if [ ! -z "${iswebkit}" ]; then
+    wbk_suff="webkit-"
+  fi
+  if [ ! -z "${issql}" ]; then
+    sql_suff="sql-"
+  fi
+  mxe_outd=${buildpsi}/mxe_builds
+  7z a -mx=9 -m0=LZMA -mmt=on ${mxe_outd}/psi-plus-${wbk_suff}${sql_suff}${psi_package_version}-$1.7z ${mxe_outd}/$1/*
 }
 #
 build_all_mxe()
