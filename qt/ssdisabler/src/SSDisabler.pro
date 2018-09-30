@@ -8,7 +8,7 @@ QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = ssdisable
+TARGET = ssdisabler
 TEMPLATE = app
 
 
@@ -17,7 +17,7 @@ SOURCES += main.cpp\
 
 HEADERS  += ssdisabler.h
 
-DATADIR = $$PREFIX/share/ssdisable
+DATADIR = $$PREFIX/share/ssdisabler
 
 TRANSLATIONS = $$TARGET_en.ts \
 	       $$TARGET_ru.ts \
@@ -31,7 +31,7 @@ unix{
 	target.path = $$BINDIR
 	INSTALLS += target
 	dt.path = $$PREFIX/share/applications/
-	dt.files =../ssdisable.desktop
+	dt.files =../ssdisabler.desktop
 	translations.path = $$DATADIR/languages
 	translations.extra = lrelease SSDisabler.pro && cp -f *.qm  $(INSTALL_ROOT)$$translations.path
 	icon1.path = $$DATADIR/icons

@@ -99,8 +99,12 @@ void SSDisabler::resume()
 void SSDisabler::startProcess(const QStringList &args)
 {
 	QProcess cmd;
+    QProcess xcs;
 	if (args.contains("suspend")) {
 		if (cmd.startDetached("xdg-screensaver", args)) {
+            if(xcs.startDetached("xset", QStringList() << "s" << "off" << "-dpms")) {
+                //
+            }
 			suspended_ = true;
 			click_->setText(tr("Resume"));
 			changeTrayIcon();
@@ -108,6 +112,9 @@ void SSDisabler::startProcess(const QStringList &args)
 	}
 	else {
 		if (cmd.startDetached("xdg-screensaver", args)) {
+            if(xcs.startDetached("xset", QStringList() << "s" << "on" << "+dpms")) {
+                //
+            }
 			suspended_ = false;
 			click_->setText(tr("Suspend"));
 			changeTrayIcon();
