@@ -1,6 +1,6 @@
 [Desktop Entry]
 Encoding=UTF-8
-Icon=/usr/share/ssdisable/icons/icon.png
+Icon=/usr/share/ssdisabler/icons/icon.png
 Name=SSDisabler
 Comment=Disable and enable xdg-screenshot from systray
 Exec=ssdisabler
