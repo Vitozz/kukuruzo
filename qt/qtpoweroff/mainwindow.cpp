@@ -143,7 +143,7 @@ void MainWindow::onAbout()
     const QString message = tr("<!DOCTYPE html><html><body>"
                                "<p><b>Tool for scheduled Shutdown/Reboot</b></p>"
                                "<p>written using Qt</p>"
-                               "<p>2014 (c) Vitaly Tonkacheyev <address><a href=\"mailto:thetvg@gmail.com\">&lt;EMail&gt;</a></address></p>"
+                               "<p>2018 (c) Vitaly Tonkacheyev <address><a href=\"mailto:thetvg@gmail.com\">&lt;EMail&gt;</a></address></p>"
                                "<a href=\"http://sites.google.com/site/thesomeprojects/\">Program WebSite</a>"
                                "<p>version: <b>%1</b></p></body></html>").arg(APP_VERSION);
     QMessageBox aboutDialog;

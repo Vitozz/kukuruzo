@@ -87,7 +87,7 @@ PulseCore::PulseCore(const char *clientName)
 	isAvailable_ = true;
 	pState = CONNECTING;
 	pa_context_set_state_callback(context_, &state_cb, this);
-	pa_context_connect(context_, NULL, PA_CONTEXT_NOFLAGS, NULL);
+    pa_context_connect(context_, nullptr, PA_CONTEXT_NOFLAGS, nullptr);
 	while (pState == CONNECTING) {
 		pa_mainloop_iterate(mainLoop_, 1, &retval_);
 	}
@@ -247,14 +247,14 @@ void PulseCore::setVolume_(const PulseDevice::Ptr &device, int value)
 {
 	pa_cvolume* new_cvolume = pa_cvolume_set(&device->volume,
 						 device->volume.channels,
-						 (pa_volume_t) device->round(qMax(((double)value * PA_VOLUME_NORM) / 100, 0.0))
+                         static_cast<pa_volume_t>(device->round(qMax((static_cast<double>(value) * PA_VOLUME_NORM) / 100, 0.0)))
 						 );
 	pa_operation* op;
 	if (device->type() == SINK) {
-		op = pa_context_set_sink_volume_by_index(context_, device->index(), new_cvolume, success_cb, NULL);
+        op = pa_context_set_sink_volume_by_index(context_, device->index(), new_cvolume, success_cb, nullptr);
 	}
 	else {
-		op = pa_context_set_source_volume_by_index(context_, device->index(), new_cvolume, success_cb, NULL);
+        op = pa_context_set_source_volume_by_index(context_, device->index(), new_cvolume, success_cb, nullptr);
 	}
 	iterate(op);
 	pa_operation_unref(op);
@@ -264,10 +264,10 @@ void PulseCore::setMute_(const PulseDevice::Ptr &device, bool mute)
 {
 	pa_operation* op;
 	if (device->type() == SINK) {
-		op = pa_context_set_sink_mute_by_index(context_, device->index(), (int) mute, success_cb, NULL);
+        op = pa_context_set_sink_mute_by_index(context_, device->index(), (int) mute, success_cb, nullptr);
 	}
 	else {
-		op = pa_context_set_source_mute_by_index(context_, device->index(), (int) mute, success_cb, NULL);
+        op = pa_context_set_source_mute_by_index(context_, device->index(), (int) mute, success_cb, nullptr);
 	}
 	iterate(op);
 	pa_operation_unref(op);
@@ -275,7 +275,7 @@ void PulseCore::setMute_(const PulseDevice::Ptr &device, bool mute)
 
 void PulseCore::onError(const QString &message)
 {
-	QMessageBox::critical(0, "Error in pulsecore.cpp", message);
+    QMessageBox::critical(nullptr, "Error in pulsecore.cpp", message);
 }
 
 void PulseCore::setCurrentDevice(const QString &name)

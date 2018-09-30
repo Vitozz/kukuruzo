@@ -49,7 +49,6 @@ static const QString dFile = QString("%1%2%3%4%5%6%7%8").arg(
 			     "X-LXQt-Need-Tray=true");
 static const int POPUP_HEIGHT = 140;
 static const int POPUP_WIDTH = 30;
-static const int DELTA = 2;
 
 PopupWindow::PopupWindow()
 : alsaWork_(AlsaWork::Ptr(new AlsaWork())),
@@ -534,8 +533,6 @@ void PopupWindow::iconActivated(ActivationReason reason)
 	case WHEELDOWN:
 		setVolume(-1);
 		break;
-	default:
-	;
 	}
 }
 

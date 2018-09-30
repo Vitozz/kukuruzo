@@ -23,6 +23,9 @@ isoffline=0
 skip_invalid=0
 use_plugins="*"
 let cpu_count=$(grep -c ^processor /proc/cpuinfo)+1
+devm=0
+wbkt=0
+pref=0
 #
 #COLORS
 red="\e[0;31m"
@@ -61,8 +64,11 @@ x86_64_mxe_prefix=${mxe_root}/usr/x86_64-w64-mingw32.shared
 buildpsi=${default_buildpsi} #инициализация переменной
 upstream_src=${buildpsi}/psi #репозиторий Psi
 psiplus_src=${buildpsi}/psi-plus #репозиторий Psi+
-workdir=${buildpsi}/worksrc #рабочий каталог для компиляции psi+
-builddir=${buildpsi}/build
+#workdir=${buildpsi}/worksrc #каталог подготовки исходных кодов psi+
+#builddir=${buildpsi}/build #рабочий каталог для компиляции psi+
+tmp_dir=/tmp/ppbuild
+workdir=${tmp_dir}/worksrc
+builddir=${tmp_dir}/build
 patches=${buildpsi}/psi-plus/patches #путь к патчам psi+, необходим для разработки
 inst_path=${buildpsi}/${inst_suffix} #только для пакетирования
 rpm_oscodename=$(lsb_release -is)
@@ -116,10 +122,12 @@ fetch_url ()
 
 fetch_all ()
 {
-  fetch_url ${psi_url} ${upstream_src}
-  fetch_url ${psi_plus_url} ${psiplus_src}
-  fetch_url ${plugins_url} ${buildpsi}/plugins
-  fetch_url ${langs_url} ${buildpsi}/langs
+  if [ $isoffline -eq 0 ]; then
+    fetch_url ${psi_url} ${upstream_src}
+    fetch_url ${psi_plus_url} ${psiplus_src}
+    fetch_url ${plugins_url} ${buildpsi}/plugins
+    fetch_url ${langs_url} ${buildpsi}/langs
+  fi
 }
 
 find_ccache ()
@@ -183,8 +191,8 @@ update_variables ()
 {
   upstream_src=${buildpsi}/psi
   psiplus_src=${buildpsi}/psi-plus
-  workdir=${buildpsi}/worksrc
-  builddir=${buildpsi}/build
+  #workdir=${buildpsi}/worksrc
+  #builddir=${buildpsi}/build
   patches=${buildpsi}/psi-plus/patches
   inst_path=${buildpsi}/${inst_suffix}
   if [ "${qt_ver}" == "5" ]; then
@@ -842,7 +850,8 @@ prepare_mxe()
 	grep -vi '^EDITOR=\|^HOME=\|^LANG=\|MXE\|^PATH=' | \
 	grep -vi 'PKG_CONFIG\|PROXY\|^PS1=\|^TERM=' | \
 	cut -d '=' -f1 | tr '\n' ' ')
-	export PATH="${mxe_root}/usr/bin:$PATH"
+	webkit_incs="${x86_64_mxe_prefix}/qt5/include:${x86_64_mxe_prefix}/qt5/include/QtWebView:${x86_64_mxe_prefix}/qt5/include/QtWebKit:${x86_64_mxe_prefix}/qt5/include/QtWebKitWidgets"
+	export PATH="${mxe_root}/usr/bin:${webkit_incs}:$PATH"
 }
 run_mxe_cmake()
 {
@@ -858,12 +867,19 @@ run_mxe_cmake_64()
 compile_psi_mxe()
 {
   curd=$(pwd)
+  flags=""
   prepare_src
   prepare_builddir ${builddir}
-  mxe_outd=${buildpsi}/mxe_builds
+  mxe_outd=${tmp_dir}/mxe_builds
   check_dir ${mxe_outd}
   cd ${builddir}
-  flags="-DENABLE_PLUGINS=ON -DBUILD_DEV_PLUGINS=ON -DDEV_MODE=ON -DVERBOSE_PROGRAM_NAME=ON -DQt5Keychain_DIR=${x86_64_mxe_prefix}/lib/cmake/Qt5Keychain"
+  if [ ${devm} -eq 1 ]; then
+    flags="${flags} -DENABLE_PLUGINS=ON -DBUILD_DEV_PLUGINS=ON -DDEV_MODE=ON"
+  fi
+  if [ ${wbkt} -eq 0 ]; then
+    flags="${flags} -DENABLE_WEBKIT=OFF"
+  fi
+  flags="${flags} -DVERBOSE_PROGRAM_NAME=ON -DQt5Keychain_DIR=${x86_64_mxe_prefix}/lib/cmake/Qt5Keychain"
   if [ "$1" == "qt5" ];then
     cmakecmd=run_mxe_cmake
   elif [ "$1" == "qt5_64" ];then
@@ -876,11 +892,11 @@ compile_psi_mxe()
   ${cmakecmd} ${flags} ${workdir}"
   ${cmakecmd} ${flags} ${workdir}
   echo 
-  echo "Press Enter to continue..." && read tmpvar
+  #echo "Press Enter to continue..." && read tmpvar
   ${cmakecmd} --build . --target all -- -j${cpu_count}
   ${cmakecmd} --build . --target prepare-bin --
   ${cmakecmd} --build . --target prepare-bin-libs --
-  if [ -d "${mxe_outd}/$1" ]; then
+  if [ -d "${mxe_outd}/$1" ] && [ ${devm} -ne 0 ]; then
     cd ${mxe_outd} && rm -rf $1
   fi
   check_dir ${mxe_outd}/$1
@@ -896,26 +912,36 @@ compile_psi_mxe()
 archivate_psi()
 {
   if [ ! -z "${iswebkit}" ]; then
-    wbk_suff="webkit-"
+      wbk_suff="webkit-"
   fi
   if [ ! -z "${issql}" ]; then
     sql_suff="sql-"
   fi
-  mxe_outd=${buildpsi}/mxe_builds
+  mxe_outd=${tmp_dir}/mxe_builds
   7z a -mx=9 -m0=LZMA -mmt=on ${mxe_outd}/psi-plus-${wbk_suff}${sql_suff}${psi_package_version}-$1.7z ${mxe_outd}/$1/*
+  cp -r ${mxe_outd}/psi-plus-${wbk_suff}${sql_suff}${psi_package_version}-$1.7z ${buildpsi}/mxe_builds/
 }
 #
 build_all_mxe()
 {
-  compile_psi_mxe qt5
+  wbkt=1
+  devm=1
+  compile_psi_mxe qt5_64
+  devm=0
+  wbkt=0
   compile_psi_mxe qt5_64
   archivate_all
 }
 #
 archivate_all()
 {
-  archivate_psi qt5
-  archivate_psi qt5_64
+  if [ ! -z "${issql}" ]; then
+    sql_suff="sql-"
+  fi
+  wbk_suff="all-"
+  mxe_outd=${tmp_dir}/mxe_builds
+  7z a -mx=9 -m0=LZMA -mmt=on ${mxe_outd}/psi-plus-${wbk_suff}${sql_suff}${psi_package_version}-qt5_64.7z ${mxe_outd}/qt5_64/*
+  cp -r ${mxe_outd}/psi-plus-${wbk_suff}${sql_suff}${psi_package_version}-qt5_64.7z ${buildpsi}/mxe_builds/
 }
 #
 check_qt_deps()

@@ -41,7 +41,7 @@ PulseDevice::PulseDevice()
 }
 
 PulseDevice::PulseDevice(const pa_source_info* i)
-: index_(i->index),
+: index_(int(i->index)),
   card_(getCardId(i->proplist)),
   type_(SOURCE),
   name_(QString(i->name)),
@@ -56,7 +56,7 @@ PulseDevice::PulseDevice(const pa_source_info* i)
 }
 
 PulseDevice::PulseDevice(const pa_sink_info* i)
-: index_(i->index),
+: index_(int(i->index)),
   card_(getCardId(i->proplist)),
   type_(SINK),
   name_(QString(i->name)),
@@ -72,7 +72,7 @@ PulseDevice::PulseDevice(const pa_sink_info* i)
 
 int PulseDevice::percent(pa_cvolume& volume_) const
 {
-	return (int) round(((double) pa_cvolume_avg(&volume_) * 100.) / PA_VOLUME_NORM);
+    return static_cast<int>(round((static_cast<double>(pa_cvolume_avg(&volume_)) * 100.) / PA_VOLUME_NORM));
 }
 
 double PulseDevice::round(double value) const
@@ -80,12 +80,12 @@ double PulseDevice::round(double value) const
 	return (value > 0.0) ? qFloor(value + 0.5) : qCeil(value - 0.5);
 }
 
-uint32_t PulseDevice::index() const
+int PulseDevice::index() const
 {
 	return index_;
 }
 
-uint32_t PulseDevice::card() const
+int PulseDevice::card() const
 {
 	return card_;
 }
