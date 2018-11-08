@@ -19,7 +19,10 @@
 #include "ssdisabler.h"
 #include <QIcon>
 #include <QProcess>
+#ifdef IS_DEBUG
 #include <QDebug>
+#endif
+#include <QMessageBox>
 #include <QApplication>
 
 SSDisabler::SSDisabler(QWidget *parent)
@@ -40,7 +43,9 @@ SSDisabler::SSDisabler(QWidget *parent)
             this,
             &SSDisabler::iconActivated_);
     winId_ = QString("0x%1").arg(QString::number(static_cast<int>(winId()),16));
+#ifdef IS_DEBUG
     qDebug() << "WinID" << winId_;
+#endif
     suspend();
     trayIcon_->show();
 }
@@ -68,7 +73,10 @@ void SSDisabler::fillTrayMenu()
 
 void SSDisabler::onExit_()
 {
-    resume();
+    bool answ = (QMessageBox::Yes == QMessageBox::question(nullptr, tr("Exit question"), tr("Do you want to enable screensaver?")));
+    if (answ) {
+        resume();
+    }
     qApp->exit(0);
 }
 
@@ -103,13 +111,16 @@ void SSDisabler::startProcess(const QStringList &args)
 {
     QProcess cmd;
     QProcess xcs;
+    QProcess xss;
     QStringList xargs;
     cmd.setProgram("xdg-screensaver");
     xcs.setProgram("xset");
+    xss.setProgram("xscreensaver-command");
     cmd.setArguments(args);
     if (args.contains("suspend")) {
         xcs.setArguments(xargs<< "s" << "off" << "-dpms");
-        if (cmd.startDetached() || xcs.startDetached()) {
+        xss.setArguments(QStringList() << "-deactivate");
+        if (cmd.startDetached() || xcs.startDetached() || xss.startDetached()) {
             suspended_ = true;
             click_->setText(tr("Resume"));
             changeTrayIcon();
@@ -117,7 +128,8 @@ void SSDisabler::startProcess(const QStringList &args)
     }
     else {
         xcs.setArguments(xargs << "s" << "on" << "+dpms");
-        if (cmd.startDetached() || xcs.startDetached()) {
+        xss.setArguments(QStringList() << "-restart");
+        if (cmd.startDetached() || xcs.startDetached() || xss.startDetached()) {
             suspended_ = false;
             click_->setText(tr("Suspend"));
             changeTrayIcon();

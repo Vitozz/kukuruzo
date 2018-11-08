@@ -4,6 +4,10 @@ set( CMAKE_AUTOMOC ON )
 set( CMAKE_INCLUDE_CURRENT_DIR ON )
 option( USE_CPACK "Enable CPack" OFF )
 
+if("${CMAKE_BUILD_TYPE}" STREQUAL "Debug" OR ("${CMAKE_BUILD_TYPE}" STREQUAL "RelWithDebInfo"))
+    add_definitions(-DIS_DEBUG)
+endif()
+
 if( USE_CPACK )
     include(version.cmake)
     include(use_cpack.cmake)

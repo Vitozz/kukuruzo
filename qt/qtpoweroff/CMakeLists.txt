@@ -84,7 +84,7 @@ if( UNIX AND NOT (APPLE OR CYGWIN) )
     set( DATADIR_PATH ${CMAKE_INSTALL_PREFIX}${CPACK_SUFFIX}/share )
     set( APPDATA_PATH ${DATADIR_PATH}/applications )
     set( ICON_FILES
-        images/tb_icon.png
+        images/32x32.png
     )
     set( ICON_PATH
         ${DATADIR_PATH}/${PROJECT_NAME}/images

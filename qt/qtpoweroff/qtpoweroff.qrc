@@ -1,6 +1,11 @@
 <RCC>
     <qresource prefix="/">
         <file>images/poweroff.png</file>
-        <file>images/tb_icon.png</file>
+        <file>images/32x32.png</file>
+        <file>images/16x16.png</file>
+        <file>images/24x24.png</file>
+        <file>images/48x48.png</file>
+        <file>images/72x72.png</file>
+        <file>images/128x128.png</file>
     </qresource>
 </RCC>

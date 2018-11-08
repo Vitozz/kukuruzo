@@ -40,7 +40,7 @@ class MainWindow : public QMainWindow
 	Q_OBJECT
 
 public:
-	explicit MainWindow(QWidget *parent = 0);
+    explicit MainWindow(QWidget *parent = nullptr);
 	~MainWindow();
 
 protected slots:
@@ -70,7 +70,7 @@ private:
 	void doAction();
 	void calculateTimeOffset();
 	void showTrayMessage(const QString &msg);
-	QString getTimeString(int seconds) const;
+    QString getTimeString(uint seconds) const;
 #ifdef HAVE_DBUS
     bool isIfaceAvailable(const QString &service, const QString &path, const QString &iface);
     bool doDbusAction(const QString &service, const QString &path, const QString &iface);

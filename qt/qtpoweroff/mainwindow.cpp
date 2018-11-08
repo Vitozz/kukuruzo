@@ -24,6 +24,9 @@
 #include <QSettings>
 #include <QPushButton>
 #include <QDateTimeEdit>
+#include <QRadioButton>
+#include <QSpinBox>
+#include <QAction>
 #ifdef HAVE_DBUS
 #include <QtDBus/QDBusConnection>
 #include <QtDBus/QDBusInterface>
@@ -56,7 +59,7 @@ static const QString LD_POWEROFF = "PowerOff";
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent),
       ui(new Ui::MainWindow),
-      trayIcon_(new QSystemTrayIcon(QIcon(":/images/tb_icon.png"), this)),
+      trayIcon_(new QSystemTrayIcon(QIcon(":/images/32x32.png"), this)),
       poffTimer_(new QTimer(this)),
       time_(QDateTimePtr(new QDateTime())),
       terminate_(new QAction(tr("Terminate"), this)),
@@ -72,19 +75,19 @@ MainWindow::MainWindow(QWidget *parent)
     initActions();
     updateTrayMenu();
     trayIcon_->setContextMenu(popupMenu_);
-    connect(ui->actionExit, SIGNAL(triggered()), this, SLOT(onExit()));
-    connect(ui->actionAbout, SIGNAL(triggered()), this, SLOT(onAbout()));
-    connect(ui->actionAbout_Qt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
-    connect(ui->actionTerminate, SIGNAL(triggered()), this, SLOT(onTerminate()));
-    connect(ui->byMinutesRadio, SIGNAL(toggled(bool)), this, SLOT(onMinsChecked(bool)));
-    connect(ui->byTimeRadio, SIGNAL(toggled(bool)), this, SLOT(onTimeChecked(bool)));
-    connect(ui->isReboot, SIGNAL(toggled(bool)), this, SLOT(onRebootChecked(bool)));
-    connect(ui->isShutdown, SIGNAL(toggled(bool)), this, SLOT(onShutdownChecked(bool)));
-    connect(ui->minutesSpin, SIGNAL(valueChanged(int)), this, SLOT(onMinSpin(int)));
-    connect(ui->poweroffBtn, SIGNAL(clicked()), this, SLOT(onPowerOffClicked()));
-    connect(ui->dateTimeEdit, SIGNAL(dateTimeChanged(QDateTime)), this, SLOT(onTimeChange(QDateTime)));
-    connect(poffTimer_, SIGNAL(timeout()), this, SLOT(onTimer()));
-    connect(trayIcon_, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, SLOT(iconActivated(QSystemTrayIcon::ActivationReason)));
+    connect(ui->actionExit, &QAction::triggered, this, &MainWindow::onExit);
+    connect(ui->actionAbout, &QAction::triggered, this, &MainWindow::onAbout);
+    connect(ui->actionAbout_Qt, &QAction::triggered, qApp, &QApplication::aboutQt);
+    connect(ui->actionTerminate, &QAction::triggered, this, &MainWindow::onTerminate);
+    connect(ui->byMinutesRadio, &QRadioButton::toggled, this, &MainWindow::onMinsChecked);
+    connect(ui->byTimeRadio, &QRadioButton::toggled, this, &MainWindow::onTimeChecked);
+    connect(ui->isReboot, &QRadioButton::toggled, this, &MainWindow::onRebootChecked);
+    connect(ui->isShutdown, &QRadioButton::toggled, this, &MainWindow::onShutdownChecked);
+    connect(ui->minutesSpin, QOverload<int>::of(&QSpinBox::valueChanged), this, &MainWindow::onMinSpin);
+    connect(ui->poweroffBtn, &QPushButton::clicked, this, &MainWindow::onPowerOffClicked);
+    connect(ui->dateTimeEdit, &QDateTimeEdit::dateTimeChanged, this, &MainWindow::onTimeChange);
+    connect(poffTimer_, &QTimer::timeout, this, &MainWindow::onTimer);
+    connect(trayIcon_, &QSystemTrayIcon::activated, this, &MainWindow::iconActivated);
     trayIcon_->show();
     ReadSettings();
     SetTrayToolTip(QString("%1-%2").arg(APP_TITLE, APP_VERSION));
@@ -105,10 +108,10 @@ MainWindow::~MainWindow()
 
 void MainWindow::initActions()
 {
-    connect(terminate_, SIGNAL(triggered()), this, SLOT(onTerminate()));
-    connect(about_, SIGNAL(triggered()), this, SLOT(onAbout()));
-    connect(aboutQt_, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
-    connect(exit_, SIGNAL(triggered()), this, SLOT(onExit()));
+    connect(terminate_, &QAction::triggered, this, &MainWindow::onTerminate);
+    connect(about_, &QAction::triggered, this, &MainWindow::onAbout);
+    connect(aboutQt_, &QAction::triggered, qApp, &QApplication::aboutQt);
+    connect(exit_, &QAction::triggered, this, &MainWindow::onExit);
 }
 
 void MainWindow::updateTrayMenu()
@@ -159,14 +162,14 @@ void MainWindow::onMinSpin(int mins)
     offset_ = mins*secsInMin;
 }
 
-QString MainWindow::getTimeString(int seconds) const
+QString MainWindow::getTimeString(uint seconds) const
 {
-    int secs = seconds;
-    const int day = secs / secsInDay;
+    uint secs = seconds;
+    const uint day = secs / secsInDay;
     secs -= day * secsInDay;
-    const int hour = secs / secsInHour;
+    const uint hour = secs / secsInHour;
     secs -= hour * secsInHour;
-    const int mins = secs / secsInMin;
+    const uint mins = secs / secsInMin;
     secs -= mins * secsInMin;
     const QString dayStr((day >= 10) ? QString::number(day) : "0" + QString::number(day));
     const QString hourStr((hour >= 10) ? QString::number(hour) : "0" + QString::number(hour));
@@ -189,7 +192,7 @@ void MainWindow::calculateTimeOffset()
     }
     else {
         if(!time_->isNull()) {
-            offset_ = time_->currentDateTime().secsTo(*time_);
+            offset_ = int(time_->currentDateTime().secsTo(*time_));
 #ifdef IS_DEBUG
             qDebug() << "Time - " << time_->toString("dd-MM-yyyy hh:mm:ss");
             qDebug() << "Offset " << offset_;
@@ -262,7 +265,7 @@ void MainWindow::onTimeChecked(bool toggled)
 
 void MainWindow::onTimer()
 {
-    int deltaTime = time_->toTime_t() - time_->currentDateTime().toTime_t();//currentTime->toTime_t();
+    uint deltaTime = time_->toTime_t() - time_->currentDateTime().toTime_t();//currentTime->toTime_t();
     if (deltaTime == 0 || offset_ == 0) {
         doAction();
 #ifdef IS_DEBUG
