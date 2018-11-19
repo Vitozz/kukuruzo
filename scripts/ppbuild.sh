@@ -56,8 +56,9 @@ USE_QT5="ON"
 #MXE PATH
 mxe_root=${githubdir}/mxe
 #i386 mxe prefix
-i386_mxe_prefix=${mxe_root}/usr/i686-w64-mingw32.shared
+i686_mxe_prefix=${mxe_root}/usr/i686-w64-mingw32.shared
 x86_64_mxe_prefix=${mxe_root}/usr/x86_64-w64-mingw32.shared
+OLDPATH=${PATH}
 
 
 #WARNING: следующие переменные будут изменены в процессе работы скрипта автоматически
@@ -311,8 +312,12 @@ prepare_workspace ()
   cp -a ${buildpsi}/langs/translations/*.ts ${workdir}/translations/
   cd ${workdir}
   patch_psi
-  echo -e "${blue}Do you want to apply psi-new-history.patch${nocolor} ${pink}[y/n(default)]${nocolor}"
-  read ispatch
+  if [ "${issql}" != "y" ]; then
+    echo -e "${blue}Do you want to apply psi-new-history.patch${nocolor} ${pink}[y/n(default)]${nocolor}"
+    read ispatch
+  else
+    ispatch="y"
+  fi
   if [ "${ispatch}" == "y" ]; then
     cd ${workdir}
     patch_psi 10000 ${patches}/dev/psi-new-history.patch
@@ -845,13 +850,12 @@ debug_psi ()
 #
 prepare_mxe()
 {
-	OLDPATH=${PATH}
-	unset $(env | \
-	grep -vi '^EDITOR=\|^HOME=\|^LANG=\|MXE\|^PATH=' | \
-	grep -vi 'PKG_CONFIG\|PROXY\|^PS1=\|^TERM=' | \
-	cut -d '=' -f1 | tr '\n' ' ')
-	webkit_incs="${x86_64_mxe_prefix}/qt5/include:${x86_64_mxe_prefix}/qt5/include/QtWebView:${x86_64_mxe_prefix}/qt5/include/QtWebKit:${x86_64_mxe_prefix}/qt5/include/QtWebKitWidgets"
-	export PATH="${mxe_root}/usr/bin:${webkit_incs}:$PATH"
+  OLDPATH=${PATH}
+  unset $(env | \
+  grep -vi '^EDITOR=\|^HOME=\|^LANG=\|MXE\|^PATH=' | \
+  grep -vi 'PKG_CONFIG\|PROXY\|^PS1=\|^TERM=' | \
+  cut -d '=' -f1 | tr '\n' ' ')
+  export PATH="${mxe_root}/usr/bin:$PATH"
 }
 run_mxe_cmake()
 {
@@ -868,23 +872,27 @@ compile_psi_mxe()
 {
   curd=$(pwd)
   flags=""
+  oldissql=${issql}
+  issql="y"
   prepare_src
   prepare_builddir ${builddir}
   mxe_outd=${tmp_dir}/mxe_builds
   check_dir ${mxe_outd}
   cd ${builddir}
+  if [ "$1" == "qt5" ];then
+    current_prefix=${i686_mxe_prefix}
+    cmakecmd=run_mxe_cmake
+  elif [ "$1" == "qt5_64" ];then
+    current_prefix=${x86_64_mxe_prefix}
+    cmakecmd=run_mxe_cmake_64
+  fi
   if [ ${devm} -eq 1 ]; then
     flags="${flags} -DENABLE_PLUGINS=ON -DBUILD_DEV_PLUGINS=ON -DDEV_MODE=ON"
   fi
   if [ ${wbkt} -eq 0 ]; then
     flags="${flags} -DENABLE_WEBKIT=OFF"
   fi
-  flags="${flags} -DVERBOSE_PROGRAM_NAME=ON -DQt5Keychain_DIR=${x86_64_mxe_prefix}/lib/cmake/Qt5Keychain"
-  if [ "$1" == "qt5" ];then
-    cmakecmd=run_mxe_cmake
-  elif [ "$1" == "qt5_64" ];then
-    cmakecmd=run_mxe_cmake_64
-  fi
+  flags="${flags} -DVERBOSE_PROGRAM_NAME=ON -DQt5Keychain_DIR=${current_prefix}/lib/cmake/Qt5Keychain"
   wrkdir=${builddir}
   check_dir ${wrkdir}
   cd ${wrkdir}
@@ -895,7 +903,9 @@ compile_psi_mxe()
   #echo "Press Enter to continue..." && read tmpvar
   ${cmakecmd} --build . --target all -- -j${cpu_count}
   ${cmakecmd} --build . --target prepare-bin --
-  ${cmakecmd} --build . --target prepare-bin-libs --
+  if [ ${devm} -eq 1 ]; then
+    ${cmakecmd} --build . --target prepare-bin-libs --
+  fi
   if [ -d "${mxe_outd}/$1" ] && [ ${devm} -ne 0 ]; then
     cd ${mxe_outd} && rm -rf $1
   fi
@@ -907,6 +917,7 @@ compile_psi_mxe()
   if [ ! -z "${OLDPATH}" ]; then
     PATH=${OLDPATH}
   fi
+  issql=${oldissql}
 }
 #
 archivate_psi()
@@ -922,7 +933,18 @@ archivate_psi()
   cp -r ${mxe_outd}/psi-plus-${wbk_suff}${sql_suff}${psi_package_version}-$1.7z ${buildpsi}/mxe_builds/
 }
 #
-build_all_mxe()
+build_i686_mxe()
+{
+  wbkt=1
+  devm=1
+  compile_psi_mxe qt5
+  devm=0
+  wbkt=0
+  compile_psi_mxe qt5
+  archivate_all qt5
+}
+#
+build_x86_64_mxe()
 {
   wbkt=1
   devm=1
@@ -930,7 +952,13 @@ build_all_mxe()
   devm=0
   wbkt=0
   compile_psi_mxe qt5_64
-  archivate_all
+  archivate_all qt5_64
+}
+#
+build_all_mxe()
+{
+  build_i686_mxe
+  build_x86_64_mxe
 }
 #
 archivate_all()
@@ -940,8 +968,8 @@ archivate_all()
   fi
   wbk_suff="all-"
   mxe_outd=${tmp_dir}/mxe_builds
-  7z a -mx=9 -m0=LZMA -mmt=on ${mxe_outd}/psi-plus-${wbk_suff}${sql_suff}${psi_package_version}-qt5_64.7z ${mxe_outd}/qt5_64/*
-  cp -r ${mxe_outd}/psi-plus-${wbk_suff}${sql_suff}${psi_package_version}-qt5_64.7z ${buildpsi}/mxe_builds/
+  7z a -mx=9 -m0=LZMA -mmt=on ${mxe_outd}/psi-plus-${wbk_suff}${sql_suff}${psi_package_version}-$1.7z ${mxe_outd}/$1/*
+  cp -r ${mxe_outd}/psi-plus-${wbk_suff}${sql_suff}${psi_package_version}-$1.7z ${buildpsi}/mxe_builds/
 }
 #
 check_qt_deps()

@@ -1,7 +1,7 @@
 
 [Desktop Entry]
 Encoding=UTF-8
-Icon=/usr/share/qtpoweroff/images/32x32.png
+Icon=/usr/share/qtpoweroff/images/48x48.png
 Name=QtPowerOff
 Comment=The program for the planned shutdown of computer
 Exec=qtpoweroff

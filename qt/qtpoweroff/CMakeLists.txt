@@ -85,6 +85,9 @@ if( UNIX AND NOT (APPLE OR CYGWIN) )
     set( APPDATA_PATH ${DATADIR_PATH}/applications )
     set( ICON_FILES
         images/32x32.png
+        images/48x48.png
+        images/72x72.png
+        images/128x128.png
     )
     set( ICON_PATH
         ${DATADIR_PATH}/${PROJECT_NAME}/images
