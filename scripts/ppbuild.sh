@@ -17,7 +17,6 @@ qt_ver=5
 spell_flag="-DUSE_ENCHANT=OFF -DUSE_HUNSPELL=ON"
 spellchek_engine="hunspell"
 iswebkit=""
-issql=""
 use_iconsets="system clients activities moods affiliations roster"
 isoffline=0
 skip_invalid=0
@@ -312,18 +311,6 @@ prepare_workspace ()
   cp -a ${buildpsi}/langs/translations/*.ts ${workdir}/translations/
   cd ${workdir}
   patch_psi
-  if [ "${issql}" != "y" ]; then
-    echo -e "${blue}Do you want to apply psi-new-history.patch${nocolor} ${pink}[y/n(default)]${nocolor}"
-    read ispatch
-  else
-    ispatch="y"
-  fi
-  if [ "${ispatch}" == "y" ]; then
-    cd ${workdir}
-    patch_psi 10000 ${patches}/dev/psi-new-history.patch
-    cd ${githubdir}
-    issql="y"
-  fi
   get_psi_plus_version
   cd ${psiplus_src}
   local suffix=""
@@ -872,8 +859,6 @@ compile_psi_mxe()
 {
   curd=$(pwd)
   flags=""
-  oldissql=${issql}
-  issql="y"
   prepare_src
   prepare_builddir ${builddir}
   mxe_outd=${tmp_dir}/mxe_builds
@@ -917,7 +902,6 @@ compile_psi_mxe()
   if [ ! -z "${OLDPATH}" ]; then
     PATH=${OLDPATH}
   fi
-  issql=${oldissql}
 }
 #
 archivate_psi()
@@ -925,12 +909,9 @@ archivate_psi()
   if [ ! -z "${iswebkit}" ]; then
       wbk_suff="webkit-"
   fi
-  if [ ! -z "${issql}" ]; then
-    sql_suff="sql-"
-  fi
   mxe_outd=${tmp_dir}/mxe_builds
-  7z a -mx=9 -m0=LZMA -mmt=on ${mxe_outd}/psi-plus-${wbk_suff}${sql_suff}${psi_package_version}-$1.7z ${mxe_outd}/$1/*
-  cp -r ${mxe_outd}/psi-plus-${wbk_suff}${sql_suff}${psi_package_version}-$1.7z ${buildpsi}/mxe_builds/
+  7z a -mx=9 -m0=LZMA -mmt=on ${mxe_outd}/psi-plus-${wbk_suff}${psi_package_version}-$1.7z ${mxe_outd}/$1/*
+  cp -r ${mxe_outd}/psi-plus-${wbk_suff}${psi_package_version}-$1.7z ${buildpsi}/mxe_builds/
 }
 #
 build_i686_mxe()
@@ -963,13 +944,10 @@ build_all_mxe()
 #
 archivate_all()
 {
-  if [ ! -z "${issql}" ]; then
-    sql_suff="sql-"
-  fi
   wbk_suff="all-"
   mxe_outd=${tmp_dir}/mxe_builds
-  7z a -mx=9 -m0=LZMA -mmt=on ${mxe_outd}/psi-plus-${wbk_suff}${sql_suff}${psi_package_version}-$1.7z ${mxe_outd}/$1/*
-  cp -r ${mxe_outd}/psi-plus-${wbk_suff}${sql_suff}${psi_package_version}-$1.7z ${buildpsi}/mxe_builds/
+  7z a -mx=9 -m0=LZMA -mmt=on ${mxe_outd}/psi-plus-${wbk_suff}${psi_package_version}-$1.7z ${mxe_outd}/$1/*
+  cp -r ${mxe_outd}/psi-plus-${wbk_suff}${psi_package_version}-$1.7z ${buildpsi}/mxe_builds/
 }
 #
 check_qt_deps()
