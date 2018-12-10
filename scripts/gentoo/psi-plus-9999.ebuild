@@ -127,8 +127,6 @@ src_compile() {
 src_install() {
 	cmake-utils_src_install
 
-emake INSTALL_ROOT="${D}" install
-
 	# this way the docs will be installed in the standard gentoo dir
 	rm "${ED}"/usr/share/${PN}/{COPYING,README.html} || die "Installed file set seems to be changed by upstream"
 	newdoc iconsets/roster/README README.roster
