@@ -6,7 +6,7 @@ EAPI=6
 PLOCALES="be bg ca cs de en eo es et fa fi fr he hu it ja kk mk nl pl pt pt_BR ru sk sl sr@latin sv sw uk ur_PK vi zh_CN zh_TW"
 PLOCALE_BACKUP="en"
 
-inherit cmake-utils eutils l10n multilib git-r3 xdg-utils
+inherit cmake-utils eutils l10n multilib git-r3 xdg-utils qmake-utils
 
 PSI_PLUS_URI="git://github.com/psi-plus"
 EGIT_REPO_URI="${PSI_PLUS_URI}/psi-plus-snapshots.git"
@@ -96,6 +96,7 @@ src_prepare() {
 	if use iconsets; then
 		cp -a "${WORKDIR}/resources/iconsets" "${S}" || die
 	fi
+	eapply_user
 }
 
 src_configure() {
@@ -105,15 +106,13 @@ src_configure() {
 	if use webengine || use webkit; then
 		EXRTA_FLAGS="$EXTRA_FLAGS -DENABLE_WEBKIT=ON"
 	fi
-	if use plugins; then
-		EXTRA_FLAGS="$EXTRA_FLAGS -DINSTALL_PLUGINS_SDK=ON"
-	fi
 	local mycmakeargs=(
-		$(cmake-utils_use_use hunspell HUNSPELL)
-		$(cmake-utils_use_use enchant ENCHANT)
-		$(cmake-utils_use_use webengine WEBENGINE)
-		$(cmake-utils-use_use keychain KEYCHAIN)
-		$(echo -DCMAKE_INSTALL_PREFIX=/usr)
+		-DUSE_ENCHANT="$(usex enchant)"
+		-DUSE_HUNSPELL="$(usex hunspell)"
+		-DINSTALL_PLUGINS_SDK="$(usex plugins)"
+		-DUSE_KEYCHAIN="$(usex keychain)"
+		-DUSE_WEBENGINE="$(usex  webengine)"
+		-DCMAKE_INSTALL_PREFIX="/usr"
 		$(echo ${EXTRA_FLAGS})
 	)
 	cmake-utils_src_configure
@@ -128,18 +127,18 @@ src_install() {
 	cmake-utils_src_install
 
 	# this way the docs will be installed in the standard gentoo dir
-	rm "${ED}"/usr/share/${PN}/{COPYING,README.html} || die "Installed file set seems to be changed by upstream"
-	newdoc iconsets/roster/README README.roster
-	newdoc iconsets/system/README README.system
-	newdoc certs/README README.certs
-	dodoc README.html
+	#rm "${ED}"/usr/share/${PN}/{COPYING,README.html} || die "Installed file set seems to be changed by upstream"
+	#newdoc iconsets/roster/README README.roster
+	#newdoc iconsets/system/README README.system
+	#newdoc certs/README README.certs
+	#dodoc README.html
 
-	use doc && HTML_DOCS=( doc/api/. )
-	einstalldocs
+	#use doc && HTML_DOCS=( doc/api/. )
+	#einstalldocs
 
 	# install translations
 	local mylrelease="$(qt5_get_bindir)"/lrelease
-	cd "${WORKDIR}/psi-l10n" || die
+	cd "${WORKDIR}/${PN}-l10n" || die
 	insinto /usr/share/${PN}
 	install_locale() {
 		"${mylrelease}" "translations/psi_${1}.ts" || die "lrelease ${1} failed"
