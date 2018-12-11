@@ -18,7 +18,7 @@ HOMEPAGE="http://psi-plus.com/"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS=""
-IUSE="crypt +dbus debug doc enchant +extras +hunspell jingle iconsets keychain ssl +plugins xscreensaver webengine webkit webp"
+IUSE="crypt debug doc enchant +extras +hunspell jingle iconsets keychain ssl +plugins xscreensaver webengine webkit webp"
 
 REQUIRED_USE="
 	?? ( enchant hunspell )
@@ -29,6 +29,7 @@ REQUIRED_USE="
 RDEPEND="
 	dev-qt/qtconcurrent:5
 	dev-qt/qtcore:5
+	dev-qt/qtdbus:5
 	dev-qt/qtgui:5
 	dev-qt/qtmultimedia:5
 	dev-qt/qtnetwork:5
@@ -41,7 +42,6 @@ RDEPEND="
 	sys-libs/zlib[minizip]
 	x11-libs/libX11
 	x11-libs/libxcb
-	dbus? ( dev-qt/qtdbus:5 )
 	enchant? ( >=app-text/enchant-1.3.0 )
 	hunspell? ( app-text/hunspell:= )
 	keychain? ( dev-libs/qtkeychain )
