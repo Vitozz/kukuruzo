@@ -18,8 +18,7 @@ HOMEPAGE="http://psi-plus.com/"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS=""
-IUSE="crypt dbus debug doc enchant extras +hunspell jingle iconsets keychain ssl +plugins xscreensaver webengine webkit webp"
-
+IUSE="crypt +dbus debug doc enchant +extras +hunspell jingle iconsets keychain ssl +plugins xscreensaver webengine webkit webp"
 
 REQUIRED_USE="
 	?? ( enchant hunspell )
@@ -109,6 +108,7 @@ src_configure() {
 	local mycmakeargs=(
 		-DUSE_ENCHANT="$(usex enchant)"
 		-DUSE_HUNSPELL="$(usex hunspell)"
+		-DINSTALL_EXTRA_FILES="$(usex extras)"
 		-DINSTALL_PLUGINS_SDK="$(usex plugins)"
 		-DUSE_KEYCHAIN="$(usex keychain)"
 		-DUSE_WEBENGINE="$(usex  webengine)"
@@ -127,14 +127,14 @@ src_install() {
 	cmake-utils_src_install
 
 	# this way the docs will be installed in the standard gentoo dir
-	#rm "${ED}"/usr/share/${PN}/{COPYING,README.html} || die "Installed file set seems to be changed by upstream"
-	#newdoc iconsets/roster/README README.roster
-	#newdoc iconsets/system/README README.system
-	#newdoc certs/README README.certs
-	#dodoc README.html
+	rm "${ED}"/usr/share/${PN}/{COPYING,README.html} || die "Installed file set seems to be changed by upstream"
+	newdoc iconsets/roster/README README.roster
+	newdoc iconsets/system/README README.system
+	newdoc certs/README README.certs
+	dodoc README.html
 
-	#use doc && HTML_DOCS=( doc/api/. )
-	#einstalldocs
+	use doc && HTML_DOCS=( doc/api/. )
+	einstalldocs
 
 	# install translations
 	local mylrelease="$(qt5_get_bindir)"/lrelease
