@@ -1,4 +1,4 @@
-# Copyright 1999-2016 Gentoo Foundation
+# Copyright 1999-2018 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=6
@@ -13,7 +13,7 @@ EGIT_REPO_URI="${PSI_PLUS_URI}/psi-plus-snapshots.git"
 PSI_PLUS_LANGS_URI="${PSI_PLUS_URI}/psi-plus-l10n.git"
 EGIT_MIN_CLONE_TYPE="single"
 
-DESCRIPTION="Qt5 Jabber client, with Licq-like interface"
+DESCRIPTION="Qt5 Jabber client, based on Psi client (https://psi-im.org) but with more features"
 HOMEPAGE="http://psi-plus.com/"
 LICENSE="GPL-2"
 SLOT="0"
