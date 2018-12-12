@@ -41,7 +41,8 @@ build() {
 
   cmake -DCMAKE_INSTALL_PREFIX=/usr \
     -DCMAKE_BUILD_TYPE=Release \
-    -DUSE_PULSE=ON \
+    -DUSE_PULSE=@USE_PULSE@ \
+    -DUSE_KDE=@USE_KDE@ \
     "$srcdir/$_gitname/qt/@CPACK_PACKAGE_NAME@"
 
   make

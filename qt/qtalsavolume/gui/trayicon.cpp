@@ -119,7 +119,9 @@ void TrayIcon::setTrayIcon(const QString &icon)
 	}
 #ifdef HAVE_KDE
 	else {
-		newTrayIcon_->setIconByName(icon);
+		QIcon icon_(icon);
+		//newTrayIcon_->setIconByName(icon);
+		newTrayIcon_->setIconByPixmap(icon_);
 		currentIcon_ = icon;
 	}
 #endif

@@ -261,7 +261,6 @@ void PopupWindow::setTrayIcon(int value)
 #ifdef ISDEBUG
 	qDebug() << "val " << value;
 	qDebug() << "num " << number;
-	qDebug() << "Suffix " << pathSuffix;
 	qDebug() << "Icon path " << fullPath;
 #endif
 	trayIcon_->setTrayIcon(fullPath);
