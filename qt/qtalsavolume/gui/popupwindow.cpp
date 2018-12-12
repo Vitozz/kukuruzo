@@ -39,14 +39,14 @@ static const QString appLogo(":/images/Logo");
 static const QString autoStartPath(".config/autostart");
 static const QString fName(QDir::home().absolutePath() + "/.config/autostart/qtalsavolume.desktop");
 static const QString dFile = QString("%1%2%3%4%5%6%7%8").arg(
-			     "[Desktop Entry]\n",
-			     "Encoding=UTF-8\n",
-			     "Name=QtAlsaVolume\n",
-			     "Exec=qtalsavolume\n",
-			     QString("%1%2%3").arg("Version=",APP_VERSION,"\n"),
-			     "Type=Application\n",
-			     "Comment=Changes the sound volume from the system tray\n",
-			     "X-LXQt-Need-Tray=true");
+				 "[Desktop Entry]\n",
+				 "Encoding=UTF-8\n",
+				 "Name=QtAlsaVolume\n",
+				 "Exec=qtalsavolume\n",
+				 QString("%1%2%3").arg("Version=",APP_VERSION,"\n"),
+				 "Type=Application\n",
+				 "Comment=Changes the sound volume from the system tray\n",
+				 "X-LXQt-Need-Tray=true");
 static const int POPUP_HEIGHT = 140;
 static const int POPUP_WIDTH = 30;
 
@@ -83,17 +83,17 @@ PopupWindow::PopupWindow()
   title_(tr("About QtAlsaVolume")),
 #ifdef USE_PULSE
   message_(QString(tr("<!DOCTYPE html><html><body>"
-		      "<p><b>Tray Alsa Volume Changer written using Qt</b></p>"
-		      "<p>With Pulseaudio support</p>"
-		      "<p>2015 (c) Vitaly Tonkacheyev <address><a href=\"mailto:thetvg@gmail.com\">&lt;EMail&gt;</a></address></p>"
-		      "<a href=\"http://sites.google.com/site/thesomeprojects/\">Program WebSite</a>"
-		      "<p>version: <b>%1</b></p></body></html>")).arg(APP_VERSION))
+			  "<p><b>Tray Alsa Volume Changer written using Qt</b></p>"
+			  "<p>With Pulseaudio support</p>"
+			  "<p>2015 (c) Vitaly Tonkacheyev <address><a href=\"mailto:thetvg@gmail.com\">&lt;EMail&gt;</a></address></p>"
+			  "<a href=\"http://sites.google.com/site/thesomeprojects/\">Program WebSite</a>"
+			  "<p>version: <b>%1</b></p></body></html>")).arg(APP_VERSION))
 #else
   message_(QString(tr("<!DOCTYPE html><html><body>"
-		      "<p><b>Tray Alsa Volume Changer written using Qt</b></p>"
-		      "<p>2015 (c) Vitaly Tonkacheyev <address><a href=\"mailto:thetvg@gmail.com\">&lt;EMail&gt;</a></address></p>"
-		      "<a href=\"http://sites.google.com/site/thesomeprojects/\">Program WebSite</a>"
-		      "<p>version: <b>%1</b></p></body></html>")).arg(APP_VERSION))
+			  "<p><b>Tray Alsa Volume Changer written using Qt</b></p>"
+			  "<p>2015 (c) Vitaly Tonkacheyev <address><a href=\"mailto:thetvg@gmail.com\">&lt;EMail&gt;</a></address></p>"
+			  "<a href=\"http://sites.google.com/site/thesomeprojects/\">Program WebSite</a>"
+			  "<p>version: <b>%1</b></p></body></html>")).arg(APP_VERSION))
 #endif
 {
 	setWindowIcon(QIcon(appLogo));
@@ -247,7 +247,7 @@ void PopupWindow::showPopup()
 
 void PopupWindow::setTrayIcon(int value)
 {
-	const QString pathPrefix((isLightStyle_) ? "icons/light/" : "icons/dark/");
+	const QString pathPrefix((isLightStyle_) ? ":/images/icons/light/" : ":/images/icons/dark/");
 	int number = 100;
 	value = (value <= 0) ? 0 : (value > 100) ? 100 : value;
 	number = (value < 10) ? 10 : int(value/10)*10;
@@ -257,8 +257,7 @@ void PopupWindow::setTrayIcon(int value)
 	if (isMuted_) {
 		number = 0;
 	}
-	QString pathSuffix(QString("tb_icon%1.png").arg(QString::number(number)));
-	const QString fullPath(getResPath(QString("%1%2").arg(pathPrefix,pathSuffix)));
+	const QString fullPath(QString("%1tb_icon%2.png").arg(pathPrefix).arg(QString::number(number)));
 #ifdef ISDEBUG
 	qDebug() << "val " << value;
 	qDebug() << "num " << number;
@@ -573,24 +572,6 @@ void PopupWindow::onStyleChanged(bool isLight)
 {
 	isLightStyle_ = isLight;
 	setTrayIcon(volumeValue_);
-}
-
-QString PopupWindow::getResPath(const QString &fileName) const
-{
-	const QStringList resDirs = QStringList()
-				    << QString(QDir::currentPath())
-				    << QString(qApp->applicationDirPath())
-				    << QString("/usr/share/%1").arg(APP_NAME)
-				    << QString("/usr/local/share/%1").arg(APP_NAME)
-				    << QString(QDir::home().absolutePath() + "/.local/share/%1").arg(APP_NAME)
-				    << QString(QDir::currentPath().left(QDir::currentPath().lastIndexOf("/")) + "/share/%1").arg(APP_NAME);
-	foreach(const QString &dir, resDirs){
-		const QString fullName = QString("%1%2%3").arg(dir,"/",fileName);
-		if (QFile::exists(fullName)) {
-			return fullName;
-		}
-	}
-	return QString();
 }
 
 void PopupWindow::onTimeout()

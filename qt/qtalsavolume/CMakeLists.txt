@@ -1,11 +1,12 @@
 project(qtalsavolume )
-cmake_minimum_required( VERSION 2.8.12 )
+cmake_minimum_required( VERSION 3.1.0 )
 if ( NOT CMAKE_VERSION VERSION_LESS 3.10 )
-	cmake_policy(SET CMP0071 OLD)
+    cmake_policy(SET CMP0071 NEW)
 endif ()
 if( UNIX AND NOT (APPLE OR CYGWIN) )
     set( CMAKE_AUTOMOC ON )
     set( CMAKE_INCLUDE_CURRENT_DIR ON )
+    set(CMAKE_CXX_STANDARD 11)
     option( USE_PULSE "Enable pulseaudio support" OFF )
     option( BUILD_TRANSLATIONS "Build project translations" ON )
     option( USE_KDE "Enable Kde Notifications support" OFF )
@@ -59,32 +60,6 @@ if( UNIX AND NOT (APPLE OR CYGWIN) )
     set( APPDIR_PATH ${DATADIR_PATH}/applications )
     set( DESKTOP_FILES ${PROJECT_NAME}.desktop )
     set( ICON_FILES icons/volume_ico.png )
-    set( DARK_ICONS
-        icons/dark/tb_icon0.png
-        icons/dark/tb_icon10.png
-        icons/dark/tb_icon20.png
-        icons/dark/tb_icon30.png
-        icons/dark/tb_icon40.png
-        icons/dark/tb_icon50.png
-        icons/dark/tb_icon60.png
-        icons/dark/tb_icon70.png
-        icons/dark/tb_icon80.png
-        icons/dark/tb_icon90.png
-        icons/dark/tb_icon100.png
-    )
-    set( LIGHT_ICONS
-        icons/light/tb_icon0.png
-        icons/light/tb_icon10.png
-        icons/light/tb_icon20.png
-        icons/light/tb_icon30.png
-        icons/light/tb_icon40.png
-        icons/light/tb_icon50.png
-        icons/light/tb_icon60.png
-        icons/light/tb_icon70.png
-        icons/light/tb_icon80.png
-        icons/light/tb_icon90.png
-        icons/light/tb_icon100.png
-    )
     set( qtalsavolume_TRS
         ${TRANSLATIONS_PATH}/${PROJECT_NAME}_en.ts
         ${TRANSLATIONS_PATH}/${PROJECT_NAME}_ru.ts
@@ -110,7 +85,6 @@ if( UNIX AND NOT (APPLE OR CYGWIN) )
         )
     endif()
     find_package ( Qt5 COMPONENTS Widgets REQUIRED )
-    set( CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS} ${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}" )
     add_definitions( -DHAVE_QT5 )
     qt5_add_resources( RSCS ${QRC_FILES} )
     if( ${BUILD_TRANSLATIONS} )
@@ -141,8 +115,6 @@ if( UNIX AND NOT (APPLE OR CYGWIN) )
     INSTALL( TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin )
     INSTALL( FILES ${DESKTOP_FILES} DESTINATION ${APPDIR_PATH} )
     INSTALL( FILES ${ICON_FILES} DESTINATION ${DATADIR_PATH}/${PROJECT_NAME}/icons )
-    INSTALL( FILES ${DARK_ICONS} DESTINATION ${DATADIR_PATH}/${PROJECT_NAME}/icons/dark )
-    INSTALL( FILES ${LIGHT_ICONS} DESTINATION ${DATADIR_PATH}/${PROJECT_NAME}/icons/light )
     INSTALL( FILES ${TRS} DESTINATION ${DATADIR_PATH}/${PROJECT_NAME}/${TRANSLATIONS_PATH} )
     if(USE_CPACK AND DPKG_PATH)
         INSTALL( FILES ${PROJECT_BINARY_DIR}/copyright DESTINATION ${DATADIR_PATH}/doc/${PROJECT_NAME} )

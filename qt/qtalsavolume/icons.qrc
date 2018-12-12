@@ -1,5 +1,27 @@
 <RCC>
     <qresource prefix="/images">
         <file alias="Logo">icons/volume_ico.png</file>
+        <file>icons/light/tb_icon0.png</file>
+        <file>icons/light/tb_icon10.png</file>
+        <file>icons/light/tb_icon20.png</file>
+        <file>icons/light/tb_icon30.png</file>
+        <file>icons/light/tb_icon40.png</file>
+        <file>icons/light/tb_icon50.png</file>
+        <file>icons/light/tb_icon60.png</file>
+        <file>icons/light/tb_icon70.png</file>
+        <file>icons/light/tb_icon80.png</file>
+        <file>icons/light/tb_icon90.png</file>
+        <file>icons/light/tb_icon100.png</file>
+        <file>icons/dark/tb_icon0.png</file>
+        <file>icons/dark/tb_icon10.png</file>
+        <file>icons/dark/tb_icon20.png</file>
+        <file>icons/dark/tb_icon30.png</file>
+        <file>icons/dark/tb_icon40.png</file>
+        <file>icons/dark/tb_icon50.png</file>
+        <file>icons/dark/tb_icon60.png</file>
+        <file>icons/dark/tb_icon70.png</file>
+        <file>icons/dark/tb_icon80.png</file>
+        <file>icons/dark/tb_icon90.png</file>
+        <file>icons/dark/tb_icon100.png</file>
     </qresource>
 </RCC>

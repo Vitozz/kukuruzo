@@ -21,6 +21,9 @@
 #include "alsawork.h"
 #include <QMessageBox>
 #include <QString>
+#ifdef ISDEBUG
+  #include <QDebug>
+#endif
 
 static const QString ERROR_TITLE = "Error in alsawork.cpp";
 
@@ -42,7 +45,7 @@ AlsaWork::~AlsaWork()
 //public
 void AlsaWork::setCurrentCard(int cardId)
 {
-	if(cardId < (int)devices_.size()) {
+	if(cardId < devices_.size()) {
 		currentAlsaDevice_ = devices_.at(cardId);
 	}
 }
@@ -75,13 +78,20 @@ const QString AlsaWork::getCardName(int index)
 {
 	QString card(AlsaDevice::formatCardName(index));
 	snd_ctl_t *ctl;
-	checkError(snd_ctl_open(&ctl, card.toLocal8Bit(), SND_CTL_NONBLOCK));
-	snd_ctl_card_info_t *cardInfo;
-	snd_ctl_card_info_alloca(&cardInfo);
-	checkError(snd_ctl_card_info(ctl, cardInfo));
-	const char *cardName = snd_ctl_card_info_get_name(cardInfo);
-	checkError(snd_ctl_close(ctl));
-	return QString::fromLocal8Bit(cardName);
+	int res = snd_ctl_open(&ctl, card.toLocal8Bit(), SND_CTL_NONBLOCK);
+	checkError(res);
+	if (res == 0) {
+		snd_ctl_card_info_t *cardInfo;
+		snd_ctl_card_info_alloca(&cardInfo);
+		res = snd_ctl_card_info(ctl, cardInfo);
+		checkError(res);
+		if(res == 0) {
+			const char *cardName = snd_ctl_card_info_get_name(cardInfo);
+			checkError(snd_ctl_close(ctl));
+			return QString::fromLocal8Bit(cardName);
+		}
+	}
+	return QString();
 }
 
 QString AlsaWork::getCurrentMixerName() const
@@ -136,14 +146,14 @@ bool AlsaWork::checkCardId(int cardId)
 void AlsaWork::checkError (int errorIndex)
 {
 	if (errorIndex < 0) {
-		QMessageBox::critical(0, ERROR_TITLE, QString::fromLocal8Bit(snd_strerror(errorIndex)));
+		QMessageBox::critical(nullptr, ERROR_TITLE, QString::fromLocal8Bit(snd_strerror(errorIndex)));
 	}
 }
 
 void AlsaWork::checkError(const QString &title, const QString &message)
 {
 	if(!title.isEmpty() && !message.isEmpty()) {
-		QMessageBox::critical(0, title, message);
+		QMessageBox::critical(nullptr, title, message);
 	}
 }
 
@@ -152,8 +162,9 @@ int AlsaWork::getTotalCards()
 	int cards = 0;
 	int index = -1;
 	while (true) {
-		checkError(snd_card_next(&index));
-		if (index < 0) {
+		int res = snd_card_next(&index);
+		checkError(res);
+		if (res == 0 && index < 0) {
 			break;
 		}
 		++cards;
@@ -166,9 +177,15 @@ void AlsaWork::getCards()
 	if (!cardList_.isEmpty())
 		cardList_.clear();
 	totalCards_ = getTotalCards();
+#ifdef ISDEBUG
+	qDebug() << "TC" << totalCards_;
+#endif
 	if (totalCards_ >= 1) {
 		for (int card = 0; card < totalCards_; card++) {
-			cardList_ << getCardName(card);
+			QString name(getCardName(card));
+			if(!name.isEmpty()) {
+				cardList_ << getCardName(card);
+			}
 		}
 	}
 }
@@ -197,7 +214,7 @@ bool AlsaWork::mixerExists(const QString &name)
 
 bool AlsaWork::mixerExists(int id)
 {
-	return bool(id >=0 && id < (int)currentAlsaDevice_->mixers().size());
+	return bool(id >=0 && id < currentAlsaDevice_->mixers().size());
 }
 
 int AlsaWork::getFirstCardWithMixers() const

@@ -1,3 +1,8 @@
+2018-12-12
+v.0.2.2
+  + Fixed segmentation faults in alsawork
+  + Icons moved to resources
+
 2018-10-17
 v.0.2.1
   + Added initial cpack support
