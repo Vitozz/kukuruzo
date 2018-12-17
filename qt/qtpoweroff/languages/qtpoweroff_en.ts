@@ -1,211 +1,234 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="en_US">
+<TS version="2.1" language="en_US">
 <context>
     <name>MainWindow</name>
     <message>
         <location filename="../mainwindow.ui" line="26"/>
         <source>QtPowerOff</source>
-        <translation type="unfinished"></translation>
+        <translation>QtPowerOff</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="82"/>
         <source>Action after a specified number of minutes</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="85"/>
-        <source>Time to shutdown (min)</source>
-        <translation type="unfinished"></translation>
+        <translation>Action after a specified number of minutes</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="98"/>
         <source>Set time in minutes</source>
-        <translation type="unfinished"></translation>
+        <translation>Set time in minutes</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="108"/>
         <source>Action at selected Date and Time</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="111"/>
-        <source>Shutdown in (dd.MM.yy hh:mm)</source>
-        <translation type="unfinished"></translation>
+        <translation>Action at selected Date and Time</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="121"/>
         <source>Select Date and set Time</source>
-        <translation type="unfinished"></translation>
+        <translation>Select Date and set Time</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="153"/>
         <source>Reboot system</source>
-        <translation type="unfinished"></translation>
+        <translation>Reboot system</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="156"/>
-        <location filename="../mainwindow.cpp" line="192"/>
-        <location filename="../mainwindow.cpp" line="267"/>
+        <location filename="../mainwindow.cpp" line="206"/>
+        <location filename="../mainwindow.cpp" line="280"/>
         <source>Reboot</source>
-        <translation type="unfinished"></translation>
+        <translation>Reboot</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="172"/>
         <source>Shutdown system</source>
-        <translation type="unfinished"></translation>
+        <translation>Shutdown system</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="206"/>
+        <location filename="../mainwindow.cpp" line="280"/>
+        <source>Shutdown</source>
+        <translation>Shutdown</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="85"/>
+        <source>&amp;Time to shutdown (min)</source>
+        <translation>&amp;Time to shutdown (min)</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="111"/>
+        <source>&amp;Shutdown in (dd.MM.yy hh:mm)</source>
+        <translation>&amp;Shutdown in (dd.MM.yy hh:mm)</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="156"/>
+        <source>&amp;Reboot</source>
+        <translation>&amp;Reboot</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="175"/>
-        <location filename="../mainwindow.cpp" line="192"/>
-        <location filename="../mainwindow.cpp" line="267"/>
-        <source>Shutdown</source>
-        <translation type="unfinished"></translation>
+        <source>Sh&amp;utdown</source>
+        <translation>Sh&amp;utdown</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="214"/>
         <source>Start</source>
-        <translation type="unfinished"></translation>
+        <translation>Start</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="273"/>
         <source>&amp;File</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;File</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="279"/>
         <source>&amp;Options</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Options</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="285"/>
         <source>&amp;Help</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Help</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="296"/>
         <source>E&amp;xit</source>
-        <translation type="unfinished"></translation>
+        <translation>E&amp;xit</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="301"/>
         <source>&amp;Terminate</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="311"/>
-        <location filename="../mainwindow.cpp" line="52"/>
-        <source>About Qt</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="50"/>
-        <source>Terminate</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="53"/>
-        <source>Exit</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Terminate</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="306"/>
-        <source>About QtPowerOff</source>
-        <translation type="unfinished"></translation>
+        <source>&amp;About QtPowerOff</source>
+        <translation>&amp;About QtPowerOff</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="203"/>
+        <location filename="../mainwindow.ui" line="311"/>
+        <source>About &amp;Qt</source>
+        <translation>About &amp;Qt</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="67"/>
+        <source>About Qt</source>
+        <translation>About Qt</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="65"/>
+        <source>Terminate</source>
+        <translation>Terminate</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="68"/>
+        <source>Exit</source>
+        <translation>Exit</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="217"/>
         <source>reboot</source>
-        <translation type="unfinished"></translation>
+        <translation>reboot</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="167"/>
+        <location filename="../mainwindow.cpp" line="181"/>
         <source>%1 days %2:%3:%4</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 days %2:%3:%4</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="51"/>
-        <location filename="../mainwindow.cpp" line="139"/>
+        <location filename="../mainwindow.cpp" line="66"/>
+        <location filename="../mainwindow.cpp" line="153"/>
         <source>About %1</source>
-        <translation type="unfinished"></translation>
+        <translation>About %1</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="132"/>
-        <source>&lt;!DOCTYPE html&gt;&lt;html&gt;&lt;body&gt;&lt;p&gt;&lt;b&gt;Tool for scheduled Shutdown/Reboot&lt;/b&gt;&lt;/p&gt;&lt;p&gt;written using Qt&lt;/p&gt;&lt;p&gt;2014 (c) Vitaly Tonkacheyev &lt;address&gt;&lt;a href=&quot;mailto:thetvg@gmail.com&quot;&gt;&amp;lt;EMail&amp;gt;&lt;/a&gt;&lt;/address&gt;&lt;/p&gt;&lt;a href=&quot;http://sites.google.com/site/thesomeprojects/&quot;&gt;Program WebSite&lt;/a&gt;&lt;p&gt;version: &lt;b&gt;%1&lt;/b&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <location filename="../mainwindow.cpp" line="146"/>
+        <source>&lt;!DOCTYPE html&gt;&lt;html&gt;&lt;body&gt;&lt;p&gt;&lt;b&gt;Tool for scheduled Shutdown/Reboot&lt;/b&gt;&lt;/p&gt;&lt;p&gt;written using Qt&lt;/p&gt;&lt;p&gt;2018 (c) Vitaly Tonkacheyev &lt;address&gt;&lt;a href=&quot;mailto:thetvg@gmail.com&quot;&gt;&amp;lt;EMail&amp;gt;&lt;/a&gt;&lt;/address&gt;&lt;/p&gt;&lt;a href=&quot;http://sites.google.com/site/thesomeprojects/&quot;&gt;Program WebSite&lt;/a&gt;&lt;p&gt;version: &lt;b&gt;%1&lt;/b&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation>&lt;!DOCTYPE html&gt;&lt;html&gt;&lt;body&gt;&lt;p&gt;&lt;b&gt;Tool for scheduled Shutdown/Reboot&lt;/b&gt;&lt;/p&gt;&lt;p&gt;written using Qt&lt;/p&gt;&lt;p&gt;2018 (c) Vitaly Tonkacheyev &lt;address&gt;&lt;a href=&quot;mailto:thetvg@gmail.com&quot;&gt;&amp;lt;EMail&amp;gt;&lt;/a&gt;&lt;/address&gt;&lt;/p&gt;&lt;a href=&quot;http://sites.google.com/site/thesomeprojects/&quot;&gt;Program WebSite&lt;/a&gt;&lt;p&gt;version: &lt;b&gt;%1&lt;/b&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="165"/>
+        <location filename="../mainwindow.cpp" line="179"/>
         <source>%1:%2:%3</source>
-        <translation type="unfinished"></translation>
+        <translation>%1:%2:%3</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="200"/>
+        <location filename="../mainwindow.cpp" line="214"/>
         <source>%1 at %2</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 at %2</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="203"/>
+        <location filename="../mainwindow.cpp" line="217"/>
         <source>shutdown</source>
-        <translation type="unfinished"></translation>
+        <translation>shutdown</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="204"/>
+        <location filename="../mainwindow.cpp" line="218"/>
         <source>Please Confirm Your Choice</source>
-        <translation type="unfinished"></translation>
+        <translation>Please Confirm Your Choice</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="207"/>
+        <location filename="../mainwindow.cpp" line="221"/>
         <source>Do You realy whant to %1 your PC
  %2</source>
-        <translation type="unfinished"></translation>
+        <translation>Do You realy whant to %1 your PC
+ %2</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="237"/>
+        <location filename="../mainwindow.cpp" line="251"/>
         <source>Terminated</source>
-        <translation type="unfinished"></translation>
+        <translation>Terminated</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="268"/>
+        <location filename="../mainwindow.cpp" line="281"/>
         <source>%1 at - %2</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 at - %2</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="370"/>
+        <location filename="../mainwindow.cpp" line="375"/>
         <source>Errorr in DBUS</source>
-        <translation type="unfinished"></translation>
+        <translation>Errorr in DBUS</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="371"/>
+        <location filename="../mainwindow.cpp" line="376"/>
         <source>Can&apos;t establish connection to
 org.freedesktop.ConsoleKit.Manager
+or to
+org.freedesktop.login1.Manager
 May be you have no permissions
-Or service not available</source>
-        <translation type="unfinished"></translation>
+Or consolekit/logind app not available
+Or maybe you not in power group</source>
+        <translation>Can&apos;t establish connection to
+org.freedesktop.ConsoleKit.Manager
+or to
+org.freedesktop.login1.Manager
+May be you have no permissions
+Or consolekit/logind app not available
+Or maybe you not in power group</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="418"/>
+        <location filename="../mainwindow.cpp" line="427"/>
         <source>Error</source>
-        <translation type="unfinished"></translation>
+        <translation>Error</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="419"/>
+        <location filename="../mainwindow.cpp" line="428"/>
         <source>Can&apos;t get privileges</source>
-        <translation type="unfinished"></translation>
+        <translation>Can&apos;t get privileges</translation>
     </message>
 </context>
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../main.cpp" line="58"/>
+        <location filename="../main.cpp" line="57"/>
         <source>Error</source>
-        <translation type="unfinished"></translation>
+        <translation>Error</translation>
     </message>
     <message>
-        <location filename="../main.cpp" line="58"/>
+        <location filename="../main.cpp" line="57"/>
         <source>System tray not detected
 Exiting...</source>
-        <translation type="unfinished"></translation>
+        <translation>System tray not detected
+Exiting...</translation>
     </message>
 </context>
 </TS>
