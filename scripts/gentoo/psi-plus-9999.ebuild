@@ -1,4 +1,4 @@
-# Copyright 1999-2018 Gentoo Foundation
+# Copyright 1999-2016 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=6
@@ -13,7 +13,7 @@ EGIT_REPO_URI="${PSI_PLUS_URI}/psi-plus-snapshots.git"
 PSI_PLUS_LANGS_URI="${PSI_PLUS_URI}/psi-plus-l10n.git"
 EGIT_MIN_CLONE_TYPE="single"
 
-DESCRIPTION="Qt5 Jabber client, based on Psi client (https://psi-im.org) but with more features"
+DESCRIPTION="Qt5 Jabber client, with Licq-like interface"
 HOMEPAGE="http://psi-plus.com/"
 LICENSE="GPL-2"
 SLOT="0"
@@ -45,10 +45,6 @@ RDEPEND="
 	enchant? ( >=app-text/enchant-1.3.0 )
 	hunspell? ( app-text/hunspell:= )
 	keychain? ( dev-libs/qtkeychain )
-	plugins? (
-		webengine? ( net-im/psi-plus-plugins[webengine] )
-		webkit? ( net-im/psi-plus-plugins[-webengine] )
-	)
 	webkit? ( dev-qt/qtwebkit:5	)
 	webengine? (
 		dev-qt/qtwebchannel:5
@@ -91,7 +87,6 @@ src_unpack() {
 }
 
 src_prepare() {
-	cd "${S}"
 	if use iconsets; then
 		cp -a "${WORKDIR}/resources/iconsets" "${S}" || die
 	fi
@@ -108,11 +103,11 @@ src_configure() {
 	local mycmakeargs=(
 		-DUSE_ENCHANT="$(usex enchant)"
 		-DUSE_HUNSPELL="$(usex hunspell)"
-		-DINSTALL_EXTRA_FILES="$(usex extras)"
 		-DINSTALL_PLUGINS_SDK="$(usex plugins)"
 		-DUSE_KEYCHAIN="$(usex keychain)"
 		-DUSE_WEBENGINE="$(usex  webengine)"
 		-DCMAKE_INSTALL_PREFIX="/usr"
+		-DINSTALL_EXTRA_FILES="$(usex extras)"
 		$(echo ${EXTRA_FLAGS})
 	)
 	cmake-utils_src_configure

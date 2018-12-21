@@ -23,7 +23,8 @@ RDEPEND="
 "
 DESCRIPTION="Tray ALSA volume changer written using Qt library"
 HOMEPAGE="http://sites.google.com/site/thesomeprojects/"
-EGIT_REPO_URI="git://github.com/Vitozz/kukuruzo.git"
+EGIT_REPO_URI="https://github.com/Vitozz/kukuruzo.git"
+EGIT_MIN_CLONE_TYPE="single"
 
 SLOT="0"
 KEYWORDS="~amd64 ~x86 ~amd64-linux ~x86-linux"
@@ -31,12 +32,13 @@ LICENSE="GPL-2"
 
 src_configure() {
 	local mycmakeargs=(
-		use -DUSE_PULSE="$(usex pulseaudio)"
-		use -DUSE_KDE="$(usex kde)"
+		-DUSE_PULSE="$(usex pulseaudio)"
+		-DUSE_KDE="$(usex kde)"
 	)
 	cmake-utils_src_configure
 }
 
 src_prepare() {
-	S="${EGIT_SOURCEDIR}/qt/qtalsavolume"
+	S="${WORKDIR}/${P}/qt/qtalsavolume"
+	eapply_user
 }

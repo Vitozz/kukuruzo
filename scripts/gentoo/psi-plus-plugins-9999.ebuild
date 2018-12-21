@@ -53,19 +53,19 @@ videostatusplugin
 watcherplugin
 "
 
-IUSE="${PSI_PLUGINS} webengine webkit"
+IUSE="${PSI_PLUGINS}"
 
 RDEPEND="
 	dev-qt/qtwidgets:5
 	dev-qt/qtxml:5
-	net-im/psi-plus[plugins]
+	net-im/psi-plus
 	httpuploadplugin? ( dev-qt/qtnetwork:5 )
 	contentdownloaderplugin? ( dev-qt/qtnetwork:5 )
 	videostatusplugin? (
 		dev-qt/qtx11extras
 		dev-qt/qtdbus:5
 	)
-		screenshotplugin? (
+	screenshotplugin? (
 		dev-qt/qtnetwork:5
 		dev-qt/qtprintsupport:5
 		dev-qt/qtx11extras
@@ -73,14 +73,10 @@ RDEPEND="
 	juickplugin? (
 		dev-qt/qtcore:5
 		dev-qt/qtnetwork:5
-		webengine? ( >=dev-qt/qtwebengine-5.7:5 )
-		webkit? ( dev-qt/qtwebkit:5 )
 	)
 	imagepreviewplugin? (
 		dev-qt/qtcore:5
 		dev-qt/qtnetwork:5
-		webengine? ( >=dev-qt/qtwebengine-5.7:5 )
-		webkit? ( dev-qt/qtwebkit:5 )
 	)
 	otrplugin? ( dev-qt/qtconcurrent )
 	omemoplugin? (
@@ -111,6 +107,7 @@ src_unpack() {
 
 src_configure() {
 	local plugins=""
+#	local EXTRA_FLAGS="-DONLY_PLUGINS=ON"
 	if use ripperccplugin || use battleshipgameplugin; then
 		EXTRA_FLAGS="${EXTRA_FLAGS} -BUILD_DEV_PLUGINS=ON"
 	fi
