@@ -1,6 +1,6 @@
 /*
  * defines.h
- * Copyright (C) 2013-2015 Vitaly Tonkacheyev
+ * Copyright (C) 2013-2019 Vitaly Tonkacheyev
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,7 +22,7 @@
 
 #define APP_NAME "qtalsavolume"
 #define APP_ORG "thesomeprojects"
-#define APP_VERSION "0.2.2"
+#define APP_VERSION "0.2.3"
 
 #define CARD_INDEX "Main/card"
 #define MIXER_NAME "Main/mixer"
@@ -43,25 +43,25 @@
 typedef QPair<QString, bool> switcher;
 
 enum Position {
-	BOTTOM = 0,
-	TOP = 1,
-	LEFT = 2,
-	RIGHT = 3
+    BOTTOM = 0,
+    TOP = 1,
+    LEFT = 2,
+    RIGHT = 3
 };
 
 enum SwitchType {
-	PLAYBACK = 0,
-	CAPTURE = 1,
-	ENUM = 2
+    PLAYBACK = 0,
+    CAPTURE = 1,
+    ENUM = 2
 };
 enum ActivationReason {
-	RESTORE = 0,
-	ABOUT = 1,
-	SETTINGS = 2,
-	ABOUTQT = 3,
-	WHEELUP = 4,
-	WHEELDOWN = 5,
-	EXIT = 6
+    RESTORE = 0,
+    ABOUT = 1,
+    SETTINGS = 2,
+    ABOUTQT = 3,
+    WHEELUP = 4,
+    WHEELDOWN = 5,
+    EXIT = 6
 };
 
 #endif // DEFINES_H

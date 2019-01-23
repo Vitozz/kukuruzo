@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014-2015 Vitaly Tonkacheyev <thetvg@gmail.com>
+ * Copyright (C) 2014-2019 Vitaly Tonkacheyev <thetvg@gmail.com>
  *
  * Big thanks to Clément Démoulins <clement@archivel.fr>
  *
@@ -26,48 +26,48 @@
 
 static int getCardId(pa_proplist *pl)
 {
-	const QString cardId(pa_proplist_gets(pl, ALSA_CARDID_PROPERTY));
-	return (!cardId.isNull()) ? cardId.toInt() : 0;
+    const QString cardId(pa_proplist_gets(pl, ALSA_CARDID_PROPERTY));
+    return (!cardId.isNull()) ? cardId.toInt() : 0;
 }
 
 PulseDevice::PulseDevice()
-: index_(0),
-  card_(0),
-  type_(SINK),
-  name_(QString()),
-  description_(QString()),
-  mute_(false)
+    : index_(0),
+      card_(0),
+      type_(SINK),
+      name_(QString()),
+      description_(QString()),
+      mute_(false)
 {
 }
 
 PulseDevice::PulseDevice(const pa_source_info* i)
-: index_(int(i->index)),
-  card_(getCardId(i->proplist)),
-  type_(SOURCE),
-  name_(QString(i->name)),
-  description_(QString::fromLocal8Bit(i->description))
+    : index_(int(i->index)),
+      card_(getCardId(i->proplist)),
+      type_(SOURCE),
+      name_(QString(i->name)),
+      description_(QString::fromLocal8Bit(i->description))
 {
-	volume.channels = i->volume.channels;
-	int n;
-	for (n = 0; n < volume.channels; ++n) {
-		volume.values[n] = i->volume.values[n];
-	}
-	mute_ = i->mute == 1;
+    volume.channels = i->volume.channels;
+    int n;
+    for (n = 0; n < volume.channels; ++n) {
+        volume.values[n] = i->volume.values[n];
+    }
+    mute_ = i->mute == 1;
 }
 
 PulseDevice::PulseDevice(const pa_sink_info* i)
-: index_(int(i->index)),
-  card_(getCardId(i->proplist)),
-  type_(SINK),
-  name_(QString(i->name)),
-  description_(QString::fromLocal8Bit(i->description))
+    : index_(int(i->index)),
+      card_(getCardId(i->proplist)),
+      type_(SINK),
+      name_(QString(i->name)),
+      description_(QString::fromLocal8Bit(i->description))
 {
-	volume.channels = i->volume.channels;
-	int n;
-	for (n = 0; n < volume.channels; ++n) {
-		volume.values[n] = i->volume.values[n];
-	}
-	mute_ = i->mute == 1;
+    volume.channels = i->volume.channels;
+    int n;
+    for (n = 0; n < volume.channels; ++n) {
+        volume.values[n] = i->volume.values[n];
+    }
+    mute_ = i->mute == 1;
 }
 
 int PulseDevice::percent(pa_cvolume& volume_) const
@@ -77,41 +77,41 @@ int PulseDevice::percent(pa_cvolume& volume_) const
 
 double PulseDevice::round(double value) const
 {
-	return (value > 0.0) ? qFloor(value + 0.5) : qCeil(value - 0.5);
+    return (value > 0.0) ? qFloor(value + 0.5) : qCeil(value - 0.5);
 }
 
 int PulseDevice::index() const
 {
-	return index_;
+    return index_;
 }
 
 int PulseDevice::card() const
 {
-	return card_;
+    return card_;
 }
 
 device_type PulseDevice::type() const
 {
-	return type_;
+    return type_;
 }
 
 const QString &PulseDevice::name() const
 {
-	return name_;
+    return name_;
 }
 
 const QString &PulseDevice::description() const
 {
-	return description_;
+    return description_;
 }
 
 int PulseDevice::volume_percent()
 {
-	return percent(volume);
+    return percent(volume);
 }
 
 bool PulseDevice::mute() const
 {
-	return mute_;
+    return mute_;
 }
 

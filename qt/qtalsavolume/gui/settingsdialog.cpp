@@ -1,6 +1,6 @@
 /*
  * settingsgialog.cpp
- * Copyright (C) 2013-2015 Vitaly Tonkacheyev
+ * Copyright (C) 2013-2019 Vitaly Tonkacheyev
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,297 +31,297 @@
 #endif
 
 SettingsDialog::SettingsDialog(QWidget *parent)
-: QDialog(parent),
-  ui(new Ui::SettingsDialog),
-  soundCards_(QStringList()),
-  mixers_(QStringList()),
-  isAutorun_(false),
-  pulseAvailable_(false),
-  playbacks_(new QListWidget(this)),
-  captures_(new QListWidget(this)),
-  enums_(new QListWidget(this)),
-  l1_(new QLabel(tr("Playback Switches"),this)),
-  l2_(new QLabel(tr("Capture Switches"),this)),
-  l3_(new QLabel(tr("Enum Switches"),this))
+    : QDialog(parent),
+      ui(new Ui::SettingsDialog),
+      soundCards_(QStringList()),
+      mixers_(QStringList()),
+      isAutorun_(false),
+      pulseAvailable_(false),
+      playbacks_(new QListWidget(this)),
+      captures_(new QListWidget(this)),
+      enums_(new QListWidget(this)),
+      l1_(new QLabel(tr("Playback Switches"),this)),
+      l2_(new QLabel(tr("Capture Switches"),this)),
+      l3_(new QLabel(tr("Enum Switches"),this))
 {
-	ui->setupUi(this);
-	connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &SettingsDialog::onOk);
-	connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &SettingsDialog::onCancel);
-	playbacks_->setToolTip(tr("Enable/Disable Alsa's Playback Switch"));
-	captures_->setToolTip(tr("Enable/Disable Alsa's Capture Switch"));
-	enums_->setToolTip(tr("Enable/Disable Alsa's Enumerated Switch"));
-	ui->verticalLayout_3->addWidget(l1_);
-	ui->verticalLayout_3->addWidget(playbacks_);
-	ui->verticalLayout_3->addWidget(l2_);
-	ui->verticalLayout_3->addWidget(captures_);
-	ui->verticalLayout_3->addWidget(l3_);
-	ui->verticalLayout_3->addWidget(enums_);
-	ui->tabWidget->setCurrentIndex(0);
+    ui->setupUi(this);
+    connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &SettingsDialog::onOk);
+    connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &SettingsDialog::onCancel);
+    playbacks_->setToolTip(tr("Enable/Disable Alsa's Playback Switch"));
+    captures_->setToolTip(tr("Enable/Disable Alsa's Capture Switch"));
+    enums_->setToolTip(tr("Enable/Disable Alsa's Enumerated Switch"));
+    ui->verticalLayout_3->addWidget(l1_);
+    ui->verticalLayout_3->addWidget(playbacks_);
+    ui->verticalLayout_3->addWidget(l2_);
+    ui->verticalLayout_3->addWidget(captures_);
+    ui->verticalLayout_3->addWidget(l3_);
+    ui->verticalLayout_3->addWidget(enums_);
+    ui->tabWidget->setCurrentIndex(0);
 }
 
 SettingsDialog::~SettingsDialog()
 {
-	disconnectSignals();
-	delete l3_;
-	delete l2_;
-	delete l1_;
-	delete enums_;
-	delete captures_;
-	delete playbacks_;
-	delete ui;
+    disconnectSignals();
+    delete l3_;
+    delete l2_;
+    delete l1_;
+    delete enums_;
+    delete captures_;
+    delete playbacks_;
+    delete ui;
 }
 
 void SettingsDialog::setSoundCards(const QStringList &cards)
 {
-	ui->cardBox->blockSignals(true);
-	soundCards_ = cards;
-	if (ui->cardBox->count() > 0) {
-		ui->cardBox->clear();
-	}
-	ui->cardBox->addItems(soundCards_);
-	ui->cardBox->blockSignals(false);
+    ui->cardBox->blockSignals(true);
+    soundCards_ = cards;
+    if (ui->cardBox->count() > 0) {
+        ui->cardBox->clear();
+    }
+    ui->cardBox->addItems(soundCards_);
+    ui->cardBox->blockSignals(false);
 }
 
 void SettingsDialog::setMixers(const QStringList &mixers)
 {
-	ui->mixerBox->blockSignals(true);
-	mixers_ = mixers;
-	if (ui->mixerBox->count() > 0) {
-		ui->mixerBox->clear();
-	}
-	if (mixers_.size() > 0) {
-		ui->mixerBox->addItems(mixers_);
-	}
-	ui->mixerBox->blockSignals(false);
+    ui->mixerBox->blockSignals(true);
+    mixers_ = mixers;
+    if (ui->mixerBox->count() > 0) {
+        ui->mixerBox->clear();
+    }
+    if (mixers_.size() > 0) {
+        ui->mixerBox->addItems(mixers_);
+    }
+    ui->mixerBox->blockSignals(false);
 }
 
 void SettingsDialog::connectSignals()
 {
-	connect(playbacks_, &QListWidget::itemChanged, this, &SettingsDialog::onPBAction);
-	connect(captures_, &QListWidget::itemChanged, this, &SettingsDialog::onCPAction);
-	connect(enums_, &QListWidget::itemChanged, this, &SettingsDialog::onENAction);
-	connect(ui->darkRadio, &QRadioButton::toggled, this, &SettingsDialog::onDarkStyle);
-	connect(ui->lightRadio, &QRadioButton::toggled, this, &SettingsDialog::onLightStyle);
-	connect(ui->cardBox, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &SettingsDialog::onSoundCard);
-	connect(ui->mixerBox, static_cast<void(QComboBox::*)(const QString &)>(&QComboBox::currentIndexChanged), this, &SettingsDialog::onMixer);
-	connect(ui->isAutorun, &QCheckBox::toggled, this, &SettingsDialog::onAutorun);
-	connect(ui->usePulseaudio, &QCheckBox::toggled, this, &SettingsDialog::onPulseSoundSystem);
-	connect(ui->enableTimer, &QCheckBox::toggled, this, &SettingsDialog::onEnableTimer);
+    connect(playbacks_, &QListWidget::itemChanged, this, &SettingsDialog::onPBAction);
+    connect(captures_, &QListWidget::itemChanged, this, &SettingsDialog::onCPAction);
+    connect(enums_, &QListWidget::itemChanged, this, &SettingsDialog::onENAction);
+    connect(ui->darkRadio, &QRadioButton::toggled, this, &SettingsDialog::onDarkStyle);
+    connect(ui->lightRadio, &QRadioButton::toggled, this, &SettingsDialog::onLightStyle);
+    connect(ui->cardBox, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &SettingsDialog::onSoundCard);
+    connect(ui->mixerBox, static_cast<void(QComboBox::*)(const QString &)>(&QComboBox::currentIndexChanged), this, &SettingsDialog::onMixer);
+    connect(ui->isAutorun, &QCheckBox::toggled, this, &SettingsDialog::onAutorun);
+    connect(ui->usePulseaudio, &QCheckBox::toggled, this, &SettingsDialog::onPulseSoundSystem);
+    connect(ui->enableTimer, &QCheckBox::toggled, this, &SettingsDialog::onEnableTimer);
 }
 
 void SettingsDialog::disconnectSignals()
 {
-	playbacks_->disconnect();
-	captures_->disconnect();
-	enums_->disconnect();
-	ui->darkRadio->disconnect();
-	ui->lightRadio->disconnect();
-	ui->cardBox->disconnect();
-	ui->mixerBox->disconnect();
-	ui->isAutorun->disconnect();
-	ui->usePulseaudio->disconnect();
-	ui->enableTimer->disconnect();
+    playbacks_->disconnect();
+    captures_->disconnect();
+    enums_->disconnect();
+    ui->darkRadio->disconnect();
+    ui->lightRadio->disconnect();
+    ui->cardBox->disconnect();
+    ui->mixerBox->disconnect();
+    ui->isAutorun->disconnect();
+    ui->usePulseaudio->disconnect();
+    ui->enableTimer->disconnect();
 }
 
 void SettingsDialog::onSoundCard(int changed)
 {
-	emit soundCardChanged(changed);
+    emit soundCardChanged(changed);
 }
 
 void SettingsDialog::onMixer(const QString &changed)
 {
-	emit mixerChanged(changed);
+    emit mixerChanged(changed);
 }
 
 void SettingsDialog::setCurrentCard(int index)
 {
-	if (index < soundCards_.size()) {
-		ui->cardBox->setCurrentIndex(index);
-	}
-	else {
-		ui->cardBox->setCurrentIndex(0);
-	}
+    if (index < soundCards_.size()) {
+        ui->cardBox->setCurrentIndex(index);
+    }
+    else {
+        ui->cardBox->setCurrentIndex(0);
+    }
 }
 
 void SettingsDialog::setCurrentMixer(const QString &mixer)
 {
-	if (mixers_.contains(mixer)) {
-		ui->mixerBox->setCurrentIndex(mixers_.indexOf(mixer));
-	}
+    if (mixers_.contains(mixer)) {
+        ui->mixerBox->setCurrentIndex(mixers_.indexOf(mixer));
+    }
 }
 
 void SettingsDialog::onOk()
 {
-	const QString mixer(ui->mixerBox->currentText());
-	const int card = ui->cardBox->currentIndex();
-	emit soundCardChanged(card);
-	emit mixerChanged(mixer);
-	hide();
+    const QString mixer(ui->mixerBox->currentText());
+    const int card = ui->cardBox->currentIndex();
+    emit soundCardChanged(card);
+    emit mixerChanged(mixer);
+    hide();
 }
 
 void SettingsDialog::onCancel()
 {
-	hide();
+    hide();
 }
 
 void SettingsDialog::onAutorun(bool toggle)
 {
-	emit autorunChanged(toggle);
+    emit autorunChanged(toggle);
 }
 
 void SettingsDialog::closeEvent(QCloseEvent *)
 {
-	hide();
+    hide();
 }
 
 void SettingsDialog::setPlaybackChecks(const QList<switcher> &pbList)
 {
-	if (playbacks_->count() > 0) {
-		playbacks_->clear();
-	}
-	foreach (switcher item, pbList) {
-		QListWidgetItem *cb = new QListWidgetItem(item.first, playbacks_);
-		cb->setFlags(cb->flags() | Qt::ItemIsUserCheckable);
-		if (item.second) {
-			cb->setCheckState(Qt::Checked);
-		}
-		else {
-			cb->setCheckState(Qt::Unchecked);
-		}
-		playbacks_->addItem(cb);
-	}
-	bool hasItems(playbacks_->count() > 0);
-	playbacks_->show();
-	playbacks_->setVisible(hasItems);
-	l1_->setVisible(hasItems);
+    if (playbacks_->count() > 0) {
+        playbacks_->clear();
+    }
+    foreach (switcher item, pbList) {
+        QListWidgetItem *cb = new QListWidgetItem(item.first, playbacks_);
+        cb->setFlags(cb->flags() | Qt::ItemIsUserCheckable);
+        if (item.second) {
+            cb->setCheckState(Qt::Checked);
+        }
+        else {
+            cb->setCheckState(Qt::Unchecked);
+        }
+        playbacks_->addItem(cb);
+    }
+    bool hasItems(playbacks_->count() > 0);
+    playbacks_->show();
+    playbacks_->setVisible(hasItems);
+    l1_->setVisible(hasItems);
 }
 
 void SettingsDialog::setCaptureChecks(const QList<switcher> &cList)
 {
-	if (captures_->count() > 0 ){
-		captures_->clear();
-	}
-	foreach (switcher item, cList) {
-		QListWidgetItem *cb = new QListWidgetItem(item.first, captures_);
-		cb->setFlags(cb->flags() | Qt::ItemIsUserCheckable);
-		if (item.second) {
-			cb->setCheckState(Qt::Checked);
-		}
-		else {
-			cb->setCheckState(Qt::Unchecked);
-		}
-		captures_->addItem(cb);
-	}
-	bool hasItems(captures_->count() > 0);
-	captures_->show();
-	captures_->setVisible(hasItems);
-	l2_->setVisible(hasItems);
+    if (captures_->count() > 0 ){
+        captures_->clear();
+    }
+    foreach (switcher item, cList) {
+        QListWidgetItem *cb = new QListWidgetItem(item.first, captures_);
+        cb->setFlags(cb->flags() | Qt::ItemIsUserCheckable);
+        if (item.second) {
+            cb->setCheckState(Qt::Checked);
+        }
+        else {
+            cb->setCheckState(Qt::Unchecked);
+        }
+        captures_->addItem(cb);
+    }
+    bool hasItems(captures_->count() > 0);
+    captures_->show();
+    captures_->setVisible(hasItems);
+    l2_->setVisible(hasItems);
 }
 
 void SettingsDialog::setEnumChecks(const QList<switcher> &eList)
 {
-	if (enums_->count() > 0 ){
-		enums_->clear();
-	}
-	foreach (switcher item, eList) {
-		QListWidgetItem *cb = new QListWidgetItem(item.first, enums_);
-		cb->setFlags(cb->flags() | Qt::ItemIsUserCheckable);
-		if (item.second) {
-			cb->setCheckState(Qt::Checked);
-		}
-		else {
-			cb->setCheckState(Qt::Unchecked);
-		}
-		enums_->addItem(cb);
-	}
-	enums_->show();
-	bool hasItems(enums_->count() > 0);
-	enums_->setVisible(hasItems);
-	l3_->setVisible(hasItems);
+    if (enums_->count() > 0 ){
+        enums_->clear();
+    }
+    foreach (switcher item, eList) {
+        QListWidgetItem *cb = new QListWidgetItem(item.first, enums_);
+        cb->setFlags(cb->flags() | Qt::ItemIsUserCheckable);
+        if (item.second) {
+            cb->setCheckState(Qt::Checked);
+        }
+        else {
+            cb->setCheckState(Qt::Unchecked);
+        }
+        enums_->addItem(cb);
+    }
+    enums_->show();
+    bool hasItems(enums_->count() > 0);
+    enums_->setVisible(hasItems);
+    l3_->setVisible(hasItems);
 }
 
 void SettingsDialog::setAutorun(bool isAutorun)
 {
-	ui->isAutorun->setChecked(isAutorun);
+    ui->isAutorun->setChecked(isAutorun);
 }
 
 void SettingsDialog::onPBAction(QListWidgetItem *item)
 {
-	const Qt::CheckState checked(item->checkState());
-	emit playChanged(item->text(), (checked == Qt::Checked));
+    const Qt::CheckState checked(item->checkState());
+    emit playChanged(item->text(), (checked == Qt::Checked));
 }
 
 void SettingsDialog::onCPAction(QListWidgetItem *item)
 {
-	const Qt::CheckState checked = item->checkState();
-	emit captChanged(item->text(), (checked == Qt::Checked));
+    const Qt::CheckState checked = item->checkState();
+    emit captChanged(item->text(), (checked == Qt::Checked));
 }
 
 void SettingsDialog::onENAction(QListWidgetItem *item)
 {
-	const Qt::CheckState checked = item->checkState();
-	emit enumChanged(item->text(), (checked == Qt::Checked));
+    const Qt::CheckState checked = item->checkState();
+    emit enumChanged(item->text(), (checked == Qt::Checked));
 }
 
 void SettingsDialog::onDarkStyle(bool toggled)
 {
-	if (toggled) {
-		emit styleChanged(false);
-	}
+    if (toggled) {
+        emit styleChanged(false);
+    }
 }
 
 void SettingsDialog::onLightStyle(bool toggled)
 {
-	if (toggled) {
-		emit styleChanged(true);
-	}
+    if (toggled) {
+        emit styleChanged(true);
+    }
 }
 
 void SettingsDialog::setIconStyle(bool isLight)
 {
-	if (isLight) {
-		ui->lightRadio->setChecked(true);
-	}
-	else {
-		ui->darkRadio->setChecked(true);
-	}
+    if (isLight) {
+        ui->lightRadio->setChecked(true);
+    }
+    else {
+        ui->darkRadio->setChecked(true);
+    }
 }
 
 void SettingsDialog::onPulseSoundSystem(bool toggled)
 {
-	emit soundSystemChanged(toggled);
+    emit soundSystemChanged(toggled);
 }
 
 void SettingsDialog::setUsePulse(bool isPulse)
 {
-	ui->usePulseaudio->setChecked(isPulse);
+    ui->usePulseaudio->setChecked(isPulse);
 }
 
 void SettingsDialog::hideAlsaElements(bool isHide)
 {
-	ui->mixerBox->setEnabled(!isHide);
+    ui->mixerBox->setEnabled(!isHide);
 }
 
 void SettingsDialog::setPulseAvailable(bool available)
 {
-	pulseAvailable_ = available;
-	if (!pulseAvailable_) {
-		ui->usePulseaudio->setVisible(false);
-		ui->usePulseaudio->setEnabled(false);
-	}
-	else {
-		ui->usePulseaudio->setVisible(true);
-		ui->usePulseaudio->setEnabled(true);
-	}
+    pulseAvailable_ = available;
+    if (!pulseAvailable_) {
+        ui->usePulseaudio->setVisible(false);
+        ui->usePulseaudio->setEnabled(false);
+    }
+    else {
+        ui->usePulseaudio->setVisible(true);
+        ui->usePulseaudio->setEnabled(true);
+    }
 
 }
 
 void SettingsDialog::setUsePolling(bool isPoll)
 {
-	ui->enableTimer->setChecked(isPoll);
+    ui->enableTimer->setChecked(isPoll);
 }
 
 void SettingsDialog::onEnableTimer(bool toggled)
 {
-	emit timerEnabled(toggled);
+    emit timerEnabled(toggled);
 }

@@ -21,7 +21,7 @@ use_iconsets="system clients activities moods affiliations roster"
 isoffline=0
 skip_invalid=0
 use_plugins="*"
-let cpu_count=$(grep -c ^processor /proc/cpuinfo)+1
+let cpu_count=$(grep -c ^processor /proc/cpuinfo)
 devm=0
 wbkt=0
 pref=0
@@ -151,6 +151,7 @@ find_ccache ()
 #
 quit ()
 {
+  clean_tmp_dirs
   exit 0
 }
 #
@@ -296,11 +297,18 @@ copy_psiplus_icons()
   fi
 }
 #
+clean_tmp_dirs()
+{
+  if [ -d "${tmp_dir}" ]; then
+    rm -rf ${tmp_dir}
+  fi
+}
+#
 prepare_workspace ()
 {
   local last_dir=$(pwd)
   echo "Deleting ${workdir}"
-  rm -rf ${workdir}
+  clean_tmp_dirs
   check_dir ${workdir}
   cd ${upstream_src}
   prepare_psi_src ${workdir}
@@ -859,7 +867,9 @@ compile_psi_mxe()
 {
   curd=$(pwd)
   flags=""
-  prepare_src
+  if [ ! -d "${workdir}" ]; then
+    prepare_src
+  fi
   prepare_builddir ${builddir}
   mxe_outd=${tmp_dir}/mxe_builds
   check_dir ${mxe_outd}
