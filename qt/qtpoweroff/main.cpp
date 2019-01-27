@@ -1,6 +1,6 @@
 /*
  * main.cpp
- * Copyright (C) 2014 Vitaly Tonkacheyev
+ * Copyright (C) 2014-2019 Vitaly Tonkacheyev
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,37 +29,37 @@
 
 int main(int argc, char *argv[])
 {
-	QApplication a(argc, argv);
-	a.setOrganizationName(APP_ORG);
-	a.setApplicationVersion(APP_VERSION);
-	a.setApplicationName(APP_NAME);
-	QTranslator translator;
-	const QStringList localeDirs = QStringList() << QString("%1/languages").arg(QDir::currentPath())
-						     << QString("%1/languages").arg(qApp->applicationDirPath())
-						     << QString("/usr/share/%1/languages").arg(APP_NAME)
-						     << QString("/usr/local/share/%1/languages").arg(APP_NAME)
-						     << QString("%1/.local/share/%2/languages").arg(QDir::home().absolutePath(), APP_NAME)
-						     << QString("%1/share/%2/languages").arg(QDir::currentPath().left(QDir::currentPath().lastIndexOf("/")), APP_NAME);
-	const QString langFile(qApp->applicationName());
-	foreach(const QString &dir, localeDirs){
+    QApplication a(argc, argv);
+    a.setOrganizationName(APP_ORG);
+    a.setApplicationVersion(APP_VERSION);
+    a.setApplicationName(APP_NAME);
+    QTranslator translator;
+    const QStringList localeDirs({QString("%1/languages").arg(QDir::currentPath()),
+                                  QString("%1/languages").arg(qApp->applicationDirPath()),
+                                  QString("/usr/share/%1/languages").arg(APP_NAME),
+                                  QString("/usr/local/share/%1/languages").arg(APP_NAME),
+                                  QString("%1/.local/share/%2/languages").arg(QDir::home().absolutePath(), APP_NAME),
+                                  QString("%1/share/%2/languages").arg(QDir::currentPath().left(QDir::currentPath().lastIndexOf("/")), APP_NAME)});
+    const QString langFile(qApp->applicationName());
+    foreach(const QString &dir, localeDirs){
 #ifdef IS_DEBUG
-			qDebug() << "Dir is " << dir;
+        qDebug() << "Dir is " << dir;
 #endif
-		if (translator.load(QLocale::system(),langFile, "_", dir )) {
-			qApp->installTranslator(&translator);
+        if (translator.load(QLocale::system(),langFile, "_", dir )) {
+            qApp->installTranslator(&translator);
 #ifdef IS_DEBUG
-			qDebug() << "Found in " << dir;
+            qDebug() << "Found in " << dir;
 #endif
-			break;
-		}
-	}
-	if (!QSystemTrayIcon::isSystemTrayAvailable()) {
-		QMessageBox::critical(0, QObject::tr("Error"), QObject::tr("System tray not detected\nExiting..."));
-		return 1;
-	}
-	QApplication::setQuitOnLastWindowClosed(false);
-	MainWindow w;
-	w.show();
+            break;
+        }
+    }
+    if (!QSystemTrayIcon::isSystemTrayAvailable()) {
+        QMessageBox::critical(nullptr, QObject::tr("Error"), QObject::tr("System tray not detected\nExiting..."));
+        return 1;
+    }
+    QApplication::setQuitOnLastWindowClosed(false);
+    MainWindow w;
+    w.show();
 
-	return a.exec();
+    return a.exec();
 }
