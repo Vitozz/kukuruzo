@@ -20,11 +20,11 @@
 #include <QTranslator>
 #include <QDir>
 #include <QLocale>
-#include "mainwindow.h"
+#include "regexpwindow.h"
 
 #define ORGANIZATION "thesomeprojects"
 #define APPNAME "regexptest"
-#define APPVERISON "0.3.6"
+#define APPVERISON "0.4.0"
 
 int main(int argc, char *argv[])
 {
@@ -33,7 +33,8 @@ int main(int argc, char *argv[])
     a.setApplicationName(QString(APPNAME));
     a.setApplicationVersion(QString(APPVERISON));
     QTranslator translator;
-    const QStringList localeDirs({QString("%1/langs").arg(QDir::currentPath()),
+    const QStringList localeDirs({QString("%1").arg(QDir::currentPath()),
+                                  QString("%1/langs").arg(QDir::currentPath()),
                                   QString("%1/langs").arg(qApp->applicationDirPath()),
                                   QString("../share/%1/langs").arg(APPNAME),
                                   QString("/usr/share/%1/langs").arg(QString(APPNAME)),
@@ -46,7 +47,7 @@ int main(int argc, char *argv[])
             break;
         }
     }
-    MainWindow w;
+    RegexpWindow w;
     w.show();
     return a.exec();
 }

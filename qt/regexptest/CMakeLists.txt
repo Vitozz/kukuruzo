@@ -1,5 +1,5 @@
 project( regexptest )
-cmake_minimum_required( VERSION 2.8.12 )
+cmake_minimum_required( VERSION 3.1.0 )
 if ( NOT CMAKE_VERSION VERSION_LESS 3.10 )
 	cmake_policy(SET CMP0071 OLD)
 endif ()
@@ -21,14 +21,14 @@ include_directories(
 )
 set( regexptest_SRC
     main.cpp
-    mainwindow.cpp
+    regexpwindow.cpp
 )
 
 set( regexptest_HDR
-    mainwindow.h
+    regexpwindow.h
 )
 set( regexptest_UI
-    mainwindow.ui
+    regexpwindow.ui
 )
 set( regexptest_QRC
     resources.qrc
@@ -54,7 +54,7 @@ if( "${CMAKE_BUILD_TYPE}" STREQUAL "Debug" OR ( "${CMAKE_BUILD_TYPE}" STREQUAL "
 endif()
 
 find_package( Qt5 COMPONENTS Widgets REQUIRED )
-set( CMAKE_CXX_FLAGS "-std=c++0x ${CMAKE_CXX_FLAGS} ${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}" )
+set(CMAKE_CXX_STANDARD 11)
 qt5_add_resources( RSCS ${regexptest_QRC} )
 if( ${BUILD_TRANSLATIONS} )
     find_package( Qt5 COMPONENTS LinguistTools REQUIRED )

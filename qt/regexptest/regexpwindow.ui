@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>MainWindow</class>
- <widget class="QMainWindow" name="MainWindow">
+ <class>RegexpWindow</class>
+ <widget class="QMainWindow" name="RegexpWindow">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -82,28 +82,28 @@
        <item row="0" column="0">
         <widget class="QCheckBox" name="iscase">
          <property name="text">
-          <string>Case Sensetive</string>
+          <string>Case Insensetive</string>
          </property>
         </widget>
        </item>
        <item row="0" column="2">
-        <widget class="QCheckBox" name="isregexp2">
+        <widget class="QCheckBox" name="isextpattern">
          <property name="text">
-          <string>RegExp2</string>
+          <string>Extended Pattern Syntax</string>
          </property>
         </widget>
        </item>
        <item row="0" column="4">
-        <widget class="QCheckBox" name="isw3c">
+        <widget class="QCheckBox" name="dotMatchEverithing">
          <property name="text">
-          <string>W3CXmlSchema11</string>
+          <string>Dot Matches Everything</string>
          </property>
         </widget>
        </item>
        <item row="1" column="0">
-        <widget class="QCheckBox" name="isregexp">
+        <widget class="QCheckBox" name="multiline">
          <property name="text">
-          <string>RegExp</string>
+          <string>Multiline</string>
          </property>
         </widget>
        </item>
@@ -115,9 +115,9 @@
         </widget>
        </item>
        <item row="1" column="4">
-        <widget class="QCheckBox" name="iswildcardunix">
+        <widget class="QCheckBox" name="isinvgreed">
          <property name="text">
-          <string>WildcardUnix</string>
+          <string>Inverted Greediness</string>
          </property>
         </widget>
        </item>
@@ -202,14 +202,14 @@
        <item row="2" column="0">
         <widget class="QCheckBox" name="isminimal">
          <property name="text">
-          <string>Minimal match</string>
+          <string>Partial First Match</string>
          </property>
         </widget>
        </item>
        <item row="2" column="2">
-        <widget class="QCheckBox" name="isexactmatch">
+        <widget class="QCheckBox" name="dontcapture">
          <property name="text">
-          <string>Exact Match</string>
+          <string>Dont Capture</string>
          </property>
         </widget>
        </item>
@@ -405,7 +405,7 @@
      <x>0</x>
      <y>0</y>
      <width>566</width>
-     <height>20</height>
+     <height>30</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -460,11 +460,11 @@
   <tabstop>RegExp</tabstop>
   <tabstop>spinBox</tabstop>
   <tabstop>iscase</tabstop>
-  <tabstop>isregexp</tabstop>
-  <tabstop>isregexp2</tabstop>
+  <tabstop>multiline</tabstop>
+  <tabstop>isextpattern</tabstop>
   <tabstop>iswildcard</tabstop>
-  <tabstop>isw3c</tabstop>
-  <tabstop>iswildcardunix</tabstop>
+  <tabstop>dotMatchEverithing</tabstop>
+  <tabstop>isinvgreed</tabstop>
   <tabstop>label</tabstop>
  </tabstops>
  <resources>

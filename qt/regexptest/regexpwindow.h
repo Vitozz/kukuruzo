@@ -1,5 +1,5 @@
 /*
- * mainwindow.h
+ * regexpwindow.h
  * Copyright (C) 2013-2019 Vitaly Tonkacheyev
  *
  * This program is free software: you can redistribute it and/or modify
@@ -17,15 +17,14 @@
  *
  */
 
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#ifndef RegexpWindow_H
+#define RegexpWindow_H
 
 #include <QMainWindow>
-
-class QRegExp;
+#include <QRegularExpression>
 
 namespace Ui {
-class MainWindow;
+class RegexpWindow;
 }
 
 enum checkType {
@@ -33,31 +32,28 @@ enum checkType {
     CHECK_POS = 2
 };
 
-class MainWindow : public QMainWindow {
+class RegexpWindow : public QMainWindow {
     Q_OBJECT
 public:
-    MainWindow(QWidget *parent = nullptr);
-    ~MainWindow();
+    RegexpWindow(QWidget *parent = nullptr);
+    ~RegexpWindow();
 
 protected:
     void changeEvent(QEvent *e);
     void closeEvent(QCloseEvent *e);
 
 private:
-    Ui::MainWindow *ui;
+    Ui::RegexpWindow *ui;
     void RunOnlineHelp();
     QString LoadTextFile(const QString &filename);
-    QList <QStringList> CheckExpression(const QString &regexp, const QString &text) const;
+    QList<QStringList> CheckExpression(const QString &regexp, const QString &text) const;
     QString GetRegexpList(const QList <QStringList> &matches, const int &parm, const int &pos) const;
     void readSettings();
     void writeSettings();
-    QString replaceNotGreedy(const QString &text) const;
     QString unquoteText(const QString &text) const;
     QString quoteText(const QString &text) const;
-    QString getDirName(const QString &filename) const;
 
-    Qt::CaseSensitivity sens_;
-    QRegExp::PatternSyntax pattern_;
+    QRegularExpression::PatternOptions patternOptions_;
     QString fileName_;
     QString inputText_;
     QString regExpText_;
@@ -74,13 +70,13 @@ private slots:
     void on_actionE_xit_triggered();
     void on_inputText_textChanged();
     void on_fileName_textChanged(QString );
-    void on_iswildcardunix_toggled(bool checked);
-    void on_iswildcard_toggled(bool checked);
-    void on_isregexp2_toggled(bool checked);
-    void on_isregexp_toggled(bool checked);
+    void on_isinvgreed_toggled(bool checked);
+    void on_isextpattern_toggled(bool checked);
+    void on_dontcapture_toggled(bool checked);
+    void on_multiline_toggled(bool checked);
     void on_iscase_toggled(bool checked);
-    void on_isw3c_toggled(bool checked);
+    void on_dotMatchEverithing_toggled(bool checked);
     void on_unquotebox_toggled(bool checked);
 };
 
-#endif // MAINWINDOW_H
+#endif // RegexpWindow_H

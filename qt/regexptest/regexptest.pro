@@ -16,9 +16,9 @@ greaterThan(QT_MAJOR_VERSION, 4){
 }
 
 SOURCES += main.cpp \
-	   mainwindow.cpp
-HEADERS += mainwindow.h
-FORMS += mainwindow.ui
+	   regexpwindow.cpp
+HEADERS += regexpwindow.h
+FORMS += regexpwindow.ui
 RESOURCES += resources.qrc
 
 LANG_PATH = langs
