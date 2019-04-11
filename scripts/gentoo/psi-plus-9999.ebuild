@@ -6,7 +6,7 @@ EAPI=6
 PLOCALES="be bg ca cs de en eo es et fa fi fr he hu it ja kk mk nl pl pt pt_BR ru sk sl sr@latin sv sw uk ur_PK vi zh_CN zh_TW"
 PLOCALE_BACKUP="en"
 
-inherit cmake-utils eutils l10n multilib git-r3 xdg-utils
+inherit cmake-utils eutils l10n multilib git-r3 xdg-utils qmake-utils
 
 PSI_PLUS_URI="git://github.com/psi-plus"
 EGIT_REPO_URI="${PSI_PLUS_URI}/psi-plus-snapshots.git"
