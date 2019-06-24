@@ -94,18 +94,17 @@ src_prepare() {
 }
 
 src_configure() {
-	if use debug; then
-		EXTRA_FLAGS="-DCMAKE_BUILD_TYPE=Debug"
-	fi
-	if use webengine || use webkit; then
-		EXRTA_FLAGS="$EXTRA_FLAGS -DENABLE_WEBKIT=ON"
+	use debug && EXTRA_FLAGS="$EXTRA_FLAGS -DCMAKE_BUILD_TYPE=Debug"
+	use webengine && EXRTA_FLAGS="$EXTRA_FLAGS -DCHAT_TYPE=webengine"
+	use webkit && EXRTA_FLAGS="$EXTRA_FLAGS -DCHAT_TYPE=webkit"
+	if ! use webengine && ! use webkit; then
+		EXRTA_FLAGS="$EXTRA_FLAGS -DCHAT_TYPE=basic"
 	fi
 	local mycmakeargs=(
 		-DUSE_ENCHANT="$(usex enchant)"
 		-DUSE_HUNSPELL="$(usex hunspell)"
 		-DINSTALL_PLUGINS_SDK="$(usex plugins)"
 		-DUSE_KEYCHAIN="$(usex keychain)"
-		-DUSE_WEBENGINE="$(usex  webengine)"
 		-DCMAKE_INSTALL_PREFIX="/usr"
 		-DINSTALL_EXTRA_FILES="$(usex extras)"
 		$(echo ${EXTRA_FLAGS})
@@ -143,11 +142,11 @@ src_install() {
 }
 
 pkg_postinst() {
-	gnome2_icon_cache_update
+	xdg_icon_cache_update
 	xdg_desktop_database_update
 }
 
 pkg_postrm() {
-	gnome2_icon_cache_update
+	xdg_icon_cache_update
 	xdg_desktop_database_update
 }

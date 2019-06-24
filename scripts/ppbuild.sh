@@ -16,6 +16,7 @@ def_prefix="/usr" #префикс для сборки пси+
 #DEFAULT OPTIONS/ОПЦИИ ПО УМОЛЧАНИЮ
 spell_flag="-DUSE_ENCHANT=OFF -DUSE_HUNSPELL=ON"
 spellchek_engine="hunspell"
+chat_type="webengine" #webkit, basic, webengine
 iswebkit=""
 isoffline=0
 skip_invalid=0
@@ -390,7 +391,7 @@ compile_psiplus ()
     flags="${flags}"
   fi
   if [ -z "${iswebkit}" ]; then
-    flags="${flags} -DENABLE_WEBKIT=OFF"
+    flags="${flags} -DCHAT_TYPE=basic"
   fi
   cd ${builddir}
   cbuild_path=${workdir}
@@ -421,7 +422,7 @@ build_all_psiplus ()
   cd ${builddir}
   flags="-DCMAKE_BUILD_TYPE=${DEF_CMAKE_BUILD_TYPE} -DBUILD_PLUGINS=${DEF_PLUG_LIST} -DENABLE_PLUGINS=ON -DDEV_MODE=ON -DBUILD_DEV_PLUGINS=ON"
   if [ -z "${iswebkit}" ]; then
-    flags="${flags} -DENABLE_WEBKIT=OFF"
+    flags="${flags} -DCHAT_TYPE=basic"
   fi
   cd ${builddir}
   cbuild_path=${workdir}
@@ -504,7 +505,7 @@ Psi+ - Psi IM Mod by psi-dev@conference.jabber.ru.'
 prepare_spec ()
 {
   if [ -z "${iswebkit}" ]; then
-    extraflags="-DENABLE_WEBKIT=OFF ${spell_flag}"
+    extraflags="-DCHAT_TYPE=basic ${spell_flag}"
   fi
   echo "Creating psi.spec file..."
   local specfile="Summary: Client application for the Jabber network
@@ -899,7 +900,9 @@ compile_psi_mxe()
     flags="${flags} -DENABLE_PLUGINS=ON -DBUILD_DEV_PLUGINS=ON -DDEV_MODE=ON"
   fi
   if [ ${wbkt} -eq 0 ]; then
-    flags="${flags} -DENABLE_WEBKIT=OFF"
+    flags="${flags} -DCHAT_TYPE=basic"
+  else
+    flags="${flags} -DCHAT_TYPE=webkit"
   fi
   flags="${flags} -DUSE_CCACHE=ON -DVERBOSE_PROGRAM_NAME=ON -DQt5Keychain_DIR=${current_prefix}/lib/cmake/Qt5Keychain"
   wrkdir=${builddir}

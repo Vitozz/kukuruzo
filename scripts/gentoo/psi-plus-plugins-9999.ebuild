@@ -32,7 +32,6 @@ extendedoptionsplugin
 gnupgplugin
 gomokugameplugin
 historykeeperplugin
-httpuploadplugin
 icqdieplugin
 imageplugin
 imagepreviewplugin
@@ -59,7 +58,6 @@ RDEPEND="
 	dev-qt/qtwidgets:5
 	dev-qt/qtxml:5
 	net-im/psi-plus
-	httpuploadplugin? ( dev-qt/qtnetwork:5 )
 	contentdownloaderplugin? ( dev-qt/qtnetwork:5 )
 	videostatusplugin? (
 		dev-qt/qtx11extras
