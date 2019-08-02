@@ -57,11 +57,7 @@ protected:
     void closeEvent(QCloseEvent *);
 
 protected slots:
-    void onSoundCard(int changed);
-    void onMixer(const QString &changed);
-    void onAutorun(bool toggle);
     void onOk();
-    void onCancel();
     void onPBAction(QListWidgetItem *item);
     void onCPAction(QListWidgetItem *item);
     void onENAction(QListWidgetItem *item);

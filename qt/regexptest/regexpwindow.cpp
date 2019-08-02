@@ -59,6 +59,7 @@ RegexpWindow::RegexpWindow(QWidget *parent) :
     connect(ui->actionAbout_Qt, &QAction::triggered, qApp, &QApplication::aboutQt);
     connect(ui->actionOpen, &QAction::triggered, this, &RegexpWindow::on_openFile_clicked);
     readSettings();
+    qDebug() << (Qt::WindowFlags)nullptr;
 }
 
 RegexpWindow::~RegexpWindow()

@@ -77,6 +77,15 @@ private:
     void onError(const QString &message);
     void updateDevices();
     void clearLists();
+    static void pa_context_notify_cb(pa_context* context, void* raw);
+    static void pa_sink_info_cb(pa_context *c, const pa_sink_info *i, int eol, void *raw);
+    static void pa_source_info_cb(pa_context *c, const pa_source_info *i, int eol, void *raw);
+    static void server_info_cb(pa_context* c, const pa_server_info* i, void* raw);
+    static void success_cb(pa_context* c, int success, void* raw) {
+        Q_UNUSED(c);
+        Q_UNUSED(success);
+        Q_UNUSED(raw);
+    }
 private:
     pa_mainloop* mainLoop_;
     pa_mainloop_api* mainLoopApi_;

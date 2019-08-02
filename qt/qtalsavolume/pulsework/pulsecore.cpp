@@ -25,54 +25,6 @@
 #include <QDebug>
 #endif
 
-//Callbacks
-void state_cb(pa_context* context, void* raw) {
-    PulseCore *state = static_cast<PulseCore*>(raw);
-    switch(pa_context_get_state(context)) {
-    case PA_CONTEXT_READY:
-        state->pState = CONNECTED;
-        break;
-    case PA_CONTEXT_FAILED:
-        state->pState = ERROR;
-        break;
-    case PA_CONTEXT_UNCONNECTED:
-    case PA_CONTEXT_AUTHORIZING:
-    case PA_CONTEXT_SETTING_NAME:
-    case PA_CONTEXT_CONNECTING:
-    case PA_CONTEXT_TERMINATED:
-        break;
-    }
-}
-
-void sink_list_cb(pa_context *c, const pa_sink_info *i, int eol, void *raw) {
-    Q_UNUSED(c);
-    if (eol != 0) return;
-    PulseDevicePtrList* sinks = static_cast<PulseDevicePtrList*>(raw);
-    sinks->push_back(PulseDevice::Ptr(new PulseDevice(i)));
-}
-
-void source_list_cb(pa_context *c, const pa_source_info *i, int eol, void *raw) {
-    Q_UNUSED(c);
-    if (eol != 0) return;
-    PulseDevicePtrList* sources = static_cast<PulseDevicePtrList*>(raw);
-    sources->push_back(PulseDevice::Ptr(new PulseDevice(i)));
-}
-
-void server_info_cb(pa_context* c, const pa_server_info* i, void* raw) {
-    Q_UNUSED(c);
-    ServerInfo* info = static_cast<ServerInfo*>(raw);
-    info->defaultSinkName = QString(i->default_sink_name);
-    info->defaultSourceName = QString(i->default_source_name);
-}
-
-void success_cb(pa_context* c, int success, void* raw) {
-    Q_UNUSED(c);
-    Q_UNUSED(success);
-    Q_UNUSED(raw);
-}
-//
-
-
 PulseCore::PulseCore(const char *clientName)
     : mainLoop_(pa_mainloop_new()),
       mainLoopApi_(pa_mainloop_get_api(mainLoop_)),
@@ -86,7 +38,8 @@ PulseCore::PulseCore(const char *clientName)
 {
     isAvailable_ = true;
     pState = CONNECTING;
-    pa_context_set_state_callback(context_, &state_cb, this);
+
+    pa_context_set_state_callback(context_, pa_context_notify_cb, this);
     pa_context_connect(context_, nullptr, PA_CONTEXT_NOFLAGS, nullptr);
     while (pState == CONNECTING) {
         pa_mainloop_iterate(mainLoop_, 1, &retval_);
@@ -110,6 +63,47 @@ PulseCore::~PulseCore()
     pa_mainloop_free(mainLoop_);
 }
 
+void PulseCore::pa_context_notify_cb(pa_context* context, void* raw){
+    PulseCore *state = static_cast<PulseCore*>(raw);
+    switch(pa_context_get_state(context)) {
+    case PA_CONTEXT_READY:
+        state->pState = CONNECTED;
+        break;
+    case PA_CONTEXT_FAILED:
+        state->pState = ERROR;
+        break;
+    case PA_CONTEXT_UNCONNECTED:
+    case PA_CONTEXT_AUTHORIZING:
+    case PA_CONTEXT_SETTING_NAME:
+    case PA_CONTEXT_CONNECTING:
+    case PA_CONTEXT_TERMINATED:
+        break;
+    }
+}
+
+void PulseCore::pa_sink_info_cb(pa_context *c, const pa_sink_info *i, int eol, void *raw)
+{
+    Q_UNUSED(c);
+    if (eol != 0) return;
+    PulseDevicePtrList* sinks = static_cast<PulseDevicePtrList*>(raw);
+    sinks->push_back(PulseDevice::Ptr(new PulseDevice(i)));
+}
+
+void PulseCore::pa_source_info_cb(pa_context *c, const pa_source_info *i, int eol, void *raw)
+{
+    Q_UNUSED(c);
+    if (eol != 0) return;
+    PulseDevicePtrList* sources = static_cast<PulseDevicePtrList*>(raw);
+    sources->push_back(PulseDevice::Ptr(new PulseDevice(i)));
+}
+
+void PulseCore::server_info_cb(pa_context* c, const pa_server_info* i, void* raw) {
+    Q_UNUSED(c);
+    ServerInfo* info = static_cast<ServerInfo*>(raw);
+    info->defaultSinkName = QString(i->default_sink_name);
+    info->defaultSourceName = QString(i->default_source_name);
+}
+
 bool PulseCore::available()
 {
     return isAvailable_;
@@ -124,14 +118,14 @@ void PulseCore::iterate(pa_operation *op)
 
 void PulseCore::getSinks()
 {
-    pa_operation* op = pa_context_get_sink_info_list(context_, &sink_list_cb, &sinks_);
+    pa_operation* op = pa_context_get_sink_info_list(context_, pa_sink_info_cb, &sinks_);
     iterate(op);
     pa_operation_unref(op);
 }
 
 void PulseCore::getSources()
 {
-    pa_operation* op = pa_context_get_source_info_list(context_, &source_list_cb, &sources_);
+    pa_operation* op = pa_context_get_source_info_list(context_, pa_source_info_cb, &sources_);
     iterate(op);
     pa_operation_unref(op);
 }
@@ -183,7 +177,7 @@ PulseDevice::Ptr PulseCore::getSource(const QString &name)
 PulseDevice::Ptr PulseCore::getDefaultSink()
 {
     ServerInfo info;
-    pa_operation* op = pa_context_get_server_info(context_, &server_info_cb, &info);
+    pa_operation* op = pa_context_get_server_info(context_, server_info_cb, &info);
     iterate(op);
     pa_operation_unref(op);
     if (!info.defaultSinkName.isEmpty()) {
@@ -197,7 +191,7 @@ PulseDevice::Ptr PulseCore::getDefaultSink()
 PulseDevice::Ptr PulseCore::getDefaultSource()
 {
     ServerInfo info;
-    pa_operation* op = pa_context_get_server_info(context_, &server_info_cb, &info);
+    pa_operation* op = pa_context_get_server_info(context_, server_info_cb, &info);
     iterate(op);
     pa_operation_unref(op);
     if (!info.defaultSourceName.isEmpty()) {
@@ -251,10 +245,10 @@ void PulseCore::setVolume_(const PulseDevice::Ptr &device, int value)
                                              );
     pa_operation* op;
     if (device->type() == SINK) {
-        op = pa_context_set_sink_volume_by_index(context_, device->index(), new_cvolume, success_cb, nullptr);
+        op = pa_context_set_sink_volume_by_index(context_, uint(device->index()), new_cvolume, success_cb, nullptr);
     }
     else {
-        op = pa_context_set_source_volume_by_index(context_, device->index(), new_cvolume, success_cb, nullptr);
+        op = pa_context_set_source_volume_by_index(context_, uint(device->index()), new_cvolume, success_cb, nullptr);
     }
     iterate(op);
     pa_operation_unref(op);
@@ -264,10 +258,10 @@ void PulseCore::setMute_(const PulseDevice::Ptr &device, bool mute)
 {
     pa_operation* op;
     if (device->type() == SINK) {
-        op = pa_context_set_sink_mute_by_index(context_, device->index(), (int) mute, success_cb, nullptr);
+        op = pa_context_set_sink_mute_by_index(context_, uint(device->index()), int(mute), success_cb, nullptr);
     }
     else {
-        op = pa_context_set_source_mute_by_index(context_, device->index(), (int) mute, success_cb, nullptr);
+        op = pa_context_set_source_mute_by_index(context_, uint(device->index()), int(mute), success_cb, nullptr);
     }
     iterate(op);
     pa_operation_unref(op);

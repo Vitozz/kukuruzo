@@ -46,7 +46,7 @@ SettingsDialog::SettingsDialog(QWidget *parent)
 {
     ui->setupUi(this);
     connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &SettingsDialog::onOk);
-    connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &SettingsDialog::onCancel);
+    connect(ui->buttonBox, &QDialogButtonBox::rejected, this, [this](){hide();});
     playbacks_->setToolTip(tr("Enable/Disable Alsa's Playback Switch"));
     captures_->setToolTip(tr("Enable/Disable Alsa's Capture Switch"));
     enums_->setToolTip(tr("Enable/Disable Alsa's Enumerated Switch"));
@@ -102,9 +102,15 @@ void SettingsDialog::connectSignals()
     connect(enums_, &QListWidget::itemChanged, this, &SettingsDialog::onENAction);
     connect(ui->darkRadio, &QRadioButton::toggled, this, &SettingsDialog::onDarkStyle);
     connect(ui->lightRadio, &QRadioButton::toggled, this, &SettingsDialog::onLightStyle);
-    connect(ui->cardBox, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &SettingsDialog::onSoundCard);
-    connect(ui->mixerBox, static_cast<void(QComboBox::*)(const QString &)>(&QComboBox::currentIndexChanged), this, &SettingsDialog::onMixer);
-    connect(ui->isAutorun, &QCheckBox::toggled, this, &SettingsDialog::onAutorun);
+    connect(ui->cardBox, QOverload<int>::of(&QComboBox::currentIndexChanged), this, [this](int index){
+        emit soundCardChanged(index);
+    });
+    connect(ui->mixerBox, QOverload<int>::of(&QComboBox::currentIndexChanged), this, [this](int index){
+        if(index <= ui->mixerBox->count()) {
+            emit mixerChanged(ui->mixerBox->itemText(index));
+        }
+    });
+    connect(ui->isAutorun, &QCheckBox::toggled, this, [this](bool toggle){emit autorunChanged(toggle);});
     connect(ui->usePulseaudio, &QCheckBox::toggled, this, &SettingsDialog::onPulseSoundSystem);
     connect(ui->enableTimer, &QCheckBox::toggled, this, &SettingsDialog::onEnableTimer);
 }
@@ -121,16 +127,6 @@ void SettingsDialog::disconnectSignals()
     ui->isAutorun->disconnect();
     ui->usePulseaudio->disconnect();
     ui->enableTimer->disconnect();
-}
-
-void SettingsDialog::onSoundCard(int changed)
-{
-    emit soundCardChanged(changed);
-}
-
-void SettingsDialog::onMixer(const QString &changed)
-{
-    emit mixerChanged(changed);
 }
 
 void SettingsDialog::setCurrentCard(int index)
@@ -157,16 +153,6 @@ void SettingsDialog::onOk()
     emit soundCardChanged(card);
     emit mixerChanged(mixer);
     hide();
-}
-
-void SettingsDialog::onCancel()
-{
-    hide();
-}
-
-void SettingsDialog::onAutorun(bool toggle)
-{
-    emit autorunChanged(toggle);
 }
 
 void SettingsDialog::closeEvent(QCloseEvent *)
