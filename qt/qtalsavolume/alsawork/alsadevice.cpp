@@ -173,8 +173,8 @@ snd_mixer_selem_channel_id_t AlsaDevice::checkMixerChannels(snd_mixer_elem_t *el
     }
     else {
         for (int channel = 0; channel <= SND_MIXER_SCHN_LAST; channel++) {
-            if (snd_mixer_selem_has_playback_channel(element, (snd_mixer_selem_channel_id_t)channel)) {
-                return (snd_mixer_selem_channel_id_t)channel;
+            if (snd_mixer_selem_has_playback_channel(element, snd_mixer_selem_channel_id_t(channel))) {
+                return snd_mixer_selem_channel_id_t(channel);
             }
         }
     }
@@ -183,8 +183,8 @@ snd_mixer_selem_channel_id_t AlsaDevice::checkMixerChannels(snd_mixer_elem_t *el
     }
     else {
         for (int channel = 0; channel <= SND_MIXER_SCHN_LAST; channel++) {
-            if (snd_mixer_selem_has_capture_channel(element, (snd_mixer_selem_channel_id_t)channel)) {
-                return (snd_mixer_selem_channel_id_t)channel;
+            if (snd_mixer_selem_has_capture_channel(element, snd_mixer_selem_channel_id_t(channel))) {
+                return snd_mixer_selem_channel_id_t(channel);
             }
         }
     }
@@ -217,7 +217,7 @@ double AlsaDevice::getNormVolume(snd_mixer_elem_t *element)
             if (err < 0) {
                 return ZERO;
             }
-            return (value - min) / (double)(max-min);
+            return (value - min) / double(max-min);
         }
         err = snd_mixer_selem_get_playback_dB(element, chanelid, &value);
         checkError(err);
@@ -225,7 +225,7 @@ double AlsaDevice::getNormVolume(snd_mixer_elem_t *element)
             return ZERO;
         }
         if (useLinearDb(min, max)) {
-            return (value - min)/(double)(max-min);
+            return (value - min)/double(max-min);
         }
         norm = getExp10((value - max) / 6000.0);
         if (min != SND_CTL_TLV_DB_GAIN_MUTE) {
@@ -248,7 +248,7 @@ double AlsaDevice::getNormVolume(snd_mixer_elem_t *element)
             if (err < 0) {
                 return ZERO;
             }
-            return (value - min) / (double)(max-min);
+            return (value - min) / double(max-min);
         }
 
         err = snd_mixer_selem_get_capture_dB(element, chanelid, &value);
@@ -257,7 +257,7 @@ double AlsaDevice::getNormVolume(snd_mixer_elem_t *element)
             return ZERO;
         }
         if (useLinearDb(min, max)) {
-            return (value - min)/(double)(max-min);
+            return (value - min)/double(max-min);
         }
         norm = getExp10((value - max) / 6000.0);
         if (min != SND_CTL_TLV_DB_GAIN_MUTE) {
