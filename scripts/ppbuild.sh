@@ -388,6 +388,8 @@ compile_psiplus ()
   fi
   if [ -z "${iswebkit}" ]; then
     flags="${flags} -DCHAT_TYPE=basic"
+  else
+    flags="${flags} -DCHAT_TYPE=${chat_type}"
   fi
   cd ${builddir}
   cbuild_path=${workdir}
@@ -419,7 +421,10 @@ build_all_psiplus ()
   flags="-DCMAKE_BUILD_TYPE=${DEF_CMAKE_BUILD_TYPE} -DBUILD_PLUGINS=${DEF_PLUG_LIST} -DENABLE_PLUGINS=ON -DDEV_MODE=ON -DBUILD_DEV_PLUGINS=ON"
   if [ -z "${iswebkit}" ]; then
     flags="${flags} -DCHAT_TYPE=basic"
+  else
+    flags="${flags} -DCHAT_TYPE=${chat_type}"
   fi
+  
   cd ${builddir}
   cbuild_path=${workdir}
   echo "--Starting cmake 
@@ -502,6 +507,8 @@ prepare_spec ()
 {
   if [ -z "${iswebkit}" ]; then
     extraflags="-DCHAT_TYPE=basic ${spell_flag}"
+  else
+    extraflags="-DCHAT_TYPE=${chat_type} ${spell_flag}"
   fi
   echo "Creating psi.spec file..."
   local specfile="Summary: Client application for the Jabber network
@@ -746,7 +753,7 @@ build_rpm_plugins ()
 #Скачиване ресурсов
 get_resources ()
 {
-  fetch_url "https://github.com/psi-plus/resources.git" ${buildpsi}/resources
+  fetch_url "https://github.com/psi-im/resources.git" ${buildpsi}/resources
 }
 #Установка ресурсов в домашний каталог
 install_resources ()
@@ -845,7 +852,7 @@ run_psiplus ()
 #Запуск собранной версии в дебаггере
 debug_psi ()
 {
-  local psi_binary_path=${workdir}/cbuild/psi
+  local psi_binary_path=${builddir}/psi
   if [ -f "${psi_binary_path}/psi-plus" ];then
     cd ${psi_binary_path}
     gdb ./psi-plus
@@ -911,9 +918,9 @@ compile_psi_mxe()
   echo 
   #echo "Press Enter to continue..." && read tmpvar
   ${cmakecmd} --build . --target all -- -j${cpu_count}
-  ${cmakecmd} --build . --target prepare-bin --
   if [ ${devm} -eq 1 ]; then
-    ${cmakecmd} --build . --target prepare-bin-libs --
+    ${cmakecmd} --build . --target prepare-bin -- #copy default iconsets skins and themes
+    ${cmakecmd} --build . --target prepare-bin-libs -- #copy dependencies
   fi
   if [ -d "${mxe_outd}/$1" ] && [ ${devm} -ne 0 ]; then
     cd ${mxe_outd} && rm -rf $1
