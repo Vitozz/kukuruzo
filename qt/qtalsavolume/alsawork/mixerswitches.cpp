@@ -20,33 +20,16 @@
 #include "mixerswitches.h"
 
 MixerSwitches::MixerSwitches()
-{
-}
+= default;
 
 MixerSwitches::~MixerSwitches()
-{
-}
+= default;
 
 MixerSwitches::MixerSwitches(const MixerSwitches &ms)
     : captureSwitchList_(ms.captureSwitchList()),
       playbackSwitchList_(ms.playbackSwitchList()),
       enumSwitchList_(ms.enumSwitchList())
 {
-}
-
-void MixerSwitches::setCaptureSwitchList(const QList<switcher> &list)
-{
-    captureSwitchList_ = list;
-}
-
-void MixerSwitches::setPlaybackSwitchList(const QList<switcher> &list)
-{
-    playbackSwitchList_= list;
-}
-
-void MixerSwitches::setEnumSwitchList(const QList<switcher> &list)
-{
-    enumSwitchList_ = list;
 }
 
 void MixerSwitches::pushBack(SwitchType sType, switcher &item)

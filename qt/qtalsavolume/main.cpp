@@ -18,13 +18,11 @@
  */
 
 #include "gui/popupwindow.h"
-#include "defines.h"
 
 #include <QApplication>
 #include <QSharedMemory>
 #include <QTranslator>
 #include <QtGui>
-#include <QMessageBox>
 #ifdef ISDEBUG
 #include <QDebug>
 #endif
@@ -32,9 +30,9 @@
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    a.setOrganizationName(APP_ORG);
-    a.setApplicationVersion(APP_VERSION);
-    a.setApplicationName(APP_NAME);
+    QApplication::setOrganizationName(APP_ORG);
+    QApplication::setApplicationVersion(APP_VERSION);
+    QApplication::setApplicationName(APP_NAME);
     QTranslator translator;
     const QStringList localeDirs({QString("%1/languages").arg(QDir::currentPath()),
                                   QString(qApp->applicationDirPath() + "/languages"),
@@ -54,13 +52,5 @@ int main(int argc, char *argv[])
     w.hide();
     QSharedMemory sharedMemory;
     sharedMemory.setKey("QtAlsaVolume");
-    if (sharedMemory.attach()) {
-        return 0;
-    }
-    if (!sharedMemory.create(1)) {
-        return 0;
-    }
-    else{
-        return a.exec();
-    }
+    return (sharedMemory.attach() || !sharedMemory.create(1)) ? 0 : QApplication::exec();
 }

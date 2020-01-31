@@ -28,7 +28,7 @@
 class AlsaDevice
 {
 public:
-    AlsaDevice(int id, const QString &card);
+    AlsaDevice(int id, QString card);
     ~AlsaDevice();
     AlsaDevice(AlsaDevice const &);
     typedef QSharedPointer<AlsaDevice> Ptr;
@@ -36,14 +36,13 @@ public:
     int id() const;
     const QStringList &mixers() const;
     MixerSwitches::Ptr switches();
-    const QString &currentMixer() const;
-    int currentMixerId() const;
+
     bool haveMixers();
     double getVolume();
     bool getMute();
     void setDeviceVolume(double volume);
     void setCurrentMixer(int id);
-    void setCurrentMixer(const QString &mixer);
+
     void setSwitch(const QString &mixer, int id, bool enabled);
     void setMute(bool enabled);
     void updateElements();
@@ -51,14 +50,14 @@ public:
 
 private:
     snd_mixer_t *getMixerHanlde(int id);
-    snd_mixer_selem_channel_id_t checkMixerChannels(snd_mixer_elem_t *element);
-    snd_mixer_elem_t *initMixerElement(snd_mixer_t *handle, const char *mixer);
-    void checkError (int errorIndex);
-    void checkError (const QString &title, const QString &message);
+    static snd_mixer_selem_channel_id_t checkMixerChannels(snd_mixer_elem_t *element);
+    static snd_mixer_elem_t *initMixerElement(snd_mixer_t *handle, const char *mixer);
+    static void checkError (int errorIndex);
+    static void checkError (const QString &title, const QString &message);
     void initMixerList();
     double getNormVolume(snd_mixer_elem_t *element);
     double getExp10(double value) const;
-    bool useLinearDb(long min, long max);
+    static bool useLinearDb(long min, long max);
     void setNormVolume(snd_mixer_elem_t *element, double volume);
 
 private:

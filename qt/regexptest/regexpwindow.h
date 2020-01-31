@@ -35,12 +35,12 @@ enum checkType {
 class RegexpWindow : public QMainWindow {
     Q_OBJECT
 public:
-    RegexpWindow(QWidget *parent = nullptr);
-    ~RegexpWindow();
+    explicit RegexpWindow(QWidget *parent = nullptr);
+    ~RegexpWindow() override;
 
 protected:
-    void changeEvent(QEvent *e);
-    void closeEvent(QCloseEvent *e);
+    void changeEvent(QEvent *e) override;
+    void closeEvent(QCloseEvent *e) override;
 
 private:
     Ui::RegexpWindow *ui;

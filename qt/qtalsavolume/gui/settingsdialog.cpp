@@ -89,7 +89,7 @@ void SettingsDialog::setMixers(const QStringList &mixers)
     if (ui->mixerBox->count() > 0) {
         ui->mixerBox->clear();
     }
-    if (mixers_.size() > 0) {
+    if (!mixers_.empty()) {
         ui->mixerBox->addItems(mixers_);
     }
     ui->mixerBox->blockSignals(false);
@@ -166,7 +166,7 @@ void SettingsDialog::setPlaybackChecks(const QList<switcher> &pbList)
         playbacks_->clear();
     }
     foreach (switcher item, pbList) {
-        QListWidgetItem *cb = new QListWidgetItem(item.first, playbacks_);
+        auto *cb = new QListWidgetItem(item.first, playbacks_);
         cb->setFlags(cb->flags() | Qt::ItemIsUserCheckable);
         if (item.second) {
             cb->setCheckState(Qt::Checked);
@@ -188,7 +188,7 @@ void SettingsDialog::setCaptureChecks(const QList<switcher> &cList)
         captures_->clear();
     }
     foreach (switcher item, cList) {
-        QListWidgetItem *cb = new QListWidgetItem(item.first, captures_);
+        auto *cb = new QListWidgetItem(item.first, captures_);
         cb->setFlags(cb->flags() | Qt::ItemIsUserCheckable);
         if (item.second) {
             cb->setCheckState(Qt::Checked);
@@ -210,7 +210,7 @@ void SettingsDialog::setEnumChecks(const QList<switcher> &eList)
         enums_->clear();
     }
     foreach (switcher item, eList) {
-        QListWidgetItem *cb = new QListWidgetItem(item.first, enums_);
+        auto *cb = new QListWidgetItem(item.first, enums_);
         cb->setFlags(cb->flags() | Qt::ItemIsUserCheckable);
         if (item.second) {
             cb->setCheckState(Qt::Checked);

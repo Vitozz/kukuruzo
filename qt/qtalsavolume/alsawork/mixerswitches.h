@@ -32,9 +32,6 @@ public:
     ~MixerSwitches();
     typedef QSharedPointer<MixerSwitches> Ptr;
     void pushBack(SwitchType sType, switcher &item);
-    void setCaptureSwitchList(const QList<switcher> &list);
-    void setPlaybackSwitchList(const QList<switcher> &list);
-    void setEnumSwitchList(const QList<switcher> &list);
     void clear(SwitchType sType);
     void clearAll();
     const QList<switcher> &captureSwitchList() const;

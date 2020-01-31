@@ -36,8 +36,8 @@ class SettingsDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit SettingsDialog(QWidget *parent = 0);
-    ~SettingsDialog();
+    explicit SettingsDialog(QWidget *parent = nullptr);
+    ~SettingsDialog() override;
     void setSoundCards(const QStringList &cards);
     void setMixers(const QStringList &mixers);
     void setAutorun(bool isAutorun);
@@ -54,7 +54,7 @@ public:
     void setUsePolling(bool isPoll);
 
 protected:
-    void closeEvent(QCloseEvent *);
+    void closeEvent(QCloseEvent *) override;
 
 protected slots:
     void onOk();

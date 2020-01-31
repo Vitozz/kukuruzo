@@ -45,11 +45,11 @@ class PopupWindow : public QDialog
 
 public:
     PopupWindow();
-    ~PopupWindow();
+    ~PopupWindow() override;
 
 protected:
-    void closeEvent(QCloseEvent *event);
-    bool eventFilter(QObject *object, QEvent *event);
+    void closeEvent(QCloseEvent *event) override;
+    bool eventFilter(QObject *object, QEvent *event) override;
 
 protected slots:
     void iconActivated(ActivationReason reason);

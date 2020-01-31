@@ -48,7 +48,7 @@ class TrayIcon : public QObject
 
 public:
     TrayIcon();
-    ~TrayIcon();
+    ~TrayIcon() override;
     void setTrayIcon(const QString &icon);
     void setToolTip(const QString &tooltip);
     void setMute(bool isMuted);
@@ -69,7 +69,7 @@ protected slots:
     void iconActivated(QSystemTrayIcon::ActivationReason reason);
 
 protected:
-    bool eventFilter(QObject *object, QEvent *event);
+    bool eventFilter(QObject *object, QEvent *event) override;
 
 private:
     QActionPtr restore_;

@@ -201,7 +201,7 @@ void TrayIcon::iconActivated(QSystemTrayIcon::ActivationReason reason)
 bool TrayIcon::eventFilter(QObject *object, QEvent *event)
 {
 	if (object == legacyTrayIcon_.data() && event->type() == QEvent::Wheel) {
-		QWheelEvent *wheelEvent = static_cast<QWheelEvent*>(event);
+		auto *wheelEvent = static_cast<QWheelEvent*>(event);
 		const int steps = (wheelEvent->delta()>0) ? 1 : (wheelEvent->delta()<0) ? -1: 0;
 		if (steps > 0) {
 			emit activated(WHEELUP);

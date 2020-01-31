@@ -28,7 +28,8 @@
 static const QString ERROR_TITLE = "Error in alsawork.cpp";
 
 AlsaWork::AlsaWork()
-    : cardList_(QStringList())
+    : cardList_(QStringList()),
+    totalCards_(0)
 {
     getCards();
     foreach (const QString &name, cardList_) {
@@ -50,11 +51,6 @@ void AlsaWork::setCurrentCard(int cardId)
     }
 }
 
-void AlsaWork::setCurrentMixer(const QString &mixer)
-{
-    currentAlsaDevice_->setCurrentMixer(mixer);
-}
-
 void AlsaWork::setCurrentMixer(int id)
 {
     currentAlsaDevice_->setCurrentMixer(id);
@@ -74,7 +70,7 @@ int AlsaWork::getAlsaVolume()
     return 0;
 }
 
-const QString AlsaWork::getCardName(int index)
+QString AlsaWork::getCardName(int index)
 {
     QString card(AlsaDevice::formatCardName(index));
     snd_ctl_t *ctl;
@@ -92,11 +88,6 @@ const QString AlsaWork::getCardName(int index)
         }
     }
     return QString();
-}
-
-QString AlsaWork::getCurrentMixerName() const
-{
-    return currentAlsaDevice_->currentMixer();
 }
 
 const QStringList &AlsaWork::getCardsList() const
@@ -133,27 +124,11 @@ void AlsaWork::setSwitch(const QString &mixer, int id, bool enabled)
     currentAlsaDevice_->setSwitch(mixer, id, enabled);
 }
 
-bool AlsaWork::checkCardId(int cardId)
-{
-    if (cardId < int(cardList_.size()) && !cardList_.at(cardId).isEmpty()) {
-        return true;
-    }
-    checkError(ERROR_TITLE,QString("line::119::Item with id=%1 out of Range ").arg(QString::number(cardId)));
-    return false;
-}
-
 //private
 void AlsaWork::checkError (int errorIndex)
 {
     if (errorIndex < 0) {
         QMessageBox::critical(nullptr, ERROR_TITLE, QString::fromLocal8Bit(snd_strerror(errorIndex)));
-    }
-}
-
-void AlsaWork::checkError(const QString &title, const QString &message)
-{
-    if(!title.isEmpty() && !message.isEmpty()) {
-        QMessageBox::critical(nullptr, title, message);
     }
 }
 
@@ -197,24 +172,7 @@ bool AlsaWork::haveVolumeMixers()
 
 bool AlsaWork::cardExists(int id)
 {
-    if (id >= 0 && id < totalCards_) {
-        return true;
-    }
-    return false;
-}
-
-bool AlsaWork::mixerExists(const QString &name)
-{
-    int index = currentAlsaDevice_->mixers().indexOf(name);
-    if (index >= 0) {
-        return true;
-    }
-    return false;
-}
-
-bool AlsaWork::mixerExists(int id)
-{
-    return bool(id >=0 && id < currentAlsaDevice_->mixers().size());
+    return id >= 0 && id < totalCards_;
 }
 
 int AlsaWork::getFirstCardWithMixers() const
@@ -227,7 +185,7 @@ int AlsaWork::getFirstCardWithMixers() const
     return 0;
 }
 
-int AlsaWork::getCurrentMixerId() const
+AlsaWork::AlsaWork(AlsaWork const &aw)
+ : totalCards_(aw.totalCards_)
 {
-    return currentAlsaDevice_->currentMixerId();
 }

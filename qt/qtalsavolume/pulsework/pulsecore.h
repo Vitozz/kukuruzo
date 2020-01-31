@@ -46,10 +46,10 @@ public:
     ~PulseCore();
     typedef QSharedPointer<PulseCore> Ptr;
     state pState;
-    const QString defaultSink();
+    QString defaultSink();
     const QStringList &getCardList() const;
-    const QString getDeviceDescription(const QString &name);
-    const QString getDeviceNameByIndex(int index);
+    QString getDeviceDescription(const QString &name);
+    QString getDeviceNameByIndex(int index);
     int getCurrentDeviceIndex() const;
     int getVolume();
     int getCardIndex();
@@ -57,7 +57,6 @@ public:
     void setVolume(int value);
     void setMute(bool mute);
     void setCurrentDevice(const QString &name);
-    void refreshDevices();
     bool available();
 private:
     void getSinks();
@@ -70,11 +69,10 @@ private:
     PulseDevice::Ptr getDefaultSource();
     PulseDevice::Ptr getDeviceByName(const QString &name);
     PulseDevice::Ptr getDeviceByIndex(int index);
-    int getDeviceIndexByName(const QString &name);
     void setVolume_(const PulseDevice::Ptr &device, int value);
     void setMute_(const PulseDevice::Ptr &device, bool mute);
     void iterate(pa_operation* op);
-    void onError(const QString &message);
+    static void onError(const QString &message);
     void updateDevices();
     void clearLists();
     static void pa_context_notify_cb(pa_context* context, void* raw);

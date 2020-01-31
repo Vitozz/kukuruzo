@@ -30,9 +30,9 @@
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    a.setOrganizationName(APP_ORG);
-    a.setApplicationVersion(APP_VERSION);
-    a.setApplicationName(APP_NAME);
+    QApplication::setOrganizationName(APP_ORG);
+    QApplication::setApplicationVersion(APP_VERSION);
+    QApplication::setApplicationName(APP_NAME);
     QTranslator translator;
     const QStringList localeDirs({QString("%1/languages").arg(QDir::currentPath()),
                                   QString("%1/languages").arg(qApp->applicationDirPath()),
@@ -61,5 +61,5 @@ int main(int argc, char *argv[])
     MainWindow w;
     w.show();
 
-    return a.exec();
+    return QApplication::exec();
 }

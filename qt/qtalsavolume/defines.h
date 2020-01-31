@@ -44,9 +44,7 @@ typedef QPair<QString, bool> switcher;
 
 enum Position {
     BOTTOM = 0,
-    TOP = 1,
-    LEFT = 2,
-    RIGHT = 3
+    TOP = 1
 };
 
 enum SwitchType {

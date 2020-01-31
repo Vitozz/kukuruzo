@@ -248,9 +248,8 @@ void PopupWindow::showPopup()
 void PopupWindow::setTrayIcon(int value)
 {
     const QString pathPrefix((isLightStyle_) ? ":/images/icons/light/" : ":/images/icons/dark/");
-    int number = 100;
     value = (value <= 0) ? 0 : (value > 100) ? 100 : value;
-    number = (value < 10) ? 10 : int(value/10)*10;
+    int number = (value < 10) ? 10 : int(value/10)*10;
     if (value <= 0) {
         number = 0;
     }
@@ -563,7 +562,7 @@ void PopupWindow::readDesktopFile()
     QFile desktop(fName);
     if (desktop.open(QIODevice::ReadOnly))
     {
-        settingsDialog_->setAutorun(QString(desktop.readAll()).contains(QRegExp("\\bhidden\\s*=\\s*false", Qt::CaseInsensitive)));
+        settingsDialog_->setAutorun(QString(desktop.readAll()).contains(QRegExp(R"(\bhidden\s*=\s*false)", Qt::CaseInsensitive)));
     }
 }
 

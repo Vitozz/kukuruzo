@@ -41,7 +41,7 @@ class MainWindow : public QMainWindow
 
 public:
     explicit MainWindow(QWidget *parent = nullptr);
-    ~MainWindow();
+    ~MainWindow() override;
 
 protected slots:
     void onExit();
@@ -58,8 +58,8 @@ protected slots:
     void iconActivated(QSystemTrayIcon::ActivationReason reason);
 
 protected:
-    void changeEvent(QEvent *e);
-    void closeEvent(QCloseEvent *);
+    void changeEvent(QEvent *e) override;
+    void closeEvent(QCloseEvent *) override;
 
 private:
     void SetTrayToolTip(const QString &text);

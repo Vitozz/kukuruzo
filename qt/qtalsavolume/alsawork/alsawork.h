@@ -38,12 +38,10 @@ public:
     ~AlsaWork();
     typedef QSharedPointer<AlsaWork> Ptr;
     void setCurrentCard(int cardId);
-    void setCurrentMixer(const QString &mixer);
     void setCurrentMixer(int id);
     void setAlsaVolume(int volume);
     int getAlsaVolume();
-    const QString getCardName(int index);
-    QString getCurrentMixerName() const;
+    static QString getCardName(int index);
     const QStringList &getCardsList() const;
     const QStringList &getVolumeMixers() const;
     MixerSwitches::Ptr getSwitchList() const;
@@ -52,22 +50,13 @@ public:
     bool getMute();
     bool haveVolumeMixers();
     bool cardExists(int id);
-    bool mixerExists(const QString &name);
-    bool mixerExists(int id);
     int getFirstCardWithMixers() const;
-    int getCurrentMixerId() const;
+
 private:
-    bool checkCardId(int cardId);
-    int getTotalCards();
-    snd_mixer_t *getMixerHanlde(int id);
-    snd_mixer_elem_t *initMixerElement(snd_mixer_t *handle, const char *mixer);
-    void setVolume(snd_mixer_elem_t *element, snd_mixer_t *handle, double volume);
-    void checkError (int errorIndex);
-    void checkError (const QString &title, const QString &message);
+    static int getTotalCards();
+    static void checkError (int errorIndex);
     void getCards();
-    void updateMixers(int cardIndex);
-    void updateMixerList(int cardIndex);
-    snd_mixer_selem_channel_id_t checkMixerChannels(snd_mixer_elem_t *element);
+
 private:
     QStringList cardList_;
     int totalCards_;

@@ -18,7 +18,6 @@
  */
 #include "regexpwindow.h"
 #include "ui_regexpwindow.h"
-#include "stdlib.h"
 
 #include <QFile>
 #include <QTextStream>
@@ -49,7 +48,8 @@
 
 RegexpWindow::RegexpWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::RegexpWindow)
+    ui(new Ui::RegexpWindow),
+    isLoaded_(false)
 {
     ui->setupUi(this);
     ui->label->setReadOnly(true);

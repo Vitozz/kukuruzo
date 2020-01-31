@@ -266,13 +266,13 @@ prepare_psi_src ()
   fi
 }
 #Копирование иконок пси+
-copy_psiplus_icons()
-{
-  if [ ! -z "$1" ]; then
-    cp -a ${psiplus_src}/iconsets/* $1/iconsets/
-    cp -a ${psiplus_src}/app.ico $1/win32/
-  fi
-}
+#copy_psiplus_icons()
+#{
+#  if [ ! -z "$1" ]; then
+#    cp -a ${psiplus_src}/iconsets/* $1/iconsets/
+#    cp -a ${psiplus_src}/app.ico $1/win32/
+#  fi
+#}
 #Очистка временных каталогов
 clean_tmp_dirs()
 {
@@ -291,7 +291,7 @@ prepare_workspace ()
   prepare_psi_src ${workdir}
   cd ${buildpsi}/plugins
   prepare_psi_src ${workdir}/src/plugins
-  copy_psiplus_icons ${workdir}
+  #copy_psiplus_icons ${workdir}
   check_dir ${workdir}/translations
   cp -a ${buildpsi}/langs/translations/*.ts ${workdir}/translations/
   cd ${workdir}
@@ -380,7 +380,7 @@ compile_psiplus ()
   echo "***Build started***">${buildlog}
   prepare_builddir ${builddir}
   cd ${builddir}
-  flags="-DCMAKE_BUILD_TYPE=${DEF_CMAKE_BUILD_TYPE} -DPSI_LIBDIR=${buildpsi}/build-plugins"
+  flags="-DPSI_PLUS=ON -DCMAKE_BUILD_TYPE=${DEF_CMAKE_BUILD_TYPE} -DPSI_LIBDIR=${buildpsi}/build-plugins"
   if [ ! -z "$1" ]; then
     flags="${flags} -DCMAKE_INSTALL_PREFIX=$1"
   else
@@ -418,7 +418,7 @@ build_all_psiplus ()
   echo "***Build started***">${buildlog}
   prepare_builddir ${builddir}
   cd ${builddir}
-  flags="-DCMAKE_BUILD_TYPE=${DEF_CMAKE_BUILD_TYPE} -DBUILD_PLUGINS=${DEF_PLUG_LIST} -DENABLE_PLUGINS=ON -DDEV_MODE=ON -DBUILD_DEV_PLUGINS=ON"
+  flags="-DPSI_PLUS=ON -DCMAKE_BUILD_TYPE=${DEF_CMAKE_BUILD_TYPE} -DBUILD_PLUGINS=${DEF_PLUG_LIST} -DENABLE_PLUGINS=ON -DDEV_MODE=ON -DBUILD_DEV_PLUGINS=ON"
   if [ -z "${iswebkit}" ]; then
     flags="${flags} -DCHAT_TYPE=basic"
   else
@@ -546,7 +546,7 @@ Psi+ - Psi IM Mod by psi-dev@conference.jabber.ru
 
 
 %build
-cmake -DCMAKE_INSTALL_PREFIX=\"%{_prefix}\" -DINSTALL_PLUGINS_SDK=ON -DCMAKE_BUILD_TYPE=RelWithDebInfo ${extraflags} .
+cmake -DPSI_PLUS=ON -DCMAKE_INSTALL_PREFIX=\"%{_prefix}\" -DINSTALL_PLUGINS_SDK=ON -DCMAKE_BUILD_TYPE=RelWithDebInfo ${extraflags} .
 %{__make} %{?_smp_mflags}
 
 
@@ -692,7 +692,7 @@ ${desc}
 %setup
 
 %build
-cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_INSTALL_PREFIX=%{buildroot}%{_libdir} -DPLUGINS_PATH=/psi-plus/plugins .
+cmake -DPSI_PLUS=ON -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_INSTALL_PREFIX=%{buildroot}%{_libdir} -DPLUGINS_PATH=/psi-plus/plugins .
 %{__make} %{?_smp_mflags} 
 
 %install
@@ -908,7 +908,7 @@ compile_psi_mxe()
   else
     flags="${flags} -DCHAT_TYPE=webkit"
   fi
-  flags="${flags} -DUSE_CCACHE=ON -DVERBOSE_PROGRAM_NAME=ON"
+  flags="${flags} -DPSI_PLUS=ON -DUSE_CCACHE=ON -DVERBOSE_PROGRAM_NAME=ON"
   wrkdir=${builddir}
   check_dir ${wrkdir}
   cd ${wrkdir}

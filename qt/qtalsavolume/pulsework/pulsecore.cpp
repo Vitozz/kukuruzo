@@ -29,6 +29,7 @@ PulseCore::PulseCore(const char *clientName)
     : mainLoop_(pa_mainloop_new()),
       mainLoopApi_(pa_mainloop_get_api(mainLoop_)),
       context_(pa_context_new(mainLoopApi_,clientName)),
+      retval_(0),
       currentDeviceName_(QString()),
       currentDeviceIndex_(0),
       sinksDescriptions_(QStringList()),
@@ -64,7 +65,7 @@ PulseCore::~PulseCore()
 }
 
 void PulseCore::pa_context_notify_cb(pa_context* context, void* raw){
-    PulseCore *state = static_cast<PulseCore*>(raw);
+    auto *state = static_cast<PulseCore*>(raw);
     switch(pa_context_get_state(context)) {
     case PA_CONTEXT_READY:
         state->pState = CONNECTED;
@@ -85,7 +86,7 @@ void PulseCore::pa_sink_info_cb(pa_context *c, const pa_sink_info *i, int eol, v
 {
     Q_UNUSED(c);
     if (eol != 0) return;
-    PulseDevicePtrList* sinks = static_cast<PulseDevicePtrList*>(raw);
+    auto* sinks = static_cast<PulseDevicePtrList*>(raw);
     sinks->push_back(PulseDevice::Ptr(new PulseDevice(i)));
 }
 
@@ -93,13 +94,13 @@ void PulseCore::pa_source_info_cb(pa_context *c, const pa_source_info *i, int eo
 {
     Q_UNUSED(c);
     if (eol != 0) return;
-    PulseDevicePtrList* sources = static_cast<PulseDevicePtrList*>(raw);
+    auto* sources = static_cast<PulseDevicePtrList*>(raw);
     sources->push_back(PulseDevice::Ptr(new PulseDevice(i)));
 }
 
 void PulseCore::server_info_cb(pa_context* c, const pa_server_info* i, void* raw) {
     Q_UNUSED(c);
-    ServerInfo* info = static_cast<ServerInfo*>(raw);
+    auto* info = static_cast<ServerInfo*>(raw);
     info->defaultSinkName = QString(i->default_sink_name);
     info->defaultSourceName = QString(i->default_source_name);
 }
@@ -202,7 +203,7 @@ PulseDevice::Ptr PulseCore::getDefaultSource()
     return PulseDevice::Ptr();
 }
 
-const QString PulseCore::getDeviceDescription(const QString &name)
+QString PulseCore::getDeviceDescription(const QString &name)
 {
     QString desc = getDeviceByName(name)->description();
     if (desc.isEmpty()) {
@@ -227,12 +228,12 @@ PulseDevice::Ptr PulseCore::getDeviceByName(const QString &name)
     return result;
 }
 
-const QString PulseCore::getDeviceNameByIndex(int index)
+QString PulseCore::getDeviceNameByIndex(int index)
 {
     return getDeviceByIndex(index)->name();
 }
 
-const QString PulseCore::defaultSink()
+QString PulseCore::defaultSink()
 {
     return getDefaultSink()->name();
 }
@@ -328,11 +329,6 @@ void PulseCore::clearLists()
     if (!sourcesDescriptions_.isEmpty()) {
         sourcesDescriptions_.clear();
     }
-}
-
-void PulseCore::refreshDevices()
-{
-    updateDevices();
 }
 
 int PulseCore::getVolume()

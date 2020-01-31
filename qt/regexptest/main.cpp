@@ -29,9 +29,9 @@
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    a.setOrganizationName(QString(ORGANIZATION));
-    a.setApplicationName(QString(APPNAME));
-    a.setApplicationVersion(QString(APPVERISON));
+    QApplication::setOrganizationName(QString(ORGANIZATION));
+    QApplication::setApplicationName(QString(APPNAME));
+    QApplication::setApplicationVersion(QString(APPVERISON));
     QTranslator translator;
     const QStringList localeDirs({QString("%1").arg(QDir::currentPath()),
                                   QString("%1/langs").arg(QDir::currentPath()),
@@ -49,5 +49,5 @@ int main(int argc, char *argv[])
     }
     RegexpWindow w;
     w.show();
-    return a.exec();
+    return QApplication::exec();
 }

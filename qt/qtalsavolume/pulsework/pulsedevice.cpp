@@ -31,7 +31,8 @@ static int getCardId(pa_proplist *pl)
 }
 
 PulseDevice::PulseDevice()
-    : index_(0),
+    : volume({0,0}),
+      index_(0),
       card_(0),
       type_(SINK),
       name_(QString()),
@@ -41,7 +42,8 @@ PulseDevice::PulseDevice()
 }
 
 PulseDevice::PulseDevice(const pa_source_info* i)
-    : index_(int(i->index)),
+    : volume({0,0}),
+      index_(int(i->index)),
       card_(getCardId(i->proplist)),
       type_(SOURCE),
       name_(QString(i->name)),
@@ -56,7 +58,8 @@ PulseDevice::PulseDevice(const pa_source_info* i)
 }
 
 PulseDevice::PulseDevice(const pa_sink_info* i)
-    : index_(int(i->index)),
+    : volume({0,0}),
+      index_(int(i->index)),
       card_(getCardId(i->proplist)),
       type_(SINK),
       name_(QString(i->name)),

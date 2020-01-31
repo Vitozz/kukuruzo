@@ -21,15 +21,15 @@
 #include <QMessageBox>
 #ifdef ISDEBUG
 #include <QDebug>
+#include <utility>
 #endif
 
 #define ERROR_TITLE "Error in alsadevice.cpp"
-#define WARNING_TITLE "Warning in alsadevice.cpp"
 #define ZERO 0.0
 
-AlsaDevice::AlsaDevice(int id, const QString &card)
+AlsaDevice::AlsaDevice(int id, QString card)
     : id_(id),
-      name_(card),
+      name_(std::move(card)),
       volumeMixers_(QStringList()),
       captureMixers_(QStringList()),
       mixers_(QStringList()),
@@ -41,8 +41,7 @@ AlsaDevice::AlsaDevice(int id, const QString &card)
 }
 
 AlsaDevice::~AlsaDevice()
-{
-}
+= default;
 
 void AlsaDevice::updateElements()
 {
@@ -217,7 +216,7 @@ double AlsaDevice::getNormVolume(snd_mixer_elem_t *element)
             if (err < 0) {
                 return ZERO;
             }
-            return (value - min) / double(max-min);
+            return double(value - min) / double(max-min);
         }
         err = snd_mixer_selem_get_playback_dB(element, chanelid, &value);
         checkError(err);
@@ -225,11 +224,11 @@ double AlsaDevice::getNormVolume(snd_mixer_elem_t *element)
             return ZERO;
         }
         if (useLinearDb(min, max)) {
-            return (value - min)/double(max-min);
+            return double(value - min)/double(max-min);
         }
-        norm = getExp10((value - max) / 6000.0);
+        norm = getExp10(double(value - max) / 6000.0);
         if (min != SND_CTL_TLV_DB_GAIN_MUTE) {
-            minNorm = getExp10((min - max) / 6000.0);
+            minNorm = getExp10(double(min - max) / 6000.0);
             norm = (norm - minNorm)/(1 - minNorm);
         }
         return norm;
@@ -248,7 +247,7 @@ double AlsaDevice::getNormVolume(snd_mixer_elem_t *element)
             if (err < 0) {
                 return ZERO;
             }
-            return (value - min) / double(max-min);
+            return double(value - min) / double(max-min);
         }
 
         err = snd_mixer_selem_get_capture_dB(element, chanelid, &value);
@@ -257,11 +256,11 @@ double AlsaDevice::getNormVolume(snd_mixer_elem_t *element)
             return ZERO;
         }
         if (useLinearDb(min, max)) {
-            return (value - min)/double(max-min);
+            return double(value - min)/double(max-min);
         }
-        norm = getExp10((value - max) / 6000.0);
+        norm = getExp10(double(value - max) / 6000.0);
         if (min != SND_CTL_TLV_DB_GAIN_MUTE) {
-            minNorm = getExp10((min - max) / 6000.0);
+            minNorm = getExp10(double(min - max) / 6000.0);
             norm = (norm - minNorm)/(1 - minNorm);
         }
         return norm;
@@ -289,17 +288,17 @@ void AlsaDevice::setNormVolume(snd_mixer_elem_t *element, double volume)
             if (err < 0) {
                 return;
             }
-            value = lrint(volume*(max-min)) + min;
+            value = lrint(volume*double(max-min)) + min;
             checkError(snd_mixer_selem_set_playback_volume_all(element, value));
             return;
         }
         if (useLinearDb(min, max)) {
-            value = lrint(volume*(max-min)) + min;
+            value = lrint(volume*double(max-min)) + min;
             checkError(snd_mixer_selem_set_playback_dB_all(element, value, 1));
             return;
         }
         if (min != SND_CTL_TLV_DB_GAIN_MUTE) {
-            min_norm = getExp10((min-max)/6000.0);
+            min_norm = getExp10(double(min-max)/6000.0);
             volume = volume * (1-min_norm) + min_norm;
         }
         value = lrint(6000.0 * log10(volume))+max;
@@ -315,17 +314,17 @@ void AlsaDevice::setNormVolume(snd_mixer_elem_t *element, double volume)
             if (err < 0) {
                 return;
             }
-            value = lrint(volume*(max-min)) + min;
+            value = lrint(volume*double(max-min)) + min;
             checkError(snd_mixer_selem_set_capture_volume_all(element, value));
             return;
         }
         if (useLinearDb(min, max)) {
-            value = lrint(volume*(max-min)) + min;
+            value = lrint(volume*double(max-min)) + min;
             checkError(snd_mixer_selem_set_capture_dB_all(element, value, 1));
             return;
         }
         if (min != SND_CTL_TLV_DB_GAIN_MUTE) {
-            min_norm = getExp10((min-max)/6000.0);
+            min_norm = getExp10(double(min-max)/6000.0);
             volume = volume * (1-min_norm) + min_norm;
         }
         value = lrint(6000.0 * log10(volume))+max;
@@ -374,6 +373,7 @@ void AlsaDevice::setSwitch(const QString &mixer, int id, bool enabled)
     if (!snd_mixer_elem_empty(elem)) {
         switch (id) {
         case PLAYBACK:
+        default:
             checkError(snd_mixer_selem_set_playback_switch_all(elem, int(enabled)));
             break;
         case CAPTURE:
@@ -457,15 +457,6 @@ void AlsaDevice::setCurrentMixer(int id)
     }
 }
 
-void AlsaDevice::setCurrentMixer(const QString &mixer)
-{
-    int index(mixers_.indexOf(mixer));
-    if(index >= 0){
-        currentMixerId_ = index;
-        currentMixerName_ = mixer;
-    }
-}
-
 const QString &AlsaDevice::name() const
 {
     return name_;
@@ -510,12 +501,8 @@ MixerSwitches::Ptr AlsaDevice::switches()
     return switches_;
 }
 
-int AlsaDevice::currentMixerId() const
+AlsaDevice::AlsaDevice(AlsaDevice const &ad)
+: id_(ad.id()),
+  currentMixerId_(ad.currentMixerId_)
 {
-    return currentMixerId_;
-}
-
-const QString &AlsaDevice::currentMixer() const
-{
-    return currentMixerName_;
 }
