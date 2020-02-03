@@ -19,12 +19,6 @@
 
 #include "mixerswitches.h"
 
-MixerSwitches::MixerSwitches()
-= default;
-
-MixerSwitches::~MixerSwitches()
-= default;
-
 MixerSwitches::MixerSwitches(const MixerSwitches &ms)
     : captureSwitchList_(ms.captureSwitchList()),
       playbackSwitchList_(ms.playbackSwitchList()),

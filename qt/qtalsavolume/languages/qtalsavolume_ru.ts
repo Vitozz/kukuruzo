@@ -28,48 +28,64 @@
         <translation type="vanished">&amp;Выход</translation>
     </message>
     <message>
-        <location filename="../gui/popupwindow.cpp" line="85"/>
+        <location filename="../gui/popupwindow.cpp" line="83"/>
         <source>About QtAlsaVolume</source>
         <translation>О QtAlsaVolume</translation>
     </message>
     <message>
-        <location filename="../gui/popupwindow.cpp" line="87"/>
         <source>&lt;!DOCTYPE html&gt;&lt;html&gt;&lt;body&gt;&lt;p&gt;&lt;b&gt;Tray Alsa Volume Changer written using Qt&lt;/b&gt;&lt;/p&gt;&lt;p&gt;With Pulseaudio support&lt;/p&gt;&lt;p&gt;2015 (c) Vitaly Tonkacheyev &lt;address&gt;&lt;a href=&quot;mailto:thetvg@gmail.com&quot;&gt;&amp;lt;EMail&amp;gt;&lt;/a&gt;&lt;/address&gt;&lt;/p&gt;&lt;a href=&quot;http://sites.google.com/site/thesomeprojects/&quot;&gt;Program WebSite&lt;/a&gt;&lt;p&gt;version: &lt;b&gt;%1&lt;/b&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;!DOCTYPE html&gt;&lt;html&gt;&lt;body&gt;&lt;p&gt;&lt;b&gt;Регулятор громкости Alsa в трее на Qt&lt;/b&gt;&lt;/p&gt;&lt;p&gt;С поддержкой Pulseaudio&lt;/p&gt;&lt;p&gt;2015 (c) Виталий Тонкачеев &lt;address&gt;&lt;a href=&quot;mailto:thetvg@gmail.com&quot;&gt;&amp;lt;EMail&amp;gt;&lt;/a&gt;&lt;/address&gt;&lt;/p&gt;&lt;a href=&quot;http://sites.google.com/site/thesomeprojects/&quot;&gt;Web-сайт программы&lt;/a&gt;&lt;p&gt;версия: &lt;b&gt;%1&lt;/b&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation type="vanished">&lt;!DOCTYPE html&gt;&lt;html&gt;&lt;body&gt;&lt;p&gt;&lt;b&gt;Регулятор громкости Alsa в трее на Qt&lt;/b&gt;&lt;/p&gt;&lt;p&gt;С поддержкой Pulseaudio&lt;/p&gt;&lt;p&gt;2015 (c) Виталий Тонкачеев &lt;address&gt;&lt;a href=&quot;mailto:thetvg@gmail.com&quot;&gt;&amp;lt;EMail&amp;gt;&lt;/a&gt;&lt;/address&gt;&lt;/p&gt;&lt;a href=&quot;http://sites.google.com/site/thesomeprojects/&quot;&gt;Web-сайт программы&lt;/a&gt;&lt;p&gt;версия: &lt;b&gt;%1&lt;/b&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../gui/popupwindow.cpp" line="94"/>
         <source>&lt;!DOCTYPE html&gt;&lt;html&gt;&lt;body&gt;&lt;p&gt;&lt;b&gt;Tray Alsa Volume Changer written using Qt&lt;/b&gt;&lt;/p&gt;&lt;p&gt;2015 (c) Vitaly Tonkacheyev &lt;address&gt;&lt;a href=&quot;mailto:thetvg@gmail.com&quot;&gt;&amp;lt;EMail&amp;gt;&lt;/a&gt;&lt;/address&gt;&lt;/p&gt;&lt;a href=&quot;http://sites.google.com/site/thesomeprojects/&quot;&gt;Program WebSite&lt;/a&gt;&lt;p&gt;version: &lt;b&gt;%1&lt;/b&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;!DOCTYPE html&gt;&lt;html&gt;&lt;body&gt;&lt;p&gt;&lt;b&gt;Регулятор громкости Alsa в трее на Qt&lt;/b&gt;&lt;/p&gt;&lt;p&gt;2015 (c) Виталий Тонкачеев &lt;address&gt;&lt;a href=&quot;mailto:thetvg@gmail.com&quot;&gt;&amp;lt;EMail&amp;gt;&lt;/a&gt;&lt;/address&gt;&lt;/p&gt;&lt;a href=&quot;http://sites.google.com/site/thesomeprojects/&quot;&gt;Web-сайт программы&lt;/a&gt;&lt;p&gt;версия: &lt;b&gt;%1&lt;/b&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation type="vanished">&lt;!DOCTYPE html&gt;&lt;html&gt;&lt;body&gt;&lt;p&gt;&lt;b&gt;Регулятор громкости Alsa в трее на Qt&lt;/b&gt;&lt;/p&gt;&lt;p&gt;2015 (c) Виталий Тонкачеев &lt;address&gt;&lt;a href=&quot;mailto:thetvg@gmail.com&quot;&gt;&amp;lt;EMail&amp;gt;&lt;/a&gt;&lt;/address&gt;&lt;/p&gt;&lt;a href=&quot;http://sites.google.com/site/thesomeprojects/&quot;&gt;Web-сайт программы&lt;/a&gt;&lt;p&gt;версия: &lt;b&gt;%1&lt;/b&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../gui/popupwindow.cpp" line="104"/>
+        <source>&lt;!DOCTYPE html&gt;&lt;html&gt;&lt;body&gt;&lt;p&gt;&lt;b&gt;Tray Alsa Volume Changer written using Qt&lt;/b&gt;&lt;/p&gt;&lt;p&gt;With Pulseaudio support&lt;/p&gt;&lt;p&gt;2015-2020 (c) Vitaly Tonkacheyev &lt;address&gt;&lt;a href=&quot;mailto:thetvg@gmail.com&quot;&gt;&amp;lt;EMail&amp;gt;&lt;/a&gt;&lt;/address&gt;&lt;/p&gt;&lt;a href=&quot;http://sites.google.com/site/thesomeprojects/&quot;&gt;Program WebSite&lt;/a&gt;&lt;p&gt;version: &lt;b&gt;%1&lt;/b&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="obsolete">&lt;!DOCTYPE html&gt;&lt;html&gt;&lt;body&gt;&lt;p&gt;&lt;b&gt;Регулятор громкости Alsa в трее на Qt&lt;/b&gt;&lt;/p&gt;&lt;p&gt;С поддержкой Pulseaudio&lt;/p&gt;&lt;p&gt;2014 (c) Виталий Тонкачеев &lt;address&gt;&lt;a href=&quot;mailto:thetvg@gmail.com&quot;&gt;&amp;lt;EMail&amp;gt;&lt;/a&gt;&lt;/address&gt;&lt;/p&gt;&lt;a href=&quot;http://sites.google.com/site/thesomeprojects/&quot;&gt;Web-сайт программы&lt;/a&gt;&lt;p&gt;версия: &lt;b&gt;%1&lt;/b&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt; {2015-2020 ?} {1&lt;?}</translation>
+    </message>
+    <message>
+        <source>&lt;!DOCTYPE html&gt;&lt;html&gt;&lt;body&gt;&lt;p&gt;&lt;b&gt;Tray Alsa Volume Changer written using Qt&lt;/b&gt;&lt;/p&gt;&lt;p&gt;2015-2020 (c) Vitaly Tonkacheyev &lt;address&gt;&lt;a href=&quot;mailto:thetvg@gmail.com&quot;&gt;&amp;lt;EMail&amp;gt;&lt;/a&gt;&lt;/address&gt;&lt;/p&gt;&lt;a href=&quot;http://sites.google.com/site/thesomeprojects/&quot;&gt;Program WebSite&lt;/a&gt;&lt;p&gt;version: &lt;b&gt;%1&lt;/b&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="obsolete">&lt;!DOCTYPE html&gt;&lt;html&gt;&lt;body&gt;&lt;p&gt;&lt;b&gt;Регулятор громкости Alsa в трее на Qt&lt;/b&gt;&lt;/p&gt;&lt;p&gt;2014 (c) Виталий Тонкачеев &lt;address&gt;&lt;a href=&quot;mailto:thetvg@gmail.com&quot;&gt;&amp;lt;EMail&amp;gt;&lt;/a&gt;&lt;/address&gt;&lt;/p&gt;&lt;a href=&quot;http://sites.google.com/site/thesomeprojects/&quot;&gt;Web-сайт программы&lt;/a&gt;&lt;p&gt;версия: &lt;b&gt;%1&lt;/b&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt; {2015-2020 ?} {1&lt;?}</translation>
+    </message>
+    <message>
+        <location filename="../gui/popupwindow.cpp" line="85"/>
+        <source>&lt;!DOCTYPE html&gt;&lt;html&gt;&lt;body&gt;&lt;p&gt;&lt;b&gt;Tray Alsa Volume Changer written using Qt&lt;/b&gt;&lt;/p&gt;&lt;p&gt;With Pulseaudio support&lt;/p&gt;&lt;p&gt;2013-2020 (c) Vitaly Tonkacheyev &lt;address&gt;&lt;a href=&quot;mailto:thetvg@gmail.com&quot;&gt;&amp;lt;EMail&amp;gt;&lt;/a&gt;&lt;/address&gt;&lt;/p&gt;&lt;a href=&quot;http://sites.google.com/site/thesomeprojects/&quot;&gt;Program WebSite&lt;/a&gt;&lt;p&gt;version: &lt;b&gt;%1&lt;/b&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation>&lt;!DOCTYPE html&gt;&lt;html&gt;&lt;body&gt;&lt;p&gt;&lt;b&gt;Регулятор громкости Alsa в трее на Qt&lt;/b&gt;&lt;/p&gt;&lt;p&gt;С поддержкой Pulseaudio&lt;/p&gt;&lt;p&gt;2013-2020 (c) Виталий Тонкачеев &lt;address&gt;&lt;a href=&quot;mailto:thetvg@gmail.com&quot;&gt;&amp;lt;EMail&amp;gt;&lt;/a&gt;&lt;/address&gt;&lt;/p&gt;&lt;a href=&quot;http://sites.google.com/site/thesomeprojects/&quot;&gt;Web-сайт программы&lt;/a&gt;&lt;p&gt;версия: &lt;b&gt;%1&lt;/b&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+        <location filename="../gui/popupwindow.cpp" line="92"/>
+        <source>&lt;!DOCTYPE html&gt;&lt;html&gt;&lt;body&gt;&lt;p&gt;&lt;b&gt;Tray Alsa Volume Changer written using Qt&lt;/b&gt;&lt;/p&gt;&lt;p&gt;2013-2020 (c) Vitaly Tonkacheyev &lt;address&gt;&lt;a href=&quot;mailto:thetvg@gmail.com&quot;&gt;&amp;lt;EMail&amp;gt;&lt;/a&gt;&lt;/address&gt;&lt;/p&gt;&lt;a href=&quot;http://sites.google.com/site/thesomeprojects/&quot;&gt;Program WebSite&lt;/a&gt;&lt;p&gt;version: &lt;b&gt;%1&lt;/b&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation>&lt;!DOCTYPE html&gt;&lt;html&gt;&lt;body&gt;&lt;p&gt;&lt;b&gt;Регулятор громкости Alsa в трее на Qt&lt;/b&gt;&lt;/p&gt;&lt;p&gt;2013-2020 (c) Виталий Тонкачеев &lt;address&gt;&lt;a href=&quot;mailto:thetvg@gmail.com&quot;&gt;&amp;lt;EMail&amp;gt;&lt;/a&gt;&lt;/address&gt;&lt;/p&gt;&lt;a href=&quot;http://sites.google.com/site/thesomeprojects/&quot;&gt;Web-сайт программы&lt;/a&gt;&lt;p&gt;версия: &lt;b&gt;%1&lt;/b&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+        <location filename="../gui/popupwindow.cpp" line="102"/>
         <source>System tray is not available</source>
         <translation>Системный трей не найден</translation>
     </message>
     <message>
-        <location filename="../gui/popupwindow.cpp" line="130"/>
+        <location filename="../gui/popupwindow.cpp" line="128"/>
         <source>Can&apos;t start PulseAudio. Using Alsa by default</source>
         <translation>Невозможно запустить PulseAudio. Используем по-умолчанию Alsa</translation>
     </message>
     <message>
-        <location filename="../gui/popupwindow.cpp" line="407"/>
+        <location filename="../gui/popupwindow.cpp" line="416"/>
         <source>Card: %1%2%3</source>
         <translation>Карта: %1%2%3</translation>
     </message>
     <message>
-        <location filename="../gui/popupwindow.cpp" line="410"/>
-        <location filename="../gui/popupwindow.cpp" line="421"/>
+        <location filename="../gui/popupwindow.cpp" line="419"/>
+        <location filename="../gui/popupwindow.cpp" line="430"/>
         <source>Volume: %1</source>
         <translation>Громкость: %1</translation>
     </message>
     <message>
-        <location filename="../gui/popupwindow.cpp" line="417"/>
+        <location filename="../gui/popupwindow.cpp" line="426"/>
         <source>Card: %1%2%3%4</source>
         <translation>Карта: %1%2%3%4</translation>
     </message>
     <message>
-        <location filename="../gui/popupwindow.cpp" line="420"/>
+        <location filename="../gui/popupwindow.cpp" line="429"/>
         <source>Mixer: %1%2</source>
         <translation>Микшер: %1%2</translation>
     </message>
@@ -110,7 +126,7 @@ version: %1</source>
 версия: %1</translation>
     </message>
     <message>
-        <location filename="../gui/popupwindow.cpp" line="103"/>
+        <location filename="../gui/popupwindow.cpp" line="101"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
@@ -266,32 +282,32 @@ version: 0.0.1</source>
         <translation>Переключатели</translation>
     </message>
     <message>
-        <location filename="../gui/settingsdialog.cpp" line="44"/>
+        <location filename="../gui/settingsdialog.cpp" line="43"/>
         <source>Playback Switches</source>
         <translation>Переключатели воспроизведения</translation>
     </message>
     <message>
-        <location filename="../gui/settingsdialog.cpp" line="45"/>
+        <location filename="../gui/settingsdialog.cpp" line="44"/>
         <source>Capture Switches</source>
         <translation>Переключатели записи</translation>
     </message>
     <message>
-        <location filename="../gui/settingsdialog.cpp" line="46"/>
+        <location filename="../gui/settingsdialog.cpp" line="45"/>
         <source>Enum Switches</source>
         <translation>Другие переключатели</translation>
     </message>
     <message>
-        <location filename="../gui/settingsdialog.cpp" line="51"/>
+        <location filename="../gui/settingsdialog.cpp" line="50"/>
         <source>Enable/Disable Alsa&apos;s Playback Switch</source>
         <translation>Включить/Выключить переключатель воспроизведения Alsa</translation>
     </message>
     <message>
-        <location filename="../gui/settingsdialog.cpp" line="52"/>
+        <location filename="../gui/settingsdialog.cpp" line="51"/>
         <source>Enable/Disable Alsa&apos;s Capture Switch</source>
         <translation>Включить/Выключить переключатель записи Alsa</translation>
     </message>
     <message>
-        <location filename="../gui/settingsdialog.cpp" line="53"/>
+        <location filename="../gui/settingsdialog.cpp" line="52"/>
         <source>Enable/Disable Alsa&apos;s Enumerated Switch</source>
         <translation>Включить/Выключить другой переключатель Alsa</translation>
     </message>

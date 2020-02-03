@@ -27,9 +27,9 @@
 class MixerSwitches
 {
 public:
-    MixerSwitches();
+    MixerSwitches() = default;
     MixerSwitches(const MixerSwitches &ms);
-    ~MixerSwitches();
+    ~MixerSwitches() = default;
     typedef QSharedPointer<MixerSwitches> Ptr;
     void pushBack(SwitchType sType, switcher &item);
     void clear(SwitchType sType);

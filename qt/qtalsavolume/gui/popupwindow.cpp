@@ -85,13 +85,13 @@ PopupWindow::PopupWindow()
       message_(QString(tr("<!DOCTYPE html><html><body>"
                           "<p><b>Tray Alsa Volume Changer written using Qt</b></p>"
                           "<p>With Pulseaudio support</p>"
-                          "<p>2015 (c) Vitaly Tonkacheyev <address><a href=\"mailto:thetvg@gmail.com\">&lt;EMail&gt;</a></address></p>"
+                          "<p>2013-2020 (c) Vitaly Tonkacheyev <address><a href=\"mailto:thetvg@gmail.com\">&lt;EMail&gt;</a></address></p>"
                           "<a href=\"http://sites.google.com/site/thesomeprojects/\">Program WebSite</a>"
                           "<p>version: <b>%1</b></p></body></html>")).arg(APP_VERSION))
     #else
       message_(QString(tr("<!DOCTYPE html><html><body>"
                           "<p><b>Tray Alsa Volume Changer written using Qt</b></p>"
-                          "<p>2015 (c) Vitaly Tonkacheyev <address><a href=\"mailto:thetvg@gmail.com\">&lt;EMail&gt;</a></address></p>"
+                          "<p>2013-2020 (c) Vitaly Tonkacheyev <address><a href=\"mailto:thetvg@gmail.com\">&lt;EMail&gt;</a></address></p>"
                           "<a href=\"http://sites.google.com/site/thesomeprojects/\">Program WebSite</a>"
                           "<p>version: <b>%1</b></p></body></html>")).arg(APP_VERSION))
     #endif

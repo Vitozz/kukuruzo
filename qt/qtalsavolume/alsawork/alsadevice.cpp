@@ -40,9 +40,6 @@ AlsaDevice::AlsaDevice(int id, QString card)
     updateElements();
 }
 
-AlsaDevice::~AlsaDevice()
-= default;
-
 void AlsaDevice::updateElements()
 {
     if (!volumeMixers_.isEmpty()) {

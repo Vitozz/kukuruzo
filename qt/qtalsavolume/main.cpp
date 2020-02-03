@@ -35,12 +35,12 @@ int main(int argc, char *argv[])
     QApplication::setApplicationName(APP_NAME);
     QTranslator translator;
     const QStringList localeDirs({QString("%1/languages").arg(QDir::currentPath()),
-                                  QString(qApp->applicationDirPath() + "/languages"),
+                                  QString(a.applicationDirPath() + "/languages"),
                                   QString("/usr/share/%1/languages").arg(APP_NAME),
                                   QString("/usr/local/share/%1/languages").arg(APP_NAME),
                                   QString(QDir::home().absolutePath() + "/.local/share/%1/languages").arg(APP_NAME),
                                   QString(QDir::currentPath().left(QDir::currentPath().lastIndexOf("/")) + "/share/%1/languages").arg(APP_NAME)});
-    const QString langFile(qApp->applicationName());
+    const QString langFile(a.applicationName());
     foreach(const QString &dir, localeDirs){
         if (translator.load(QLocale::system(),langFile, "_", dir )) {
             qApp->installTranslator(&translator);

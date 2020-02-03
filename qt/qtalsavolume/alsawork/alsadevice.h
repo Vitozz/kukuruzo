@@ -29,7 +29,7 @@ class AlsaDevice
 {
 public:
     AlsaDevice(int id, QString card);
-    ~AlsaDevice();
+    ~AlsaDevice() = default;
     AlsaDevice(AlsaDevice const &);
     typedef QSharedPointer<AlsaDevice> Ptr;
     const QString &name() const;
