@@ -94,6 +94,7 @@ src_prepare() {
 }
 
 src_configure() {
+    EXRTA_FLAGS="$EXTRA_FLAGS -DPSI_PLUS=ON"
 	use debug && EXTRA_FLAGS="$EXTRA_FLAGS -DCMAKE_BUILD_TYPE=Debug"
 	use webengine && EXRTA_FLAGS="$EXTRA_FLAGS -DCHAT_TYPE=webengine"
 	use webkit && EXRTA_FLAGS="$EXTRA_FLAGS -DCHAT_TYPE=webkit"

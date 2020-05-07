@@ -697,7 +697,7 @@ build_qtpoweroff ()
 	section="misc"
 	arch="any"
 	addit="#"
-	depends="\${shlibs:Depends}, \${misc:Depends}, consolekit"
+	depends="\${shlibs:Depends}, \${misc:Depends}"
 	description="Simple Power-Off Tool"
 	descriptionlong='Simple program to sheduled power-off/reboot of system. Written on Qt'
 	docfiles=""

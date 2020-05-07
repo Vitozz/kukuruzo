@@ -27,6 +27,7 @@
 #include <QRadioButton>
 #include <QSpinBox>
 #include <QAction>
+#include <QString>
 #ifdef HAVE_DBUS
 #include <QtDBus/QDBusConnection>
 #include <QtDBus/QDBusInterface>
