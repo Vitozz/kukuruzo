@@ -284,9 +284,9 @@ prepare_workspace ()
   cd ${upstream_src}
   prepare_psi_src ${workdir}
   cd ${buildpsi}/plugins
-  prepare_psi_src ${workdir}/src/plugins
-  check_dir ${workdir}/psimedia
-  cd ${buildpsi}/psimedia && prepare_psi_src ${workdir}/psimedia
+  prepare_psi_src ${workdir}/plugins
+  check_dir ${workdir}/plugins/generic/psimedia
+  cd ${buildpsi}/psimedia && prepare_psi_src ${workdir}/plugins/generic/psimedia
   check_dir ${workdir}/translations
   cp -a ${buildpsi}/langs/translations/*.ts ${workdir}/translations/
   cd ${workdir}
@@ -769,7 +769,7 @@ archivate_all()
 {
   wbk_suff="all-"
   mxe_outd=${tmp_dir}/mxe_builds
-  7z a -mx=9 -m0=LZMA -mmt=on ${mxe_outd}/psi-plus-${wbk_suff}${psi_package_version}-$1.7z ${mxe_outd}/$1/*
+  7z a -mx=9 -m0=LZMA -mmt=on -xr!*.a ${mxe_outd}/psi-plus-${wbk_suff}${psi_package_version}-$1.7z ${mxe_outd}/$1/*
   cp -r ${mxe_outd}/psi-plus-${wbk_suff}${psi_package_version}-$1.7z ${buildpsi}/mxe_builds/
 }
 #Список зависимостей
