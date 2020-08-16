@@ -1,6 +1,6 @@
 /*
  * settingsgialog.cpp
- * Copyright (C) 2013-2019 Vitaly Tonkacheyev
+ * Copyright (C) 2013-2020 Vitaly Tonkacheyev
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -57,6 +57,7 @@ SettingsDialog::SettingsDialog(QWidget *parent)
     ui->verticalLayout_3->addWidget(l3_);
     ui->verticalLayout_3->addWidget(enums_);
     ui->tabWidget->setCurrentIndex(0);
+    setWindowIcon(QIcon(":/images/Logo"));
 }
 
 SettingsDialog::~SettingsDialog()
@@ -131,12 +132,7 @@ void SettingsDialog::disconnectSignals()
 
 void SettingsDialog::setCurrentCard(int index)
 {
-    if (index < soundCards_.size()) {
-        ui->cardBox->setCurrentIndex(index);
-    }
-    else {
-        ui->cardBox->setCurrentIndex(0);
-    }
+    ui->cardBox->setCurrentIndex(index < soundCards_.size() ? index : 0);
 }
 
 void SettingsDialog::setCurrentMixer(const QString &mixer)
@@ -165,15 +161,10 @@ void SettingsDialog::setPlaybackChecks(const QList<switcher> &pbList)
     if (playbacks_->count() > 0) {
         playbacks_->clear();
     }
-    foreach (switcher item, pbList) {
-        auto *cb = new QListWidgetItem(item.first, playbacks_);
+    for (const switcher &item : pbList) {
+        auto cb = new QListWidgetItem(item.first, playbacks_);
         cb->setFlags(cb->flags() | Qt::ItemIsUserCheckable);
-        if (item.second) {
-            cb->setCheckState(Qt::Checked);
-        }
-        else {
-            cb->setCheckState(Qt::Unchecked);
-        }
+        cb->setCheckState(item.second ? Qt::Checked : Qt::Unchecked);
         playbacks_->addItem(cb);
     }
     bool hasItems(playbacks_->count() > 0);
@@ -187,15 +178,10 @@ void SettingsDialog::setCaptureChecks(const QList<switcher> &cList)
     if (captures_->count() > 0 ){
         captures_->clear();
     }
-    foreach (switcher item, cList) {
-        auto *cb = new QListWidgetItem(item.first, captures_);
+    for (const switcher &item : cList) {
+        auto cb = new QListWidgetItem(item.first, captures_);
         cb->setFlags(cb->flags() | Qt::ItemIsUserCheckable);
-        if (item.second) {
-            cb->setCheckState(Qt::Checked);
-        }
-        else {
-            cb->setCheckState(Qt::Unchecked);
-        }
+        cb->setCheckState(item.second ? Qt::Checked : Qt::Unchecked);
         captures_->addItem(cb);
     }
     bool hasItems(captures_->count() > 0);
@@ -209,15 +195,10 @@ void SettingsDialog::setEnumChecks(const QList<switcher> &eList)
     if (enums_->count() > 0 ){
         enums_->clear();
     }
-    foreach (switcher item, eList) {
-        auto *cb = new QListWidgetItem(item.first, enums_);
+    for (const switcher &item : eList) {
+        auto cb = new QListWidgetItem(item.first, enums_);
         cb->setFlags(cb->flags() | Qt::ItemIsUserCheckable);
-        if (item.second) {
-            cb->setCheckState(Qt::Checked);
-        }
-        else {
-            cb->setCheckState(Qt::Unchecked);
-        }
+        cb->setCheckState(item.second ? Qt::Checked : Qt::Unchecked);
         enums_->addItem(cb);
     }
     enums_->show();
@@ -291,15 +272,8 @@ void SettingsDialog::hideAlsaElements(bool isHide)
 void SettingsDialog::setPulseAvailable(bool available)
 {
     pulseAvailable_ = available;
-    if (!pulseAvailable_) {
-        ui->usePulseaudio->setVisible(false);
-        ui->usePulseaudio->setEnabled(false);
-    }
-    else {
-        ui->usePulseaudio->setVisible(true);
-        ui->usePulseaudio->setEnabled(true);
-    }
-
+    ui->usePulseaudio->setVisible(!pulseAvailable_);
+    ui->usePulseaudio->setEnabled(!pulseAvailable_);
 }
 
 void SettingsDialog::setUsePolling(bool isPoll)

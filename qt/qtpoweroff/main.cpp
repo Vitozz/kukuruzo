@@ -22,7 +22,6 @@
 #include <QTranslator>
 #include <QMessageBox>
 #include <QDir>
-#include <QLocale>
 #ifdef IS_DEBUG
 #include <QDebug>
 #endif
@@ -35,18 +34,18 @@ int main(int argc, char *argv[])
     QApplication::setApplicationName(APP_NAME);
     QTranslator translator;
     const QStringList localeDirs({QString("%1/languages").arg(QDir::currentPath()),
-                                  QString("%1/languages").arg(qApp->applicationDirPath()),
+                                  QString("%1/languages").arg(QCoreApplication::applicationDirPath()),
                                   QString("/usr/share/%1/languages").arg(APP_NAME),
                                   QString("/usr/local/share/%1/languages").arg(APP_NAME),
                                   QString("%1/.local/share/%2/languages").arg(QDir::home().absolutePath(), APP_NAME),
                                   QString("%1/share/%2/languages").arg(QDir::currentPath().left(QDir::currentPath().lastIndexOf("/")), APP_NAME)});
-    const QString langFile(qApp->applicationName());
-    foreach(const QString &dir, localeDirs){
+    const QString langFile(QCoreApplication::applicationName());
+    for (const QString &dir : localeDirs){
 #ifdef IS_DEBUG
         qDebug() << "Dir is " << dir;
 #endif
         if (translator.load(QLocale::system(),langFile, "_", dir )) {
-            qApp->installTranslator(&translator);
+            QCoreApplication::installTranslator(&translator);
 #ifdef IS_DEBUG
             qDebug() << "Found in " << dir;
 #endif

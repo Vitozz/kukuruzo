@@ -1,6 +1,6 @@
 /*
  * alsawork.h
- * Copyright (C) 2012-2019 Vitaly Tonkacheyev
+ * Copyright (C) 2012-2020 Vitaly Tonkacheyev
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,7 +49,7 @@ public:
     void setMute(bool enabled);
     bool getMute();
     bool haveVolumeMixers();
-    bool cardExists(int id);
+    bool cardExists(int id) const;
     int getFirstCardWithMixers() const;
 
 private:

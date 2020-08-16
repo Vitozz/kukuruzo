@@ -1,6 +1,6 @@
 /*
  * trayicon.cpp
- * Copyright (C) 2015 Vitaly Tonkacheyev
+ * Copyright (C) 2015-2020 Vitaly Tonkacheyev
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -130,7 +130,7 @@ void TrayIcon::setTrayIcon(const QString &icon)
 
 bool TrayIcon::isAvailable()
 {
-	return legacyTrayIcon_.isNull() ? true : legacyTrayIcon_->isSystemTrayAvailable();
+	return legacyTrayIcon_.isNull() || legacyTrayIcon_->isSystemTrayAvailable();
 }
 
 void TrayIcon::setMute(bool isMuted)
@@ -171,14 +171,8 @@ void TrayIcon::iconActivatedSecondary(QPoint point)
 
 void TrayIcon::onScroll(int value, Qt::Orientation orientation)
 {
-	if (orientation == Qt::Vertical) {
-		if (value > 0) {
-			emit activated(WHEELUP);
-		}
-		else {
-			emit activated(WHEELDOWN);
-		}
-	}
+    if (orientation == Qt::Vertical)
+        emit activated(value > 0 ? WHEELUP : WHEELDOWN);
 }
 #endif
 void TrayIcon::iconActivated(QSystemTrayIcon::ActivationReason reason)
@@ -201,15 +195,10 @@ void TrayIcon::iconActivated(QSystemTrayIcon::ActivationReason reason)
 bool TrayIcon::eventFilter(QObject *object, QEvent *event)
 {
 	if (object == legacyTrayIcon_.data() && event->type() == QEvent::Wheel) {
-		auto *wheelEvent = static_cast<QWheelEvent*>(event);
+		auto wheelEvent = static_cast<QWheelEvent*>(event);
 		const int steps = (wheelEvent->delta()>0) ? 1 : (wheelEvent->delta()<0) ? -1: 0;
-		if (steps > 0) {
-			emit activated(WHEELUP);
-		}
-		else {
-			emit activated(WHEELDOWN);
-		}
-		return true;
+        emit activated(steps > 0 ? WHEELUP : WHEELDOWN);
+        return true;
 	}
 	return false;
 }

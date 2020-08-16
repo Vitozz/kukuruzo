@@ -1,6 +1,6 @@
 /*
  * alsawork.cpp
- * Copyright (C) 2012-2019 Vitaly Tonkacheyev
+ * Copyright (C) 2012-2020 Vitaly Tonkacheyev
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@ AlsaWork::AlsaWork()
     totalCards_(0)
 {
     getCards();
-    foreach (const QString &name, cardList_) {
+    for (const QString &name : cardList_) {
         devices_.push_back(AlsaDevice::Ptr(new AlsaDevice(cardList_.indexOf(name), name)));
     }
     setCurrentCard(0);
@@ -64,10 +64,7 @@ void AlsaWork::setAlsaVolume(int volume)
 int AlsaWork::getAlsaVolume()
 {
     getCards();
-    if (cardExists(currentAlsaDevice_->id())) {
-        return int(currentAlsaDevice_->getVolume());
-    }
-    return 0;
+    return cardExists(currentAlsaDevice_->id()) ? int(currentAlsaDevice_->getVolume()) : 0;
 }
 
 QString AlsaWork::getCardName(int index)
@@ -113,10 +110,7 @@ void AlsaWork::setMute(bool enabled)
 bool AlsaWork::getMute()
 {
     getCards();
-    if (cardExists(currentAlsaDevice_->id())) {
-        return !currentAlsaDevice_->getMute();
-    }
-    return false;
+    return cardExists(currentAlsaDevice_->id()) && !currentAlsaDevice_->getMute();
 }
 
 void AlsaWork::setSwitch(const QString &mixer, int id, bool enabled)
@@ -170,7 +164,7 @@ bool AlsaWork::haveVolumeMixers()
     return currentAlsaDevice_->haveMixers();
 }
 
-bool AlsaWork::cardExists(int id)
+bool AlsaWork::cardExists(int id) const
 {
     return id >= 0 && id < totalCards_;
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014-2019 Vitaly Tonkacheyev <thetvg@gmail.com>
+ * Copyright (C) 2014-2020 Vitaly Tonkacheyev <thetvg@gmail.com>
  *
  * Big thanks to Clément Démoulins <clement@archivel.fr>
  *
@@ -65,7 +65,7 @@ PulseCore::~PulseCore()
 }
 
 void PulseCore::pa_context_notify_cb(pa_context* context, void* raw){
-    auto *state = static_cast<PulseCore*>(raw);
+    auto state = static_cast<PulseCore *>(raw);
     switch(pa_context_get_state(context)) {
     case PA_CONTEXT_READY:
         state->pState = CONNECTED;
@@ -86,7 +86,7 @@ void PulseCore::pa_sink_info_cb(pa_context *c, const pa_sink_info *i, int eol, v
 {
     Q_UNUSED(c);
     if (eol != 0) return;
-    auto* sinks = static_cast<PulseDevicePtrList*>(raw);
+    auto sinks = static_cast<PulseDevicePtrList *>(raw);
     sinks->push_back(PulseDevice::Ptr(new PulseDevice(i)));
 }
 
@@ -94,18 +94,18 @@ void PulseCore::pa_source_info_cb(pa_context *c, const pa_source_info *i, int eo
 {
     Q_UNUSED(c);
     if (eol != 0) return;
-    auto* sources = static_cast<PulseDevicePtrList*>(raw);
+    auto sources = static_cast<PulseDevicePtrList *>(raw);
     sources->push_back(PulseDevice::Ptr(new PulseDevice(i)));
 }
 
 void PulseCore::server_info_cb(pa_context* c, const pa_server_info* i, void* raw) {
     Q_UNUSED(c);
-    auto* info = static_cast<ServerInfo*>(raw);
+    auto info = static_cast<ServerInfo *>(raw);
     info->defaultSinkName = QString(i->default_sink_name);
     info->defaultSourceName = QString(i->default_source_name);
 }
 
-bool PulseCore::available()
+bool PulseCore::available() const
 {
     return isAvailable_;
 }
@@ -144,7 +144,7 @@ PulseDevice::Ptr PulseCore::getSink(int index)
 
 PulseDevice::Ptr PulseCore::getSink(const QString &name)
 {
-    foreach(const PulseDevice::Ptr &sink, sinks_) {
+    for (const PulseDevice::Ptr &sink : sinks_) {
         if (sink->name() == name) {
             return sink;
         }
@@ -166,7 +166,7 @@ PulseDevice::Ptr PulseCore::getSource(int index)
 
 PulseDevice::Ptr PulseCore::getSource(const QString &name)
 {
-    foreach(const PulseDevice::Ptr &source, sources_) {
+    for (const PulseDevice::Ptr &source : sources_) {
         if (source->name() == name) {
             return source;
         }
@@ -215,12 +215,12 @@ QString PulseCore::getDeviceDescription(const QString &name)
 PulseDevice::Ptr PulseCore::getDeviceByName(const QString &name)
 {
     PulseDevice::Ptr result = getDefaultSink();
-    foreach (const PulseDevice::Ptr &device, sinks_) {
+    for (const PulseDevice::Ptr &device : sinks_) {
         if (device->name() == name) {
             result = device;
         }
     }
-    foreach (const PulseDevice::Ptr &device, sources_) {
+    for (const PulseDevice::Ptr &device : sources_) {
         if (device->name() == name) {
             result = device;
         }
@@ -240,10 +240,11 @@ QString PulseCore::defaultSink()
 
 void PulseCore::setVolume_(const PulseDevice::Ptr &device, int value)
 {
-    pa_cvolume* new_cvolume = pa_cvolume_set(&device->volume,
-                                             device->volume.channels,
-                                             static_cast<pa_volume_t>(device->round(qMax((static_cast<double>(value) * PA_VOLUME_NORM) / 100, 0.0)))
-                                             );
+    auto new_cvolume = pa_cvolume_set(&device->volume,
+                                      device->volume.channels,
+                                      static_cast<pa_volume_t>(device->round(
+                                          qMax((static_cast<double>(value) * PA_VOLUME_NORM) / 100,
+                                               0.0))));
     pa_operation* op;
     if (device->type() == SINK) {
         op = pa_context_set_sink_volume_by_index(context_, uint(device->index()), new_cvolume, success_cb, nullptr);
@@ -295,16 +296,16 @@ void PulseCore::updateDevices()
     clearLists();
     getSinks();
     getSources();
-    foreach(const PulseDevice::Ptr &device, sinks_) {
+    for (const PulseDevice::Ptr &device : sinks_) {
         deviceNames_ << device->name();
         sinksDescriptions_ << device->description();
     }
-    foreach(const PulseDevice::Ptr &device, sources_) {
+    for (const PulseDevice::Ptr &device : sources_) {
         deviceNames_ << device->name();
         sourcesDescriptions_ << device->description();
     }
     deviceDescriptions_ = sinksDescriptions_;
-    foreach(const QString &desc, sourcesDescriptions_) {
+    for (const QString &desc : sourcesDescriptions_) {
         deviceDescriptions_ << desc;
     }
 }

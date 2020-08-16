@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014-2019 Vitaly Tonkacheyev <thetvg@gmail.com>
+ * Copyright (C) 2014-2020 Vitaly Tonkacheyev <thetvg@gmail.com>
  *
  * Big thanks to Clément Démoulins <clement@archivel.fr>
  *
@@ -66,19 +66,18 @@ PulseDevice::PulseDevice(const pa_sink_info* i)
       description_(QString::fromLocal8Bit(i->description))
 {
     volume.channels = i->volume.channels;
-    int n;
-    for (n = 0; n < volume.channels; ++n) {
+    for (quint8 n = 0; n < volume.channels; ++n) {
         volume.values[n] = i->volume.values[n];
     }
     mute_ = i->mute == 1;
 }
 
-int PulseDevice::percent(pa_cvolume& volume_) const
+int PulseDevice::percent(pa_cvolume& volume_)
 {
     return static_cast<int>(round((static_cast<double>(pa_cvolume_avg(&volume_)) * 100.) / PA_VOLUME_NORM));
 }
 
-double PulseDevice::round(double value) const
+double PulseDevice::round(double value)
 {
     return (value > 0.0) ? qFloor(value + 0.5) : qCeil(value - 0.5);
 }

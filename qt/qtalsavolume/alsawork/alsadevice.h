@@ -1,6 +1,6 @@
 /*
  * alsadevice.h
- * Copyright (C) 2014-2019 Vitaly Tonkacheyev
+ * Copyright (C) 2014-2020 Vitaly Tonkacheyev
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,22 +43,22 @@ public:
     void setDeviceVolume(double volume);
     void setCurrentMixer(int id);
 
-    void setSwitch(const QString &mixer, int id, bool enabled);
+    void setSwitch(const QString &mixer, int id, bool enabled) const;
     void setMute(bool enabled);
     void updateElements();
     static QString formatCardName(int id);
 
 private:
-    snd_mixer_t *getMixerHanlde(int id);
+    static snd_mixer_t *getMixerHanlde(int id);
     static snd_mixer_selem_channel_id_t checkMixerChannels(snd_mixer_elem_t *element);
     static snd_mixer_elem_t *initMixerElement(snd_mixer_t *handle, const char *mixer);
     static void checkError (int errorIndex);
     static void checkError (const QString &title, const QString &message);
     void initMixerList();
-    double getNormVolume(snd_mixer_elem_t *element);
-    double getExp10(double value) const;
+    static double getNormVolume(snd_mixer_elem_t *element);
+    static double getExp10(double value) ;
     static bool useLinearDb(long min, long max);
-    void setNormVolume(snd_mixer_elem_t *element, double volume);
+    static void setNormVolume(snd_mixer_elem_t *element, double volume);
 
 private:
     int id_;

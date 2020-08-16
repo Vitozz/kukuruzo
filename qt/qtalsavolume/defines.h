@@ -1,6 +1,6 @@
 /*
  * defines.h
- * Copyright (C) 2013-2019 Vitaly Tonkacheyev
+ * Copyright (C) 2013-2020 Vitaly Tonkacheyev
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,7 +22,7 @@
 
 #define APP_NAME "qtalsavolume"
 #define APP_ORG "thesomeprojects"
-#define APP_VERSION "0.2.4"
+#define APP_VERSION "0.2.5"
 
 #define CARD_INDEX "Main/card"
 #define MIXER_NAME "Main/mixer"

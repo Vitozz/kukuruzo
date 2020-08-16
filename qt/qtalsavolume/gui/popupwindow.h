@@ -1,6 +1,6 @@
 /*
  * popupwindow.h
- * Copyright (C) 2013-2019 Vitaly Tonkacheyev
+ * Copyright (C) 2013-2020 Vitaly Tonkacheyev
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -74,7 +74,7 @@ private:
     void setTrayIcon(int value);
     void setVolume(int value);
     void setIconToolTip(int value);
-    void createDesktopFile();
+    void createDesktopFile() const;
     void readDesktopFile();
     void updateAlsa(int card);
     void updateSwitches();

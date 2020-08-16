@@ -1,6 +1,6 @@
 /*
  * trayicon.h
- * Copyright (C) 2015-2019 Vitaly Tonkacheyev
+ * Copyright (C) 2015-2020 Vitaly Tonkacheyev
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

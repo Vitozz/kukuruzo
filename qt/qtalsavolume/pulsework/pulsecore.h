@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014-2019 Vitaly Tonkacheyev <thetvg@gmail.com>
+ * Copyright (C) 2014-2020 Vitaly Tonkacheyev <thetvg@gmail.com>
  *
  * Big thanks to Clément Démoulins <clement@archivel.fr>
  *
@@ -57,7 +57,7 @@ public:
     void setVolume(int value);
     void setMute(bool mute);
     void setCurrentDevice(const QString &name);
-    bool available();
+    bool available() const;
 private:
     void getSinks();
     void getSources();

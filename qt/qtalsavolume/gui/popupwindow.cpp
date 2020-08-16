@@ -1,6 +1,6 @@
 /*
  * popupwindow.cpp
- * Copyright (C) 2013-2019 Vitaly Tonkacheyev
+ * Copyright (C) 2013-2020 Vitaly Tonkacheyev
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,9 +26,7 @@
 #include <QSlider>
 #include <QLabel>
 #include <QAction>
-#include <QMenu>
 #include <QMessageBox>
-#include <QDesktopWidget>
 #include <QApplication>
 
 #ifdef ISDEBUG
@@ -52,49 +50,38 @@ static const int POPUP_WIDTH = 30;
 
 PopupWindow::PopupWindow()
     : alsaWork_(AlsaWork::Ptr(new AlsaWork())),
-      #ifdef USE_PULSE
-      pulse_(PulseCore::Ptr(new PulseCore(APP_NAME))),
-      deviceIndex_(0),
-      #endif
-      mixerName_(QString()),
-      cardIndex_(0),
-      mixerList_(QStringList()),
-      switchList_(MixerSwitches::Ptr()),
-      playBackItems_(QList<switcher>()),
-      captureItems_(QList<switcher>()),
-      enumItems_(QList<switcher>()),
-      trayIcon_(new TrayIcon()),
-      mainLayout_(new QVBoxLayout()),
-      volumeSlider_(new QSlider(Qt::Vertical, this)),
-      volumeLabel_(new QLabel(this)),
-      pollingTimer_(new QTimer(this)),
-      settingsDialog_(new SettingsDialog()),
-      cardName_(QString()),
-      cardList_(QStringList()),
-      pulseCardName_(QString()),
-      pulseCardList_(QStringList()),
-      volumeValue_(0),
-      pollingVolume_(0),
-      isMuted_(false),
-      isAutorun_(false),
-      isLightStyle_(false),
-      isPulse_(false),
-      isPoll_(true),
+#ifdef USE_PULSE
+      pulse_(PulseCore::Ptr(new PulseCore(APP_NAME))), deviceIndex_(0),
+#endif
+      mixerName_(QString()), cardIndex_(0), mixerList_(QStringList()),
+      switchList_(MixerSwitches::Ptr()), playBackItems_(QList<switcher>()),
+      captureItems_(QList<switcher>()), enumItems_(QList<switcher>()), trayIcon_(new TrayIcon()),
+      mainLayout_(new QVBoxLayout()), volumeSlider_(new QSlider(Qt::Vertical, this)),
+      volumeLabel_(new QLabel(this)), pollingTimer_(new QTimer(this)),
+      settingsDialog_(new SettingsDialog()), cardName_(QString()), cardList_(QStringList()),
+      pulseCardName_(QString()), pulseCardList_(QStringList()), volumeValue_(0), pollingVolume_(0),
+      isMuted_(false), isAutorun_(false), isLightStyle_(false), isPulse_(false), isPoll_(true),
       title_(tr("About QtAlsaVolume")),
-      #ifdef USE_PULSE
-      message_(QString(tr("<!DOCTYPE html><html><body>"
-                          "<p><b>Tray Alsa Volume Changer written using Qt</b></p>"
-                          "<p>With Pulseaudio support</p>"
-                          "<p>2013-2020 (c) Vitaly Tonkacheyev <address><a href=\"mailto:thetvg@gmail.com\">&lt;EMail&gt;</a></address></p>"
-                          "<a href=\"http://sites.google.com/site/thesomeprojects/\">Program WebSite</a>"
-                          "<p>version: <b>%1</b></p></body></html>")).arg(APP_VERSION))
-    #else
-      message_(QString(tr("<!DOCTYPE html><html><body>"
-                          "<p><b>Tray Alsa Volume Changer written using Qt</b></p>"
-                          "<p>2013-2020 (c) Vitaly Tonkacheyev <address><a href=\"mailto:thetvg@gmail.com\">&lt;EMail&gt;</a></address></p>"
-                          "<a href=\"http://sites.google.com/site/thesomeprojects/\">Program WebSite</a>"
-                          "<p>version: <b>%1</b></p></body></html>")).arg(APP_VERSION))
-    #endif
+#ifdef USE_PULSE
+      message_(
+          QString(tr("<!DOCTYPE html><html><body>"
+                     "<p><b>Tray Alsa Volume Changer written using Qt</b></p>"
+                     "<p>With Pulseaudio support</p>"
+                     "<p>2013-2020 (c) Vitaly Tonkacheyev <address><a "
+                     "href=\"mailto:thetvg@gmail.com\">&lt;EMail&gt;</a></address></p>"
+                     "<a href=\"http://sites.google.com/site/thesomeprojects/\">Program WebSite</a>"
+                     "<p>version: <b>%1</b></p></body></html>"))
+              .arg(APP_VERSION))
+#else
+      message_(
+          QString(tr("<!DOCTYPE html><html><body>"
+                     "<p><b>Tray Alsa Volume Changer written using Qt</b></p>"
+                     "<p>2013-2020 (c) Vitaly Tonkacheyev <address><a "
+                     "href=\"mailto:thetvg@gmail.com\">&lt;EMail&gt;</a></address></p>"
+                     "<a href=\"http://sites.google.com/site/thesomeprojects/\">Program WebSite</a>"
+                     "<p>version: <b>%1</b></p></body></html>"))
+              .arg(APP_VERSION))
+#endif
 {
     setWindowIcon(QIcon(appLogo));
     //Start of tray icon initialization
@@ -228,7 +215,7 @@ void PopupWindow::onAbout()
 {
     QMessageBox about;
     about.setIconPixmap(QPixmap(appLogo));
-    about.setWindowIcon(this->windowIcon());
+    about.setWindowIcon(windowIcon());
     about.setText(message_);
     about.setWindowTitle(title_);
     about.exec();
@@ -256,7 +243,7 @@ void PopupWindow::setTrayIcon(int value)
     if (isMuted_) {
         number = 0;
     }
-    const QString fullPath(QString("%1tb_icon%2.png").arg(pathPrefix).arg(QString::number(number)));
+    const QString fullPath(QString("%1tb_icon%2.png").arg(pathPrefix, QString::number(number)));
 #ifdef ISDEBUG
     qDebug() << "val " << value;
     qDebug() << "num " << number;
@@ -311,7 +298,7 @@ void PopupWindow::closeEvent(QCloseEvent *event)
 #ifdef ISDEBUG
     qDebug() << "CloseEvent accepted";
 #endif
-    qApp->quit();
+    QCoreApplication::quit();
 }
 
 void PopupWindow::saveSettings()
@@ -345,11 +332,7 @@ void PopupWindow::setPopupPosition()
     }
     else {
         position = (point.y() > screenHeight/2) ? BOTTOM : TOP;
-#ifdef HAVE_KDE
-        to.setX(point.x());
-#else
         to.setX(point.x() - width()/2);
-#endif
     }
     switch (position) {
     case TOP:
@@ -544,7 +527,7 @@ void PopupWindow::onAutorun(bool isIt)
     }
 }
 
-void PopupWindow::createDesktopFile()
+void PopupWindow::createDesktopFile() const
 {
     QDir home = QDir::home();
     if (!home.exists(autoStartPath)) {

@@ -407,13 +407,15 @@ compile_psiplus ()
 install_pp_to_home ()
 {
   curd=$(pwd)
-  prepare_src
+  if [ ! -d "${workdir}" ]; then
+    prepare_src
+  fi
   cd ${workdir}
   local buildlog=${buildpsi}/build.log
   echo "***Build started***">${buildlog}
   prepare_builddir ${builddir}
   cd ${builddir}
-  flags="-DPSI_PLUS=ON -DCMAKE_BUILD_TYPE=${DEF_CMAKE_BUILD_TYPE} -DENABLE_PLUGINS=ON -DBUILD_PSIMEDIA=ON -DVERBOSE_PROGRAM_NAME=ON -DCMAKE_INSTALL_PREFIX=${home}/build/psi-plus -DPSI_LIBDIR=${home}/build/psi-plus/lib/psi-plus"
+  flags="-DPSI_PLUS=ON -DCMAKE_BUILD_TYPE=${DEF_CMAKE_BUILD_TYPE} -DENABLE_PLUGINS=ON -DBUILD_PSIMEDIA=ON -DVERBOSE_PROGRAM_NAME=ON -DCMAKE_INSTALL_PREFIX=${home}/build/psi-plus"
   if [ -z "${iswebkit}" ]; then
     flags="${flags} -DCHAT_TYPE=basic"
   else

@@ -20,17 +20,16 @@
 #include "ui_mainwindow.h"
 #include "defines.h"
 
+#include <QApplication>
 #include <QMessageBox>
+#include <QMenu>
 #include <QSettings>
 #include <QPushButton>
 #include <QDateTimeEdit>
 #include <QRadioButton>
 #include <QSpinBox>
 #include <QAction>
-#include <QString>
 #ifdef HAVE_DBUS
-#include <QtDBus/QDBusConnection>
-#include <QtDBus/QDBusInterface>
 #include <QtDBus/QDBusReply>
 #endif
 #ifdef Q_OS_WIN
@@ -111,7 +110,7 @@ void MainWindow::initActions()
 {
     connect(terminate_, &QAction::triggered, this, &MainWindow::onTerminate);
     connect(about_, &QAction::triggered, this, &MainWindow::onAbout);
-    connect(aboutQt_, &QAction::triggered, qApp, &QApplication::aboutQt);
+    connect(aboutQt_, &QAction::triggered, QCoreApplication::instance(), &QApplication::aboutQt);
     connect(exit_, &QAction::triggered, this, &MainWindow::onExit);
 }
 
@@ -133,7 +132,7 @@ void MainWindow::SetTrayToolTip(const QString &text)
 void MainWindow::onExit()
 {
     SaveSettings();
-    qApp->quit();
+    QCoreApplication::quit();
 }
 
 void MainWindow::onMinsChecked(bool toggled)

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014-2019 Vitaly Tonkacheyev <thetvg@gmail.com>
+ * Copyright (C) 2014-2020 Vitaly Tonkacheyev <thetvg@gmail.com>
  *
  * Big thanks to Clément Démoulins <clement@archivel.fr>
  *
@@ -44,9 +44,9 @@ public:
     pa_cvolume volume;
     int volume_percent();
     bool mute() const;
-    double round(double value) const;
+    static double round(double value) ;
 private:
-    int percent(pa_cvolume& volume) const;
+    static int percent(pa_cvolume& volume) ;
 private:
     int index_;
     int card_;

@@ -1,6 +1,6 @@
 /*
  * alsadevice.cpp
- * Copyright (C) 2014-2019 Vitaly Tonkacheyev
+ * Copyright (C) 2014-2020 Vitaly Tonkacheyev
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -118,12 +118,12 @@ void AlsaDevice::initMixerList()
         mixers_.clear();
     }
     if (isplay) {
-        foreach (const QString &mixer, volumeMixers_) {
+        for (const QString &mixer : volumeMixers_) {
             mixers_ << mixer;
         }
     }
     if (isrec && !mixers_.isEmpty()) {
-        foreach (const QString &mixer, captureMixers_) {
+        for (const QString &mixer : captureMixers_) {
             mixers_ << mixer;
         }
     }
@@ -188,7 +188,7 @@ snd_mixer_selem_channel_id_t AlsaDevice::checkMixerChannels(snd_mixer_elem_t *el
 }
 //This part of code from alsa-utils.git/alsamixer/volume_mapping.c
 //Copyright (c) 2010 Clemens Ladisch <clemens@ladisch.de>
-double AlsaDevice::getExp10(double value) const
+double AlsaDevice::getExp10(double value)
 {
     return exp(value * log(10));
 }
@@ -363,7 +363,7 @@ double AlsaDevice::getVolume()
     return volume;
 }
 
-void AlsaDevice::setSwitch(const QString &mixer, int id, bool enabled)
+void AlsaDevice::setSwitch(const QString &mixer, int id, bool enabled) const
 {
     snd_mixer_t *handle = getMixerHanlde(id_);
     snd_mixer_elem_t* elem = initMixerElement(handle, mixer.toLocal8Bit());
