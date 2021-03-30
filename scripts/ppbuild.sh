@@ -247,23 +247,23 @@ patch_psi ()
 #Получение версии пси+
 get_psi_plus_version()
 {
-  local plus_tag=$(cd ${psiplus_src} && git describe --tags | cut -d - -f1)
-  local psi_num=$("${upstream_src}/admin/git_revnumber.sh" "${plus_tag}")
-  local plus_num=$(cd ${psiplus_src} && git describe --tags | cut -d - -f2)
-  psi_package_version="${plus_tag}.${sum_commit}"
-  psi_plus_version=$(${psiplus_src}/admin/psi-plus-nightly-version ${upstream_src})
+  #local plus_tag=$(cd ${psiplus_src} && git describe --tags | cut -d - -f1)
+  #local psi_num=$("${upstream_src}/admin/git_revnumber.sh" "${plus_tag}")
+  #local plus_num=$(cd ${psiplus_src} && git describe --tags | cut -d - -f2)
+  #psi_package_version="${plus_tag}.${sum_commit}"
+#  psi_plus_version=$(${psiplus_src}/admin/psi-plus-nightly-version ${upstream_src})
 
-  #local psi_tag=$(cd ${upstream_src} ; git describe --tags | cut -d - -f1)
-  #local psi_num=$("${upstream_src}/admin/git_revnumber.sh" "${psi_tag}")
+  local psi_tag=$(cd ${upstream_src} ; git describe --tags | cut -d - -f1)
+  local psi_num=$("${upstream_src}/admin/git_revnumber.sh" "${psi_tag}")
   #local plus_num=$(cd ${psiplus_src} ; git describe --tags | cut -d - -f2)
-  #local psi_rev=$(cd ${upstream_src} ; git rev-parse --short HEAD)
+  local psi_rev=$(cd ${upstream_src} ; git rev-parse --short HEAD)
   #local plus_rev=$(cd ${psiplus_src} ; git rev-parse --short HEAD)
-  local sum_commit=$(expr ${psi_num} + ${plus_num})
-  #local rev_date_list=$(cd ${upstream_src} ; git log -n1 --date=short --pretty=format:'%ad')
-  #local rev_date=$(echo "${rev_date_list}" | sort -r | head -n1)
-  psi_package_version="${plus_tag}.${sum_commit}"
-  #psi_plus_version="${psi_tag}.${sum_commit} (${rev_date}, Psi:${psi_rev}, Psi+:${plus_rev})"
-  psi_plus_version=$(${psiplus_src}/admin/psi-plus-nightly-version ${upstream_src})
+  local sum_commit=${psi_num}
+  local rev_date_list=$(cd ${upstream_src} ; git log -n1 --date=short --pretty=format:'%ad')
+  local rev_date=$(echo "${rev_date_list}" | sort -r | head -n1)
+  psi_package_version="${psi_tag}.${sum_commit}"
+  psi_plus_version="${psi_tag}.${sum_commit} (${rev_date}, ${psi_rev})"
+  #psi_plus_version=$(${psiplus_src}/admin/psi-plus-nightly-version ${upstream_src})
 
   echo "SHORT_VERSION = $psi_package_version"
   echo "LONG_VERSION = $psi_plus_version"
