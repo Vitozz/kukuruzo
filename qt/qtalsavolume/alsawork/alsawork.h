@@ -1,6 +1,6 @@
 /*
  * alsawork.h
- * Copyright (C) 2012-2020 Vitaly Tonkacheyev
+ * Copyright (C) 2012-2021 Vitaly Tonkacheyev
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,46 +21,45 @@
 #define ALSAWORK_H
 
 #include "alsa/asoundlib.h"
-#include "mixerswitches.h"
 #include "alsadevice.h"
-#include <QString>
-#include <QStringList>
+#include "mixerswitches.h"
 #include <QList>
 #include <QSharedPointer>
+#include <QString>
+#include <QStringList>
 
 typedef QList<AlsaDevice::Ptr> AlsaDevicePtrList;
 
-class AlsaWork
-{
+class AlsaWork {
 public:
-    AlsaWork();
-    AlsaWork(AlsaWork const &);
-    ~AlsaWork();
-    typedef QSharedPointer<AlsaWork> Ptr;
-    void setCurrentCard(int cardId);
-    void setCurrentMixer(int id);
-    void setAlsaVolume(int volume);
-    int getAlsaVolume();
-    static QString getCardName(int index);
-    const QStringList &getCardsList() const;
-    const QStringList &getVolumeMixers() const;
-    MixerSwitches::Ptr getSwitchList() const;
-    void setSwitch(const QString& mixer, int id, bool enabled);
-    void setMute(bool enabled);
-    bool getMute();
-    bool haveVolumeMixers();
-    bool cardExists(int id) const;
-    int getFirstCardWithMixers() const;
+  AlsaWork();
+  AlsaWork(AlsaWork const &);
+  ~AlsaWork();
+  typedef QSharedPointer<AlsaWork> Ptr;
+  void setCurrentCard(int cardId);
+  void setCurrentMixer(int id);
+  void setAlsaVolume(int volume);
+  int getAlsaVolume();
+  static QString getCardName(int index);
+  const QStringList &getCardsList() const;
+  const QStringList &getVolumeMixers() const;
+  MixerSwitches::Ptr getSwitchList() const;
+  void setSwitch(const QString &mixer, int id, bool enabled);
+  void setMute(bool enabled);
+  bool getMute();
+  bool haveVolumeMixers();
+  bool cardExists(int id) const;
+  int getFirstCardWithMixers() const;
 
 private:
-    static int getTotalCards();
-    static void checkError (int errorIndex);
-    void getCards();
+  static int getTotalCards();
+  static void checkError(int errorIndex);
+  void getCards();
 
 private:
-    QStringList cardList_;
-    int totalCards_;
-    AlsaDevice::Ptr currentAlsaDevice_;
-    AlsaDevicePtrList devices_;
+  QStringList cardList_;
+  int totalCards_;
+  AlsaDevice::Ptr currentAlsaDevice_;
+  AlsaDevicePtrList devices_;
 };
 #endif // ALSAWORK_H

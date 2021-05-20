@@ -1,6 +1,6 @@
 /*
  * main.cpp
- * Copyright (C) 2013-2020 Vitaly Tonkacheyev
+ * Copyright (C) 2013-2021 Vitaly Tonkacheyev
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,30 +27,35 @@
 #include <QDebug>
 #endif
 
-int main(int argc, char *argv[])
-{
-    QApplication a(argc, argv);
-    QApplication::setOrganizationName(APP_ORG);
-    QApplication::setApplicationVersion(APP_VERSION);
-    QApplication::setApplicationName(APP_NAME);
-    QTranslator translator;
-    const QStringList localeDirs({QString("%1/languages").arg(QDir::currentPath()),
-                                  QString(a.applicationDirPath() + "/languages"),
-                                  QString("/usr/share/%1/languages").arg(APP_NAME),
-                                  QString("/usr/local/share/%1/languages").arg(APP_NAME),
-                                  QString(QDir::home().absolutePath() + "/.local/share/%1/languages").arg(APP_NAME),
-                                  QString(QDir::currentPath().left(QDir::currentPath().lastIndexOf("/")) + "/share/%1/languages").arg(APP_NAME)});
-    const QString langFile(a.applicationName());
-    for (const QString &dir : localeDirs){
-        if (translator.load(QLocale::system(),langFile, "_", dir )) {
-            QCoreApplication::installTranslator(&translator);
-            break;
-        }
+int main(int argc, char *argv[]) {
+  QApplication a(argc, argv);
+  QApplication::setOrganizationName(APP_ORG);
+  QApplication::setApplicationVersion(APP_VERSION);
+  QApplication::setApplicationName(APP_NAME);
+  QTranslator translator;
+  const QStringList localeDirs(
+      {QString("%1/languages").arg(QDir::currentPath()),
+       QString(a.applicationDirPath() + "/languages"),
+       QString("/usr/share/%1/languages").arg(APP_NAME),
+       QString("/usr/local/share/%1/languages").arg(APP_NAME),
+       QString(QDir::home().absolutePath() + "/.local/share/%1/languages")
+           .arg(APP_NAME),
+       QString(QDir::currentPath().left(QDir::currentPath().lastIndexOf("/")) +
+               "/share/%1/languages")
+           .arg(APP_NAME)});
+  const QString langFile(a.applicationName());
+  for (const QString &dir : localeDirs) {
+    if (translator.load(QLocale::system(), langFile, "_", dir)) {
+      QCoreApplication::installTranslator(&translator);
+      break;
     }
-    QApplication::setQuitOnLastWindowClosed(false);
-    PopupWindow w;
-    w.hide();
-    QSharedMemory sharedMemory;
-    sharedMemory.setKey("QtAlsaVolume");
-    return (sharedMemory.attach() || !sharedMemory.create(1)) ? 0 : QApplication::exec();
+  }
+  QApplication::setQuitOnLastWindowClosed(false);
+  PopupWindow w;
+  w.hide();
+  QSharedMemory sharedMemory;
+  sharedMemory.setKey("QtAlsaVolume");
+  return (sharedMemory.attach() || !sharedMemory.create(1))
+             ? 0
+             : QApplication::exec();
 }

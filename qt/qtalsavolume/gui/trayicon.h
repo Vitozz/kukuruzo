@@ -1,6 +1,6 @@
 /*
  * trayicon.h
- * Copyright (C) 2015-2020 Vitaly Tonkacheyev
+ * Copyright (C) 2015-2021 Vitaly Tonkacheyev
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,13 +27,13 @@
 #elif defined(KDE_4)
 #include <kstatusnotifieritem.h>
 #endif
-#include <QSharedPointer>
-#include <QSystemTrayIcon>
 #include <QEvent>
-#include <QString>
-#include <QRect>
-#include <QPoint>
 #include <QMenu>
+#include <QPoint>
+#include <QRect>
+#include <QSharedPointer>
+#include <QString>
+#include <QSystemTrayIcon>
 
 typedef QSharedPointer<QAction> QActionPtr;
 #ifdef HAVE_KDE
@@ -41,51 +41,44 @@ typedef QSharedPointer<KStatusNotifierItem> KStatusNotifierItemPtr;
 #endif
 typedef QSharedPointer<QSystemTrayIcon> QSystemTrayIconPtr;
 
-
-class TrayIcon : public QObject
-{
-    Q_OBJECT
+class TrayIcon : public QObject {
+  Q_OBJECT
 
 public:
-    TrayIcon();
-    ~TrayIcon() override;
-    void setTrayIcon(const QString &icon);
-    void setToolTip(const QString &tooltip);
-    void setMute(bool isMuted);
-    bool isAvailable();
-    QRect iconGeometery();
-    QPoint iconPosition();
+  TrayIcon();
+  ~TrayIcon() override;
+  void setTrayIcon(const QString &icon);
+  void setToolTip(const QString &tooltip);
+  void setMute(bool isMuted);
+  bool isAvailable();
+  QRect iconGeometery();
+  QPoint iconPosition();
 
 signals:
-    void activated(ActivationReason reason);
-    void muted(bool isMuted);
+  void activated(ActivationReason reason);
+  void muted(bool isMuted);
 
 protected slots:
-#ifdef HAVE_KDE
-    void kdeIconActivated(bool isIt, QPoint point);
-    void iconActivatedSecondary(QPoint point);
-    void onScroll(int value,Qt::Orientation orientation);
-#endif
-    void iconActivated(QSystemTrayIcon::ActivationReason reason);
+  void iconActivated(QSystemTrayIcon::ActivationReason reason);
 
 protected:
-    bool eventFilter(QObject *object, QEvent *event) override;
+  bool eventFilter(QObject *object, QEvent *event) override;
 
 private:
-    QActionPtr restore_;
-    QActionPtr settings_;
-    QActionPtr mute_;
-    QActionPtr about_;
-    QActionPtr aboutQt_;
-    QActionPtr exit_;
-    QMenu *trayMenu_;
-    QString currentIcon_;
-    QRect geometery_;
-    QPoint iconPosition_;
+  QActionPtr restore_;
+  QActionPtr settings_;
+  QActionPtr mute_;
+  QActionPtr about_;
+  QActionPtr aboutQt_;
+  QActionPtr exit_;
+  QMenu *trayMenu_;
+  QString currentIcon_;
+  QRect geometery_;
+  QPoint iconPosition_;
 #ifdef HAVE_KDE
-    KStatusNotifierItemPtr newTrayIcon_;
+  KStatusNotifierItemPtr newTrayIcon_;
 #endif
-    QSystemTrayIconPtr legacyTrayIcon_;
+  QSystemTrayIconPtr legacyTrayIcon_;
 };
 
 #endif // TRAYICON_H

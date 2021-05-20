@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014-2020 Vitaly Tonkacheyev <thetvg@gmail.com>
+ * Copyright (C) 2014-2021 Vitaly Tonkacheyev <thetvg@gmail.com>
  *
  * Big thanks to Clément Démoulins <clement@archivel.fr>
  *
@@ -21,39 +21,37 @@
 #define PULSEDEVICE_H
 
 #include "pulse/pulseaudio.h"
-#include <QString>
 #include <QSharedPointer>
+#include <QString>
 
-enum device_type {
-    SOURCE,
-    SINK
-};
+enum device_type { SOURCE, SINK };
 
-class PulseDevice
-{
+class PulseDevice {
 public:
-    PulseDevice();
-    explicit PulseDevice(const pa_source_info* i_);
-    explicit PulseDevice(const pa_sink_info* i);
-    typedef QSharedPointer<PulseDevice> Ptr;
-    int index() const;
-    int card() const;
-    device_type type() const;
-    const QString &name() const;
-    const QString &description() const;
-    pa_cvolume volume;
-    int volume_percent();
-    bool mute() const;
-    static double round(double value) ;
+  PulseDevice();
+  explicit PulseDevice(const pa_source_info *i_);
+  explicit PulseDevice(const pa_sink_info *i);
+  typedef QSharedPointer<PulseDevice> Ptr;
+  int index() const;
+  int card() const;
+  device_type type() const;
+  const QString &name() const;
+  const QString &description() const;
+  pa_cvolume volume;
+  int volume_percent();
+  bool mute() const;
+  static double round(double value);
+
 private:
-    static int percent(pa_cvolume& volume) ;
+  static int percent(pa_cvolume &volume);
+
 private:
-    int index_;
-    int card_;
-    device_type type_;
-    QString name_;
-    QString description_;
-    bool mute_;
+  int index_;
+  int card_;
+  device_type type_;
+  QString name_;
+  QString description_;
+  bool mute_;
 };
 
 #endif // PULSEDEVICE_H

@@ -18,6 +18,7 @@ if( UNIX AND NOT (APPLE OR CYGWIN) )
         include(use_cpack.cmake)
     #CPack section end
     endif()
+    include(fix-codestyle.cmake)
 
     find_package( ALSA REQUIRED )
     if( "${CMAKE_BUILD_TYPE}" STREQUAL "Debug" OR ( "${CMAKE_BUILD_TYPE}" STREQUAL "RelWithDebInfo" ) )

@@ -1,6 +1,6 @@
 /*
  * mixerswitches.cpp
- * Copyright (C) 2012-2020 Vitaly Tonkacheyev
+ * Copyright (C) 2012-2021 Vitaly Tonkacheyev
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,72 +22,64 @@
 MixerSwitches::MixerSwitches(const MixerSwitches &ms)
     : captureSwitchList_(ms.captureSwitchList()),
       playbackSwitchList_(ms.playbackSwitchList()),
-      enumSwitchList_(ms.enumSwitchList())
-{
+      enumSwitchList_(ms.enumSwitchList()) {}
+
+void MixerSwitches::pushBack(SwitchType sType, switcher &item) {
+  switch (sType) {
+  case PLAYBACK:
+    playbackSwitchList_ << item;
+    break;
+  case CAPTURE:
+    captureSwitchList_ << item;
+    break;
+  case ENUM:
+    enumSwitchList_ << item;
+    break;
+  }
 }
 
-void MixerSwitches::pushBack(SwitchType sType, switcher &item)
-{
-    switch (sType) {
-    case PLAYBACK:
-        playbackSwitchList_ << item;
-        break;
-    case CAPTURE:
-        captureSwitchList_ << item;
-        break;
-    case ENUM:
-        enumSwitchList_ << item;
-        break;
-    }
+void MixerSwitches::clear(SwitchType sType) {
+  switch (sType) {
+  case PLAYBACK:
+    if (!playbackSwitchList_.isEmpty())
+      playbackSwitchList_.clear();
+    break;
+  case CAPTURE:
+    if (!captureSwitchList_.isEmpty())
+      captureSwitchList_.clear();
+    break;
+  case ENUM:
+    if (!enumSwitchList_.isEmpty())
+      enumSwitchList_.clear();
+    break;
+  }
 }
 
-void MixerSwitches::clear(SwitchType sType)
-{
-    switch (sType) {
-    case PLAYBACK:
-        if (!playbackSwitchList_.isEmpty())
-            playbackSwitchList_.clear();
-        break;
-    case CAPTURE:
-        if (!captureSwitchList_.isEmpty())
-            captureSwitchList_.clear();
-        break;
-    case ENUM:
-        if (!enumSwitchList_.isEmpty())
-            enumSwitchList_.clear();
-        break;
-    }
+void MixerSwitches::clearAll() {
+  if (!playbackSwitchList_.isEmpty()) {
+    playbackSwitchList_.clear();
+  }
+  if (!captureSwitchList_.isEmpty()) {
+    captureSwitchList_.clear();
+  }
+  if (!enumSwitchList_.isEmpty()) {
+    enumSwitchList_.clear();
+  }
 }
 
-void MixerSwitches::clearAll()
-{
-    if (!playbackSwitchList_.isEmpty()) {
-        playbackSwitchList_.clear();
-    }
-    if (!captureSwitchList_.isEmpty()) {
-        captureSwitchList_.clear();
-    }
-    if (!enumSwitchList_.isEmpty()) {
-        enumSwitchList_.clear();
-    }
+const QList<switcher> &MixerSwitches::captureSwitchList() const {
+  return captureSwitchList_;
 }
 
-const QList<switcher> &MixerSwitches::captureSwitchList() const
-{
-    return captureSwitchList_;
+const QList<switcher> &MixerSwitches::playbackSwitchList() const {
+  return playbackSwitchList_;
 }
 
-const QList<switcher> &MixerSwitches::playbackSwitchList() const
-{
-    return playbackSwitchList_;
+const QList<switcher> &MixerSwitches::enumSwitchList() const {
+  return enumSwitchList_;
 }
 
-const QList<switcher> &MixerSwitches::enumSwitchList() const
-{
-    return enumSwitchList_;
-}
-
-bool MixerSwitches::isEmpty()
-{
-    return (captureSwitchList_.isEmpty() && playbackSwitchList_.isEmpty() && enumSwitchList_.isEmpty());
+bool MixerSwitches::isEmpty() {
+  return (captureSwitchList_.isEmpty() && playbackSwitchList_.isEmpty() &&
+          enumSwitchList_.isEmpty());
 }

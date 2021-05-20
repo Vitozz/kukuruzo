@@ -1,6 +1,6 @@
 /*
  * mixerswitches.h
- * Copyright (C) 2012-2020 Vitaly Tonkacheyev
+ * Copyright (C) 2012-2021 Vitaly Tonkacheyev
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,25 +24,24 @@
 #include <QList>
 #include <QSharedPointer>
 
-class MixerSwitches
-{
+class MixerSwitches {
 public:
-    MixerSwitches() = default;
-    MixerSwitches(const MixerSwitches &ms);
-    ~MixerSwitches() = default;
-    typedef QSharedPointer<MixerSwitches> Ptr;
-    void pushBack(SwitchType sType, switcher &item);
-    void clear(SwitchType sType);
-    void clearAll();
-    const QList<switcher> &captureSwitchList() const;
-    const QList<switcher> &playbackSwitchList() const;
-    const QList<switcher> &enumSwitchList() const;
-    bool isEmpty();
+  MixerSwitches() = default;
+  MixerSwitches(const MixerSwitches &ms);
+  ~MixerSwitches() = default;
+  typedef QSharedPointer<MixerSwitches> Ptr;
+  void pushBack(SwitchType sType, switcher &item);
+  void clear(SwitchType sType);
+  void clearAll();
+  const QList<switcher> &captureSwitchList() const;
+  const QList<switcher> &playbackSwitchList() const;
+  const QList<switcher> &enumSwitchList() const;
+  bool isEmpty();
 
 private:
-    QList<switcher> captureSwitchList_;
-    QList<switcher> playbackSwitchList_;
-    QList<switcher> enumSwitchList_;
+  QList<switcher> captureSwitchList_;
+  QList<switcher> playbackSwitchList_;
+  QList<switcher> enumSwitchList_;
 };
 
 #endif // MIXERSWITCHES_H

@@ -1,6 +1,6 @@
 /*
  * settingsdialog.h
- * Copyright (C) 2013-2020 Vitaly Tonkacheyev
+ * Copyright (C) 2013-2021 Vitaly Tonkacheyev
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,66 +31,65 @@ namespace Ui {
 class SettingsDialog;
 }
 
-class SettingsDialog : public QDialog
-{
-    Q_OBJECT
+class SettingsDialog : public QDialog {
+  Q_OBJECT
 
 public:
-    explicit SettingsDialog(QWidget *parent = nullptr);
-    ~SettingsDialog() override;
-    void setSoundCards(const QStringList &cards);
-    void setMixers(const QStringList &mixers);
-    void setAutorun(bool isAutorun);
-    void connectSignals();
-    void setCurrentCard(int index);
-    void setCurrentMixer(const QString &mixer);
-    void setPlaybackChecks(const QList<switcher> &pbList);
-    void setCaptureChecks(const QList<switcher> &cList);
-    void setEnumChecks(const QList<switcher> &eList);
-    void setIconStyle(bool isLight);
-    void setUsePulse(bool isPulse);
-    void hideAlsaElements(bool isHide);
-    void setPulseAvailable(bool available);
-    void setUsePolling(bool isPoll);
+  explicit SettingsDialog(QWidget *parent = nullptr);
+  ~SettingsDialog() override;
+  void setSoundCards(const QStringList &cards);
+  void setMixers(const QStringList &mixers);
+  void setAutorun(bool isAutorun);
+  void connectSignals();
+  void setCurrentCard(int index);
+  void setCurrentMixer(const QString &mixer);
+  void setPlaybackChecks(const QList<switcher> &pbList);
+  void setCaptureChecks(const QList<switcher> &cList);
+  void setEnumChecks(const QList<switcher> &eList);
+  void setIconStyle(bool isLight);
+  void setUsePulse(bool isPulse);
+  void hideAlsaElements(bool isHide);
+  void setPulseAvailable(bool available);
+  void setUsePolling(bool isPoll);
 
 protected:
-    void closeEvent(QCloseEvent *) override;
+  void closeEvent(QCloseEvent *) override;
 
 protected slots:
-    void onOk();
-    void onPBAction(QListWidgetItem *item);
-    void onCPAction(QListWidgetItem *item);
-    void onENAction(QListWidgetItem *item);
-    void onDarkStyle(bool toggled);
-    void onLightStyle(bool toggled);
-    void onPulseSoundSystem(bool toggled);
-    void onEnableTimer(bool toggled);
+  void onOk();
+  void onPBAction(QListWidgetItem *item);
+  void onCPAction(QListWidgetItem *item);
+  void onENAction(QListWidgetItem *item);
+  void onDarkStyle(bool toggled);
+  void onLightStyle(bool toggled);
+  void onPulseSoundSystem(bool toggled);
+  void onEnableTimer(bool toggled);
 signals:
-    void soundCardChanged(int card);
-    void mixerChanged(const QString &mixer);
-    void autorunChanged(bool isIt);
-    void playChanged(const QString &check, bool isIt);
-    void captChanged(const QString &check, bool isIt);
-    void enumChanged(const QString &check, bool isIt);
-    void styleChanged(bool isLight);
-    void soundSystemChanged(bool isAlsa);
-    void timerEnabled(bool isTimer);
+  void soundCardChanged(int card);
+  void mixerChanged(const QString &mixer);
+  void autorunChanged(bool isIt);
+  void playChanged(const QString &check, bool isIt);
+  void captChanged(const QString &check, bool isIt);
+  void enumChanged(const QString &check, bool isIt);
+  void styleChanged(bool isLight);
+  void soundSystemChanged(bool isAlsa);
+  void timerEnabled(bool isTimer);
 
 private:
-    void disconnectSignals();
+  void disconnectSignals();
 
 private:
-    Ui::SettingsDialog *ui;
-    QStringList soundCards_;
-    QStringList mixers_;
-    bool isAutorun_;
-    bool pulseAvailable_;
-    QListWidget *playbacks_;
-    QListWidget *captures_;
-    QListWidget *enums_;
-    QLabel *l1_;
-    QLabel *l2_;
-    QLabel *l3_;
+  Ui::SettingsDialog *ui;
+  QStringList soundCards_;
+  QStringList mixers_;
+  bool isAutorun_;
+  bool pulseAvailable_;
+  QListWidget *playbacks_;
+  QListWidget *captures_;
+  QListWidget *enums_;
+  QLabel *l1_;
+  QLabel *l2_;
+  QLabel *l3_;
 };
 
 #endif // SETTINGSDIALOG_H

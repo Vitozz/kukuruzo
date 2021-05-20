@@ -1,6 +1,6 @@
 /*
  * defines.h
- * Copyright (C) 2013-2020 Vitaly Tonkacheyev
+ * Copyright (C) 2013-2021 Vitaly Tonkacheyev
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,7 +22,7 @@
 
 #define APP_NAME "qtalsavolume"
 #define APP_ORG "thesomeprojects"
-#define APP_VERSION "0.2.5"
+#define APP_VERSION "0.2.6"
 
 #define CARD_INDEX "Main/card"
 #define MIXER_NAME "Main/mixer"
@@ -32,7 +32,7 @@
 #define PULSE "Main/pulse"
 #define ISPOLL "Main/polling"
 
-//Polling timer interval
+// Polling timer interval
 #define POLLING_INTERVAL 3000
 
 #define DELTA_VOLUME 2
@@ -42,24 +42,17 @@
 
 typedef QPair<QString, bool> switcher;
 
-enum Position {
-    BOTTOM = 0,
-    TOP = 1
-};
+enum Position { BOTTOM = 0, TOP = 1 };
 
-enum SwitchType {
-    PLAYBACK = 0,
-    CAPTURE = 1,
-    ENUM = 2
-};
+enum SwitchType { PLAYBACK = 0, CAPTURE = 1, ENUM = 2 };
 enum ActivationReason {
-    RESTORE = 0,
-    ABOUT = 1,
-    SETTINGS = 2,
-    ABOUTQT = 3,
-    WHEELUP = 4,
-    WHEELDOWN = 5,
-    EXIT = 6
+  RESTORE = 0,
+  ABOUT = 1,
+  SETTINGS = 2,
+  ABOUTQT = 3,
+  WHEELUP = 4,
+  WHEELDOWN = 5,
+  EXIT = 6
 };
 
 #endif // DEFINES_H

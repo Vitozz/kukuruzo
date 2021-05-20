@@ -1,3 +1,9 @@
+2021-05-20
+v.0.2.6
+  * Fixed scroll in KDE 5
+  * Code modernize
+  * Minor optimizations
+
 2018-12-12
 v.0.2.2
   + Fixed segmentation faults in alsawork
