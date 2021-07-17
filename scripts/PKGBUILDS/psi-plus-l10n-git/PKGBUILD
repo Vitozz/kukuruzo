@@ -3,7 +3,7 @@
 # Contributor: Alexey D. <lq07829icatm@rambler.ru>
 
 pkgname=psi-plus-l10n-git
-pkgver=1.4.976.0.g1547721
+pkgver=1.5.1548.3.gae329f5
 pkgrel=1
 pkgdesc="Language packs for Psi+ (Qt 5.x build)"
 arch=('any')

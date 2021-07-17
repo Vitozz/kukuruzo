@@ -4,14 +4,14 @@
 # Contributor: Alexey D. <lq07829icatm@rambler.ru>
 
 pkgname=psi-plus-git
-pkgver=1.4.980.0.g9d491823
+pkgver=1.5.1548.4.gc3fa0cbf
 pkgrel=1
 pkgdesc="Psi+ is a powerful Jabber client (Qt, C++) designed for the Jabber power users (built with Qt 5.x)"
 url="http://psi-plus.com"
 license=('GPL2')
 arch=('x86_64')
 depends=('qt5-base' 'qt5-webengine' 'qt5-multimedia' 'qt5-x11extras'
-	 'libidn' 'libxss' 'qt5-svg' 'hunspell' 'qtkeychain')
+	 'libidn' 'libxss' 'qt5-svg' 'hunspell' 'qtkeychain-qt5')
 makedepends=('git' 'cmake')
 provides=("psi-plus=$pkgver" "psi-plus-qt5-git=$pkgver")
 conflicts=('psi-plus' 'psi-plus-qt5-git' 'psi-plus-webkit-qt5-git' 'psi-plus-webkit-git')
@@ -23,7 +23,7 @@ pkgver() {
 }
 
 build() {
-  cmake_flags="-DCMAKE_INSTALL_PREFIX=/usr -DPSI_PLUS=ON -DBUNDLED_QCA=ON -DCHAT_TYPE=webengine -DINSTALL_PLUGINS_SDK=ON -DCMAKE_BUILD_TYPE=RelWithDebInfo"
+  cmake_flags="-DCMAKE_INSTALL_PREFIX=/usr -DPSI_PLUS=ON -DBUNDLED_USRSCTP=ON -DBUNDLED_QCA=ON -DCHAT_TYPE=webengine -DINSTALL_PLUGINS_SDK=ON -DCMAKE_BUILD_TYPE=RelWithDebInfo"
   mkdir -p ${srcdir}/psi-plus-snapshots/build && cd ${srcdir}/psi-plus-snapshots/build
   cmake ${cmake_flags} ..
   cmake --build . --target all
