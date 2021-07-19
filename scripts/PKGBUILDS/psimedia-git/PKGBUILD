@@ -3,7 +3,7 @@
 # Contributor: Vladimir Kutyavin <vlkut-at-bk-dot-ru>
 
 pkgname=psimedia
-pkgver=1.0.5.154.g3bebc3a
+pkgver=1.0.5.157.gfda9f7c
 pkgrel=1
 pkgdesc="Voice and video chat plugin for Psi-like IM clients.  The implementation is based on GStreamer."
 arch=('i686' 'x86_64')
