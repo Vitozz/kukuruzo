@@ -1,19 +1,21 @@
 project( regexptest LANGUAGES CXX)
 cmake_minimum_required( VERSION 3.1.0 )
-if ( NOT CMAKE_VERSION VERSION_LESS 3.10 )
-	cmake_policy(SET CMP0071 OLD)
-endif ()
+
+include(policyRules)
+
 set( CMAKE_AUTOMOC ON )
 set( CMAKE_INCLUDE_CURRENT_DIR ON )
 option( BUILD_TRANSLATIONS "Build project translations" ON )
 option( USE_CPACK "Enable CPack" OFF )
 
 if(USE_CPACK)
-    include(version.cmake)
+    include(version)
     #CPack section start
-    include(use_cpack.cmake)
+    include(use_cpack)
     #CPack section end
 endif()
+
+include(qtvars)
 
 include_directories(
     ${CMAKE_SOURCE_DIR}
@@ -53,17 +55,16 @@ if( "${CMAKE_BUILD_TYPE}" STREQUAL "Debug" OR ( "${CMAKE_BUILD_TYPE}" STREQUAL "
     set(CMAKE_CXX_FLAGS_DEBUG "-O0 ${CMAKE_CXX_FLAGS_DEBUG}")
 endif()
 
-find_package( Qt5 COMPONENTS Widgets REQUIRED )
+find_qt_package( Widgets REQUIRED )
 set(CMAKE_CXX_STANDARD 11)
-qt5_add_resources( RSCS ${regexptest_QRC} )
+add_qt_resources( RSCS ${regexptest_QRC} )
 if( ${BUILD_TRANSLATIONS} )
-    find_package( Qt5 COMPONENTS LinguistTools REQUIRED )
-    qt5_add_translation( TRS ${regexptest_TRS} )
+    find_qt_package( LinguistTools REQUIRED )
+    add_qt_translation( TRS ${regexptest_TRS} )
 endif( ${BUILD_TRANSLATIONS} )
-qt5_wrap_ui( UIS ${regexptest_UI} )
-set( QT_DEPLIBS
-    Qt5::Widgets
-)
+wrap_qt_ui( UIS ${regexptest_UI} )
+add_qt_library(QT_DEPLIBS Widgets)
+
 if( UNIX AND NOT (APPLE OR CYGWIN) )
     set( DATADIR_PATH ${CMAKE_INSTALL_PREFIX}/share )
     set( APPDATA_PATH ${DATADIR_PATH}/applications )

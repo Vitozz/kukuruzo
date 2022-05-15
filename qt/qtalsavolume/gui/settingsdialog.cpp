@@ -249,8 +249,8 @@ void SettingsDialog::hideAlsaElements(bool isHide) {
 
 void SettingsDialog::setPulseAvailable(bool available) {
   pulseAvailable_ = available;
-  ui->usePulseaudio->setVisible(!pulseAvailable_);
-  ui->usePulseaudio->setEnabled(!pulseAvailable_);
+  ui->usePulseaudio->setVisible(pulseAvailable_);
+  ui->usePulseaudio->setEnabled(pulseAvailable_);
 }
 
 void SettingsDialog::setUsePolling(bool isPoll) {

@@ -11,7 +11,7 @@ license=('GPL2')
 url="http://delta.affinix.com/psimedia/"
 depends=('psi-plus' 'opus' 'gst-plugins-base' 'qt5-base' 'gst-plugins-good')
 makedepends=('pkgconfig' 'gdb' 'git')
-source=("git://github.com/psi-im/psimedia.git")
+source=("git+https://github.com/psi-im/psimedia.git")
 md5sums=('SKIP')
 
 pkgver() {

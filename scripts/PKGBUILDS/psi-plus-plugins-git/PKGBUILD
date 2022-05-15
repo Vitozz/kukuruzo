@@ -3,7 +3,7 @@
 # Contributor: Alexey D. <lq07829icatm@rambler.ru>
 
 pkgname=psi-plus-plugins-git
-pkgver=1.1.383.g3b3e4ad
+pkgver=1.1.392.g147ddea
 pkgrel=1
 pkgdesc="Additional plugins for Psi+ (built with Qt 5.x)"
 arch=('x86_64')
@@ -16,7 +16,7 @@ makedepends=('libotr' 'tidy' 'libsignal-protocol-c')
 optdepends=('libotr: for OTR plugin'
             'tidy: for OTR plugin'
             'libsignal-protocol-c: for OMEMO plugin')
-source=('git://github.com/psi-im/plugins')
+source=('git+https://github.com/psi-im/plugins')
 md5sums=('SKIP')
 
 pkgver() {

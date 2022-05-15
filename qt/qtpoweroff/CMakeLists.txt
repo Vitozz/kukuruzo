@@ -15,6 +15,8 @@ if(USE_CPACK)
     include(use_cpack.cmake)
 endif()
 
+include(qtvars.cmake)
+
 include_directories(
     ${CMAKE_SOURCE_DIR}
     ${CMAKE_CURRENT_BINARY_DIR}
@@ -54,28 +56,22 @@ if( "${CMAKE_BUILD_TYPE}" STREQUAL "Debug" OR ( "${CMAKE_BUILD_TYPE}" STREQUAL "
     set( CMAKE_CXX_FLAGS_DEBUG "-O0 ${CMAKE_CXX_FLAGS_DEBUG}" )
 endif()
 
-find_package( Qt5 COMPONENTS Widgets REQUIRED )
-set( CMAKE_CXX_FLAGS "-std=c++0x ${CMAKE_CXX_FLAGS} ${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}" )
-add_definitions( -DHAVE_QT5 )
-qt5_add_resources( RSCS ${qtpoweroff_QRC} )
+find_qt_package(Widgets REQUIRED )
+
+add_qt_resources( RSCS ${qtpoweroff_QRC} )
 if( ${BUILD_TRANSLATIONS} )
-    find_package( Qt5 COMPONENTS LinguistTools REQUIRED )
-    qt5_add_translation( TRS ${qtpoweroff_TRS} )
+    find_qt_package( LinguistTools REQUIRED )
+    add_qt_translation( TRS ${qtpoweroff_TRS} )
 endif()
-qt5_wrap_ui( UIS ${qtpoweroff_UI} )
-set( QT_DEPLIBS
-    Qt5::Widgets
-)
+wrap_qt_ui( UIS ${qtpoweroff_UI} )
+add_qt_library(QT_DEPLIBS Widgets)
+
 if( UNIX AND NOT (APPLE OR CYGWIN) )
-    find_package( Qt5 COMPONENTS DBus REQUIRED )
-    include_directories( ${Qt5DBus_INCLUDES} )
+    find_qt_package( DBus REQUIRED )
     add_definitions(
-        ${Qt5DBus_DEFINITIONS}
         -DHAVE_DBUS
     )
-    list( APPEND QT_DEPLIBS
-        Qt5::DBus
-    )
+    add_qt_library(QT_DEPLIBS DBus)
 endif()
 if( UNIX AND NOT (APPLE OR CYGWIN) )
     if("${CMAKE_INSTALL_PREFIX}" STREQUAL "/")

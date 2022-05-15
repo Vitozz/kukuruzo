@@ -22,9 +22,10 @@
 
 #include <QAction>
 #include <QApplication>
-#include <QDesktopWidget>
 #include <QLabel>
 #include <QMessageBox>
+#include <QRegularExpression>
+#include <QScreen>
 #include <QSlider>
 #include <QVBoxLayout>
 #include <QtGui>
@@ -333,9 +334,8 @@ void PopupWindow::setPopupPosition() {
   QPoint to;
   QPoint point(trayIcon_->iconPosition());
   Position position;
-  QDesktopWidget desktopWidget;
-  const int screenHeight = desktopWidget.availableGeometry(this).height();
-  const int screenTop = desktopWidget.availableGeometry(this).top();
+  const int screenHeight = screen()->availableGeometry().height();
+  const int screenTop = screen()->availableGeometry().top();
   if (!trayGeometry.isEmpty()) {
     position = trayGeometry.top() > screenHeight / 2 ? BOTTOM : TOP;
     to.setX(trayGeometry.left() + trayGeometry.width() / 2 - width() / 2);
@@ -541,7 +541,9 @@ void PopupWindow::readDesktopFile() {
   if (desktop.open(QIODevice::ReadOnly)) {
     settingsDialog_->setAutorun(
         QString(desktop.readAll())
-            .contains(QRegExp(R"(\bhidden\s*=\s*false)", Qt::CaseInsensitive)));
+            .contains(
+                QRegularExpression(R"(\bhidden\s*=\s*false)",
+                                   QRegularExpression::CaseInsensitiveOption)));
   }
 }
 

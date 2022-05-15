@@ -9,7 +9,7 @@ depends=('qt5-base' 'qt5-tools' 'hunspell')
 makedepends=('git' 'cmake')
 optdepends=('kglobalaccel' 'kwindowsystem' 'knotifications')
 conflicts=(qtnote)
-source=("$pkgname"::git://github.com/Ri0n/QtNote.git)
+source=("$pkgname"::git+https://github.com/Ri0n/QtNote.git)
 sha256sums=('SKIP')
 
 pkgver() {

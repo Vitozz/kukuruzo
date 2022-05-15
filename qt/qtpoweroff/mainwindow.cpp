@@ -265,7 +265,7 @@ void MainWindow::onTimeChecked(bool toggled)
 
 void MainWindow::onTimer()
 {
-    uint deltaTime = time_->toTime_t() - time_->currentDateTime().toTime_t();//currentTime->toTime_t();
+    const qint64 deltaTime = time_->toSecsSinceEpoch() - time_->currentDateTime().toSecsSinceEpoch();
     if (deltaTime == 0 || offset_ == 0) {
         doAction();
 #ifdef IS_DEBUG
