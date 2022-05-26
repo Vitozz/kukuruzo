@@ -6,7 +6,7 @@ pkgdesc="@CPACK_PACKAGE_DESCRIPTION@"
 arch=('i686' 'x86_64')
 url="@PACKAGE_URL@"
 license=('GPL3')
-depends=( 'qt5-base' 'qt5-tools' )
+depends=( 'qt@QT_PKG_VER@-base' 'qt@QT_PKG_VER@-tools' )
 makedepends=('git' 'cmake')
 conflicts=(@CPACK_PACKAGE_NAME@)
 source=(git+https://github.com/Vitozz/kukuruzo)
@@ -41,6 +41,7 @@ build() {
 
   cmake -DCMAKE_INSTALL_PREFIX=$_pkgprefix \
     -DCMAKE_BUILD_TYPE=Release \
+    -DUSE_QT6=@QT6_FLAG@ \
     "$srcdir/$_gitname/$_gitpkgsuffix"
 
   make

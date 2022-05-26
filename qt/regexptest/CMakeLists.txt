@@ -10,14 +10,14 @@ set( CMAKE_INCLUDE_CURRENT_DIR ON )
 option( BUILD_TRANSLATIONS "Build project translations" ON )
 option( USE_CPACK "Enable CPack" OFF )
 
+include(qtvars)
+
 if(USE_CPACK)
     include(version)
     #CPack section start
     include(use_cpack)
     #CPack section end
 endif()
-
-include(qtvars)
 
 include_directories(
     ${CMAKE_SOURCE_DIR}
