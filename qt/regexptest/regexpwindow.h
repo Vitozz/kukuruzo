@@ -1,6 +1,6 @@
 /*
  * regexpwindow.h
- * Copyright (C) 2013-2019 Vitaly Tonkacheyev
+ * Copyright (C) 2013-2022 Vitaly Tonkacheyev
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +20,7 @@
 #ifndef RegexpWindow_H
 #define RegexpWindow_H
 
+#include "syntaxhighlighter.h"
 #include <QMainWindow>
 #include <QRegularExpression>
 
@@ -46,8 +47,8 @@ private:
     Ui::RegexpWindow *ui;
     void RunOnlineHelp();
     QString LoadTextFile(const QString &filename);
-    QList<QStringList> CheckExpression(const QString &regexp, const QString &text) const;
-    QString GetRegexpList(const QList <QStringList> &matches, const int &parm, const int &pos) const;
+    QVector<QStringList> CheckExpression(const QString &regexp, const QString &text) const;
+    QString GetRegexpList(const QVector<QStringList> &matches, const int &parm, const int &pos) const;
     void readSettings();
     void writeSettings();
     QString unquoteText(const QString &text) const;
@@ -60,6 +61,7 @@ private:
     QString originRegExpText_;
     QString dir_;
     bool isLoaded_;
+    QPointer<SyntaxHighlighter> highlighter_;
 
 private slots:
     void on_RegExp_textChanged(QString );

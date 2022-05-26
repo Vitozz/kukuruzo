@@ -1,6 +1,8 @@
 project( regexptest LANGUAGES CXX)
 cmake_minimum_required( VERSION 3.1.0 )
 
+list( APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}" )
+
 include(policyRules)
 
 set( CMAKE_AUTOMOC ON )
@@ -24,10 +26,12 @@ include_directories(
 set( regexptest_SRC
     main.cpp
     regexpwindow.cpp
+    syntaxhighlighter.cpp
 )
 
 set( regexptest_HDR
     regexpwindow.h
+    syntaxhighlighter.h
 )
 set( regexptest_UI
     regexpwindow.ui
@@ -96,7 +100,7 @@ if( UNIX AND NOT (APPLE OR CYGWIN) )
         INSTALL( FILES ${PROJECT_BINARY_DIR}/copyright DESTINATION ${DATADIR_PATH}/doc/${PROJECT_NAME} )
     endif()
 endif()
-if( ${WIN32} )
+if( WIN32 )
     if( NOT DEBUG_ENABLED )
         add_definitions( -DQT_NO_DEBUG -pthread )
     endif()

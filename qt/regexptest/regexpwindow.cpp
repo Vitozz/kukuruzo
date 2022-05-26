@@ -1,6 +1,6 @@
 /*
  * regexpwindow.cpp
- * Copyright (C) 2013-2019 Vitaly Tonkacheyev
+ * Copyright (C) 2013-2022 Vitaly Tonkacheyev
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,16 +19,16 @@
 #include "regexpwindow.h"
 #include "ui_regexpwindow.h"
 
+#include <QDesktopServices>
+#include <QDir>
 #include <QFile>
-#include <QTextStream>
+#include <QFileDialog>
 #include <QIODevice>
 #include <QMessageBox>
-#include <QDesktopServices>
-#include <QUrl>
-#include <QFileDialog>
-#include <QDir>
-#include <QSettings>
 #include <QRegularExpression>
+#include <QSettings>
+#include <QTextStream>
+#include <QUrl>
 #ifdef IS_DEBUG
 #include <QDebug>
 #endif
@@ -46,10 +46,10 @@
 #define DONTCAP_OPT "dontcap"
 #define ISMINIMAL_OPT "isminimal"
 
-RegexpWindow::RegexpWindow(QWidget *parent) :
-    QMainWindow(parent),
-    ui(new Ui::RegexpWindow),
-    isLoaded_(false)
+RegexpWindow::RegexpWindow(QWidget* parent)
+    : QMainWindow(parent)
+    , ui(new Ui::RegexpWindow)
+    , isLoaded_(false)
 {
     ui->setupUi(this);
     ui->label->setReadOnly(true);
@@ -63,10 +63,12 @@ RegexpWindow::RegexpWindow(QWidget *parent) :
 
 RegexpWindow::~RegexpWindow()
 {
+    if (highlighter_)
+        delete highlighter_;
     delete ui;
 }
 
-void RegexpWindow::changeEvent(QEvent *e)
+void RegexpWindow::changeEvent(QEvent* e)
 {
     QMainWindow::changeEvent(e);
     switch (e->type()) {
@@ -78,25 +80,32 @@ void RegexpWindow::changeEvent(QEvent *e)
     }
 }
 
-void RegexpWindow::closeEvent(QCloseEvent *){
+void RegexpWindow::closeEvent(QCloseEvent*)
+{
     writeSettings();
 }
 
 void RegexpWindow::on_runit_clicked()
 {
-    const QList <QStringList> matches(CheckExpression(regExpText_,inputText_));
-    ui->label->document()->setHtml(GetRegexpList(matches,CHECK_ALL,0));
+    const QList<QStringList> matches(CheckExpression(regExpText_, inputText_));
+    if (!matches.isEmpty()) {
+        ui->label->document()->setHtml(GetRegexpList(matches, CHECK_ALL, 0));
+        if (highlighter_)
+            delete highlighter_;
+        highlighter_ = new SyntaxHighlighter(ui->inputText->document(), regExpText_);
+    }
 }
 
-void RegexpWindow::readSettings(){
+void RegexpWindow::readSettings()
+{
     QSettings settings;
     inputText_ = settings.value(TEXT_OPT, "").toString();
     fileName_ = settings.value(FILENAME_OPT, "").toString();
     regExpText_ = settings.value(REGEXP_OPT, "").toString();
-    if(!regExpText_.isEmpty()&&(!regExpText_.isNull())){
+    if (!regExpText_.isEmpty() && (!regExpText_.isNull())) {
         ui->RegExp->setText(regExpText_);
     }
-    if(!fileName_.isEmpty()){
+    if (!fileName_.isEmpty()) {
         if (QFile::exists(fileName_)) {
             ui->fileName->setText(fileName_);
             inputText_ = LoadTextFile(fileName_);
@@ -104,9 +113,8 @@ void RegexpWindow::readSettings(){
             QFileInfo fi(fileName_);
             dir_ = fi.absolutePath();
         }
-    }
-    else{
-        if(!inputText_.isEmpty()&&(!inputText_.isNull())){
+    } else {
+        if (!inputText_.isEmpty() && (!inputText_.isNull())) {
             ui->inputText->setPlainText(inputText_);
         }
     }
@@ -121,12 +129,13 @@ void RegexpWindow::readSettings(){
     ui->isinvgreed->setChecked(settings.value(ISINVGREED_OPT, false).toBool());
 }
 
-void RegexpWindow::writeSettings(){
+void RegexpWindow::writeSettings()
+{
     QSettings settings;
-    if(!fileName_.isEmpty()){
+    if (!fileName_.isEmpty()) {
         settings.setValue(FILENAME_OPT, QVariant(fileName_));
         settings.setValue(TEXT_OPT, "");
-    }else{
+    } else {
         settings.setValue(TEXT_OPT, QVariant(inputText_));
         settings.setValue(FILENAME_OPT, "");
     }
@@ -142,57 +151,59 @@ void RegexpWindow::writeSettings(){
     settings.setValue(ISMINIMAL_OPT, QVariant(ui->isminimal->isChecked()));
 }
 
-QString RegexpWindow::GetRegexpList(const QList<QStringList> &matches, const int &parm, const int &pos) const
+QString RegexpWindow::GetRegexpList(const QVector<QStringList>& matches, const int& parm, const int& pos) const
 {
     QString result;
     const QString matchWildcard(tr("<u><a style=\"color:red\">Match # </a><b>%1</b></u><br>"));
     const QString groupWildcard(tr("<a style=\"color:blue\">Group # </a><b>%1: </b><i>%2</i><br>"));
-    if(!matches.isEmpty()){
-        foreach(const QStringList &groups, matches) {
+    if (!matches.isEmpty()) {
+        for (const QStringList& groups : matches) {
             result += matchWildcard.arg(QString::number(matches.indexOf(groups)));
-            if(parm == CHECK_ALL){
-                foreach (const QString &item, groups) {
-                    result += groupWildcard.arg(QString::number(groups.indexOf(item)),item.toHtmlEscaped());
-                }
-            }
-            else if(parm == CHECK_POS) {
-                if(pos < groups.length()) {
+            switch (parm) {
+            case CHECK_ALL:
+                for (const QString& item : groups)
+                    result += groupWildcard.arg(QString::number(groups.indexOf(item)), item.toHtmlEscaped());
+                break;
+            case CHECK_POS:
+                if (pos < groups.length())
                     result += groupWildcard.arg(QString::number(pos), groups[pos].toHtmlEscaped());
-                }
+                break;
+            default:
+                continue;
             }
         }
     }
     return result;
 }
 
-QList <QStringList> RegexpWindow::CheckExpression(const QString &regexp, const QString &text) const{
+QVector<QStringList> RegexpWindow::CheckExpression(const QString& regexp, const QString& text) const
+{
     QString pattern = regexp;
-    if(ui->iswildcard->isChecked()) {
+    if (ui->iswildcard->isChecked()) {
         pattern = QRegularExpression::wildcardToRegularExpression(regexp);
     }
     QRegularExpression rx(pattern, patternOptions_);
-    QList <QStringList> result;
-    if(rx.isValid()) {
+    QVector<QStringList> result;
+    if (rx.isValid()) {
         QRegularExpression::MatchType mType_;
-        if(ui->isminimal->isChecked()) {
+        if (ui->isminimal->isChecked()) {
             mType_ = QRegularExpression::PartialPreferFirstMatch;
-        }
-        else {
+        } else {
             mType_ = QRegularExpression::NormalMatch;
         }
         QRegularExpressionMatchIterator iter = rx.globalMatch(text, 0, mType_);
         while (iter.hasNext()) {
             QRegularExpressionMatch match = iter.next();
             QStringList matches;
-            if(match.hasMatch()) {
-                for(int i=0; i <= rx.captureCount(); ++i) {
+            if (match.hasMatch()) {
+                for (int i = 0; i <= rx.captureCount(); ++i) {
                     matches << match.captured(i);
                 }
                 result << matches;
             }
         }
 #ifdef IS_DEBUG
-        qDebug()<<"Pattern" << regexp;
+        qDebug() << "Pattern" << regexp;
         qDebug() << "Pattern options" << patternOptions_;
         qDebug() << "text" << text;
         qDebug() << "Result" << result;
@@ -200,31 +211,29 @@ QList <QStringList> RegexpWindow::CheckExpression(const QString &regexp, const Q
 #endif
         ui->spinBox->setMaximum(rx.captureCount());
         return result;
-    }
-    else if (!rx.isValid()) {
+    } else if (!rx.isValid()) {
         QMessageBox::critical(nullptr, tr("Regexp error"), rx.errorString());
     }
     return result;
 }
-
 
 void RegexpWindow::on_actionOnline_Help_triggered()
 {
     RunOnlineHelp();
 }
 
-QString RegexpWindow::LoadTextFile(const QString &filename){
+QString RegexpWindow::LoadTextFile(const QString& filename)
+{
     QString result;
-    if(!filename.isEmpty()){
+    if (!filename.isEmpty()) {
         QFile file(fileName_);
         QTextStream in(&file);
-        if(file.open(QIODevice::ReadOnly)){
+        if (file.open(QIODevice::ReadOnly)) {
             result = in.readAll();
             isLoaded_ = true;
             return result;
         }
-    }
-    else {
+    } else {
         isLoaded_ = false;
     }
     return result;
@@ -233,13 +242,13 @@ QString RegexpWindow::LoadTextFile(const QString &filename){
 void RegexpWindow::RunOnlineHelp()
 {
     QString helpdir, url;
-    const QStringList dirs({"/usr/share/doc/regexptest/html",
-                            "/usr/local/share/doc/regexptest/html",
-                            "/usr/share/doc/regexptest/html",
-                            QString("%1/.local/share/doc/regexptest/html").arg(QDir::homePath()),
-                            QString("%1/inst/docs").arg(qApp->applicationDirPath()),
-                            QString("%1/docs").arg(qApp->applicationDirPath())});
-    foreach (const QString &item, dirs) {
+    const QStringList dirs({ QStringLiteral("/usr/share/doc/regexptest/html"),
+        QStringLiteral("/usr/local/share/doc/regexptest/html"),
+        QStringLiteral("/usr/share/doc/regexptest/html"),
+        QString("%1/.local/share/doc/regexptest/html").arg(QDir::homePath()),
+        QString("%1/inst/docs").arg(qApp->applicationDirPath()),
+        QString("%1/docs").arg(qApp->applicationDirPath()) });
+    for (const QString& item : dirs) {
         QDir _dir(item);
         if (_dir.exists()) {
             helpdir = item;
@@ -251,77 +260,71 @@ void RegexpWindow::RunOnlineHelp()
 #else
     url = QString("file://%1/regexp_help.html").arg(helpdir);
 #endif
-    if (!QDesktopServices::openUrl(QUrl(url,QUrl::TolerantMode))){
-        QMessageBox::warning(this,tr("Error"),tr("Unable to open regexp_help.html"));
+    if (!QDesktopServices::openUrl(QUrl(url, QUrl::TolerantMode))) {
+        QMessageBox::warning(this, tr("Error"), tr("Unable to open regexp_help.html"));
     }
 }
 
 void RegexpWindow::on_dotMatchEverithing_toggled(bool checked)
 {
-    if(checked) {
+    if (checked) {
         patternOptions_ |= QRegularExpression::DotMatchesEverythingOption;
-    }
-    else {
+    } else {
         patternOptions_ &= ~QRegularExpression::DotMatchesEverythingOption;
     }
 }
 
 void RegexpWindow::on_iscase_toggled(bool checked)
 {
-    if(checked) {
+    if (checked) {
         patternOptions_ |= QRegularExpression::CaseInsensitiveOption;
-    }
-    else {
+    } else {
         patternOptions_ &= ~QRegularExpression::CaseInsensitiveOption;
     }
 }
 
 void RegexpWindow::on_multiline_toggled(bool checked)
 {
-    if(checked) {
+    if (checked) {
         patternOptions_ |= QRegularExpression::MultilineOption;
-    }
-    else {
+    } else {
         patternOptions_ &= ~QRegularExpression::MultilineOption;
     }
 }
 
 void RegexpWindow::on_isextpattern_toggled(bool checked)
 {
-    if(checked) {
+    if (checked) {
         patternOptions_ |= QRegularExpression::ExtendedPatternSyntaxOption;
-    }
-    else {
+    } else {
         patternOptions_ &= ~QRegularExpression::ExtendedPatternSyntaxOption;
     }
 }
 
 void RegexpWindow::on_isinvgreed_toggled(bool checked)
 {
-    if(checked) {
+    if (checked) {
         patternOptions_ |= QRegularExpression::InvertedGreedinessOption;
-    }
-    else {
+    } else {
         patternOptions_ &= ~QRegularExpression::InvertedGreedinessOption;
     }
 }
 
-void RegexpWindow::on_fileName_textChanged(QString )
+void RegexpWindow::on_fileName_textChanged(QString)
 {
     QString temptext;
-    if(!ui->fileName->text().isEmpty()){
+    if (!ui->fileName->text().isEmpty()) {
         temptext = ui->fileName->text();
-        temptext.replace("\\","/");
+        temptext.replace("\\", "/");
     }
     fileName_ = temptext;
 }
 
 void RegexpWindow::on_dontcapture_toggled(bool checked)
 {
-    if(checked) {
+    if (checked) {
         patternOptions_ |= QRegularExpression::DontCaptureOption;
-    }
-    else {
+    } else {
         patternOptions_ &= ~QRegularExpression::DontCaptureOption;
     }
 }
@@ -331,10 +334,9 @@ void RegexpWindow::on_inputText_textChanged()
     if (!ui->inputText->document()->isEmpty()) {
         inputText_ = ui->inputText->document()->toPlainText();
         if (!isLoaded_) {
-            ui->fileName->setText("");
-            fileName_ = "";
-        }
-        else {
+            ui->fileName->clear();
+            fileName_ = QString();
+        } else {
             isLoaded_ = false;
         }
     }
@@ -342,31 +344,28 @@ void RegexpWindow::on_inputText_textChanged()
 
 void RegexpWindow::on_spinBox_valueChanged(int value)
 {
-    const QList <QStringList> matches = CheckExpression(regExpText_,inputText_);
-    ui->label->document()->setHtml(GetRegexpList(matches,CHECK_POS,value));
-
+    const QVector<QStringList> matches = CheckExpression(regExpText_, inputText_);
+    ui->label->document()->setHtml(GetRegexpList(matches, CHECK_POS, value));
 }
 
 void RegexpWindow::on_openFile_clicked()
 {
-    if(dir_.isEmpty() || dir_.isNull()) {
+    if (dir_.isEmpty() || dir_.isNull()) {
         dir_ = QDir::homePath();
     }
     QString str_fileName = QFileDialog::getOpenFileName(this,
-                                                        tr("Open File..."),
-                                                        dir_,
-                                                        tr("All Files (*);;Text Files (*.txt)"));
-    if (!str_fileName.isEmpty())
-    {
+        tr("Open File..."),
+        dir_,
+        tr("All Files (*);;Text Files (*.txt)"));
+    if (!str_fileName.isEmpty()) {
         const QFileInfo fi(str_fileName);
         dir_ = fi.absolutePath();
         ui->fileName->setText(str_fileName);
         ui->inputText->setPlainText(LoadTextFile(str_fileName));
-
     }
 }
 
-QString RegexpWindow::unquoteText(const QString &text) const
+QString RegexpWindow::unquoteText(const QString& text) const
 {
     QString quoted = text;
     if (!quoted.isEmpty()) {
@@ -375,7 +374,7 @@ QString RegexpWindow::unquoteText(const QString &text) const
     return quoted;
 }
 
-QString RegexpWindow::quoteText(const QString &text) const
+QString RegexpWindow::quoteText(const QString& text) const
 {
     QString unqouted = text;
     if (!unqouted.isEmpty()) {
@@ -384,9 +383,9 @@ QString RegexpWindow::quoteText(const QString &text) const
     return unqouted;
 }
 
-void RegexpWindow::on_RegExp_textChanged(QString )
+void RegexpWindow::on_RegExp_textChanged(QString)
 {
-    if(!ui->RegExp->text().isEmpty()){
+    if (!ui->RegExp->text().isEmpty()) {
         originRegExpText_ = ui->RegExp->text();
         regExpText_ = ui->unquotebox->isChecked() ? unquoteText(originRegExpText_) : originRegExpText_;
     }
