@@ -1,6 +1,6 @@
 [Desktop Entry]
 Encoding=UTF-8
-Icon=@PREFIX@/regexptest/icons/72x72.png
+Icon=@PREFIX@/share/regexptest/icons/72x72.png
 Name=RegExp Tester
 Comment=Tool For Testing Regular Expressions
 Exec=regexptest
