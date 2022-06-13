@@ -87,7 +87,7 @@ void RegexpWindow::closeEvent(QCloseEvent*)
 
 void RegexpWindow::on_runit_clicked()
 {
-    const QList<QStringList> matches(CheckExpression(regExpText_, inputText_));
+    const QVector<QStringList> matches(CheckExpression(regExpText_, inputText_));
     if (!matches.isEmpty()) {
         ui->label->document()->setHtml(GetRegexpList(matches, CHECK_ALL, 0));
         if (highlighter_)

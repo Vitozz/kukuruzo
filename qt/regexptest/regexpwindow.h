@@ -23,6 +23,7 @@
 #include "syntaxhighlighter.h"
 #include <QMainWindow>
 #include <QRegularExpression>
+#include <QPointer>
 
 namespace Ui {
 class RegexpWindow;
