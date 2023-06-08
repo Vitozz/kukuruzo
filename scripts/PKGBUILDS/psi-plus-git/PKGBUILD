@@ -4,7 +4,7 @@
 # Contributor: Alexey D. <lq07829icatm@rambler.ru>
 
 pkgname=psi-plus-git
-pkgver=1.5.1559.0.g70db8948
+pkgver=1.5.1648.0.g385d2427
 pkgrel=1
 pkgdesc="Psi+ is a powerful Jabber client (Qt, C++) designed for the Jabber power users (built with Qt 5.x)"
 url="http://psi-plus.com"
@@ -23,10 +23,10 @@ pkgver() {
 }
 
 build() {
-  cmake_flags="-DCMAKE_INSTALL_PREFIX=/usr -DPSI_PLUS=ON -DBUNDLED_USRSCTP=ON -DBUNDLED_QCA=ON -DCHAT_TYPE=webengine -DINSTALL_PLUGINS_SDK=ON -DCMAKE_BUILD_TYPE=RelWithDebInfo"
+  cmake_flags="-DCMAKE_INSTALL_PREFIX=/usr -DPSI_PLUS=ON -DUSE_X11=OFF -DBUNDLED_USRSCTP=ON -DBUNDLED_QCA=ON -DCHAT_TYPE=webengine -DINSTALL_PLUGINS_SDK=ON -DCMAKE_BUILD_TYPE=RelWithDebInfo"
   mkdir -p ${srcdir}/psi-plus-snapshots/build && cd ${srcdir}/psi-plus-snapshots/build
-  cmake ${cmake_flags} ..
-  cmake --build . --target all
+  cmake ${cmake_flags} ${srcdir}/psi-plus-snapshots "-DVERBOSE_PROGRAM_NAME=ON"
+  cmake --build ${srcdir}/psi-plus-snapshots/build --target all
 }
 
 package() {

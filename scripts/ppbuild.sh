@@ -282,7 +282,7 @@ prepare_psi_src ()
 clean_tmp_dirs()
 {
   if [ -d "${tmp_dir}" ] && [ ${clear_tmp_on_exit} -eq 1 ]; then
-    rm -rf ${tmp_dir}
+    rm -rfv ${tmp_dir}
   fi
 }
 #Подготовка каталога сборки
