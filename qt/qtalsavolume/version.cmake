@@ -1,4 +1,4 @@
-cmake_minimum_required( VERSION 3.1.0 )
+cmake_minimum_required( VERSION 3.5.0 )
 
 set(VER_FILE "${PROJECT_SOURCE_DIR}/defines.h")
 if(EXISTS "${VER_FILE}")
