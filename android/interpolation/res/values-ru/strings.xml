@@ -2,23 +2,24 @@
 <resources>
     <string name="TitleText">Введите исходные данные</string>
     <string name="app_name">Интерполятор</string>
-
-<string name="X1Text">X1</string>
-<string name="X2Text">X2</string>
-<string name="XtrText">Xtr(X1:X2)</string>
-<string name="Y1Text">Y1</string>
-<string name="Y2Text">Y2</string><string name="about_ok">OK</string>
-<string name="about_exit">Выход</string>
-<string name="is_counted">Результат=</string>
-<string name="YrtText">Результат</string>
-<string name="ButtonText">Расчёт!</string>
-<string name="description">Расчет линечной интерполяции и линейной экстраполяции</string><string name="count_title">Расчёт!</string>
-<string name="about_title">О программе..</string>
-<string name="about_text">Программа расчета линейной интерполяции и линейной экстраполяции.\n\n
+    <string name="X1Text">X1</string>
+    <string name="X2Text">X2</string>
+    <string name="XtrText">Xtr(X1:X2)</string>
+    <string name="Y1Text">Y1</string>
+    <string name="Y2Text">Y2</string>
+    <string name="YrtText">Результат</string>
+    <string name="ButtonText">Расчёт!</string>
+    <string name="def_value">0</string>
+    <string name="description">Расчет линечной интерполяции и линейной экстраполяции</string>
+    <string name="about_title">О программе..</string>
+    <string name="about_text">Программа расчета линейной интерполяции и линейной экстраполяции.\n\n
 <u>Авторские права:\n</u>
 <i>2010 © Виталий Тонкачеев</i>
-</string>
-<string name="about_author">2010 © Виталий Тонкачеев</string>
-<string name="def_value">0</string>
-<string name="data_error">Ошибка!\n|X1-X2|=0</string>
+    </string>
+    <string name="about_author">2010 © Виталий Тонкачеев</string>
+    <string name="about_ok">Ok</string>
+    <string name="about_exit">Выход</string>
+    <string name="is_counted">Результат=</string>
+    <string name="data_error">Ошибка!\n|X1-X2|=0</string>
+    <string name="count_title">Расчёт!</string>
 </resources>
