@@ -24,7 +24,7 @@ SyntaxHighlighter::SyntaxHighlighter(QTextDocument* parent, const QString& patte
 {
     textFormat.setFontWeight(QFont::Bold);
     textFormat.setForeground(Qt::red);
-    rule_.pattern = QRegularExpression(pattern);
+    rule_.pattern = QRegularExpression(pattern, QRegularExpression::UseUnicodePropertiesOption);
     rule_.format = textFormat;
 }
 
