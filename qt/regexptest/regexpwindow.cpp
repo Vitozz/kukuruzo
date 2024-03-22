@@ -53,7 +53,7 @@ RegexpWindow::RegexpWindow(QWidget* parent)
 {
     ui->setupUi(this);
     ui->label->setReadOnly(true);
-    patternOptions_ = QRegularExpression::NoPatternOption;
+    patternOptions_ = QRegularExpression::UseUnicodePropertiesOption;
     connect(ui->actionE_xit, &QAction::triggered, this, &RegexpWindow::on_actionE_xit_triggered);
     connect(ui->actionOnline_Help, &QAction::changed, this, &RegexpWindow::on_actionOnline_Help_triggered);
     connect(ui->actionAbout_Qt, &QAction::triggered, qApp, &QApplication::aboutQt);

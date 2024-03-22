@@ -59,7 +59,7 @@ i686_mxe_prefix=${mxe_root}/usr/i686-w64-mingw32.shared
 x86_64_mxe_prefix=${mxe_root}/usr/x86_64-w64-mingw32.shared
 OLDPATH=${PATH}
 #default cmake FLAGS
-DEF_CMAKE_FLAGS="-DBUNDLED_QCA=ON -DBUNDLED_USRSCTP=ON"
+DEF_CMAKE_FLAGS="-DBUNDLED_IRIS_ALL=ON"
 
 #WARNING: следующие переменные будут изменены в процессе работы скрипта автоматически
 buildpsi=${default_buildpsi} #инициализация переменной

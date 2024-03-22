@@ -34,8 +34,8 @@
 #include <QDebug>
 #endif
 
-static const QString appLogo(":/images/Logo");
-static const QString autoStartPath(".config/autostart");
+static const QLatin1String appLogo(":/images/Logo");
+static const QLatin1String autoStartPath(".config/autostart");
 static const QString fName(QDir::home().absolutePath() +
                            "/.config/autostart/qtalsavolume.desktop");
 static const QString dFile =
@@ -539,11 +539,9 @@ void PopupWindow::createDesktopFile() const {
 void PopupWindow::readDesktopFile() {
   QFile desktop(fName);
   if (desktop.open(QIODevice::ReadOnly)) {
+    auto regexp = QRegularExpression(R"(\bhidden\s*=\s*false)", QRegularExpression::CaseInsensitiveOption);
     settingsDialog_->setAutorun(
-        QString(desktop.readAll())
-            .contains(
-                QRegularExpression(R"(\bhidden\s*=\s*false)",
-                                   QRegularExpression::CaseInsensitiveOption)));
+        QString(desktop.readAll()).contains(regexp));
   }
 }
 

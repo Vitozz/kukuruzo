@@ -136,7 +136,7 @@ PulseDevice::Ptr PulseCore::getSink(int index) {
 }
 
 PulseDevice::Ptr PulseCore::getSink(const QString &name) {
-  for (const PulseDevice::Ptr &sink : sinks_) {
+  for (const PulseDevice::Ptr &sink : std::as_const(sinks_)) {
     if (sink->name() == name) {
       return sink;
     }
@@ -159,7 +159,7 @@ PulseDevice::Ptr PulseCore::getSource(int index) {
 }
 
 PulseDevice::Ptr PulseCore::getSource(const QString &name) {
-  for (const PulseDevice::Ptr &source : sources_) {
+  for (const PulseDevice::Ptr &source : std::as_const(sources_)) {
     if (source->name() == name) {
       return source;
     }
@@ -210,12 +210,12 @@ QString PulseCore::getDeviceDescription(const QString &name) {
 
 PulseDevice::Ptr PulseCore::getDeviceByName(const QString &name) {
   PulseDevice::Ptr result = getDefaultSink();
-  for (const PulseDevice::Ptr &device : sinks_) {
+  for (const PulseDevice::Ptr &device : std::as_const(sinks_)) {
     if (device->name() == name) {
       result = device;
     }
   }
-  for (const PulseDevice::Ptr &device : sources_) {
+  for (const PulseDevice::Ptr &device : std::as_const(sources_)) {
     if (device->name() == name) {
       result = device;
     }
@@ -281,16 +281,16 @@ void PulseCore::updateDevices() {
   clearLists();
   getSinks();
   getSources();
-  for (const PulseDevice::Ptr &device : sinks_) {
+  for (const PulseDevice::Ptr &device : std::as_const(sinks_)) {
     deviceNames_ << device->name();
     sinksDescriptions_ << device->description();
   }
-  for (const PulseDevice::Ptr &device : sources_) {
+  for (const PulseDevice::Ptr &device : std::as_const(sources_)) {
     deviceNames_ << device->name();
     sourcesDescriptions_ << device->description();
   }
   deviceDescriptions_ = sinksDescriptions_;
-  for (const QString &desc : sourcesDescriptions_) {
+  for (const QString &desc : std::as_const(sourcesDescriptions_)) {
     deviceDescriptions_ << desc;
   }
 }
