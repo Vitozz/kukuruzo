@@ -413,7 +413,7 @@ compile_psiplus ()
   cmake ${flags} ${cbuild_path}">>${buildlog}
   cmake ${flags} ${cbuild_path} &&
   echo "--Starting psi-plus compilation">>${buildlog} &&
-  cmake --build . --target all -- -j${cpu_count} 2>>${buildlog} || echo -e "${red}There were errors. Open ${buildpsi}/build.log to see${nocolor}"
+  cmake --build . --target all --parallel ${cpu_count} 2>>${buildlog} || echo -e "${red}There were errors. Open ${buildpsi}/build.log to see${nocolor}"
   echo "***Build finished***">>${buildlog}
   if [ -z "$1" ]; then
     cmake --build . --target prepare-bin
@@ -445,7 +445,7 @@ install_pp_to_home ()
   cmake ${flags} ${cbuild_path}">>${buildlog}
   cmake ${flags} ${cbuild_path} &&
   echo "--Starting psi-plus compilation">>${buildlog} &&
-  cmake --build . --target all -- -j${cpu_count} 2>>${buildlog} &&
+  cmake --build . --target all --parallel ${cpu_count} 2>>${buildlog} &&
   echo "***Build finished***">>${buildlog} &&
   cmake --build . --target install || echo -e "${red}There were errors. Open ${buildpsi}/build.log to see${nocolor}" 
   #if [ -d "${home}/build/psi" ]; then
@@ -477,7 +477,7 @@ build_all_psiplus ()
   cmake ${flags} ${cbuild_path}">>${buildlog}
   cmake ${flags} ${cbuild_path} &&
   echo "--Starting psi-plus compilation">>${buildlog} &&
-  cmake --build . --target all -- -j${cpu_count} 2>>${buildlog} &&
+  cmake --build . --target all --parallel ${cpu_count} 2>>${buildlog} &&
   echo "***Build finished***">>${buildlog} &&
   cmake --build . --target prepare-bin || echo -e "${red}There were errors. Open ${buildpsi}/build.log to see${nocolor}"
   echo "Psi+ compiled at ${builddir}">>${buildlog}
@@ -515,7 +515,7 @@ build_cmake_plugins ()
   fi  
   echo " "; echo "Build psi+ plugins using CMAKE started..."; echo " "
   cmake ${plug_cmake_flags} ${plugdir} &&
-  cmake --build . --target all -- -j${cpu_count} && echo_done || die
+  cmake --build . --target all --parallel ${cpu_count} && echo_done || die
   if [ "${isinstall}" == "y" ]; then
     cmake --build . --target install && echo_done
   fi
@@ -746,7 +746,7 @@ compile_psi_mxe()
   ${cmakecmd} ${flags} ${workdir} > ${buildlog} &&
   echo &&
   #echo "Press Enter to continue..." && read tmpvar
-  ${cmakecmd} --build . --target all -- -j${cpu_count} 2>>${buildlog} || die
+  ${cmakecmd} --build . --target all --parallel ${cpu_count} 2>>${buildlog} || die
   if [ ${devm} -eq 1 ]; then
     ${cmakecmd} --build . --target prepare-bin -- #copy default iconsets skins and themes
     ${cmakecmd} --build . --target prepare-bin-libs -- #copy dependencies
