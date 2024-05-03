@@ -33,6 +33,9 @@ macro(FetchSRC _NAME _URL _OUTPATH)
         message(STATUS "Updating existing ${_NAME} git sources...")
         execute_process(
             COMMAND ${GIT_EXECUTABLE} pull
+            WORKING_DIRECTORY ${_OUTPATH}
+        )
+        execute_process(
             COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive
             WORKING_DIRECTORY ${_OUTPATH}
         )
@@ -44,7 +47,7 @@ macro(FetchSRC _NAME _URL _OUTPATH)
         )
         message(STATUS "Cloning ${_NAME} git submodules...")
         execute_process(
-            COMMAND cd ${_OUTPATH} && ${GIT_EXECUTABLE} submodule update --init --recursive
+            COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive
             WORKING_DIRECTORY ${_OUTPATH}
         )
     endif()
@@ -79,6 +82,7 @@ endif()
 if(PSI_VER AND PSI_REVISION)
     set(PSI_VERSION "${PSI_VER}.${PSI_REVISION}")
     message(STATUS "Psi version: ${PSI_VERSION}")
+    file(WRITE "${BUILD_DIR}/version.txt" ${PSI_VERSION})
 endif()
 message(STATUS "Preparing psi plugins sources...")
 FetchSRC(Plugins ${PLUGINS_URL} "${BUILD_DIR}/plugins")
