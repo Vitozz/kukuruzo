@@ -1,4 +1,5 @@
-﻿[Components]
+﻿;
+[Components]
 Name: "bin64"; Description: "Psi+"; Types: full compact custom; Flags: exclusive
 Name: "bin64w"; Description: "Psi+ WebEngine"; Types: full compact custom; Flags: exclusive
 Name: "common"; Description: "Psi+ common files"; Types: full custom compact; Flags: fixed
@@ -106,10 +107,10 @@ Name: "ukrainian"; MessagesFile: "compiler:Languages\Ukrainian.isl"
 #define MyAppExeName "psi-plus.exe"
 #define WorkDir "C:\build\Installer"
 #define ResDir "C:\build\resources"
-#define PsiPSrcDir "C:\build\psi-plus-snapshots"
-#define AppVer GetFileVersion("C:\build\Installer\bin64\psi-plus.exe")
+#define PsiPSrcDir "C:\build\psi"
+#define AppVer GetFileVersion("C:\build\Installer\psi-plus.exe")
 #define CurrYear GetDateTimeString('yyyy', '', '')
-#define PluginsPrefix "plugins64"
+#define PluginsPrefix "plugins"
 AppName=Psi+
 AppVersion={#AppVer}-x64
 AppCopyright=© 2008-{#CurrYear} Psi+ Project
@@ -125,11 +126,11 @@ AppPublisher=Psi+ Project
 AppPublisherURL=https://psi-plus.com/
 LicenseFile={#PsiPSrcDir}\COPYING
 SetupIconFile={#PsiPSrcDir}\win32\app-plus.ico
-OutputDir={#WorkDir}
+OutputDir={#WorkDir}\out
 OutputBaseFilename=psi-plus-{#AppVer}-x64-setup
 Compression=lzma2/ultra64
 InternalCompressLevel=ultra64
-DefaultDirName={pf}\Psi-plus
+DefaultDirName={userpf}\Psi-plus
 ArchitecturesAllowed=x64 ia64
 UninstallDisplayName=Psi+ {#AppVer}
 DefaultGroupName=Psi+ (x64)
@@ -137,15 +138,16 @@ AppSupportURL=https://github.com/psi-plus/main/issues
 AppUpdatesURL=https://sourceforge.net/projects/psiplus/files/Windows/Personal-Builds/KukuRuzo/
 UninstallDisplayIcon={app}\{#MyAppExeName}
 ArchitecturesInstallIn64BitMode=x64 ia64
-MinVersion=0,6.1
+MinVersion=0,6.1sp1
 DisableProgramGroupPage=auto
-PrivilegesRequired=poweruser
+PrivilegesRequired=none
 UsePreviousGroup=False
 AllowNoIcons=True
 DisableWelcomePage=False
 ShowTasksTreeLines=True
 WizardStyle=modern
 SetupLogging=True
+;SignTool=MsSign
 ;more consts
 #define SetupTypeReg "Inno Setup: Setup Type"
 #define SelectedComponentsReg "Inno Setup: Selected Components"
@@ -160,14 +162,14 @@ Source: "{#PsiPSrcDir}\iconsets\roster\*.jisp"; DestDir: "{app}\iconsets\roster"
 Source: "{#PsiPSrcDir}\sound\*"; DestDir: "{app}\sound"; Flags: ignoreversion recursesubdirs skipifsourcedoesntexist; Components: common
 ;Source: "{#PsiPSrcDir}\skins\*"; DestDir: "{app}\skins"; Flags: ignoreversion recursesubdirs skipifsourcedoesntexist; Components: common
 Source: "{#ResDir}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs skipifsourcedoesntexist; Components: common; Excludes: "iconsets, *skins\mac, sounds"
-Source: "{#PsiPSrcDir}\client_icons.txt"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs skipifsourcedoesntexist; Components: common
+Source: "{#WorkDir}\client_icons.txt"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs skipifsourcedoesntexist; Components: common
 Source: "{#PsiPSrcDir}\CHANGELOG"; DestDir: "{app}"; DestName: "CHANGELOG.TXT"; Flags: ignoreversion skipifsourcedoesntexist; Components: common
-Source: "{#WorkDir}\translations64\*"; DestDir: "{app}\translations"; Flags: ignoreversion recursesubdirs; Components: common
+Source: "{#WorkDir}\translations\*"; DestDir: "{app}\translations"; Flags: ignoreversion recursesubdirs; Components: common
 Source: "{#WorkDir}\lib64\*"; DestDir: "{app}"; Flags: ignoreversion createallsubdirs recursesubdirs; Components: common
 Source: "{#WorkDir}\psimedia\*"; DestDir: "{app}"; Flags: ignoreversion createallsubdirs recursesubdirs; Components: plugins\mediaplugin
 Source: "{#WorkDir}\webengine64\*"; DestDir: "{app}"; Flags: ignoreversion createallsubdirs recursesubdirs; Components: bin64w
-Source: "{#WorkDir}\bin64\psi-plus.exe"; DestDir: "{app}"; Flags: ignoreversion; Components: bin64
-Source: "{#WorkDir}\bin64\psi-plus-webengine.exe"; DestDir: "{app}"; Flags: ignoreversion; Components: bin64w
+Source: "{#WorkDir}\psi-plus.exe"; DestDir: "{app}"; Flags: ignoreversion; Components: bin64
+Source: "{#WorkDir}\psi-plus-webengine.exe"; DestDir: "{app}"; Flags: ignoreversion; Components: bin64w
 Source: "{#PsiPSrcDir}\COPYING"; DestDir: "{app}"; Flags: ignoreversion skipifsourcedoesntexist; Components: common
 Source: "common\README.txt"; DestDir: "{app}"; Flags: ignoreversion; Components: common
 ;Dicts
@@ -316,11 +318,12 @@ Source: "{#PluginsPrefix}\storagenotesplugin.dll"; DestDir: "{app}\plugins"; Fla
 Source: "{#PluginsPrefix}\translateplugin.dll"; DestDir: "{app}\plugins"; Flags: ignoreversion; Components: plugins\translateplugin
 Source: "{#PluginsPrefix}\videostatusplugin.dll"; DestDir: "{app}\plugins"; Flags: ignoreversion; Components: plugins\videostatusplugin
 Source: "{#PluginsPrefix}\watcherplugin.dll"; DestDir: "{app}\plugins"; Flags: ignoreversion; Components: plugins\watcherplugin
-Source: "{#WorkDir}\vcredist\vc_redist.x64.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall; Components: common
+
+Source: "{tmp}\vc_redist.x64.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall skipifsourcedoesntexist external; Components: common
 
 [Run]
 #define VCmsg "Installing Microsoft Visual C++ Redistributable...."
-Filename: "{tmp}\vc_redist.x64.exe"; StatusMsg: "{#VCmsg}"; Check: not VCinstalled
+Filename: "{tmp}\vc_redist.x64.exe"; Flags: postinstall skipifdoesntexist; StatusMsg: "{#VCmsg}"; Tasks: downloadvcred; Check: not VCinstalled
 Filename: "{app}\psi-plus.exe"; WorkingDir: "{app}"; Flags: postinstall nowait skipifsilent; Components: bin64
 Filename: "{app}\psi-plus-webengine.exe"; WorkingDir: "{app}"; Flags: nowait postinstall skipifsilent; Components: bin64w
 
@@ -339,6 +342,7 @@ UseRelativePaths=True
 Name: "desktopitems_normal"; Description: "{cm:InstallDS}"; Components: common
 Name: "uninstallitems"; Description: "{cm:InstallUN}"; Flags: unchecked; Components: common
 Name: "createregentry"; Description: "{cm:CreateRE}"; Components: common
+Name: "downloadvcred"; Description: "Download VCRedist_x64 2015-2022 (Needed to run psi-plus)"; Components: common; Check: not VCinstalled
 
 [CustomMessages]
 english.InstallDI=Desktop Icons:
@@ -396,12 +400,24 @@ russian.WelcomeLabel2=Это установит [name/ver] на ваш комп�
 ukrainian.WelcomeLabel2=Це встановить [name/ver] на ваш комп'ютер.%n%nПеред продовженням рекомендовано закрити всі інші програми.%n%УВАГА! Починаючи з версії 1.5.1594, інсталятор не містить пакетів іконок для зменшення розміру. Будь ласка, скористайтесь Content Downloader плагіном, щоб встановити необхідні іконки
 
 [Code]
-
 function InitializeUninstall(): Boolean;
   var ErrorCode: Integer;
+  SelectedComponents: string;
+  vCurID      :String;
 begin
-  ShellExec('open','taskkill.exe','/f /im {#MyAppExeName}','',SW_HIDE,ewNoWait,ErrorCode);
-  ShellExec('open','tskill.exe',' {#MyAppName}','',SW_HIDE,ewNoWait,ErrorCode);
+  vCurID:= '{#SetupSetting("AppId")}';
+  vCurID:= Copy(vCurID, 2, Length(vCurID) - 1);
+  RegQueryStringValue(HKEY_LOCAL_MACHINE,
+    'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\' + vCurID + '_is1',
+    ExpandConstant('{#SelectedComponentsReg}'), SelectedComponents);
+  if Pos('bin64', SelectedComponents) > 0 then begin
+    ShellExec('open','taskkill.exe','/f /im psi-plus.exe','',SW_HIDE,ewNoWait,ErrorCode);
+    ShellExec('open','tskill.exe',' {#MyAppName}','',SW_HIDE,ewNoWait,ErrorCode);
+  end
+  else if Pos('bin64w', SelectedComponents) > 0 then begin
+    ShellExec('open','taskkill.exe','/f /im psi-plus-webengine.exe','',SW_HIDE,ewNoWait,ErrorCode);
+    ShellExec('open','tskill.exe',' {#MyAppName}','',SW_HIDE,ewNoWait,ErrorCode);
+  end;
   result := True;
 end;
 
@@ -459,19 +475,17 @@ begin
     RegQueryStringValue(HKEY_LOCAL_MACHINE,
       'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\' + vCurID + '_is1',
       'DisplayVersion', oldVersion);
+
       if MsgBox(ExpandConstant('{cm:vPart1}') + ' ' + oldVersion + ' ' + ExpandConstant('{cm:vPart2}') + vCurAppName + ExpandConstant('{cm:vPart3}') + ' ' + oldVersion + ' ' + ExpandConstant('{cm:vPart4}'),
         mbConfirmation, MB_YESNO) = IDNO then
       begin
         Result := False;
       end
-      else
-        begin
-          if (InitializeUninstall() = true) then
-          begin
+      else if (InitializeUninstall() = true) then begin
             RegQueryStringValue(HKEY_LOCAL_MACHINE,
               'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\' + vCurID + '_is1',
               'UninstallString', uninstaller);
-            ShellExec('runas', uninstaller, '/SILENT', '', SW_HIDE, ewWaitUntilTerminated, ErrorCode);
+            ShellExec('runas', uninstaller, '/SILENT /NORESTART /SUPPRESSMSGBOXES', '', SW_HIDE, ewWaitUntilTerminated, ErrorCode);
             //Restore setup config
             RegWriteStringValue(HKEY_LOCAL_MACHINE, 'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\' + vCurID + '_is1', ExpandConstant('{#SetupTypeReg}'), SetupType);
             RegWriteStringValue(HKEY_LOCAL_MACHINE, 'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\' + vCurID + '_is1', ExpandConstant('{#SelectedComponentsReg}'), SelectedComponents);
@@ -481,13 +495,62 @@ begin
             RegWriteDWordValue(HKEY_LOCAL_MACHINE, 'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\' + vCurID + '_is1', ExpandConstant('{#NoIconsDWReg}'), NoIconsDW);
             //
             Result := True;
-          end;
         end; 
   end
   else
   begin
     Result := True;
   end;
+end;
+
+var
+  DownloadPage: TDownloadWizardPage;
+
+function OnDownloadProgress(const Url, FileName: String; const Progress, ProgressMax: Int64): Boolean;
+begin
+  if Progress = ProgressMax then
+    Log(Format('Successfully downloaded file to {tmp}: %s', [FileName]));
+  Result := True;
+end;
+
+procedure InitializeWizard;
+begin
+  DownloadPage := CreateDownloadPage(SetupMessage(msgWizardPreparing), SetupMessage(msgPreparingDesc), @OnDownloadProgress);
+end;
+
+function NextButtonClick(CurPageID: Integer): Boolean;
+var 
+  doDownload: Boolean;
+  vCurID      :String;
+begin
+  if CurPageID = wpLicense then begin
+    vCurID:= '{#SetupSetting("AppId")}';
+    vCurID:= Copy(vCurID, 2, Length(vCurID) - 1);
+    RegDeleteKeyIncludingSubkeys(HKEY_LOCAL_MACHINE, 'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\' + vCurID + '_is1');
+    Result := True;
+  end
+  else if CurPageID = wpSelectTasks then begin
+    DownloadPage.Clear;
+    if WizardIsTaskSelected('downloadvcred') then begin
+      doDownload := True;
+      DownloadPage.Add('https://aka.ms/vs/17/release/vc_redist.x64.exe', 'vc_redist.x64.exe', '');
+    end;
+    if doDownload then begin
+      DownloadPage.Show;
+      try
+        try
+          DownloadPage.Download;
+          Result := True;
+        except
+          SuppressibleMsgBox(AddPeriod(GetExceptionMessage), mbCriticalError, MB_OK, IDOK);
+          Result := False;
+        end;
+      finally
+        DownloadPage.Hide;
+      end;
+    end;
+  end;
+  Result := True;
 end;
 
 function VCinstalled: Boolean;
@@ -509,7 +572,12 @@ function VCinstalled: Boolean;
             Log('VC 2019 Redist Major is: ' + IntToStr(major) + ' Minor is: ' + IntToStr(minor) + ' Bld is: ' + IntToStr(bld) + ' Rbld is: ' + IntToStr(rbld));
             // Version info was found. Return true if later or equal to our 14.29.30139.0 redistributable
             // Note brackets required because of weird operator precendence
-            Result := (major >= 14) and (minor >= 29) and (bld >= 30153) and (rbld >= 0)
+            if (major >= 14) and (minor >= 29) and (bld >= 30153) and (rbld >= 0) then begin
+              Result := True;
+            end
+            else begin
+              Result := False;
+            end;
         end;
       end;
     end;

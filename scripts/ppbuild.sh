@@ -748,8 +748,7 @@ compile_psi_mxe()
   #echo "Press Enter to continue..." && read tmpvar
   ${cmakecmd} --build . --target all --parallel ${cpu_count} 2>>${buildlog} || die "${red}There were errors. Open ${buildlog} to see${nocolor}"
   if [ ${devm} -eq 1 ]; then
-    ${cmakecmd} --build . --target prepare-bin -- #copy default iconsets skins and themes
-    ${cmakecmd} --build . --target prepare-bin-libs -- #copy dependencies
+    ${cmakecmd} --build . --target prepare-bin --target prepare-bin-libs -- #copy default iconsets skins and themes #copy dependencies
   fi
   if [ -d "${mxe_outd}/$1" ] && [ ${devm} -ne 0 ]; then
     cd ${mxe_outd} && rm -rf $1
