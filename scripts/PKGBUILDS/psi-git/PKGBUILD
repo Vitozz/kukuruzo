@@ -1,7 +1,7 @@
 # $Id$
 
 pkgname=psi-git
-pkgver=1.5.1802.gb22e02a2
+pkgver=1.5.2000.g10ea4509
 pkgrel=1
 pkgdesc="Psi is a free instant messaging application designed for the XMPP network. Fast and lightweight, Psi is fully open-source and compatible with Windows, Linux, and macOS."
 url="https://psi-im.org/"
@@ -21,13 +21,12 @@ pkgver() {
 
 prepare() {
   cd ${srcdir}/psi
-  git submodule init
-  git submodule update
+  git submodule update --init --recursive
   mkdir -p ${srcdir}/build
 }
 
 build() {
-  cmake_flags="-DCMAKE_INSTALL_PREFIX=/usr -DUSE_X11=OFF -DBUNDLED_IRIS_ALL=ON -DUSE_X11=OFF -DCHAT_TYPE=webengine -DINSTALL_PLUGINS_SDK=ON -DQT_DEFAULT_MAJOR_VERSION=6 -DCMAKE_BUILD_TYPE=RelWithDebInfo"
+  cmake_flags="-DCMAKE_INSTALL_PREFIX=/usr -DBUNDLED_IRIS_ALL=ON -DUSE_X11=OFF -DCHAT_TYPE=webengine -DINSTALL_PLUGINS_SDK=ON -DQT_DEFAULT_MAJOR_VERSION=6"
   cd ${srcdir}/build
   cmake ${cmake_flags} -S ${srcdir}/psi "-DVERBOSE_PROGRAM_NAME=ON"
   cmake --build ${srcdir}/build --target all

@@ -1,15 +1,15 @@
 pkgname=qtnote-git
-pkgver=3.1.0.33.g85f30cf
+pkgver=3.2.0.5.g84f9237
 pkgrel=1
 pkgdesc="Note-taking application written with Qt in mind"
 arch=('i686' 'x86_64')
 url="http://ri0n.github.io/QtNote"
 license=('GPL3')
-depends=('qt5-base' 'qt5-tools' 'hunspell')
+depends=('qt6-base' 'qt6-tools' 'hunspell')
 makedepends=('git' 'cmake')
 optdepends=('kglobalaccel' 'kwindowsystem' 'knotifications')
 conflicts=(qtnote)
-source=("$pkgname"::git+https://github.com/Ri0n/QtNote.git)
+source=("$pkgname"::"git+https://github.com/Ri0n/QtNote.git")
 sha256sums=('SKIP')
 
 pkgver() {
@@ -26,7 +26,7 @@ prepare() {
 
 build() {
   # BUILD HERE
-  cmake_flags="-DCMAKE_INSTALL_PREFIX=/usr"
+  cmake_flags="-DCMAKE_INSTALL_PREFIX=/usr -DQT_DEFAULT_MAJOR_VERSION=6"
   mkdir -p $srcdir/$pkgname/build && cd $srcdir/$pkgname/build
   cmake ${cmake_flags} ..
   cmake --build . --target all

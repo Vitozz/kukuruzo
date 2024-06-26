@@ -2,13 +2,16 @@ cmake_minimum_required (VERSION 3.10.0)
 
 set(PSI_URL_PREFIX "https://github.com/psi-im")
 set(PSI_URL "${PSI_URL_PREFIX}/psi.git")
-set(PLUGINS_URL "${PSI_URL_PREFIX}/plugins")
+set(PLUGINS_URL "${PSI_URL_PREFIX}/plugins.git")
 set(TRANSLATIONS_URL "${PSI_URL_PREFIX}/psi-l10n.git")
 set(PSIMEDIA_URL "${PSI_URL_PREFIX}/psimedia.git")
 set(BUILD_DIR "${CMAKE_CURRENT_BINARY_DIR}/build" CACHE STRING "Path to build dir")
-set(PSI_SRC_DIR "${BUILD_DIR}/psi-build-src")
 
 find_package(Git REQUIRED)
+
+get_filename_component(ABS_BUILD_DIR "${BUILD_DIR}" ABSOLUTE)
+message(STATUS "Build dir: ${ABS_BUILD_DIR}")
+set(PSI_SRC_DIR "${ABS_BUILD_DIR}/psi-build-src")
 
 message(STATUS "CURRENT DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}")
 
@@ -18,12 +21,25 @@ if(EXISTS "${PSI_SRC_DIR}")
     file(MAKE_DIRECTORY ${PSI_SRC_DIR})
 endif()
 
-if(NOT EXISTS "${BUILD_DIR}")
-    message(STATUS "Creating directory: ${BUILD_DIR}")
-    file(MAKE_DIRECTORY ${BUILD_DIR})
+if(NOT EXISTS "${ABS_BUILD_DIR}")
+    message(STATUS "Creating directory: ${ABS_BUILD_DIR}")
+    file(MAKE_DIRECTORY ${ABS_BUILD_DIR})
 endif()
 
-macro(FetchSRC _NAME _URL _OUTPATH)
+function(SubmodulesExists _PATH _OUTPUT)
+    execute_process(
+        COMMAND ${GIT_EXECUTABLE} submodule status --recursive
+        WORKING_DIRECTORY ${_PATH}
+        OUTPUT_VARIABLE _HAS_SUBMODULES
+    )
+    if(NOT "${_HAS_SUBMODULES}" STREQUAL "")
+        set(${_OUTPUT} ON PARENT_SCOPE)
+    else()
+        set(${_OUTPUT} OFF PARENT_SCOPE)
+    endif()
+endfunction()
+
+function(FetchSRC _NAME _URL _OUTPATH)
     if(EXISTS "${_OUTPATH}")
         message(STATUS "Cleaning existing ${_NAME} git sources...")
         execute_process(
@@ -44,77 +60,103 @@ macro(FetchSRC _NAME _URL _OUTPATH)
         message(STATUS "Cloning ${_NAME} git sources...")
         execute_process(
             COMMAND ${GIT_EXECUTABLE} clone ${_URL} ${_OUTPATH}
-            WORKING_DIRECTORY ${BUILD_DIR}
+            WORKING_DIRECTORY ${ABS_BUILD_DIR}
         )
-        message(STATUS "Cloning ${_NAME} git submodules...")
-        execute_process(
-            COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive
-            WORKING_DIRECTORY ${_OUTPATH}
-        )
+        SubmodulesExists("${_OUTPATH}" HAS_SUBMODULES)
+        if(HAS_SUBMODULES)
+            message(STATUS "Cloning ${_NAME} git submodules...")
+            execute_process(
+                COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive
+                WORKING_DIRECTORY ${_OUTPATH}
+            )
+        endif()
     endif()
-endmacro()
-macro(Copy_SRC _INPUT_PATH _OUTPUT_PATH)
+endfunction()
+
+function(Copy_SRC _INPUT_PATH _OUTPUT_PATH)
     execute_process(
         COMMAND ${CMAKE_COMMAND} -E copy_directory ${_INPUT_PATH} ${_OUTPUT_PATH}
-        WORKING_DIRECTORY ${BUILD_DIR}
+        WORKING_DIRECTORY ${ABS_BUILD_DIR}
     )
     message(STATUS "Copy ${_INPUT_PATH} to  ${_OUTPUT_PATH}")
-endmacro()
-macro(Prepare_SRC _INPUT_PATH _SRC_PATH _TYPE)
+endfunction()
+
+function(Prepare_SRC _INPUT_PATH _SRC_PATH)
+    message(STATUS "Copy ${_SRC_PATH} to  ${_INPUT_PATH}")
     execute_process(
         COMMAND ${GIT_EXECUTABLE} checkout-index -a -f --prefix=${_INPUT_PATH}/
         WORKING_DIRECTORY ${_SRC_PATH}
     )
-    if("${_TYPE}" STREQUAL "main")
+    SubmodulesExists("${_SRC_PATH}" HAS_SUBMODULES)
+    if(HAS_SUBMODULES)
+        message(STATUS "Processing submodules...")
         execute_process(
             COMMAND ${GIT_EXECUTABLE} submodule foreach --recursive "${GIT_EXECUTABLE} checkout-index -a -f --prefix=${_INPUT_PATH}/$displaypath/"
             WORKING_DIRECTORY ${_SRC_PATH}
         )
     endif()
-    message(STATUS "Copy ${_SRC_PATH} to  ${_INPUT_PATH}")
-endmacro()
-#GIT_EXECUTABLE
-message(STATUS "Preparing psi sources...")
-FetchSRC(Psi ${PSI_URL} "${BUILD_DIR}/psi")
-set(PSI_TAG "")
-execute_process( 
-    COMMAND ${GIT_EXECUTABLE} describe --tags
-    WORKING_DIRECTORY "${BUILD_DIR}/psi"
-    OUTPUT_VARIABLE PSI_TAG
-)
-string(REGEX MATCH "([0-9].[0-9])-.*" _PSI_VER ${PSI_TAG})
-if(CMAKE_MATCH_1)
-    set(PSI_VER ${CMAKE_MATCH_1})
-    execute_process( 
-        COMMAND ${GIT_EXECUTABLE} rev-list --count ${PSI_VER}..HEAD
-        WORKING_DIRECTORY "${BUILD_DIR}/psi"
-        OUTPUT_VARIABLE PSI_REVISION
+endfunction()
+
+function(GetVersion _PATH _OUTPUT)
+    execute_process (
+        COMMAND ${GIT_EXECUTABLE} describe --tags
+        WORKING_DIRECTORY ${_PATH}
+        OUTPUT_VARIABLE PSI_TAG
     )
-else()
-    message(FATAL_ERROR "Can't obtain psi version")
-endif()
-if(PSI_VER AND PSI_REVISION)
-    set(PSI_VERSION "${PSI_VER}.${PSI_REVISION}")
-    message(STATUS "Psi version: ${PSI_VERSION}")
-    file(WRITE "${BUILD_DIR}/version.txt" ${PSI_VERSION})
-endif()
+    string(REGEX MATCH "([0-9].[0-9])-.*" PSI_VER "${PSI_TAG}")
+    if(CMAKE_MATCH_1)
+        set(PSI_VER ${CMAKE_MATCH_1})
+        execute_process(
+            COMMAND ${GIT_EXECUTABLE} rev-list --count ${PSI_VER}..HEAD
+            WORKING_DIRECTORY "${_PATH}"
+            OUTPUT_VARIABLE PSI_REVISION
+        )
+    else()
+        message(FATAL_ERROR "Can't obtain psi version")
+    endif()
+    execute_process( 
+        COMMAND ${GIT_EXECUTABLE} log -n1 --date=short --pretty=format:'%ad'
+        WORKING_DIRECTORY "${_PATH}"
+        OUTPUT_VARIABLE PSI_DATE
+    )
+    execute_process(
+        COMMAND ${GIT_EXECUTABLE} rev-parse --short HEAD
+        WORKING_DIRECTORY ${_PATH}
+        OUTPUT_VARIABLE HASH
+    )
+    set(VER_RESULT "${PSI_VER}.${PSI_REVISION} (${PSI_DATE}, ${HASH})")
+    string(REGEX REPLACE "[']" "" VER_RESULT_TMP "${VER_RESULT}")
+    string(REGEX REPLACE "\n" "" VER_RESULT_FINAL "${VER_RESULT_TMP}")
+    set(${_OUTPUT} "${VER_RESULT_FINAL}" PARENT_SCOPE)
+endfunction()
+
+message(STATUS "Preparing psi sources...")
+FetchSRC(Psi ${PSI_URL} "${ABS_BUILD_DIR}/psi")
 message(STATUS "Preparing psi plugins sources...")
-FetchSRC(Plugins ${PLUGINS_URL} "${BUILD_DIR}/plugins")
-if(EXISTS "${BUILD_DIR}/psi")
-    #Copy_SRC("${BUILD_DIR}/psi" ${PSI_SRC_DIR})
-    Prepare_SRC(${PSI_SRC_DIR} "${BUILD_DIR}/psi" "main")
+FetchSRC(Plugins ${PLUGINS_URL} "${ABS_BUILD_DIR}/plugins")
+message(STATUS "Preparing psi translations sources...")
+FetchSRC(Translations ${TRANSLATIONS_URL} "${ABS_BUILD_DIR}/translations")
+message(STATUS "Preparing psimedia sources...")
+FetchSRC(Psimeida ${PSIMEDIA_URL} "${ABS_BUILD_DIR}/psimedia")
+
+GetVersion("${ABS_BUILD_DIR}/psi" PSI_VERSION)
+message(STATUS "Psi version: ${PSI_VERSION}")
+file(WRITE "${ABS_BUILD_DIR}/version.txt" ${PSI_VERSION})
+
+message(STATUS "Preparing ${PSI_SRC_DIR}...")
+if(EXISTS "${ABS_BUILD_DIR}/psi")
+    Prepare_SRC(${PSI_SRC_DIR} "${ABS_BUILD_DIR}/psi")
+    file(WRITE "${PSI_SRC_DIR}/version" ${PSI_VERSION})
 endif()
-if(EXISTS "${BUILD_DIR}/plugins")
-    #Copy_SRC("${BUILD_DIR}/plugins" "${PSI_SRC_DIR}/plugins")
-    Prepare_SRC("${PSI_SRC_DIR}/plugins" "${BUILD_DIR}/plugins" "plugins")
+
+if(EXISTS "${ABS_BUILD_DIR}/plugins")
+    Prepare_SRC("${PSI_SRC_DIR}/plugins" "${ABS_BUILD_DIR}/plugins")
 endif()
-FetchSRC(Translations ${TRANSLATIONS_URL} "${BUILD_DIR}/translations")
-if(EXISTS "${BUILD_DIR}/translations")
-    #Copy_SRC("${BUILD_DIR}/translations/translations" "${PSI_SRC_DIR}/translations")
-    Prepare_SRC("${PSI_SRC_DIR}" "${BUILD_DIR}/translations" "trs")
+
+if(EXISTS "${ABS_BUILD_DIR}/translations")
+    Prepare_SRC("${PSI_SRC_DIR}" "${ABS_BUILD_DIR}/translations")
 endif()
-FetchSRC(Psimeida ${PSIMEDIA_URL} "${BUILD_DIR}/psimedia")
-if(EXISTS "${BUILD_DIR}/psimedia")
-    #Copy_SRC("${BUILD_DIR}/psimedia" "${PSI_SRC_DIR}/plugins/generic/psimedia")
-    Prepare_SRC("${PSI_SRC_DIR}/plugins/generic/psimedia" "${BUILD_DIR}/psimedia" "plugins")
+
+if(EXISTS "${ABS_BUILD_DIR}/psimedia")
+    Prepare_SRC("${PSI_SRC_DIR}/plugins/generic/psimedia" "${ABS_BUILD_DIR}/psimedia")
 endif()

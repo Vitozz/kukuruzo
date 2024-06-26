@@ -3,13 +3,13 @@
 # Contributor: Vladimir Kutyavin <vlkut-at-bk-dot-ru>
 
 pkgname=psimedia
-pkgver=1.0.5.157.gfda9f7c
+pkgver=1.0.5.175.g478567e
 pkgrel=1
 pkgdesc="Voice and video chat plugin for Psi-like IM clients.  The implementation is based on GStreamer."
 arch=('i686' 'x86_64')
 license=('GPL2')
 url="http://delta.affinix.com/psimedia/"
-depends=('psi-plus' 'opus' 'gst-plugins-base' 'qt5-base' 'gst-plugins-good')
+depends=('psi' 'opus' 'gst-plugins-base' 'qt6-base' 'gst-plugins-good')
 makedepends=('pkgconfig' 'gdb' 'git')
 source=("git+https://github.com/psi-im/psimedia.git")
 md5sums=('SKIP')
@@ -20,7 +20,7 @@ pkgver() {
 }  
 
 build() {
-  cmake_flags="-DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=RelWithDebInfo -DBUILD_DEMO=OFF -DUSE_PSI=OFF"
+  cmake_flags="-DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=RelWithDebInfo -DBUILD_DEMO=OFF -DUSE_PSI=ON -DQT_DEFAULT_MAJOR_VERSION=6"
   cd psimedia
   mkdir -p build && cd build
   cmake ${cmake_flags} ..
