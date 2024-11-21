@@ -14,7 +14,7 @@ snapshots_url="${psi_plus_prefix}/psi-plus-snapshots.git"
 psimedia_url="${psi_im_prefix}/psimedia.git"
 resources_url="${psi_im_prefix}/resources.git"
 def_prefix="/usr" #префикс для сборки пси+
-defualt_qt_ver=6
+defualt_qt_ver=5
 build_psi_plus=ON
 #
 #DEFAULT OPTIONS/ОПЦИИ ПО УМОЛЧАНИЮ

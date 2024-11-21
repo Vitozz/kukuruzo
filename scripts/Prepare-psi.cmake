@@ -3,7 +3,7 @@ cmake_minimum_required (VERSION 3.10.0)
 set(PSI_URL_PREFIX "https://github.com/psi-im")
 set(PSI_URL "${PSI_URL_PREFIX}/psi.git")
 set(PLUGINS_URL "${PSI_URL_PREFIX}/plugins.git")
-set(TRANSLATIONS_URL "${PSI_URL_PREFIX}/psi-l10n.git")
+set(TRANSLATIONS_URL "https://github.com/psi-plus/psi-plus-l10n.git")
 set(PSIMEDIA_URL "${PSI_URL_PREFIX}/psimedia.git")
 set(BUILD_DIR "${CMAKE_CURRENT_BINARY_DIR}/build" CACHE STRING "Path to build dir")
 
