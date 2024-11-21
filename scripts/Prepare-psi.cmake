@@ -1,3 +1,4 @@
+#https://raw.githubusercontent.com/Vitozz/kukuruzo/master/scripts/Prepare-psi.cmake
 cmake_minimum_required (VERSION 3.10.0)
 
 set(PSI_URL_PREFIX "https://github.com/psi-im")
