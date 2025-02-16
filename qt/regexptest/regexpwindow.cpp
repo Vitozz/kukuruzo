@@ -191,9 +191,13 @@ QVector<QStringList> RegexpWindow::CheckExpression(const QString& regexp, const 
         } else {
             mType_ = QRegularExpression::NormalMatch;
         }
-        QRegularExpressionMatchIterator iter = rx.globalMatch(text, 0, mType_);
+#if QT_VERSION < QT_VERSION_CHECK(6, 5, 0)
+        auto iter = rx.globalMatch(text, 0, mType_);
+#else
+        auto iter = rx.globalMatchView(text, 0, mType_);
+#endif
         while (iter.hasNext()) {
-            QRegularExpressionMatch match = iter.next();
+            auto match = iter.next();
             QStringList matches;
             if (match.hasMatch()) {
                 for (int i = 0; i <= rx.captureCount(); ++i) {

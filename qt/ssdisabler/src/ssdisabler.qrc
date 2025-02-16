@@ -1,7 +1,0 @@
-<RCC>
-    <qresource prefix="/icons">
-        <file>icon.png</file>
-        <file>tray_icon_disabled.png</file>
-        <file>tray_icon_enabled.png</file>
-    </qresource>
-</RCC>
