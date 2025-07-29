@@ -1,0 +1,39 @@
+# Maintainer: Piotr Gorski <lucjan.lucjanov@gmail.com>
+# Contributor: Sergej Pupykin <arch+pub@sergej.pp.ru>
+# Contributor: Alexey D. <lq07829icatm@rambler.ru>
+
+pkgname=psi-l10n-git
+pkgver=1.4.61.gabce689
+pkgrel=1
+pkgdesc="Language packs for Psi+ (Qt 6.x build)"
+arch=('any')
+url="http://psi-im.org"
+license=('GPL2')
+makedepends=('qt6-tools')
+depends=('psi-git')
+conflicts=('psi-l10n' 'psi-l10n-qt6-git')
+provides=("psi-l10n=$pkgver" "psi-l10n-qt6-git=$pkgver")
+options=('!strip' '!zipman')
+source=('git+https://github.com/psi-im/psi-l10n')
+md5sums=('SKIP')
+
+pkgver() {
+	cd psi-l10n
+	
+	git describe --long --tags | sed 's/^v//;s/-/./g'
+}
+
+build() {
+	cd psi-l10n/translations
+	for langfile in *.ts; do
+		/usr/lib/qt6/bin/lrelease "$langfile"
+	done
+}
+
+
+package() {
+	cd psi-l10n/translations
+
+	install -v -dm755 "$pkgdir/usr/share/psi/translations"
+	install -v -m644 *.qm "$pkgdir/usr/share/psi/translations"
+}
