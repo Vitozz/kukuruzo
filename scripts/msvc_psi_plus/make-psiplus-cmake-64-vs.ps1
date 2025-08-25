@@ -10,7 +10,7 @@ Write-Host "PSI-PLUS BUILD SCRIPT`n"
 
 # ====== GLOBAL VARIABLES ======
 # CPU count
-$CPUCOUNT = [int]$env:NUMBER_OF_PROCESSORS + 1
+$CPUCOUNT = (Get-WmiObject -Class Win32_ComputerSystem).NumberOfLogicalProcessors
 # Build with debug information OFF/ON
 $USEDEBUG = "OFF"
 # Production build OFF/ON
@@ -19,6 +19,11 @@ $USEPRODUCTION = "OFF"
 $USEPAUSES = "OFF"
 # Build psimedia ON/OFF
 $BUILD_PSIMEDIA = "ON"
+
+Write-Host "CPUs: $CPUCOUNT"
+Write-Host "DEBUG: $USEDEBUG"
+Write-Host "PAUSES: $USEPAUSES"
+Write-Host ""
 
 # ====== ABSOLUTE PATHS ======
 $BUILDDIR = "C:\build"
