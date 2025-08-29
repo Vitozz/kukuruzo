@@ -19,6 +19,9 @@ $USEPRODUCTION = "OFF"
 $USEPAUSES = "OFF"
 # Build psimedia ON/OFF
 $BUILD_PSIMEDIA = "ON"
+# Use Ninja or JOM
+$USENINJA = "ON"
+
 
 Write-Host "CPUs: $CPUCOUNT"
 Write-Host "DEBUG: $USEDEBUG"
@@ -53,7 +56,8 @@ $GITBIN = $GIT_EXECUTABLE
 $CMAKEDIR = Join-Path $QTPREFIX "Tools\Cmake_64"
 $CMAKEBIN = Join-Path $CMAKEDIR "bin\cmake.exe"
 $JOMPATH = Join-Path $QTPREFIX "Tools\QtCreator\bin\jom"
-$JOM = Join-Path $JOMPATH "jom.exe"
+$NINJAPATH = Join-Path $QTPREFIX "Tools\Ninja"
+#$JOM = Join-Path $JOMPATH "jom.exe"
 
 # ==== DO NOT CHANGE THIS PLEASE ====
 $binTemplate = "win64"
@@ -63,13 +67,22 @@ $qtTemplate = "qt$QTVER"
 # ====== win64 VARIABLES ======
 $ARCHNAME = $binTemplate
 # ====== Qt win64 VARIABLES ======
-$QTDIR = Join-Path $QTPREFIX "6.9.1\msvc2022_64"
+$QTVERSION = "6.9.2"
+$QTARCH = "msvc2022_64"
+$QTDIR = Join-Path $QTPREFIX "$QTVERSION\$QTARCH"
 $DEFAULT_CMAKE_FLAGS = @("-DUSE_CCACHE=ON",
                        "-DUSE_QT6=ON",
                        "-DGIT_EXECUTABLE=`"$GIT_EXECUTABLE`"",
                        "-DCMAKE_INSTALL_PREFIX=`"$PSIDIST\Installer`"",
                        "-DPSI_PLUS=ON")
-$CMAKE_BTYPE = "-G`"NMake Makefiles JOM`""
+if ($USENINJA -eq "ON")
+{
+    $CMAKE_BTYPE = "-G Ninja"
+}
+else
+{
+    $CMAKE_BTYPE = "-G`"NMake Makefiles JOM`""
+}
 $EXITMARK = 0
 
 # Start logging
@@ -176,7 +189,15 @@ function SetCommonVars {
     ) -join ";"
     $env:PATH = $WINVARS
     Invoke-CmdScript $VCVARS amd64
-    $env:PATH += ";$QTDIR;$QTDIR\bin;$JOMPATH;"
+    $env:PATH += ";$QTDIR;$QTDIR\bin;"
+    if ($USENINJA -eq "ON")
+    {
+        $env:PATH += "$NINJAPATH;"
+    }
+    else
+    {
+        $env:PATH += "$JOMPATH;"
+    }
     $env:PATH += "$env:PSI_SDK_MSVC_WIN64;$env:PSI_SDK_MSVC_WIN64\bin;"
     $env:PATH += "$env:PSI_SDK_MSVC_WIN64\lib;$env:PSI_SDK_MSVC_WIN64\include;$CCACHE_BIN_DIR;"
     $env:PATH | Out-File -Append -Encoding UTF8 -FilePath $BUILDLOG
