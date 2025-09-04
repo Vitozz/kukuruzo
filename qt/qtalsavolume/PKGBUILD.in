@@ -43,6 +43,7 @@ build() {
     -DCMAKE_BUILD_TYPE=Release \
     -DUSE_PULSE=@USE_PULSE@ \
     -DUSE_KDE=@USE_KDE@ \
+    -DUSE_QT6=@USE_QT6@ \
     "$srcdir/$_gitname/qt/@CPACK_PACKAGE_NAME@"
 
   make
