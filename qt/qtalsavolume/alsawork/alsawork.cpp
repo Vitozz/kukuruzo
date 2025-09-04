@@ -1,6 +1,6 @@
 /*
  * alsawork.cpp
- * Copyright (C) 2012-2021 Vitaly Tonkacheyev
+ * Copyright (C) 2012-2025 Vitaly Tonkacheyev
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@ static const QString ERROR_TITLE = "Error in alsawork.cpp";
 
 AlsaWork::AlsaWork() : cardList_(QStringList()), totalCards_(0) {
   getCards();
-  for (const QString &name : cardList_) {
+  for (const QString &name : std::as_const(cardList_)) {
     devices_.push_back(
         AlsaDevice::Ptr(new AlsaDevice(cardList_.indexOf(name), name)));
   }

@@ -1,6 +1,6 @@
 /*
  * popupwindow.cpp
- * Copyright (C) 2013-2021 Vitaly Tonkacheyev
+ * Copyright (C) 2013-2025 Vitaly Tonkacheyev
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,32 +65,20 @@ PopupWindow::PopupWindow()
       pulseCardList_(QStringList()), volumeValue_(0), pollingVolume_(0),
       isMuted_(false), isAutorun_(false), isLightStyle_(false), isPulse_(false),
       isPoll_(true), title_(tr("About QtAlsaVolume")),
+      message_(
+          QString(tr("<!DOCTYPE html><html><body>"
+                     "<p><b>Tray Alsa Volume Changer written using Qt</b></p>"
 #ifdef USE_PULSE
-      message_(
-          QString(tr("<!DOCTYPE html><html><body>"
-                     "<p><b>Tray Alsa Volume Changer written using Qt</b></p>"
                      "<p>With Pulseaudio support</p>"
-                     "<p>2013-2021 (c) Vitaly Tonkacheyev <address><a "
-                     "href=\"mailto:thetvg@gmail.com\">&lt;EMail&gt;</a></"
-                     "address></p>"
-                     "<a "
-                     "href=\"http://sites.google.com/site/thesomeprojects/"
-                     "\">Program WebSite</a>"
-                     "<p>version: <b>%1</b></p></body></html>"))
-              .arg(APP_VERSION))
-#else
-      message_(
-          QString(tr("<!DOCTYPE html><html><body>"
-                     "<p><b>Tray Alsa Volume Changer written using Qt</b></p>"
-                     "<p>2013-2021 (c) Vitaly Tonkacheyev <address><a "
-                     "href=\"mailto:thetvg@gmail.com\">&lt;EMail&gt;</a></"
-                     "address></p>"
-                     "<a "
-                     "href=\"http://sites.google.com/site/thesomeprojects/"
-                     "\">Program WebSite</a>"
-                     "<p>version: <b>%1</b></p></body></html>"))
-              .arg(APP_VERSION))
 #endif
+                     "<p>2013-2025 (c) Vitaly Tonkacheyev <address><a "
+                     "href=\"mailto:thetvg@gmail.com\">&lt;EMail&gt;</a></"
+                     "address></p>"
+                     "<a "
+                     "href=\"https://github.com/Vitozz/kukuruzo/tree/master/qt/qtalsavolume"
+                     "\">Program WebSite</a>"
+                     "<p>version: <b>%1</b></p></body></html>"))
+              .arg(APP_VERSION))
 {
   setWindowIcon(QIcon(appLogo));
   // Start of tray icon initialization
@@ -539,9 +527,9 @@ void PopupWindow::createDesktopFile() const {
 void PopupWindow::readDesktopFile() {
   QFile desktop(fName);
   if (desktop.open(QIODevice::ReadOnly)) {
-    auto regexp = QRegularExpression(R"(\bhidden\s*=\s*false)", QRegularExpression::CaseInsensitiveOption);
-    settingsDialog_->setAutorun(
-        QString(desktop.readAll()).contains(regexp));
+    auto regexp = QRegularExpression(R"(\bhidden\s*=\s*false)",
+                                     QRegularExpression::CaseInsensitiveOption);
+    settingsDialog_->setAutorun(QString(desktop.readAll()).contains(regexp));
   }
 }
 

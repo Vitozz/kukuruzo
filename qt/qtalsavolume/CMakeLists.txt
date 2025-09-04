@@ -1,4 +1,4 @@
-cmake_minimum_required( VERSION 3.5.0 )
+cmake_minimum_required( VERSION 3.10.0 )
 project(qtalsavolume LANGUAGES CXX)
 if ( NOT CMAKE_VERSION VERSION_LESS 3.10 )
     cmake_policy(SET CMP0071 NEW)
@@ -94,21 +94,44 @@ if( UNIX AND NOT (APPLE OR CYGWIN) )
     if( BUILD_TRANSLATIONS )
         find_qt_package(LinguistTools REQUIRED)
         add_qt_translation(TRS "${qtalsavolume_TRS}")
+        #update translations with: make lupdate
+        add_custom_target(lupdate)
+        foreach(_LANG ${qtalsavolume_TRS})
+            get_filename_component(_SHORT_LANG ${_LANG} NAME_WE)
+            string(REPLACE "@" "_" _SHORT_LANG ${_SHORT_LANG})
+            add_custom_command(TARGET lupdate
+                PRE_BUILD
+                COMMAND ${QT_LUPDATE_EXECUTABLE}
+                ARGS -no-obsolete -recursive ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/alsawork ${PROJECT_SOURCE_DIR}/gui ${PROJECT_SOURCE_DIR}/pulsework -ts ${_LANG}
+                WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/languages"
+                VERBATIM
+            )
+        endforeach()
     endif()
     wrap_qt_ui( UIS ${UI_FILES} )
     add_qt_library(DEPLIBS Widgets)
 
     if( USE_KDE )
-        add_definitions( -DKDE_5 -DHAVE_KDE )
-        find_package( KF5Notifications REQUIRED )
-        find_package( Qt5 COMPONENTS DBus REQUIRED )
-        if( KF5Notifications_FOUND )
-            message(STATUS "Found KF5::Notifications: (found version \"${KF5Notifications_VERSION}\")")
+        add_definitions( -DHAVE_KDE )
+        if(USE_QT6)
+            find_package(KF6StatusNotifierItem REQUIRED)
+            if( KF6StatusNotifierItem_FOUND )
+                message(STATUS "Found KF6::StatusNotifierItem: (found version \"${KF6StatusNotifierItem_VERSION}\")")
+            endif()
+            list(APPEND DEPLIBS
+                KF6::StatusNotifierItem
+            )
+        else()
+            find_package( KF5Notifications REQUIRED )
+            if( KF5Notifications_FOUND )
+                message(STATUS "Found KF5::Notifications: (found version \"${KF5Notifications_VERSION}\")")
+            endif()
+            list(APPEND DEPLIBS
+                KF5::Notifications
+            )
         endif()
-        list(APPEND DEPLIBS
-            KF5::Notifications
-            Qt5::DBus
-        )
+        find_qt_package( DBus REQUIRED )
+        add_qt_library(DEPLIBS DBus)
     endif()
     add_executable( ${PROJECT_NAME} ${CPP_FILES} ${UIS} ${RSCS} ${TRS} ${MOCS} "defines.h")
     target_link_libraries(

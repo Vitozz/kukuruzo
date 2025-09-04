@@ -1,6 +1,6 @@
 /*
  * trayicon.h
- * Copyright (C) 2015-2021 Vitaly Tonkacheyev
+ * Copyright (C) 2015-2025 Vitaly Tonkacheyev
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,10 +22,11 @@
 
 #include "../defines.h"
 
-#if defined(KDE_5)
+#if defined(HAVE_KDE)
 #include <KStatusNotifierItem>
-#elif defined(KDE_4)
+#if defined(KDE_4)
 #include <kstatusnotifieritem.h>
+#endif
 #endif
 #include <QEvent>
 #include <QMenu>

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014-2021 Vitaly Tonkacheyev <thetvg@gmail.com>
+ * Copyright (C) 2014-2025 Vitaly Tonkacheyev <thetvg@gmail.com>
  *
  * Big thanks to Clément Démoulins <clement@archivel.fr>
  *
@@ -20,9 +20,9 @@
 #ifndef PULSEDEVICE_H
 #define PULSEDEVICE_H
 
-#include "pulse/pulseaudio.h"
 #include <QSharedPointer>
 #include <QString>
+#include <pulse/pulseaudio.h>
 
 enum device_type { SOURCE, SINK };
 

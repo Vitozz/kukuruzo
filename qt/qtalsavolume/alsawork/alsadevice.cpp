@@ -1,6 +1,6 @@
 /*
  * alsadevice.cpp
- * Copyright (C) 2014-2021 Vitaly Tonkacheyev
+ * Copyright (C) 2014-2025 Vitaly Tonkacheyev
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,7 +17,6 @@
  *
  */
 #include "alsadevice.h"
-#include "qmath.h"
 #include <QMessageBox>
 #ifdef ISDEBUG
 #include <QDebug>
@@ -110,12 +109,12 @@ void AlsaDevice::initMixerList() {
     mixers_.clear();
   }
   if (isplay) {
-    for (const QString &mixer : volumeMixers_) {
+    for (const QString &mixer : std::as_const(volumeMixers_)) {
       mixers_ << mixer;
     }
   }
   if (isrec && !mixers_.isEmpty()) {
-    for (const QString &mixer : captureMixers_) {
+    for (const QString &mixer : std::as_const(captureMixers_)) {
       mixers_ << mixer;
     }
   }

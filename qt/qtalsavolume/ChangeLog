@@ -1,3 +1,7 @@
+2025-09-05
+v.0.2.8
+  * Added Qt6 and Plasma6 support
+
 2023-08-17
 v.0.2.6
   * Fixed CMake files

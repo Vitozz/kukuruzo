@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014-2021 Vitaly Tonkacheyev <thetvg@gmail.com>
+ * Copyright (C) 2014-2025 Vitaly Tonkacheyev <thetvg@gmail.com>
  *
  * Big thanks to Clément Démoulins <clement@archivel.fr>
  *
@@ -20,7 +20,6 @@
 #ifndef PULSECORE_H
 #define PULSECORE_H
 
-#include "pulse/pulseaudio.h"
 #include "pulsedevice.h"
 #include <QList>
 #include <QPair>

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014-2021 Vitaly Tonkacheyev <thetvg@gmail.com>
+ * Copyright (C) 2014-2025 Vitaly Tonkacheyev <thetvg@gmail.com>
  *
  * Big thanks to Clément Démoulins <clement@archivel.fr>
  *
@@ -18,7 +18,6 @@
  */
 
 #include "pulsecore.h"
-#include "pulse/pulseaudio.h"
 
 #include <QMessageBox>
 #ifdef ISDEBUG
