@@ -20,6 +20,7 @@
 #include "pulsecore.h"
 
 #include <QMessageBox>
+#include <utility>
 #ifdef ISDEBUG
 #include <QDebug>
 #endif

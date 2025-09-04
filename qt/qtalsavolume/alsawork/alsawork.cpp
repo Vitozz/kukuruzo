@@ -21,6 +21,7 @@
 #include "mixerswitches.h"
 #include <QMessageBox>
 #include <QString>
+#include <utility>
 #ifdef ISDEBUG
 #include <QDebug>
 #endif

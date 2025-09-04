@@ -17,10 +17,11 @@
  *
  */
 #include "alsadevice.h"
+#include "qmath.h"
 #include <QMessageBox>
+#include <utility>
 #ifdef ISDEBUG
 #include <QDebug>
-#include <utility>
 #endif
 
 #define ERROR_TITLE "Error in alsadevice.cpp"
