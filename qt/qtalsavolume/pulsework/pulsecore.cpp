@@ -35,7 +35,26 @@ PulseCore::PulseCore(const char *clientName)
   isAvailable_ = true;
   pState = CONNECTING;
 
-  pa_context_set_state_callback(context_, pa_context_notify_cb, this);
+  pa_context_set_state_callback(
+      context_,
+      [](pa_context *context, void *raw) {
+        auto core = static_cast<PulseCore *>(raw);
+        switch (pa_context_get_state(context)) {
+        case PA_CONTEXT_READY:
+          core->pState = CONNECTED;
+          break;
+        case PA_CONTEXT_FAILED:
+          core->pState = ERROR;
+          break;
+        case PA_CONTEXT_UNCONNECTED:
+        case PA_CONTEXT_AUTHORIZING:
+        case PA_CONTEXT_SETTING_NAME:
+        case PA_CONTEXT_CONNECTING:
+        case PA_CONTEXT_TERMINATED:
+          break;
+        }
+      },
+      this);
   pa_context_connect(context_, nullptr, PA_CONTEXT_NOFLAGS, nullptr);
   while (pState == CONNECTING) {
     pa_mainloop_iterate(mainLoop_, 1, &retval_);
@@ -56,24 +75,6 @@ PulseCore::~PulseCore() {
     pa_context_disconnect(context_);
   }
   pa_mainloop_free(mainLoop_);
-}
-
-void PulseCore::pa_context_notify_cb(pa_context *context, void *raw) {
-  auto state = static_cast<PulseCore *>(raw);
-  switch (pa_context_get_state(context)) {
-  case PA_CONTEXT_READY:
-    state->pState = CONNECTED;
-    break;
-  case PA_CONTEXT_FAILED:
-    state->pState = ERROR;
-    break;
-  case PA_CONTEXT_UNCONNECTED:
-  case PA_CONTEXT_AUTHORIZING:
-  case PA_CONTEXT_SETTING_NAME:
-  case PA_CONTEXT_CONNECTING:
-  case PA_CONTEXT_TERMINATED:
-    break;
-  }
 }
 
 void PulseCore::pa_sink_info_cb(pa_context *c, const pa_sink_info *i, int eol,

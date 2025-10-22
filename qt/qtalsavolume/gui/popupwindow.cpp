@@ -75,11 +75,11 @@ PopupWindow::PopupWindow()
                      "href=\"mailto:thetvg@gmail.com\">&lt;EMail&gt;</a></"
                      "address></p>"
                      "<a "
-                     "href=\"https://github.com/Vitozz/kukuruzo/tree/master/qt/qtalsavolume"
+                     "href=\"https://github.com/Vitozz/kukuruzo/tree/master/qt/"
+                     "qtalsavolume"
                      "\">Program WebSite</a>"
                      "<p>version: <b>%1</b></p></body></html>"))
-              .arg(APP_VERSION))
-{
+              .arg(APP_VERSION)) {
   setWindowIcon(QIcon(appLogo));
   // Start of tray icon initialization
   const QString errorHeader(tr("Error"));
