@@ -1,7 +1,6 @@
-# $Id$
-
+#
 pkgname=psi-git
-pkgver=1.5.2000.g10ea4509
+pkgver=1.5.2127.g9b6f0dfa
 pkgrel=1
 pkgdesc="Psi is a free instant messaging application designed for the XMPP network. Fast and lightweight, Psi is fully open-source and compatible with Windows, Linux, and macOS."
 url="https://psi-im.org/"
