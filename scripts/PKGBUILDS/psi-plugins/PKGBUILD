@@ -6,13 +6,13 @@ pkgdesc="Additional plugins for Psi (built with Qt 6.x)"
 arch=('x86_64')
 url="http://psi-im.org/"
 license=('GPL2')
-depends=('qt6-base' 'qt6-multimedia' 'psi-git' 'qt6-webengine')
+depends=('qt6-base' 'qt6-multimedia' 'psi-git')
 conflicts=('psi-plugins' 'psi-plugins-qt6-git')
 provides=("psi-plugins=$pkgver" "psi-plugins-qt6-git=$pkgver")
-makedepends=('libotr' 'tidy' 'openssl')
+makedepends=('libotr' 'tidy' 'openssl' 'libomemo-c')
 optdepends=('libotr: for OTR plugin'
             'tidy: for OTR plugin'
-            'libsignal-protocol-c: for OMEMO plugin')
+            'libomemo-c: for OMEMO plugin')
 source=('git+https://github.com/psi-im/plugins')
 md5sums=('SKIP')
 
@@ -22,7 +22,8 @@ pkgver() {
 }
 
 build() {
-  cmake_flags="-DCMAKE_INSTALL_PREFIX=/usr -DBUILD_DEV_PLUGINS=ON -DBUNDLED_OMEMO_C_ALL=ON -DUSE_X11=OFF -DCMAKE_BUILD_TYPE=RelWithDebInfo -DQT_DEFAULT_MAJOR_VERSION=6"
+  cmake_flags="-DCMAKE_INSTALL_PREFIX=/usr -DUSE_X11=OFF -DCMAKE_BUILD_TYPE=RelWithDebInfo -DQT_DEFAULT_MAJOR_VERSION=6"
+
   cd plugins
   mkdir -p build && cd build
   cmake ${cmake_flags}  ..
