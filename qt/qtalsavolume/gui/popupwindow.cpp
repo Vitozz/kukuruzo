@@ -34,7 +34,8 @@
 #include <QDebug>
 #endif
 
-static const QLatin1String appLogo(":/images/Logo");
+static const QLatin1String appLogoLight(":/images/Logo_light");
+static const QLatin1String appLogoDark(":/images/Logo_dark");
 static const QLatin1String autoStartPath(".config/autostart");
 static const QString fName(QDir::home().absolutePath() +
                            "/.config/autostart/qtalsavolume.desktop");
@@ -80,7 +81,6 @@ PopupWindow::PopupWindow()
                      "\">Program WebSite</a>"
                      "<p>version: <b>%1</b></p></body></html>"))
               .arg(APP_VERSION)) {
-  setWindowIcon(QIcon(appLogo));
   // Start of tray icon initialization
   const QString errorHeader(tr("Error"));
   const QString systrayMissing(tr("System tray is not available"));
@@ -108,6 +108,7 @@ PopupWindow::PopupWindow()
   isLightStyle_ = setts_.value(ICOSTYLE, true).toBool();
   isAutorun_ = setts_.value(ISAUTO, false).toBool();
   isPoll_ = setts_.value(ISPOLL, true).toBool();
+  setWindowIcon(QIcon(isLightStyle_ ? appLogoLight : appLogoDark));
 #ifdef USE_PULSE
   const QString pulseIsMissing(
       tr("Can't start PulseAudio. Using Alsa by default"));
@@ -162,6 +163,8 @@ PopupWindow::PopupWindow()
     settingsDialog_->hideAlsaElements(isPulse_);
   }
 #endif
+  settingsDialog_->setWindowIcon(
+      QIcon(isLightStyle_ ? appLogoLight : appLogoDark));
   settingsDialog_->setIconStyle(isLightStyle_);
   settingsDialog_
       ->connectSignals(); // connecting settingsDialog_ internal signals
@@ -219,7 +222,7 @@ PopupWindow::~PopupWindow() {
 
 void PopupWindow::onAbout() {
   QMessageBox about;
-  about.setIconPixmap(QPixmap(appLogo));
+  about.setIconPixmap(QPixmap(isLightStyle_ ? appLogoLight : appLogoDark));
   about.setWindowIcon(windowIcon());
   about.setText(message_);
   about.setWindowTitle(title_);

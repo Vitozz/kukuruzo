@@ -53,7 +53,7 @@ SettingsDialog::SettingsDialog(QWidget *parent)
   ui->verticalLayout_3->addWidget(l3_);
   ui->verticalLayout_3->addWidget(enums_);
   ui->tabWidget->setCurrentIndex(0);
-  setWindowIcon(QIcon(":/images/Logo"));
+  // setWindowIcon(QIcon(":/images/Logo_dark"));
 }
 
 SettingsDialog::~SettingsDialog() {
@@ -230,8 +230,10 @@ void SettingsDialog::onLightStyle(bool toggled) {
 void SettingsDialog::setIconStyle(bool isLight) {
   if (isLight) {
     ui->lightRadio->setChecked(true);
+    setWindowIcon(QIcon(":/images/Logo_light"));
   } else {
     ui->darkRadio->setChecked(true);
+    setWindowIcon(QIcon(":/images/Logo_dark"));
   }
 }
 

@@ -1,6 +1,6 @@
 <RCC>
     <qresource prefix="/images">
-        <file alias="Logo">icons/volume_ico.png</file>
+        <file alias="Logo_dark">icons/volume_ico.png</file>
         <file>icons/light/tb_icon0.png</file>
         <file>icons/light/tb_icon10.png</file>
         <file>icons/light/tb_icon20.png</file>
@@ -23,5 +23,6 @@
         <file>icons/dark/tb_icon80.png</file>
         <file>icons/dark/tb_icon90.png</file>
         <file>icons/dark/tb_icon100.png</file>
+        <file alias="Logo_light">icons/logoicon.png</file>
     </qresource>
 </RCC>
