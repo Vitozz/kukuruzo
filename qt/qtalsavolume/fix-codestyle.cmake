@@ -4,13 +4,14 @@ cmake_minimum_required( VERSION 3.10.0 )
 find_program(CLF_BIN clang-format DOC "Path to clang-format binary")
 if(CLF_BIN)
     #Obtain list of source files
-    file(GLOB_RECURSE SRC_LIST
-        *.c
-        *.cc
-        *.cpp
-        *.hpp
-        *.h
-    )
+    #file(GLOB_RECURSE SRC_LIST
+    #    *.c
+    #    *.cc
+    #    *.cpp
+    #    *.hpp
+    #    *.h
+    #)
+    set(SRC_LIST ${CPP_FILES} ${HEADERS})
     add_custom_target(fix-codestyle
         COMMAND ${CLF_BIN}
         --verbose

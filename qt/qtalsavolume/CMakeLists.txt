@@ -19,7 +19,6 @@ if( UNIX AND NOT (APPLE OR CYGWIN) )
         include(use_cpack.cmake)
     #CPack section end
     endif()
-    include(fix-codestyle.cmake)
 
     find_package( ALSA REQUIRED )
     if( "${CMAKE_BUILD_TYPE}" STREQUAL "Debug" OR ( "${CMAKE_BUILD_TYPE}" STREQUAL "RelWithDebInfo" ) )
@@ -133,6 +132,7 @@ if( UNIX AND NOT (APPLE OR CYGWIN) )
         find_qt_package( DBus REQUIRED )
         add_qt_library(DEPLIBS DBus)
     endif()
+    include(fix-codestyle.cmake)
     add_executable( ${PROJECT_NAME} ${CPP_FILES} ${UIS} ${RSCS} ${TRS} ${MOCS} "defines.h")
     target_link_libraries(
         ${PROJECT_NAME}

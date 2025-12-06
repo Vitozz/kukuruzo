@@ -100,9 +100,7 @@ private:
   QTimer *pollingTimer_;
   SettingsDialog *settingsDialog_;
   QString cardName_;
-  QStringList cardList_;
   QString pulseCardName_;
-  QStringList pulseCardList_;
   int volumeValue_;
   int pollingVolume_;
   bool isMuted_;
