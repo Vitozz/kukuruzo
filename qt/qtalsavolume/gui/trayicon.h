@@ -51,9 +51,11 @@ public:
   void setTrayIcon(const QString &icon);
   void setToolTip(const QString &tooltip);
   void setMute(bool isMuted);
-  bool isAvailable();
   QRect iconGeometery();
   QPoint iconPosition();
+  inline bool available() const {
+    return QSystemTrayIcon::isSystemTrayAvailable();
+  };
 
 signals:
   void activated(ActivationReason reason);

@@ -147,10 +147,6 @@ void TrayIcon::setTrayIcon(const QString &icon) {
 #endif
 }
 
-bool TrayIcon::isAvailable() {
-  return legacyTrayIcon_.isNull() || legacyTrayIcon_->isSystemTrayAvailable();
-}
-
 void TrayIcon::setMute(bool isMuted) { mute_->setChecked(isMuted); }
 
 void TrayIcon::setToolTip(const QString &tooltip) {

@@ -82,11 +82,11 @@ PopupWindow::PopupWindow()
               .arg(APP_VERSION)) {
   // Start of tray icon initialization
   const QString errorHeader(tr("Error"));
-  const QString systrayMissing(tr("System tray is not available"));
-  if (!trayIcon_->isAvailable()) {
-    QMessageBox::critical(this, errorHeader, systrayMissing);
-    onQuit();
-  }
+  // Close application if there is no system tray after 2 minutes
+  QTimer::singleShot(120000, [this]() {
+    if (!trayIcon_->available())
+      onQuit();
+  });
   // Adding QLabel and QSlider to PopupWindow
   volumeSlider_->setRange(0, 100);
   volumeSlider_->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
@@ -114,7 +114,10 @@ PopupWindow::PopupWindow()
   isPulse_ = setts_.value(PULSE, false).toBool();
   if (pulse_->available()) {
     const QString lastSink = setts_.value(LAST_SINK, "").toString();
-    pulseCardName_ = (!lastSink.isEmpty()) ? lastSink : pulse_->defaultSink();
+    pulseCardName_ =
+        (!lastSink.isEmpty() && pulse_->isDeviceAvailable(lastSink))
+            ? lastSink
+            : pulse_->defaultSink();
     pulse_->setCurrentDevice(pulseCardName_);
     deviceIndex_ = pulse_->getCurrentDeviceIndex();
     if (isPulse_) {

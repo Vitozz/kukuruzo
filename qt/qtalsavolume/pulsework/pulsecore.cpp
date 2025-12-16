@@ -346,3 +346,8 @@ PulseDevice::Ptr PulseCore::getDeviceByIndex(int index) {
 int PulseCore::getCurrentDeviceIndex() const {
   return deviceNames_.indexOf(currentDeviceName_);
 }
+
+bool PulseCore::isDeviceAvailable(const QString &name) {
+  updateDevices();
+  return deviceNames_.contains(name, Qt::CaseInsensitive);
+}

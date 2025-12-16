@@ -50,6 +50,11 @@ if( UNIX AND NOT (APPLE OR CYGWIN) )
         gui/settingsdialog.cpp
         gui/trayicon.cpp
     )
+    list(APPEND HEADERS
+        gui/popupwindow.h
+        gui/settingsdialog.h
+        gui/trayicon.h
+    )
     set( UI_FILES
         gui/settingsdialog.ui
     )

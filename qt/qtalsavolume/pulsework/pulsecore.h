@@ -51,6 +51,7 @@ public:
   void setVolume(int value);
   void setMute(bool mute);
   void setCurrentDevice(const QString &name);
+  bool isDeviceAvailable(const QString &name);
   bool available() const;
 
 private:
