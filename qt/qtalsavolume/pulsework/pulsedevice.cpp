@@ -24,46 +24,46 @@
 #endif
 #define ALSA_CARDID_PROPERTY "alsa.card"
 
-static int getCardId(pa_proplist *pl) {
-  const QString cardId(pa_proplist_gets(pl, ALSA_CARDID_PROPERTY));
-  return (!cardId.isNull()) ? cardId.toInt() : 0;
+static int getCardId(pa_proplist *pl)
+{
+    const QString cardId(pa_proplist_gets(pl, ALSA_CARDID_PROPERTY));
+    return (!cardId.isNull()) ? cardId.toInt() : 0;
 }
 
-PulseDevice::PulseDevice()
-    : volume({0, {0}}), index_(0), card_(0), type_(SINK), name_(QString()),
-      description_(QString()), mute_(false) {}
-
-PulseDevice::PulseDevice(const pa_source_info *i)
-    : volume({0, {0}}), index_(int(i->index)), card_(getCardId(i->proplist)),
-      type_(SOURCE), name_(QString(i->name)),
-      description_(QString::fromLocal8Bit(i->description)) {
-  volume.channels = i->volume.channels;
-  int n;
-  for (n = 0; n < volume.channels; ++n) {
-    volume.values[n] = i->volume.values[n];
-  }
-  mute_ = i->mute == 1;
+PulseDevice::PulseDevice() :
+    volume({ 0, { 0 } }), index_(0), card_(0), type_(SINK), name_(QString()), description_(QString()), mute_(false)
+{
 }
 
-PulseDevice::PulseDevice(const pa_sink_info *i)
-    : volume({0, {0}}), index_(int(i->index)), card_(getCardId(i->proplist)),
-      type_(SINK), name_(QString(i->name)),
-      description_(QString::fromLocal8Bit(i->description)) {
-  volume.channels = i->volume.channels;
-  for (quint8 n = 0; n < volume.channels; ++n) {
-    volume.values[n] = i->volume.values[n];
-  }
-  mute_ = i->mute == 1;
+PulseDevice::PulseDevice(const pa_source_info *i) :
+    volume({ 0, { 0 } }), index_(int(i->index)), card_(getCardId(i->proplist)), type_(SOURCE), name_(QString(i->name)),
+    description_(QString::fromLocal8Bit(i->description))
+{
+    volume.channels = i->volume.channels;
+    int n;
+    for (n = 0; n < volume.channels; ++n) {
+        volume.values[n] = i->volume.values[n];
+    }
+    mute_ = i->mute == 1;
 }
 
-int PulseDevice::percent(pa_cvolume &volume_) {
-  return static_cast<int>(round(
-      (static_cast<double>(pa_cvolume_avg(&volume_)) * 100.) / PA_VOLUME_NORM));
+PulseDevice::PulseDevice(const pa_sink_info *i) :
+    volume({ 0, { 0 } }), index_(int(i->index)), card_(getCardId(i->proplist)), type_(SINK), name_(QString(i->name)),
+    description_(QString::fromLocal8Bit(i->description))
+{
+    volume.channels = i->volume.channels;
+    for (quint8 n = 0; n < volume.channels; ++n) {
+        volume.values[n] = i->volume.values[n];
+    }
+    mute_ = i->mute == 1;
 }
 
-double PulseDevice::round(double value) {
-  return (value > 0.0) ? qFloor(value + 0.5) : qCeil(value - 0.5);
+int PulseDevice::percent(pa_cvolume &volume_)
+{
+    return static_cast<int>(round((static_cast<double>(pa_cvolume_avg(&volume_)) * 100.) / PA_VOLUME_NORM));
 }
+
+double PulseDevice::round(double value) { return (value > 0.0) ? qFloor(value + 0.5) : qCeil(value - 0.5); }
 
 int PulseDevice::index() const { return index_; }
 

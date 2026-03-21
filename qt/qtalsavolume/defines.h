@@ -22,7 +22,7 @@
 
 #define APP_NAME "qtalsavolume"
 #define APP_ORG "thesomeprojects"
-#define APP_VERSION "0.2.9"
+#define APP_VERSION "0.3.0"
 
 #define CARD_INDEX "Main/card"
 #define MIXER_NAME "Main/mixer"
@@ -45,14 +45,6 @@ typedef QPair<QString, bool> switcher;
 enum Position { BOTTOM = 0, TOP = 1 };
 
 enum SwitchType { PLAYBACK = 0, CAPTURE = 1, ENUM = 2 };
-enum ActivationReason {
-  RESTORE = 0,
-  ABOUT = 1,
-  SETTINGS = 2,
-  ABOUTQT = 3,
-  WHEELUP = 4,
-  WHEELDOWN = 5,
-  EXIT = 6
-};
+enum ActivationReason { RESTORE = 0, ABOUT = 1, SETTINGS = 2, ABOUTQT = 3, WHEELUP = 4, WHEELDOWN = 5, EXIT = 6 };
 
 #endif // DEFINES_H

@@ -23,52 +23,68 @@
 #include "mixerswitches.h"
 #include <QSharedPointer>
 #include <QStringList>
+#ifdef ISDEBUG
+#include <qdebug.h>
+#endif
+
+struct AlsaMixerDeleter {
+    void operator()(snd_mixer_t *ptr) const
+    {
+        if (ptr) {
+            auto errId = snd_mixer_close(ptr);
+#ifdef ISDEBUG
+            if (errId < 0)
+                qDebug() << QString::fromLocal8Bit(snd_strerror(errId));
+#endif
+        }
+    }
+};
+
+using ScopedMixer = std::unique_ptr<snd_mixer_t, AlsaMixerDeleter>;
 
 class AlsaDevice {
 public:
-  AlsaDevice(int id, QString card);
-  ~AlsaDevice() = default;
-  AlsaDevice(AlsaDevice const &);
-  typedef QSharedPointer<AlsaDevice> Ptr;
-  const QString &name() const;
-  int id() const;
-  const QStringList &mixers() const;
-  MixerSwitches::Ptr switches();
+    AlsaDevice(int id, QString card);
+    ~AlsaDevice() = default;
+    AlsaDevice(AlsaDevice const &);
+    typedef QSharedPointer<AlsaDevice> Ptr;
+    const QString                     &name() const;
+    int                                id() const;
+    const QStringList                 &mixers() const;
+    MixerSwitches::Ptr                 switches();
 
-  bool haveMixers();
-  double getVolume();
-  bool getMute();
-  void setDeviceVolume(double volume);
-  void setCurrentMixer(int id);
+    bool   haveMixers();
+    double getVolume();
+    bool   getMute();
+    void   setDeviceVolume(double volume);
+    void   setCurrentMixer(int id);
 
-  void setSwitch(const QString &mixer, int id, bool enabled) const;
-  void setMute(bool enabled);
-  void updateElements();
-  static QString formatCardName(int id);
-
-private:
-  static snd_mixer_t *getMixerHanlde(int id);
-  static snd_mixer_selem_channel_id_t
-  checkMixerChannels(snd_mixer_elem_t *element);
-  static snd_mixer_elem_t *initMixerElement(snd_mixer_t *handle,
-                                            const char *mixer);
-  static void checkError(int errorIndex);
-  static void checkError(const QString &title, const QString &message);
-  void initMixerList();
-  static double getNormVolume(snd_mixer_elem_t *element);
-  static double getExp10(double value);
-  static bool useLinearDb(long min, long max);
-  static void setNormVolume(snd_mixer_elem_t *element, double volume);
+    void           setSwitch(const QString &mixer, int id, bool enabled) const;
+    void           setMute(bool enabled);
+    void           updateElements();
+    static QString formatCardName(int id);
 
 private:
-  int id_;
-  QString name_;
-  QStringList volumeMixers_;
-  QStringList captureMixers_;
-  QStringList mixers_;
-  MixerSwitches::Ptr switches_;
-  int currentMixerId_;
-  QString currentMixerName_;
+    static ScopedMixer                  getMixerHanlde(int id);
+    static snd_mixer_selem_channel_id_t checkMixerChannels(snd_mixer_elem_t *element);
+    static snd_mixer_elem_t            *initMixerElement(snd_mixer_t *handle, const char *mixer);
+    static void                         checkError(int errorIndex);
+    static void                         checkError(const QString &title, const QString &message);
+    void                                initMixerList();
+    static double                       getNormVolume(snd_mixer_elem_t *element);
+    static double                       getExp10(double value);
+    static bool                         useLinearDb(long min, long max);
+    static void                         setNormVolume(snd_mixer_elem_t *element, double volume);
+
+private:
+    int                id_;
+    QString            name_;
+    QStringList        volumeMixers_;
+    QStringList        captureMixers_;
+    QStringList        mixers_;
+    MixerSwitches::Ptr switches_;
+    int                currentMixerId_;
+    QString            currentMixerName_;
 };
 
 #endif // ALSADEVICE_H

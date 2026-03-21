@@ -26,22 +26,22 @@
 
 class MixerSwitches {
 public:
-  MixerSwitches() = default;
-  MixerSwitches(const MixerSwitches &ms);
-  ~MixerSwitches() = default;
-  typedef QSharedPointer<MixerSwitches> Ptr;
-  void pushBack(SwitchType sType, switcher &item);
-  void clear(SwitchType sType);
-  void clearAll();
-  const QList<switcher> &captureSwitchList() const;
-  const QList<switcher> &playbackSwitchList() const;
-  const QList<switcher> &enumSwitchList() const;
-  bool isEmpty();
+    MixerSwitches() = default;
+    MixerSwitches(const MixerSwitches &ms);
+    ~MixerSwitches() = default;
+    typedef QSharedPointer<MixerSwitches> Ptr;
+    void                                  pushBack(SwitchType sType, switcher &item);
+    void                                  clear(SwitchType sType);
+    void                                  clearAll();
+    const QList<switcher>                &captureSwitchList() const;
+    const QList<switcher>                &playbackSwitchList() const;
+    const QList<switcher>                &enumSwitchList() const;
+    bool                                  isEmpty();
 
 private:
-  QList<switcher> captureSwitchList_;
-  QList<switcher> playbackSwitchList_;
-  QList<switcher> enumSwitchList_;
+    QList<switcher> captureSwitchList_;
+    QList<switcher> playbackSwitchList_;
+    QList<switcher> enumSwitchList_;
 };
 
 #endif // MIXERSWITCHES_H

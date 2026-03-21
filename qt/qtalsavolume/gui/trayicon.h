@@ -43,45 +43,43 @@ typedef QSharedPointer<KStatusNotifierItem> KStatusNotifierItemPtr;
 typedef QSharedPointer<QSystemTrayIcon> QSystemTrayIconPtr;
 
 class TrayIcon : public QObject {
-  Q_OBJECT
+    Q_OBJECT
 
 public:
-  TrayIcon();
-  ~TrayIcon() override;
-  void setTrayIcon(const QString &icon);
-  void setToolTip(const QString &tooltip);
-  void setMute(bool isMuted);
-  QRect iconGeometery();
-  QPoint iconPosition();
-  inline bool available() const {
-    return QSystemTrayIcon::isSystemTrayAvailable();
-  };
+    TrayIcon();
+    ~TrayIcon() override;
+    void        setTrayIcon(const QString &icon);
+    void        setToolTip(const QString &tooltip);
+    void        setMute(bool isMuted);
+    QRect       iconGeometery();
+    QPoint      iconPosition();
+    inline bool available() const { return QSystemTrayIcon::isSystemTrayAvailable(); };
 
 signals:
-  void activated(ActivationReason reason);
-  void muted(bool isMuted);
+    void activated(ActivationReason reason);
+    void muted(bool isMuted);
 
 protected slots:
-  void iconActivated(QSystemTrayIcon::ActivationReason reason);
+    void iconActivated(QSystemTrayIcon::ActivationReason reason);
 
 protected:
-  bool eventFilter(QObject *object, QEvent *event) override;
+    bool eventFilter(QObject *object, QEvent *event) override;
 
 private:
-  QActionPtr restore_;
-  QActionPtr settings_;
-  QActionPtr mute_;
-  QActionPtr about_;
-  QActionPtr aboutQt_;
-  QActionPtr exit_;
-  QMenu *trayMenu_;
-  QString currentIcon_;
-  QRect geometery_;
-  QPoint iconPosition_;
+    QActionPtr restore_;
+    QActionPtr settings_;
+    QActionPtr mute_;
+    QActionPtr about_;
+    QActionPtr aboutQt_;
+    QActionPtr exit_;
+    QMenu     *trayMenu_;
+    QString    currentIcon_;
+    QRect      geometery_;
+    QPoint     iconPosition_;
 #ifdef HAVE_KDE
-  KStatusNotifierItemPtr newTrayIcon_;
+    KStatusNotifierItemPtr newTrayIcon_;
 #endif
-  QSystemTrayIconPtr legacyTrayIcon_;
+    QSystemTrayIconPtr legacyTrayIcon_;
 };
 
 #endif // TRAYICON_H

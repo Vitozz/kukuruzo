@@ -31,34 +31,34 @@ typedef QList<AlsaDevice::Ptr> AlsaDevicePtrList;
 
 class AlsaWork {
 public:
-  AlsaWork();
-  AlsaWork(AlsaWork const &);
-  ~AlsaWork();
-  typedef QSharedPointer<AlsaWork> Ptr;
-  void setCurrentCard(int cardId);
-  void setCurrentMixer(int id);
-  void setAlsaVolume(int volume);
-  int getAlsaVolume();
-  static QString getCardName(int index);
-  const QStringList &getCardsList() const;
-  const QStringList &getVolumeMixers() const;
-  MixerSwitches::Ptr getSwitchList() const;
-  void setSwitch(const QString &mixer, int id, bool enabled);
-  void setMute(bool enabled);
-  bool getMute();
-  bool haveVolumeMixers();
-  bool cardExists(int id) const;
-  int getFirstCardWithMixers() const;
+    AlsaWork();
+    AlsaWork(AlsaWork const &);
+    ~AlsaWork();
+    typedef QSharedPointer<AlsaWork> Ptr;
+    void                             setCurrentCard(int cardId);
+    void                             setCurrentMixer(int id);
+    void                             setAlsaVolume(int volume);
+    int                              getAlsaVolume();
+    static QString                   getCardName(int index);
+    const QStringList               &getCardsList() const;
+    const QStringList               &getVolumeMixers() const;
+    MixerSwitches::Ptr               getSwitchList() const;
+    void                             setSwitch(const QString &mixer, int id, bool enabled);
+    void                             setMute(bool enabled);
+    bool                             getMute();
+    bool                             haveVolumeMixers();
+    bool                             cardExists(int id) const;
+    int                              getFirstCardWithMixers() const;
 
 private:
-  static int getTotalCards();
-  static void checkError(int errorIndex);
-  void getCards();
+    static int  getTotalCards();
+    static void checkError(int errorIndex);
+    void        getCards();
 
 private:
-  QStringList cardList_;
-  int totalCards_;
-  AlsaDevice::Ptr currentAlsaDevice_;
-  AlsaDevicePtrList devices_;
+    QStringList       cardList_;
+    int               totalCards_;
+    AlsaDevice::Ptr   currentAlsaDevice_;
+    AlsaDevicePtrList devices_;
 };
 #endif // ALSAWORK_H
