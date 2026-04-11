@@ -1,0 +1,61 @@
+# Maintainer: alex korobtsov <korobcoff@gmail.com>
+pkgname=qomp-qt6-git
+pkgver=1.5.18
+pkgrel=1
+pkgdesc="Quick(Qt) Online Music Player"
+arch=('i686' 'x86_64')
+url="http://qomp.sourceforge.net/"
+license=('GPL2')
+depends=( 'taglib' 'qt6-base' 'qt6-5compat' 'qt6-tools' 'qt6-multimedia'
+ 'gst-plugins-bad' 'openssl'
+'gst-plugins-base' 'gstreamer' 'libcue'
+'gst-plugins-good' 'gst-plugins-ugly' )
+makedepends=('git' 'cmake')
+conflicts=(qomp)
+source=(git+https://github.com/qomp/qomp)
+md5sums=('SKIP') 
+
+pkgver() {
+  cd qomp
+  git describe --tags | cut -d - -f 1-2 --output-delimiter=.
+}
+
+_gitroot=https://github.com/qomp/
+_gitname=qomp
+_plugins="filesystemplugin;urlplugin;mprisplugin;notificationsplugin"
+build() {
+  cd "$srcdir"
+  msg "Connecting to GIT server...."
+
+  if [[ -d "$_gitname" ]]; then
+    cd "$_gitname" && git pull origin
+    msg "The local files are updated."
+  else
+    git clone "$_gitroot" "$_gitname"
+  fi
+
+  msg "GIT checkout done or server timeout"
+  msg "Starting build..."
+
+  rm -rf "$srcdir/$_gitname-build"
+  git clone "$srcdir/$_gitname" "$srcdir/$_gitname-build"
+  cd "$srcdir/$_gitname-build/"
+  git submodule init
+  git submodule update
+  
+  # BUILD HERE
+  
+cmake -DCMAKE_INSTALL_PREFIX=/usr/ \
+	-DCMAKE_BUILD_TYPE=Release \
+	-DUSE_QT6=ON \
+	-DBUILD_PLUGINS=${_plugins} \
+	-S $srcdir/$_gitname-build
+
+make
+}
+
+package() {
+  cd "$srcdir/$_gitname-build/"
+  make DESTDIR="$pkgdir/"  install
+
+}

@@ -662,7 +662,7 @@ build_qtavolume ()
 	descriptionlong='Simple programm to change the volume of one of the ALSA mixers from the system tray.'
 	if [ "${iskde5}" == "y" ]; then
 		descriptionlong="${descriptionlong}
- With KDE5 StatusNotifierItem support"
+ With KStatusNotifierItem support"
 	fi
 	if [ "${ispulse}" == "y" ]; then
 		descriptionlong="${descriptionlong}

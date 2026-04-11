@@ -1,4 +1,4 @@
-cmake_minimum_required( VERSION 3.1.0 )
+cmake_minimum_required( VERSION 3.10.0 )
 
 #CPack section start
 set(CPACK_PACKAGE_VERSION ${_VERSION_STRING})
@@ -77,6 +77,7 @@ else()
             endif()
         endif()
         set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
+        set(CPACK_DEBIAN_PACKAGE_GENERATE_SHLIBS ON)
         if(NOT CPACK_DEBIAN_PACKAGE_VERSION)
             set(CPACK_DEBIAN_PACKAGE_VERSION "${CPACK_PACKAGE_VERSION}${PKG_OS_SUFFIX}${OSCODENAME}")
         endif()

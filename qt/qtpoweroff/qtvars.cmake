@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.2.0)
+cmake_minimum_required(VERSION 3.10.0)
 
 option(USE_QT6 "Build with Qt6 support" OFF)
 set(QT_PKG_VER 5)
