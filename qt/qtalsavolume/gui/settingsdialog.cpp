@@ -25,7 +25,6 @@
 #include <QDialogButtonBox>
 #include <QListWidget>
 #include <QRadioButton>
-#include <QtGui>
 #ifdef ISDEBUG
 #include <QDebug>
 #endif

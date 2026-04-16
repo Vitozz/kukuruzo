@@ -99,18 +99,22 @@ if( UNIX AND NOT (APPLE OR CYGWIN) )
         find_qt_package(LinguistTools REQUIRED)
         add_qt_translation(TRS "${qtalsavolume_TRS}")
         #update translations with: make lupdate
-        add_custom_target(lupdate)
-        foreach(_LANG ${qtalsavolume_TRS})
-            get_filename_component(_SHORT_LANG ${_LANG} NAME_WE)
-            string(REPLACE "@" "_" _SHORT_LANG ${_SHORT_LANG})
-            add_custom_command(TARGET lupdate
-                PRE_BUILD
-                COMMAND ${QT_LUPDATE_EXECUTABLE}
-                ARGS -no-obsolete -recursive ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/alsawork ${PROJECT_SOURCE_DIR}/gui ${PROJECT_SOURCE_DIR}/pulsework -ts ${_LANG}
-                WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/languages"
-                VERBATIM
-            )
-        endforeach()
+        if(NOT USE_QT6)
+            add_custom_target(lupdate)
+            foreach(_LANG ${qtalsavolume_TRS})
+                get_filename_component(_SHORT_LANG ${_LANG} NAME_WE)
+                string(REPLACE "@" "_" _SHORT_LANG ${_SHORT_LANG})
+                add_custom_command(TARGET lupdate
+                    PRE_BUILD
+                    COMMAND ${QT_LUPDATE_EXECUTABLE}
+                    ARGS -no-obsolete -recursive ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/alsawork ${PROJECT_SOURCE_DIR}/gui ${PROJECT_SOURCE_DIR}/pulsework -ts ${_LANG}
+                    WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/languages"
+                    VERBATIM
+                )
+            endforeach()
+        else()
+            qt_add_lupdate(TS_FILES ${qtalsavolume_TRS} SOURCES ${CPP_FILES} ${UI_FILES} ${HEADERS} LUPDATE_TARGET lupdate OPTIONS  -no-obsolete -recursive )
+        endif()
     endif()
     wrap_qt_ui( UIS ${UI_FILES} )
     add_qt_library(DEPLIBS Widgets)

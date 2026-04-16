@@ -1,6 +1,6 @@
 /*
  * popupwindow.cpp
- * Copyright (C) 2013-2025 Vitaly Tonkacheyev
+ * Copyright (C) 2013-2026 Vitaly Tonkacheyev
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,13 +22,15 @@
 
 #include <QAction>
 #include <QApplication>
+#include <QCloseEvent>
+#include <QDir>
 #include <QLabel>
 #include <QMessageBox>
 #include <QRegularExpression>
 #include <QScreen>
+#include <QSettings>
 #include <QSlider>
 #include <QVBoxLayout>
-#include <QtGui>
 
 #ifdef ISDEBUG
 #include <QDebug>
@@ -62,7 +64,7 @@ PopupWindow::PopupWindow() :
 #ifdef USE_PULSE
                         "<p>With Pulseaudio support</p>"
 #endif
-                        "<p>2013-2025 (c) Vitaly Tonkacheyev <address><a "
+                        "<p>2013-2026 (c) Vitaly Tonkacheyev <address><a "
                         "href=\"mailto:thetvg@gmail.com\">&lt;EMail&gt;</a></"
                         "address></p>"
                         "<a "
@@ -73,7 +75,6 @@ PopupWindow::PopupWindow() :
                  .arg(APP_VERSION))
 {
     // Start of tray icon initialization
-    const QString errorHeader(tr("Error"));
     // Close application if there is no system tray after 2 minutes
     QTimer::singleShot(120000, [this]() {
         if (!trayIcon_->available())
@@ -101,6 +102,7 @@ PopupWindow::PopupWindow() :
     isPoll_       = setts_.value(ISPOLL, true).toBool();
     setWindowIcon(QIcon(isLightStyle_ ? appLogoLight : appLogoDark));
 #ifdef USE_PULSE
+    const QString errorHeader(tr("Error"));
     const QString pulseIsMissing(tr("Can't start PulseAudio. Using Alsa by default"));
     isPulse_ = setts_.value(PULSE, false).toBool();
     if (pulse_->available()) {
