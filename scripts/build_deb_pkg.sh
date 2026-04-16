@@ -6,9 +6,9 @@
 # just run command:
 # sudo apt-get install cdbs debhelper dpkg-dev devscripts
 # to build debian package of regexptest project you also need
-# to install packages: libqt4-dev, qconf 
+# to install packages: libqt4-dev 
 # just run command:
-# sudo apt-get install libqt4-dev qconf
+# sudo apt-get install libqt4-dev
 # -------------------------------------------------------------------------
 #
 #COLORS
@@ -26,6 +26,7 @@ exitdir=${srcdir}/debians
 data=$(LANG=en date +'%a, %d %b %Y %T %z')
 year=$(date +'%Y')
 isloop=1
+use_qt6=0
 project=""
 section=""
 arch="all"
@@ -37,11 +38,16 @@ builddep=""
 docfiles=""
 dirs=""
 needed_packages="cdbs debhelper dpkg-dev devscripts"
-if [ "$(lsb_release -is)" == "Ubuntu" ]; then
+if [ "$(lsb_release -is)" == "Ubuntu" ] || [ "$(lsb_release -is)" == "Debian" ]; then
 	oscodename=$(lsb_release -cs)
 else
 	oscodename="unstable"
 fi
+shortosname="debian"
+if [ "$(lsb_release -is)" == "Ubuntu" ]; then
+	shortosname = "ubuntu"
+fi
+
 i386_dist=${oscodename}
 build_count=1
 
@@ -131,22 +137,22 @@ prepare_specs ()
 if [ -z $APP_NAME ]; then
 	APP_NAME=${project}
 fi
-versuffix="${ver}-0ubuntu1~0ppa${build_count}~${oscodename}"
+versuffix="${ver}-${shortosname}${build_count}~${oscodename}"
 
 changelog="${APP_NAME} (${versuffix}) ${oscodename}; urgency=low
 
   * new upsream release
 
- -- ${username} <${username}@gmail.com>  ${data}"
+ -- ${Maintainer} ${data}"
 
-compat="9"
+compat="10"
 control="Source: ${APP_NAME}
 Section: ${section}
 Priority: extra
 Maintainer: ${Maintainer}
 Build-Depends: ${builddep}
 Standards-Version: 3.9.7
-Homepage: http://sites.google.com/site/thesomeprojects/
+Homepage: https://sourceforge.net/projects/kukuruzo/
 
 Package: ${APP_NAME}
 Architecture: ${arch}
@@ -161,7 +167,7 @@ copyright="This package was debianized by:
 
 It was downloaded from:
 
-    http://sites.google.com/site/thesomeprojects/
+    https://sourceforge.net/projects/kukuruzo/
 
 Upstream Author:
 
@@ -497,9 +503,9 @@ build_rbtunp ()
 
 build_regext ()
 {
-	build_count=1
 	project="regexptest"
 	dirname="qt/regexptest"
+	build_count=1
 	ver=$(cat ${srcdir}/${dirname}/version.txt)
 	debdir=${builddir}/${project}-${ver}
 	prepare
@@ -507,10 +513,16 @@ build_regext ()
 	cmake_flags=""
 	section="x11"
 	arch="any"
-	check_deps "debhelper cdbs qtbase5-dev qttools5-dev qttools5-dev-tools cmake"
-	builddep="debhelper, cdbs, qtbase5-dev, qttools5-dev, qttools5-dev-tools, cmake"
+	check_qt_deps
+	builddep="debhelper, cdbs, cmake"
+	if [ $use_qt6 -eq 1 ]; then
+		builddep="${builddep}, qt6-tools-dev, qt6-tools-dev, qt6-tools-dev-tools"
+		cmake_flags="${cmake_flags} -DUSE_QT6=ON"
+	else
+		builddep="${builddep}, qtbase5-dev, qttools5-dev, qttools5-dev-tools"
+	fi
 	addit="#"
-	depends="\${shlibs:Depends}, \${misc:Depends}, libx11-6, zlib1g (>=1:1.1.4)"
+	depends="\${shlibs:Depends}, \${misc:Depends}"
 	description="RegExp Tester"
 	descriptionlong='Simple tool written on Qt to test regular expressions'
 	docfiles=""
@@ -533,7 +545,7 @@ build_avolume ()
 	run_resloader get_avolume
 	project="alsavolume"
 	APP_NAME=${project}
-	addit="Replaces: ${project}, ${project}3, ${project}-pulse, ${project}3-pulse, ${project}-kde-pulse, ${project}3-kde-pulse, ${project}-unity-pulse, ${project}3-unity-pulse, ${project}-unity, ${project}3-unity, ${project}3-kde, ${project}-kde"
+	addit="Replaces: ${project}, ${project}3, ${project}-pulse, ${project}3-pulse, ${project}-sni-pulse, ${project}3-sni-pulse, ${project}-unity-pulse, ${project}3-unity-pulse, ${project}-unity, ${project}3-unity, ${project}3-sni, ${project}-sni"
 	dirname="cppAlsaVolume"
 	build_count=1
 	ver=$(cat ${srcdir}/${dirname}/version.txt)
@@ -553,11 +565,13 @@ build_avolume ()
 		builddep="${builddep}, libgtkmm-3.0-dev"
 		deps="${deps} libgtkmm-3.0-dev"
 	fi
-		echo -e "${blue}Enable KDE tray support${nocolor} ${pink}[y/n(default)]${nocolor}"
+		echo -e "${blue}Enable Status Notifier item support${nocolor} ${pink}[y/n(default)]${nocolor}"
 	read iskde
 	if [ "${iskde}" == "y" ]; then
-		APP_NAME="${APP_NAME}-kde"
-		cmake_flags="${cmake_flags} -DUSE_KDE=ON"
+		APP_NAME="${APP_NAME}-sni"
+		cmake_flags="${cmake_flags} -DUSE_SNI=ON"
+		builddep="${builddep}, libdbusmenu-gtk3-dev"
+		deps="${deps} libdbusmenu-gtk3-dev"
 	fi
 	echo -e "${blue}Enable AppIndicator support${nocolor} ${pink}[y/n(default)]${nocolor}"
 	read isapp
@@ -583,7 +597,7 @@ build_avolume ()
 	check_deps "${deps}"
 	section="sound"
 	arch="any"	
-	depends="\${shlibs:Depends}, \${misc:Depends}, libasound2, libx11-6, zlib1g (>=1:1.1.4)"
+	depends="\${shlibs:Depends}, \${misc:Depends}"
 	description="Tray ALSA volume changer"
 	descriptionlong="Simple programm to change the volume of one of the ALSA mixers from the system tray."
 	if [ "${isgtk}" == "y" ]; then
@@ -636,8 +650,14 @@ build_qtavolume ()
 	prepare
 	cd ${debdir}
 	check_qt_deps
-    deps="libasound2-dev"
-	builddep="debhelper, cdbs, libasound2-dev, pkg-config, cmake, qttools5-dev"
+	deps="libasound2-dev"
+	builddep="debhelper, cdbs, libasound2-dev, pkg-config, cmake"
+	if [ $use_qt6 -eq 1 ]; then
+		builddep="${builddep}, qt6-tools-dev"
+		cmake_flags="${cmake_flags} -DUSE_QT6=ON"
+	else
+		builddep="${builddep}, qttools5-dev"
+	fi
 	echo -e "${blue}Enable KDE5 support${nocolor} ${pink}[y/n(default)]${nocolor}"
 	read iskde5
 	if [ "${iskde5}" == "y" ]; then
@@ -657,7 +677,7 @@ build_qtavolume ()
 	check_deps "${deps}"
 	section="sound"
 	arch="any"
-	depends="\${shlibs:Depends}, \${misc:Depends}, libasound2, libx11-6, zlib1g (>=1:1.1.4)"
+	depends="\${shlibs:Depends}, \${misc:Depends}"
 	description="Tray ALSA volume changer"
 	descriptionlong='Simple programm to change the volume of one of the ALSA mixers from the system tray.'
 	if [ "${iskde5}" == "y" ]; then
@@ -685,15 +705,20 @@ usr/share/applications"
 
 build_qtpoweroff ()
 {
-    check_qt_deps
 	project="qtpoweroff"
 	dirname="qt/qtpoweroff"
 	ver=$(cat ${srcdir}/${dirname}/version.txt)
 	debdir=${builddir}/${project}-${ver}
 	prepare
 	cd ${debdir}
-	builddep="debhelper, cdbs, qtbase5-dev, qttools5-dev, qttools5-dev-tools, cmake"
-	check_deps "qtbase5-dev qttools5-dev qttools5-dev-tools cmake"
+	check_qt_deps
+	builddep="debhelper, cdbs, cmake"
+	if [ $use_qt6 -eq 1 ]; then
+		builddep="${builddep}, qt6-tools-dev, qt6-tools-dev, qt6-tools-dev-tools"
+		cmake_flags="${cmake_flags} -DUSE_QT6=ON"
+	else
+		builddep="${builddep}, qtbase5-dev, qttools5-dev, qttools5-dev-tools"
+	fi
 	section="misc"
 	arch="any"
 	addit="#"
@@ -907,7 +932,14 @@ die() { echo "$@"; exit 1; }
 
 check_qt_deps()
 {
-	check_deps "debhelper cdbs qtbase5-dev qttools5-dev qttools5-dev-tools pkg-config cmake"
+	echo -e "${blue}Enable Qt6 support${nocolor} ${pink}[y/n(default)]${nocolor}"
+	read isqt6
+	if [ "${isqt6}" == "y" ]; then
+		use_qt6=1
+		check_deps "debhelper cdbs qt6-base-dev qt6-tools-dev qt6-tools-dev-tools pkg-config cmake"
+	else
+		check_deps "debhelper cdbs qtbase5-dev qttools5-dev qttools5-dev-tools pkg-config cmake"
+	fi
 }
 
 check_deps()

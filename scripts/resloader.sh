@@ -11,10 +11,10 @@ pink="\x1B[01;91m"
 yellow="\x1B[01;93m"
 blue="\x1B[01;94m"
 #
-kukruzo_url="git://github.com/Vitozz/kukuruzo.git"
-pyalsavolume_url="git://github.com/Vitozz/pyalsavolume.git"
-pypoweroff_url="git://github.com/Vitozz/pypoweroff.git"
-cppAlsaVolume_url="git://github.com/Vitozz/cppAlsaVolume.git"
+kukruzo_url="https://github.com/Vitozz/kukuruzo.git"
+pyalsavolume_url="https://github.com/Vitozz/pyalsavolume.git"
+pypoweroff_url="https://github.com/Vitozz/pypoweroff.git"
+cppAlsaVolume_url="https://github.com/Vitozz/cppAlsaVolume.git"
 
 check_dir ()
 {
@@ -95,11 +95,12 @@ update_git ()
 		then
 			git clone $1 $2
 			cd "$2"
-			git init
+			git submodule update --init --recursive
 		else
 			cd "$2"
 			git reset --hard
-			git init
+			#git clean -xfd
+			git submodule update --init --recursive
 			git pull
 		fi
 	fi
