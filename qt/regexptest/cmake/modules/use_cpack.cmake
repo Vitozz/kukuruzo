@@ -32,7 +32,7 @@ else()
     find_program(DPKG_PATH dpkg DOC "Path to dpkg")
     find_program(MAKEPKG makepkg DOC "Path to makepkg")
     set(CPACK_PACKAGING_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX})
-    if(RPMB_PATH)
+    if(NOT "${RPMB_PATH}" STREQUAL "RPMB_PATH-NOTFOUND")
         set(CPACK_GENERATOR "RPM")
         set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}-${CPACK_PACKAGE_RELEASE}.${CMAKE_SYSTEM_PROCESSOR}")
         set(CPACK_RPM_PACKAGE_LICENSE "GPL-3")
@@ -40,18 +40,18 @@ else()
         set(CPACK_RESOURCE_FILE_LICENSE "${CPACK_RESOURCE_FILE_LICENSE}")
         set(CPACK_RPM_PACKAGE_URL "${PACKAGE_URL}")
     endif()
-    if(DPKG_PATH)
+    if(NOT "${DPKG_PATH}" STREQUAL "DPKG_PATH-NOTFOUND")
         set(CPACK_GENERATOR "DEB")
-        exec_program("LANG=en date +'%a, %d %b %Y %T %z'"
+        execute_process(COMMAND "LANG=en date +'%a, %d %b %Y %T %z'"
             OUTPUT_VARIABLE BUILD_DATE
         )
-        exec_program("date +'%Y'"
+        execute_process(COMMAND "date +'%Y'"
             OUTPUT_VARIABLE BUILD_YEAR
         )
         message(STATUS "Build date: ${BUILD_DATE}")
         set(CPACK_DEBIAN_PACKAGE_MAINTAINER "${PACKAGE_MAINTAINER}")
         set(CPACK_DEBIAN_PACKAGE_SECTION "x11")
-        exec_program("${DPKG_PATH} --print-architecture"
+        execute_process(COMMAND "${DPKG_PATH} --print-architecture"
             OUTPUT_VARIABLE DEB_PKG_ARCH
         )
         if(NOT "${DEB_PKG_ARCH}" STREQUAL "")
@@ -59,7 +59,7 @@ else()
         endif()
         find_program(LSB_APP lsb_release DOC "Path to lsb_release")
         if(LSB_APP)
-            exec_program("${LSB_APP} -is"
+            execute_process(COMMAND "${LSB_APP} -is"
                 OUTPUT_VARIABLE OSNAME
             )
             if(NOT "${OSNAME}" STREQUAL "")
@@ -68,7 +68,7 @@ else()
                     set(PKG_OS_SUFFIX "-0ubuntu1~0ppa${CPACK_PACKAGE_RELEASE}~")
                 endif()
             endif()
-            exec_program("${LSB_APP} -cs"
+            execute_process(COMMAND "${LSB_APP} -cs"
                 OUTPUT_VARIABLE OSCODENAME
             )
             if(NOT "${OSCODENAME}" STREQUAL "")
@@ -90,7 +90,7 @@ else()
         configure_file(copyright.in copyright @ONLY)
         set(CPACK_RESOURCE_FILE_LICENSE "${PROJECT_BINARY_DIR}/copyright")
     endif()
-    if(MAKEPKG)
+    if(NOT "${MAKEPKG}" STREQUAL "MAKEPKG-NOTFOUND")
         if(USE_QT6)
             set(QT6_FLAG ON)
         else()

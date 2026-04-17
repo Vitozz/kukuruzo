@@ -2,9 +2,13 @@ cmake_minimum_required( VERSION 3.10.0 )
 project(qtalsavolume LANGUAGES CXX)
 if ( NOT CMAKE_VERSION VERSION_LESS 3.10 )
     cmake_policy(SET CMP0071 NEW)
+    if( CMAKE_VERSION VERSION_GREATER_EQUAL 3.11 )
+        cmake_policy(SET CMP0072 NEW)
+    endif()
 endif ()
 if( UNIX AND NOT (APPLE OR CYGWIN) )
-    include(qtvars.cmake)
+    list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules" )
+    include(qtvars)
     set( CMAKE_AUTOMOC ON )
     set( CMAKE_INCLUDE_CURRENT_DIR ON )
     set(CMAKE_CXX_STANDARD 17)
@@ -15,8 +19,8 @@ if( UNIX AND NOT (APPLE OR CYGWIN) )
 
     #CPack section start
     if(USE_CPACK)
-        include(version.cmake)
-        include(use_cpack.cmake)
+        include(version)
+        include(use_cpack)
     #CPack section end
     endif()
 
@@ -67,7 +71,6 @@ if( UNIX AND NOT (APPLE OR CYGWIN) )
     set( DESKTOP_FILES ${PROJECT_NAME}.desktop )
     set( ICON_FILES icons/volume_ico.png )
     set( qtalsavolume_TRS
-        ${TRANSLATIONS_PATH}/${PROJECT_NAME}_en.ts
         ${TRANSLATIONS_PATH}/${PROJECT_NAME}_ru.ts
         ${TRANSLATIONS_PATH}/${PROJECT_NAME}_uk.ts
     )
@@ -141,7 +144,7 @@ if( UNIX AND NOT (APPLE OR CYGWIN) )
         find_qt_package( DBus REQUIRED )
         add_qt_library(DEPLIBS DBus)
     endif()
-    include(fix-codestyle.cmake)
+    include(fix-codestyle)
     add_executable( ${PROJECT_NAME} ${CPP_FILES} ${UIS} ${RSCS} ${TRS} ${MOCS} "defines.h")
     target_link_libraries(
         ${PROJECT_NAME}
@@ -151,7 +154,7 @@ if( UNIX AND NOT (APPLE OR CYGWIN) )
     configure_file(${DESKTOP_FILES}.in "${PROJECT_BINARY_DIR}/${DESKTOP_FILES}" @ONLY)
     INSTALL( TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin )
     INSTALL( FILES "${PROJECT_BINARY_DIR}/${DESKTOP_FILES}" DESTINATION ${APPDIR_PATH} )
-    INSTALL( FILES ${ICON_FILES} DESTINATION ${DATADIR_PATH}/${PROJECT_NAME}/icons )
+    INSTALL( FILES ${ICON_FILES} DESTINATION ${DATADIR_PATH}/${PROJECT_NAME}/icons RENAME "${PROJECT_NAME}.png")
     INSTALL( FILES ${TRS} DESTINATION ${DATADIR_PATH}/${PROJECT_NAME}/${TRANSLATIONS_PATH} )
     if(USE_CPACK AND DPKG_PATH)
         INSTALL( FILES ${PROJECT_BINARY_DIR}/copyright DESTINATION ${DATADIR_PATH}/doc/${PROJECT_NAME} )

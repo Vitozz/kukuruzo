@@ -1,7 +1,7 @@
 cmake_minimum_required( VERSION 3.12.0 )
 project( regexptest LANGUAGES CXX)
 
-list( APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}" )
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules" )
 
 include(policyRules)
 
@@ -64,7 +64,10 @@ set(CMAKE_CXX_STANDARD 11)
 add_qt_resources( RSCS ${regexptest_QRC} )
 if( ${BUILD_TRANSLATIONS} )
     find_qt_package( LinguistTools REQUIRED )
-    add_qt_translation( TRS ${regexptest_TRS} )
+    add_qt_translation( TRS "${regexptest_TRS}" )
+    if(USE_QT6)
+        qt_add_lupdate(TS_FILES ${regexptest_TRS} SOURCES ${regexptest_SRC} ${regexptest_UI} ${regexptest_HDR} LUPDATE_TARGET lupdate OPTIONS  -no-obsolete -recursive )
+    endif()
 endif( ${BUILD_TRANSLATIONS} )
 wrap_qt_ui( UIS ${regexptest_UI} )
 add_qt_library(QT_DEPLIBS Widgets)

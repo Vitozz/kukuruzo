@@ -14,14 +14,6 @@
         <translation>Дія після вичерпання заданої кількості хвилин</translation>
     </message>
     <message>
-        <source>Time to shutdown (min)</source>
-        <translation type="vanished">Час до вимкнення (хв)</translation>
-    </message>
-    <message>
-        <source>Shutdown in (hh:min)</source>
-        <translation type="obsolete">Вимкнути в (год:хв)</translation>
-    </message>
-    <message>
         <location filename="../mainwindow.ui" line="98"/>
         <source>Set time in minutes</source>
         <translation>Задайте час у хвилинах</translation>
@@ -30,10 +22,6 @@
         <location filename="../mainwindow.ui" line="108"/>
         <source>Action at selected Date and Time</source>
         <translation>Дія на обрану Дату і Час</translation>
-    </message>
-    <message>
-        <source>Shutdown in (dd.MM.yy hh:mm)</source>
-        <translation type="vanished">Вимкнути в (дд.ММ.рр гг:хх)</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="121"/>
@@ -123,10 +111,6 @@
         <translation>Про Qt</translation>
     </message>
     <message>
-        <source>About ...</source>
-        <translation type="obsolete">Про ...</translation>
-    </message>
-    <message>
         <location filename="../mainwindow.cpp" line="67"/>
         <source>About Qt</source>
         <translation>Про Qt</translation>
@@ -140,26 +124,6 @@
         <location filename="../mainwindow.cpp" line="68"/>
         <source>Exit</source>
         <translation>Вихід</translation>
-    </message>
-    <message>
-        <source>Simple Power Off Tool written using Qt
-
-2014 (c) Vitaly Tonkacheyev (thetvg@gmail.com)
-
-version: %1</source>
-        <translation type="obsolete">Проста програма вимкнення ПК написана на Qt
-
-2014 (c) Віталій Тонкачеєв (thetvg@gmail.com)
-
-версія: %1</translation>
-    </message>
-    <message>
-        <source>About QtPowerOff</source>
-        <translation type="vanished">Про QtPowerOff</translation>
-    </message>
-    <message>
-        <source>Time to %1 - %2</source>
-        <translation type="obsolete">Час до %1 - %2</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="217"/>
@@ -176,10 +140,6 @@ version: %1</source>
         <location filename="../mainwindow.cpp" line="153"/>
         <source>About %1</source>
         <translation>Про %1</translation>
-    </message>
-    <message>
-        <source>&lt;!DOCTYPE html&gt;&lt;html&gt;&lt;body&gt;&lt;p&gt;&lt;b&gt;Tool for scheduled Shutdown/Reboot&lt;/b&gt;&lt;/p&gt;&lt;p&gt;written using Qt&lt;/p&gt;&lt;p&gt;2014 (c) Vitaly Tonkacheyev &lt;address&gt;&lt;a href=&quot;mailto:thetvg@gmail.com&quot;&gt;&amp;lt;EMail&amp;gt;&lt;/a&gt;&lt;/address&gt;&lt;/p&gt;&lt;a href=&quot;http://sites.google.com/site/thesomeprojects/&quot;&gt;Program WebSite&lt;/a&gt;&lt;p&gt;version: &lt;b&gt;%1&lt;/b&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="vanished">&lt;!DOCTYPE html&gt;&lt;html&gt;&lt;body&gt;&lt;p&gt;&lt;b&gt;Інструмент запланованого Вимкнення/Перезавантаження&lt;/b&gt;&lt;/p&gt;&lt;p&gt;написаний за допомогою Qt&lt;/p&gt;&lt;p&gt;2014 (c) Віталій Тонкачеєв &lt;address&gt;&lt;a href=&quot;mailto:thetvg@gmail.com&quot;&gt;&amp;lt;EMail&amp;gt;&lt;/a&gt;&lt;/address&gt;&lt;/p&gt;&lt;a href=&quot;http://sites.google.com/site/thesomeprojects/&quot;&gt;Web-сторінка програми&lt;/a&gt;&lt;p&gt;версія: &lt;b&gt;%1&lt;/b&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="146"/>
@@ -246,16 +206,6 @@ org.freedesktop.login1.Manager
 Або ви не належите групі power</translation>
     </message>
     <message>
-        <source>Can&apos;t establish connection to
-org.freedesktop.ConsoleKit.Manager
-May be you have no permissions
-Or service not available</source>
-        <translation type="vanished">Неможливо встановити підключення до
-org.freedesktop.ConsoleKit.Manager
-Можливо у Вас немає прав
-Або сервіс не доступний</translation>
-    </message>
-    <message>
         <location filename="../mainwindow.cpp" line="427"/>
         <source>Error</source>
         <translation>Помилка</translation>
@@ -265,34 +215,16 @@ org.freedesktop.ConsoleKit.Manager
         <source>Can&apos;t get privileges</source>
         <translation>Не можливо отримати привілеї</translation>
     </message>
-    <message>
-        <source>Can&apos;t establish connection to
- org.freedesktop.ConsoleKit.Manager
-May be you have no permissions
-Or service not available</source>
-        <translation type="obsolete">Неможливо встановити підключення до
- org.freedesktop.ConsoleKit.Manager
-Можливо у Вас немає прав
-Або сервіс не доступний</translation>
-    </message>
 </context>
 <context>
     <name>QObject</name>
     <message>
-        <source>Systray</source>
-        <translation type="obsolete">Системний трей</translation>
-    </message>
-    <message>
-        <source>System tray not detected</source>
-        <translation type="obsolete">Системний трей не доступний</translation>
-    </message>
-    <message>
-        <location filename="../main.cpp" line="57"/>
+        <location filename="../main.cpp" line="56"/>
         <source>Error</source>
         <translation>Помилка</translation>
     </message>
     <message>
-        <location filename="../main.cpp" line="57"/>
+        <location filename="../main.cpp" line="56"/>
         <source>System tray not detected
 Exiting...</source>
         <translation>Системний трей не доступний

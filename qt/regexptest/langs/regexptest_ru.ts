@@ -2,189 +2,6 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="ru_RU">
 <context>
-    <name>MainWindow</name>
-    <message>
-        <source>RegExp Tester</source>
-        <translation type="vanished">Тестер регулярных выражений</translation>
-    </message>
-    <message>
-        <source>Regular Expressions Tester</source>
-        <translation type="vanished">Тестер регулярных выражений</translation>
-    </message>
-    <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Check regular expression&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="vanished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Проверить регулярное выражение&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-    </message>
-    <message>
-        <source>Calculate</source>
-        <translation type="vanished">Вычислить</translation>
-    </message>
-    <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Regular expression&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="vanished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Регулярное выражение&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-    </message>
-    <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enter the regular expression here&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="vanished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Введите регулярное выражение тут&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-    </message>
-    <message>
-        <source>Additional options</source>
-        <translation type="vanished">Дополнительные опции</translation>
-    </message>
-    <message>
-        <source>Case Sensetive</source>
-        <translation type="vanished">Case Sensetive</translation>
-    </message>
-    <message>
-        <source>RegExp2</source>
-        <translation type="vanished">RegExp2</translation>
-    </message>
-    <message>
-        <source>W3CXmlSchema11</source>
-        <translation type="vanished">W3CXmlSchema11</translation>
-    </message>
-    <message>
-        <source>RegExp</source>
-        <translation type="vanished">RegExp</translation>
-    </message>
-    <message>
-        <source>Wildcard</source>
-        <translation type="vanished">Шаблон</translation>
-    </message>
-    <message>
-        <source>WildcardUnix</source>
-        <translation type="vanished">WildcardUnix</translation>
-    </message>
-    <message>
-        <source>Minimal match</source>
-        <translation type="vanished">Minimal match</translation>
-    </message>
-    <message>
-        <source>Exact Match</source>
-        <translation type="vanished">Exact Match</translation>
-    </message>
-    <message>
-        <source>Case Insensetive</source>
-        <translation type="vanished">Без Регистра</translation>
-    </message>
-    <message>
-        <source>Extended Pattern Syntax</source>
-        <translation type="vanished">Широкий синтаксис</translation>
-    </message>
-    <message>
-        <source>Dot Matches Everything</source>
-        <translation type="vanished">Точка значит всё</translation>
-    </message>
-    <message>
-        <source>Multiline</source>
-        <translation type="vanished">Мультистрочность</translation>
-    </message>
-    <message>
-        <source>Inverted Greediness</source>
-        <translation type="vanished">Инверсия жадности</translation>
-    </message>
-    <message>
-        <source>Partial First Match</source>
-        <translation type="vanished">Частичное совпадение</translation>
-    </message>
-    <message>
-        <source>Dont Capture</source>
-        <translation type="vanished">Без групп</translation>
-    </message>
-    <message>
-        <source>Double escape(Qt Style)</source>
-        <translation type="vanished">Double escape(Qt стиль)</translation>
-    </message>
-    <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set the full path to text file&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="vanished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Задайте полный путь к текстовому файлу&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-    </message>
-    <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;or input (insert) the text&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="vanished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;или введите (втавьте) текст&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-    </message>
-    <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Regular expression result&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="vanished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Результат регулярного выражения&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-    </message>
-    <message>
-        <source>Open</source>
-        <translation type="vanished">Открыть</translation>
-    </message>
-    <message>
-        <source>Match group</source>
-        <translation type="vanished">Группа совпадения</translation>
-    </message>
-    <message>
-        <source>&amp;File</source>
-        <translation type="vanished">&amp;Файл</translation>
-    </message>
-    <message>
-        <source>&amp;Help</source>
-        <translation type="vanished">&amp;Справка</translation>
-    </message>
-    <message>
-        <source>&amp;Run Help</source>
-        <translation type="vanished">&amp;Запустить справку</translation>
-    </message>
-    <message>
-        <source>E&amp;xit</source>
-        <translation type="vanished">В&amp;ыход</translation>
-    </message>
-    <message>
-        <source>Ctrl+X</source>
-        <translation type="vanished">Ctrl+X</translation>
-    </message>
-    <message>
-        <source>&amp;About Qt</source>
-        <translation type="vanished">&amp;О Qt</translation>
-    </message>
-    <message>
-        <source>&amp;Open</source>
-        <translation type="vanished">&amp;Открыть</translation>
-    </message>
-    <message>
-        <source>Ctrl+O</source>
-        <translation type="vanished">Ctrl+O</translation>
-    </message>
-    <message>
-        <source>&lt;u&gt;&lt;a style=&quot;color:red&quot;&gt;Match # &lt;/a&gt;</source>
-        <translation type="obsolete">&lt;u&gt;&lt;a style=&quot;color:red&quot;&gt;Совпадение # &lt;/a&gt;</translation>
-    </message>
-    <message>
-        <source>&lt;a style=&quot;color:blue&quot;&gt;Group # &lt;/a&gt;</source>
-        <translation type="obsolete">&lt;a style=&quot;color:blue&quot;&gt;Группа # &lt;/a&gt;</translation>
-    </message>
-    <message>
-        <source>&lt;u&gt;&lt;a style=&quot;color:red&quot;&gt;Match # &lt;/a&gt;&lt;b&gt;%1&lt;/b&gt;&lt;/u&gt;&lt;br&gt;</source>
-        <translation type="vanished">&lt;u&gt;&lt;a style=&quot;color:red&quot;&gt;Совпадение # &lt;/a&gt;&lt;b&gt;%1&lt;/b&gt;&lt;/u&gt;&lt;br&gt;</translation>
-    </message>
-    <message>
-        <source>&lt;a style=&quot;color:blue&quot;&gt;Group # &lt;/a&gt;&lt;b&gt;%1: &lt;/b&gt;&lt;i&gt;%2&lt;/i&gt;&lt;br&gt;</source>
-        <translation type="vanished">&lt;a style=&quot;color:blue&quot;&gt;Группа # &lt;/a&gt;&lt;b&gt;%1: &lt;/b&gt;&lt;i&gt;%2&lt;/i&gt;&lt;br&gt;</translation>
-    </message>
-    <message>
-        <source>Regexp error</source>
-        <translation type="vanished">Неверное регулярное выражение</translation>
-    </message>
-    <message>
-        <source>Error</source>
-        <translation type="vanished">Ошибка</translation>
-    </message>
-    <message>
-        <source>Unable to open regexp_help.html</source>
-        <translation type="vanished">Невозможно открыть regexp_help.html</translation>
-    </message>
-    <message>
-        <source>Open File...</source>
-        <translation type="vanished">Открыть файл...</translation>
-    </message>
-    <message>
-        <source>All Files (*);;Text Files (*.txt)</source>
-        <translation type="vanished">Все файлы (*);;Текстовые файлы (*.txt)</translation>
-    </message>
-</context>
-<context>
     <name>RegexpWindow</name>
     <message>
         <location filename="../regexpwindow.ui" line="26"/>
@@ -332,37 +149,37 @@
         <translation>Ctrl+O</translation>
     </message>
     <message>
-        <location filename="../regexpwindow.cpp" line="148"/>
+        <location filename="../regexpwindow.cpp" line="157"/>
         <source>&lt;u&gt;&lt;a style=&quot;color:red&quot;&gt;Match # &lt;/a&gt;&lt;b&gt;%1&lt;/b&gt;&lt;/u&gt;&lt;br&gt;</source>
         <translation>&lt;u&gt;&lt;a style=&quot;color:red&quot;&gt;Совпадение # &lt;/a&gt;&lt;b&gt;%1&lt;/b&gt;&lt;/u&gt;&lt;br&gt;</translation>
     </message>
     <message>
-        <location filename="../regexpwindow.cpp" line="149"/>
+        <location filename="../regexpwindow.cpp" line="158"/>
         <source>&lt;a style=&quot;color:blue&quot;&gt;Group # &lt;/a&gt;&lt;b&gt;%1: &lt;/b&gt;&lt;i&gt;%2&lt;/i&gt;&lt;br&gt;</source>
         <translation>&lt;a style=&quot;color:blue&quot;&gt;Группа # &lt;/a&gt;&lt;b&gt;%1: &lt;/b&gt;&lt;i&gt;%2&lt;/i&gt;&lt;br&gt;</translation>
     </message>
     <message>
-        <location filename="../regexpwindow.cpp" line="205"/>
+        <location filename="../regexpwindow.cpp" line="219"/>
         <source>Regexp error</source>
         <translation>Неверное регулярное выражение</translation>
     </message>
     <message>
-        <location filename="../regexpwindow.cpp" line="255"/>
+        <location filename="../regexpwindow.cpp" line="268"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
     <message>
-        <location filename="../regexpwindow.cpp" line="255"/>
+        <location filename="../regexpwindow.cpp" line="268"/>
         <source>Unable to open regexp_help.html</source>
         <translation>Невозможно открыть regexp_help.html</translation>
     </message>
     <message>
-        <location filename="../regexpwindow.cpp" line="356"/>
+        <location filename="../regexpwindow.cpp" line="361"/>
         <source>Open File...</source>
         <translation>Открыть файл...</translation>
     </message>
     <message>
-        <location filename="../regexpwindow.cpp" line="358"/>
+        <location filename="../regexpwindow.cpp" line="363"/>
         <source>All Files (*);;Text Files (*.txt)</source>
         <translation>Все файлы (*);;Текстовые файлы (*.txt)</translation>
     </message>
