@@ -1,0 +1,33 @@
+2026-04-23
+v.0.4.1
+  * Fixed Qt6 warnings
+  * CMake updated
+  * Project maintenance
+
+2024-03-22
+v.0.4.0
+  * Updated qt/regexptest
+  * Fixed cmake-build
+  * Added text highlighting
+  * Version up to 0.4.1
+
+2022-05-26
+v.0.3.0
+  * Updated qt/regexptest
+  * Fixed cmake-build
+  * Added text highlighting
+
+2022-05-15
+v.0.2.0
+  + Added Qt6 support for Qt-based apps
+  * Fixed PKGBUILD's
+  * Fixed ppbuild.sh
+
+2019-03-22
+v.0.1.0
+  * Updated qt/regexptest
+  * Changed usage QRegExp class to QRegularExpression class
+
+2018-06-13
+v.0.0.1
+  + Initial release
