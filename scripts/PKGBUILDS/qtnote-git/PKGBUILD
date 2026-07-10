@@ -1,11 +1,11 @@
 pkgname=qtnote-git
-pkgver=3.2.0.5.g84f9237
+pkgver=3.2.89.28.g7f428b1
 pkgrel=1
 pkgdesc="Note-taking application written with Qt in mind"
 arch=('i686' 'x86_64')
 url="http://ri0n.github.io/QtNote"
 license=('GPL3')
-depends=('qt6-base' 'qt6-tools' 'hunspell')
+depends=('qt6-base' 'qt6-tools' 'hunspell' 'qt6-multimedia')
 makedepends=('git' 'cmake')
 optdepends=('kglobalaccel' 'kwindowsystem' 'knotifications')
 conflicts=(qtnote)
@@ -18,10 +18,16 @@ pkgver() {
   git describe --long --tags | sed 's/^v//;s/-/./g'
 }
 
+is_installed() {
+    pacman -Q $1 &> /dev/null
+}
+
 prepare() {
     cd $pkgname
-    git submodule init
-    git submodule update
+    git submodule update --init --recursive
+    if is_installed "kglobalaccel" && is_installed "kwindowsystem" && is_installed "knotifications"; then
+      makedepends+=('extra-cmake-modules' )
+    fi
 }
 
 build() {
