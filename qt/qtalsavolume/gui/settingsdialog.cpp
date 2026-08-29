@@ -53,7 +53,6 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
 
 SettingsDialog::~SettingsDialog()
 {
-    disconnectSignals();
     delete l3_;
     delete l2_;
     delete l1_;
@@ -104,20 +103,6 @@ void SettingsDialog::connectSignals()
     connect(ui->isAutorun, &QCheckBox::toggled, this, [this](bool toggle) { emit autorunChanged(toggle); });
     connect(ui->usePulseaudio, &QCheckBox::toggled, this, &SettingsDialog::onPulseSoundSystem);
     connect(ui->enableTimer, &QCheckBox::toggled, this, &SettingsDialog::onEnableTimer);
-}
-
-void SettingsDialog::disconnectSignals()
-{
-    playbacks_->disconnect();
-    captures_->disconnect();
-    enums_->disconnect();
-    ui->darkRadio->disconnect();
-    ui->lightRadio->disconnect();
-    ui->cardBox->disconnect();
-    ui->mixerBox->disconnect();
-    ui->isAutorun->disconnect();
-    ui->usePulseaudio->disconnect();
-    ui->enableTimer->disconnect();
 }
 
 void SettingsDialog::setCurrentCard(int index) { ui->cardBox->setCurrentIndex(index < soundCards_.size() ? index : 0); }

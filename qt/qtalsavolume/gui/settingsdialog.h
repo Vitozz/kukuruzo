@@ -76,9 +76,6 @@ signals:
     void timerEnabled(bool isTimer);
 
 private:
-    void disconnectSignals();
-
-private:
     Ui::SettingsDialog *ui;
     QStringList         soundCards_;
     QStringList         mixers_;

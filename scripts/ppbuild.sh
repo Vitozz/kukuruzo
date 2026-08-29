@@ -257,8 +257,8 @@ patch_psi ()
 #Получение версии пси+
 get_psi_plus_version()
 {
-  local psi_tag=$(cd ${upstream_src} ; git describe --tags | cut -d - -f1)
-  local psi_num=$("${upstream_src}/admin/git_revnumber.sh" "${psi_tag}")
+  local psi_tag=$(cd ${upstream_src} ; git describe --tags --abbrev=0 --exclude "windows-sdk-*")
+  local psi_num=$(cd ${upstream_src} ; git rev-list --count "${psi_tag}..HEAD")
   local psi_rev=$(cd ${upstream_src} ; git rev-parse --short HEAD)
   local sum_commit=${psi_num}
   local rev_date_list=$(cd ${upstream_src} ; git log -n1 --date=short --pretty=format:'%ad')
