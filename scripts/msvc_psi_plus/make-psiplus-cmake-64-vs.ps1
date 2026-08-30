@@ -26,7 +26,6 @@ $USENINJA = "ON"
 Write-Host "CPUs: $CPUCOUNT"
 Write-Host "DEBUG: $USEDEBUG"
 Write-Host "PAUSES: $USEPAUSES"
-Write-Host ""
 
 # ====== ABSOLUTE PATHS ======
 $BUILDDIR = "C:\build"
@@ -59,6 +58,14 @@ $JOMPATH = Join-Path $QTPREFIX "Tools\QtCreator\bin\jom"
 $NINJAPATH = Join-Path $QTPREFIX "Tools\Ninja"
 #$JOM = Join-Path $JOMPATH "jom.exe"
 
+# ====== GIT URLS ======
+$PSI_GIT_PREFIX = "https://github.com/psi-im"
+$PSI_GIT_URL = "$PSI_GIT_PREFIX/psi.git"
+$PLUGINS_GIT_URL = "$PSI_GIT_PREFIX/plugins.git"
+$TRANSLATIONS_GIT_URL = "https://github.com/psi-plus/psi-plus-l10n.git"
+$PSIMEDIA_GIT_URL = "$PSI_GIT_PREFIX/psimedia.git"
+$RESOURCES_GIT_URL = "$PSI_GIT_PREFIX/resources.git"
+
 # ==== DO NOT CHANGE THIS PLEASE ====
 $binTemplate = "win64"
 $webkitTemplate = "webengine"
@@ -67,23 +74,59 @@ $qtTemplate = "qt$QTVER"
 # ====== win64 VARIABLES ======
 $ARCHNAME = $binTemplate
 # ====== Qt win64 VARIABLES ======
-$QTVERSION = "6.9.2"
+$QTVERSION = "6.11.2"
 $QTARCH = "msvc2022_64"
 $QTDIR = Join-Path $QTPREFIX "$QTVERSION\$QTARCH"
 $DEFAULT_CMAKE_FLAGS = @("-DUSE_CCACHE=ON",
                        "-DUSE_QT6=ON",
-                       "-DGIT_EXECUTABLE=`"$GIT_EXECUTABLE`"",
-                       "-DCMAKE_INSTALL_PREFIX=`"$PSIDIST\Installer`"",
+                       "-DGIT_EXECUTABLE=$GIT_EXECUTABLE",
+                       "-DCMAKE_INSTALL_PREFIX=$PSIDIST\Installer",
                        "-DPSI_PLUS=ON")
 if ($USENINJA -eq "ON")
 {
-    $CMAKE_BTYPE = "-G Ninja"
+    $CMAKE_BTYPE = @("-G", "Ninja")
 }
 else
 {
-    $CMAKE_BTYPE = "-G`"NMake Makefiles JOM`""
+    $CMAKE_BTYPE = @("-G", "NMake Makefiles JOM")
 }
 $EXITMARK = 0
+
+$mainRepo = @{
+    Url       = $PSI_GIT_URL
+    LocalPath = $PSIPATH
+    Branch    = "master"
+}
+
+$dependencies = @(
+    @{
+        Url             = $PLUGINS_GIT_URL
+        LocalPath       = $PLUGSPATH
+        Branch          = "master"
+        TargetSubFolder = "plugins"
+        SourceSubFolder = ""
+    },
+    @{
+        Url             = $TRANSLATIONS_GIT_URL
+        LocalPath       = $LANGSPATH
+        Branch          = "master"
+        TargetSubFolder = "translations"
+        SourceSubFolder = "translations"
+    },
+    @{
+        Url             = $PSIMEDIA_GIT_URL
+        LocalPath       = $MEDIAPATH
+        Branch          = "master"
+        TargetSubFolder = "plugins/generic/psimedia"
+    },
+    @{
+        Url             = $RESOURCES_GIT_URL
+        LocalPath       = $RESPATH
+        Branch          = "master"
+        TargetSubFolder = ""
+        SourceSubFolder = ""
+    }
+)
 
 # Start logging
 New-Item -ItemType Directory -Force -Path $LOGDIR | Out-Null
@@ -91,10 +134,237 @@ New-Item -ItemType Directory -Force -Path $LOGDIR | Out-Null
 "_" | Out-File -Append -Encoding UTF8 -FilePath $BUILDLOG
 
 # ================== MAIN LOGIC ==================
+function Sync-GitRepository {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)]
+        [string]$Url,
+        [Parameter(Mandatory)]
+        [string]$LocalPath,
+        [Parameter(Mandatory)]
+        [string]$Branch = "master"
+    )
+    Write-Host "---> Processing repository: $Url" -ForegroundColor Cyan
+    $gitDirectory = Join-Path $LocalPath ".git"
+    # Клонирование нового репозитория
+    if (-not (Test-Path $gitDirectory)) {
+        Write-Host "Repository not found. Clonning..." -ForegroundColor Yellow
+        if (Test-Path $LocalPath) {
+            Remove-Item $LocalPath -Recurse -Force
+        }
+        $parentDirectory = Split-Path $LocalPath -Parent
+        New-Item -ItemType Directory -Path $parentDirectory -Force | Out-Null
+        & $GIT_EXECUTABLE clone --recursive $Url $LocalPath
+        if ($LASTEXITCODE -ne 0) {
+            throw "Error clonning repository: $Url"
+        }
+        return
+    }
+    # Update existing repository
+    Write-Host "Repository found. Cleanup and update..." -ForegroundColor Yellow
+    Push-Location $LocalPath
+    try {
+        Invoke-GitCommand @("reset", "--hard", "HEAD")
+        Invoke-GitCommand @("clean", "-fdx")
+        Invoke-GitCommand @("checkout", $Branch)
+        Invoke-GitCommand @("pull", "origin", $Branch)
+        Invoke-GitCommand @("submodule", "update", "--init", "--recursive", "--force")
+        # Update submodules
+        & $GIT_EXECUTABLE submodule foreach --recursive `
+            "git reset --hard HEAD && git clean -fdx"
+        if ($LASTEXITCODE -ne 0) {
+            throw "Error cleaning submodules in repository: $LocalPath"
+        }
+    }
+    finally {
+        Pop-Location
+    }
+}
+
+
+function Invoke-GitCommand {
+    param(
+        [Parameter(Mandatory)]
+        [string[]]$Arguments
+    )
+    Write-Host "git $($Arguments -join ' ')" -ForegroundColor DarkGray
+    & $GIT_EXECUTABLE @Arguments
+    if ($LASTEXITCODE -ne 0) {
+        throw "Git-command failed ${LASTEXITCODE}: git $($Arguments -join ' ')"
+    }
+}
+
+function Get-ProjectVersion {
+    param(
+        [Parameter(Mandatory)]
+        [string]$RepositoryPath
+    )
+    Write-Host "---> Detect Main project version..." -ForegroundColor Cyan
+    Push-Location $RepositoryPath
+    try {
+        $latestTag = (& $GIT_EXECUTABLE describe --tags --abbrev=0 2>$null).Trim()
+        if ([string]::IsNullOrWhiteSpace($latestTag)) {
+            Write-Host "Tags not found. Using 1.5 version as default" -ForegroundColor Yellow
+            $baseVersion = "1.5"
+            $revision = (& $GIT_EXECUTABLE rev-list --count HEAD).Trim()
+        }
+        else {
+            $baseVersion = $latestTag -replace "^v", ""
+            $revision = (& $GIT_EXECUTABLE rev-list "$latestTag..HEAD" --count).Trim()
+        }
+        if ($LASTEXITCODE -ne 0) {
+            throw "Cannot get Git revision number"
+        }
+        $fullVersion = "$baseVersion.$revision"
+        Write-Host "Formed version: $fullVersion" -ForegroundColor Green
+        return $fullVersion
+    }
+    finally {
+        Pop-Location
+    }
+}
+
+
+function Copy-ProjectSources {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$TargetDirectory,
+
+        [Parameter(Mandatory = $true)]
+        [hashtable[]]$Projects
+    )
+    Write-Host "---> Copying sources to $TargetDirectory..." `
+        -ForegroundColor Cyan
+    if (Test-Path $TargetDirectory) {
+        Remove-Item $TargetDirectory -Recurse -Force
+    }
+    New-Item `
+        -ItemType Directory `
+        -Path $TargetDirectory `
+        -Force | Out-Null
+    foreach ($project in $Projects) {
+        $source = $project.LocalPath
+        if (-not [string]::IsNullOrWhiteSpace(
+            $project.SourceSubFolder
+        )) {
+            $source = Join-Path `
+                $source `
+                $project.SourceSubFolder
+        }
+        if (-not (Test-Path $source)) {
+            throw "Input path not found: $source"
+        }
+        if ([string]::IsNullOrWhiteSpace(
+            $project.TargetSubFolder
+        )) {
+            $destination = $TargetDirectory
+        }
+        else {
+            $destination = Join-Path `
+                $TargetDirectory `
+                $project.TargetSubFolder
+        }
+        New-Item `
+            -ItemType Directory `
+            -Path $destination `
+            -Force | Out-Null
+        Write-Host "Copying:" -ForegroundColor DarkGray
+        Write-Host "  from: $source" -ForegroundColor DarkGray
+        Write-Host "  to:   $destination" -ForegroundColor DarkGray
+        Get-ChildItem -Path $source -Force |
+            Where-Object {
+                $_.Name -ne ".git"
+            } |
+            Copy-Item `
+                -Destination $destination `
+                -Recurse `
+                -Force
+    }
+}
+
+function Save-BuildVersion {
+    param(
+        [Parameter(Mandatory)]
+        [string]$TargetDirectory,
+        [Parameter(Mandatory)]
+        [string]$Version
+    )
+    $versionFilePath = Join-Path $TargetDirectory "version.txt"
+    $Version | Out-File `
+        -FilePath $versionFilePath `
+        -Encoding utf8
+    $global:BuildVersion = $Version
+    $env:BUILD_VERSION = $Version
+    Write-Host "Version file seved to: $versionFilePath" `
+        -ForegroundColor Green
+}
+
+
+function Sync-ProjectsAndBuildVersion {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)]
+        [string]$TargetDirectory,
+        [Parameter(Mandatory)]
+        [hashtable]$MainProject,
+        [Parameter()]
+        [hashtable[]]$DependencyProjects = @()
+    )
+    # Sync main repository
+    $mainBranch = if (
+        [string]::IsNullOrWhiteSpace($MainProject.Branch)
+    ) {
+        "master"
+    }
+    else {
+        $MainProject.Branch
+    }
+    Sync-GitRepository `
+        -Url $MainProject.Url `
+        -LocalPath $MainProject.LocalPath `
+        -Branch $mainBranch
+    # Sync dependencies
+    foreach ($project in $DependencyProjects) {
+        $branch = if (
+            [string]::IsNullOrWhiteSpace($project.Branch)
+        ) {
+            "master"
+        }
+        else {
+            $project.Branch
+        }
+        Sync-GitRepository `
+            -Url $project.Url `
+            -LocalPath $project.LocalPath `
+            -Branch $branch
+    }
+    # Get version
+    $version = Get-ProjectVersion `
+        -RepositoryPath $MainProject.LocalPath
+    # Form main project list
+    $allProjects = @(
+        $MainProject
+        $DependencyProjects
+    )
+    # Copy sources
+    Copy-ProjectSources `
+        -TargetDirectory $TargetDirectory `
+        -Projects $allProjects
+    # Save version
+    Save-BuildVersion `
+        -TargetDirectory $TargetDirectory `
+        -Version $version
+    Write-Host "Sync finished." `
+        -ForegroundColor Green
+}
+
 function FetchSources {
     Set-Location $BUILDDIR
-    # Download and prepare sources using cmake script
-    & "$CMAKEDIR\bin\cmake.exe" -DGIT_EXECUTABLE="$GIT_EXECUTABLE" -DBUILD_DIR="C:/build" -P "$BUILDDIR\Prepare-psi.cmake"
+    Sync-ProjectsAndBuildVersion `
+    -TargetDirectory $BASEDIST `
+    -MainProject $mainRepo `
+    -DependencyProjects $dependencies
+
     PrepareSrc
 }
 
@@ -212,13 +482,14 @@ function MakeIt {
 
     $CMAKE_FLAGS = @("-DCHAT_TYPE=$ISWEBKIT",
                    "-DBUNDLED_IRIS_ALL=ON",
+                   "-DBUNDLED_KEYCHAIN=-ON",
                    "-DVERBOSE_PROGRAM_NAME=ON")
     if ($ISWEBKIT -eq "basic") { $CMAKE_FLAGS += "-DTRANSLATIONS_DIR=`"$LANGSPATH\translations`"" }
     if ($USEDEBUG -eq "ON") { $CMAKE_FLAGS += "-DCMAKE_BUILD_TYPE=Debug" }
     $CMAKE_FLAGS += "-DPRODUCTION=$USEPRODUCTION"
-    $ARGSLIST = @("$CMAKE_BTYPE",
-                "-S`"$PSIPATH`"",
-                "-B`"$BDIR`"")
+    $ARGSLIST = @($CMAKE_BTYPE,
+                "-S", $PSIPATH,
+                "-B", $BDIR)
     foreach ($element in $DEFAULT_CMAKE_FLAGS) {
         $ARGSLIST += "$element"
     }
@@ -231,15 +502,15 @@ function MakeIt {
     "cmake with flags $CMAKE_FLAGS finished" | Out-File -Append -Encoding UTF8 -FilePath $BUILDLOG
     "$($script:BTYPE) =$ISWEBKIT configured" | Out-File -Append -Encoding UTF8 -FilePath $BUILDLOG
     Set-Location $BDIR
-    & $CMAKEBIN --build `"$BDIR`" --target all --parallel $CPUCOUNT
+    & $CMAKEBIN --build $BDIR --target all --parallel $CPUCOUNT
     "$($script:BTYPE) =$ISWEBKIT compiled" | Out-File -Append -Encoding UTF8 -FilePath $BUILDLOG
     if ($USEPAUSES -eq "ON") { Read-Host "Press Enter to continue..." }
 
     if ($USEPRODUCTION -eq "ON") {
-        & $CMAKEBIN --build `"$BDIR`" --target prepare-bin --target prepare-bin-libs --target windeploy
+        & $CMAKEBIN --build $BDIR --target prepare-bin --target prepare-bin-libs --target windeploy
         if ($USEPAUSES -eq "ON") { Read-Host "Press Enter to continue..." }
     }
-    & $CMAKEBIN --build `"$BDIR`" --target install
+    & $CMAKEBIN --build $BDIR --target install
     if ($USEPAUSES -eq "ON") { Read-Host "Press Enter to continue..." }
     Set-Location $WORKDIR
     if (Test-Path $BDIR) { Remove-Item -Recurse -Force $BDIR }
@@ -252,16 +523,15 @@ function MakePlugins {
     New-Item -ItemType Directory -Path $BDIR | Out-Null
     Set-Location $BDIR
 
-    $CMAKE_FLAGS = @("$DEFAULT_CMAKE_FLAGS",
-                   "-DONLY_PLUGINS=ON",
-                   "-DBUILD_DEV_PLUGINS=$BPLUGS",
-                   "-DBUNDLED_OMEMO_C_ALL=ON",
+    $CMAKE_FLAGS = @("-DONLY_PLUGINS=ON",
+                   "-DBUILD_DEV_PLUGINS=ON",
+                   "-DBUILD_PLUGINS=-omemoplugin",
                    "-DBUILD_PSIMEDIA=$BUILD_PSIMEDIA",
                    "-DPKG_CONFIG_EXECUTABLE=`"$PKG_CONFIG_EXECUTABLE`"")
-    if ($USEDEBUG -eq "ON") { $CMAKE_FLAGS += " -DCMAKE_BUILD_TYPE=Debug" }
-    $ARGSLIST = @("$CMAKE_BTYPE",
-                "-S`"$BASEDIST`"",
-                "-B`"$BDIR`"")
+    if ($USEDEBUG -eq "ON") { $CMAKE_FLAGS += "-DCMAKE_BUILD_TYPE=Debug" }
+    $ARGSLIST = @($CMAKE_BTYPE,
+                "-S", $BASEDIST,
+                "-B", $BDIR)
     foreach ($element in $DEFAULT_CMAKE_FLAGS) {
         $ARGSLIST += "$element"
     }
@@ -271,9 +541,9 @@ function MakePlugins {
     & $CMAKEBIN $ARGSLIST
     if ($USEPAUSES -eq "ON") { Read-Host "Press Enter to continue..." }
     "cmake with flags $CMAKE_FLAGS finished" | Out-File -Append -Encoding UTF8 -FilePath $BUILDLOG
-    & $CMAKEBIN --build `"$BDIR`" --target all --parallel $CPUCOUNT
+    & $CMAKEBIN --build $BDIR --target all --parallel $CPUCOUNT
     if ($USEPAUSES -eq "ON") { Read-Host "Press Enter to continue..." }
-    & $CMAKEBIN --build `"$BDIR`" --target install
+    & $CMAKEBIN --build $BDIR --target install
     if ($USEPAUSES -eq "ON") { Read-Host "Press Enter to continue..." }
     Set-Location $WORKDIR
     if (Test-Path $BDIR) { Remove-Item -Recurse -Force $BDIR }

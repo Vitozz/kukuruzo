@@ -100,7 +100,7 @@ endfunction()
 
 function(GetVersion _PATH _OUTPUT)
     execute_process (
-        COMMAND ${GIT_EXECUTABLE} describe --tags
+        COMMAND ${GIT_EXECUTABLE} describe --tags --abbrev=0
         WORKING_DIRECTORY ${_PATH}
         OUTPUT_VARIABLE PSI_TAG
     )

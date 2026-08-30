@@ -26,11 +26,11 @@ Name: "plugins\juickplugin"; Description: "Juick plugin"; Types: full
 Name: "plugins\mediaplugin"; Description: "PsiMedia plugin"; Types: full compact
 Name: "plugins\messagefilterplugin"; Description: "Message Filter plugin"; Types: full
 Name: "plugins\noughtsandcrossesplugin"; Description: "Noughts And Crosses plugin"; Types: full
-Name: "plugins\omemoplugin"; Description: "OMEMO plugin"; Types: full
-Name: "plugins\openpgpplugin"; Description: "OpenPGP plugin"; Types: full
+Name: "plugins\openpgpplugin"; Description: "OpenPGP plugin"; Types: full compact
 Name: "plugins\otrplugin"; Description: "OTR plugin"; Types: full
 Name: "plugins\pepchangenotifyplugin"; Description: "PEP Change Notify plugin"; Types: full
 Name: "plugins\qipxstatusesplugin"; Description: "Qip X-Statuses plugin"; Types: full
+Name: "plugins\redirectorplugin"; Description: "Redirector Plugin"; Types: full
 Name: "plugins\skinsplugin"; Description: "Skins plugin"; Types: full
 Name: "plugins\stopspamplugin"; Description: "Stop Spam plugin"; Types: full
 Name: "plugins\storagenotesplugin"; Description: "Storage Notes plugin"; Types: full
@@ -131,14 +131,14 @@ OutputBaseFilename=psi-plus-{#AppVer}-x64-setup
 Compression=lzma2/ultra64
 InternalCompressLevel=ultra64
 DefaultDirName={userpf}\Psi-plus
-ArchitecturesAllowed=x64 ia64
+ArchitecturesAllowed=x64compatible
 UninstallDisplayName=Psi+ {#AppVer}
 DefaultGroupName=Psi+ (x64)
 AppSupportURL=https://github.com/psi-plus/main/issues
 AppUpdatesURL=https://sourceforge.net/projects/psiplus/files/Windows/Personal-Builds/KukuRuzo/
 UninstallDisplayIcon={app}\{#MyAppExeName}
-ArchitecturesInstallIn64BitMode=x64 ia64
-MinVersion=0,6.1sp1
+ArchitecturesInstallIn64BitMode=x64compatible
+MinVersion=0,6.3
 DisableProgramGroupPage=auto
 PrivilegesRequired=none
 UsePreviousGroup=False
@@ -147,6 +147,8 @@ DisableWelcomePage=False
 ShowTasksTreeLines=True
 WizardStyle=modern
 SetupLogging=True
+CloseApplications=yes
+
 ;SignTool=MsSign
 ;more consts
 #define SetupTypeReg "Inno Setup: Setup Type"
@@ -158,10 +160,10 @@ SetupLogging=True
 
 [Files]
 Source: "{#PsiPSrcDir}\certs\*"; DestDir: "{app}\certs"; Flags: ignoreversion recursesubdirs skipifsourcedoesntexist; Components: common
-Source: "{#PsiPSrcDir}\iconsets\roster\*.jisp"; DestDir: "{app}\iconsets\roster"; Flags: ignoreversion recursesubdirs skipifsourcedoesntexist; Components: common
-Source: "{#PsiPSrcDir}\sound\*"; DestDir: "{app}\sound"; Flags: ignoreversion recursesubdirs skipifsourcedoesntexist; Components: common
+Source: "{#WorkDir}\iconsets\roster\*.jisp"; DestDir: "{app}\iconsets\roster"; Flags: ignoreversion recursesubdirs skipifsourcedoesntexist; Components: common
+Source: "{#WorkDir}\sound\*"; DestDir: "{app}\sound"; Flags: ignoreversion recursesubdirs skipifsourcedoesntexist; Components: common
 ;Source: "{#PsiPSrcDir}\skins\*"; DestDir: "{app}\skins"; Flags: ignoreversion recursesubdirs skipifsourcedoesntexist; Components: common
-Source: "{#ResDir}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs skipifsourcedoesntexist; Components: common; Excludes: "iconsets, *skins\mac, sounds"
+Source: "{#ResDir}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs skipifsourcedoesntexist; Components: common; Excludes: "iconsets, *skins\mac, sound"
 Source: "{#WorkDir}\client_icons.txt"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs skipifsourcedoesntexist; Components: common
 Source: "{#PsiPSrcDir}\CHANGELOG"; DestDir: "{app}"; DestName: "CHANGELOG.TXT"; Flags: ignoreversion skipifsourcedoesntexist; Components: common
 Source: "{#WorkDir}\translations\*"; DestDir: "{app}\translations"; Flags: ignoreversion recursesubdirs; Components: common
@@ -307,11 +309,11 @@ Source: "{#PluginsPrefix}\juickplugin.dll"; DestDir: "{app}\plugins"; Flags: ign
 Source: "{#PluginsPrefix}\mediaplugin.dll"; DestDir: "{app}\plugins"; Flags: ignoreversion; Components: plugins\mediaplugin
 Source: "{#PluginsPrefix}\messagefilterplugin.dll"; DestDir: "{app}\plugins"; Flags: ignoreversion; Components: plugins\messagefilterplugin
 Source: "{#PluginsPrefix}\noughtsandcrossesplugin.dll"; DestDir: "{app}\plugins"; Flags: ignoreversion; Components: plugins\noughtsandcrossesplugin
-Source: "{#PluginsPrefix}\omemoplugin.dll"; DestDir: "{app}\plugins"; Flags: ignoreversion; Components: plugins\omemoplugin
 Source: "{#PluginsPrefix}\openpgpplugin.dll"; DestDir: "{app}\plugins"; Flags: ignoreversion; Components: plugins\openpgpplugin
 Source: "{#PluginsPrefix}\otrplugin.dll"; DestDir: "{app}\plugins"; Flags: ignoreversion; Components: plugins\otrplugin
 Source: "{#PluginsPrefix}\pepchangenotifyplugin.dll"; DestDir: "{app}\plugins"; Flags: ignoreversion; Components: plugins\pepchangenotifyplugin
 Source: "{#PluginsPrefix}\qipxstatusesplugin.dll"; DestDir: "{app}\plugins"; Flags: ignoreversion; Components: plugins\qipxstatusesplugin
+Source: "{#PluginsPrefix}\redirectorplugin.dll"; DestDir: "{app}\plugins"; Flags: ignoreversion; Components: plugins\redirectorplugin
 Source: "{#PluginsPrefix}\skinsplugin.dll"; DestDir: "{app}\plugins"; Flags: ignoreversion; Components: plugins\skinsplugin
 Source: "{#PluginsPrefix}\stopspamplugin.dll"; DestDir: "{app}\plugins"; Flags: ignoreversion; Components: plugins\stopspamplugin
 Source: "{#PluginsPrefix}\storagenotesplugin.dll"; DestDir: "{app}\plugins"; Flags: ignoreversion; Components: plugins\storagenotesplugin
@@ -394,10 +396,10 @@ Root: "HKCR"; Subkey: "xmpp\DefaultIcon"; ValueType: string; ValueData: """{app}
 Root: "HKCR"; Subkey: "xmpp\shell\open\command"; ValueType: string; ValueData: """{app}\psi-plus-webengine.exe"" ""--uri=%1"""; Flags: uninsclearvalue uninsdeletekeyifempty; Components: bin64w; Tasks: createregentry
 
 [Messages]
-english.WelcomeLabel2=This will install [name/ver] on your computer.%n%nIt is recommended that you close all other applications before continuing.%n%nWARNING! Since 1.5.1594 version installer do not contains iconpacks to reduce size. Please use Content Downloader plugin to install needed iconpacks
-french.WelcomeLabel2=Cela installera [name/ver] sur votre ordinateur.%n%nIl est recommandé de fermer toutes les autres applications avant de continuer.%n%nAVERTISSEMENT ! Depuis la version 1.5.1594, le programme d'installation ne contient pas de packs d'icônes pour réduire la taille. Veuillez utiliser le plugin Content Downloader pour installer les packs d'icônes nécessaires 
-russian.WelcomeLabel2=Это установит [name/ver] на ваш компьютер.%n%nПеред продолжением рекомендуется закрыть все другие приложения.%n%nВНИМАНИЕ! Начиная с версии 1.5.1594, инсталлятор не содержит пакеты иконок для уменьшения размера. Пожалуйста, воспользуйтесь Content Downloader плагином, чтобы установить необходимые иконки
-ukrainian.WelcomeLabel2=Це встановить [name/ver] на ваш комп'ютер.%n%nПеред продовженням рекомендовано закрити всі інші програми.%n%УВАГА! Починаючи з версії 1.5.1594, інсталятор не містить пакетів іконок для зменшення розміру. Будь ласка, скористайтесь Content Downloader плагіном, щоб встановити необхідні іконки
+english.WelcomeLabel2=This will install [name/ver] on your computer.%n%nIt is recommended that you close all other applications before continuing.%n%nWARNING! This installer do not contains iconpacks. Please use Content Downloader plugin to install needed iconpacks
+french.WelcomeLabel2=Cela installera [name/ver] sur votre ordinateur.%n%nIl est recommandé de fermer toutes les autres applications avant de continuer.%n%nAVERTISSEMENT ! Le programme d'installation ne contient pas de packs d'icônes. Veuillez utiliser le plugin Content Downloader pour installer les packs d'icônes nécessaires 
+russian.WelcomeLabel2=Это установит [name/ver] на ваш компьютер.%n%nПеред продолжением рекомендуется закрыть все другие приложения.%n%nВНИМАНИЕ! Инсталлятор не содержит пакеты иконок. Пожалуйста, воспользуйтесь Content Downloader плагином, чтобы установить необходимые иконки
+ukrainian.WelcomeLabel2=Це встановить [name/ver] на ваш комп'ютер.%n%nПеред продовженням рекомендовано закрити всі інші програми.%n%УВАГА! Інсталятор не містить пакетів іконок. Будь ласка, скористайтесь Content Downloader плагіном, щоб встановити необхідні іконки
 
 [Code]
 function InitializeUninstall(): Boolean;
@@ -410,11 +412,11 @@ begin
   RegQueryStringValue(HKEY_LOCAL_MACHINE,
     'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\' + vCurID + '_is1',
     ExpandConstant('{#SelectedComponentsReg}'), SelectedComponents);
-  if Pos('bin64', SelectedComponents) > 0 then begin
+  if pos('bin64', SelectedComponents) > 0 then begin
     ShellExec('open','taskkill.exe','/f /im psi-plus.exe','',SW_HIDE,ewNoWait,ErrorCode);
     ShellExec('open','tskill.exe',' {#MyAppName}','',SW_HIDE,ewNoWait,ErrorCode);
   end
-  else if Pos('bin64w', SelectedComponents) > 0 then begin
+  else if pos('bin64w', SelectedComponents) > 0 then begin
     ShellExec('open','taskkill.exe','/f /im psi-plus-webengine.exe','',SW_HIDE,ewNoWait,ErrorCode);
     ShellExec('open','tskill.exe',' {#MyAppName}','',SW_HIDE,ewNoWait,ErrorCode);
   end;
@@ -570,9 +572,9 @@ function VCinstalled: Boolean;
       if RegQueryDWordValue(HKEY_LOCAL_MACHINE, key, 'Bld', bld) then begin
         if RegQueryDWordValue(HKEY_LOCAL_MACHINE, key, 'RBld', rbld) then begin
             Log('VC 2019 Redist Major is: ' + IntToStr(major) + ' Minor is: ' + IntToStr(minor) + ' Bld is: ' + IntToStr(bld) + ' Rbld is: ' + IntToStr(rbld));
-            // Version info was found. Return true if later or equal to our 14.29.30139.0 redistributable
+            // Version info was found. Return true if later or equal to our 14.40.33816.0 redistributable
             // Note brackets required because of weird operator precendence
-            if (major >= 14) and (minor >= 29) and (bld >= 30153) and (rbld >= 0) then begin
+            if (major >= 14) and (minor >= 42) and (bld >= 34433) and (rbld >= 0) then begin
               Result := True;
             end
             else begin

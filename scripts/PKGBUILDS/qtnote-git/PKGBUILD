@@ -1,15 +1,15 @@
-pkgname=qtnote-git
-pkgver=3.2.89.28.g7f428b1
+pkgname=anykeep-git
+pkgver=nightly.0.g5da45c8
 pkgrel=1
 pkgdesc="Note-taking application written with Qt in mind"
 arch=('i686' 'x86_64')
-url="http://ri0n.github.io/QtNote"
+url="http://ri0n.github.io/AnyKeep"
 license=('GPL3')
 depends=('qt6-base' 'qt6-tools' 'hunspell' 'qt6-multimedia')
 makedepends=('git' 'cmake')
 optdepends=('kglobalaccel' 'kwindowsystem' 'knotifications' 'wl-clipboard')
-conflicts=(qtnote)
-source=("$pkgname"::"git+https://github.com/Ri0n/QtNote.git")
+conflicts=(qtnote qtnote-git anykeep)
+source=("$pkgname"::"git+https://github.com/Ri0n/AnyKeep")
 sha256sums=('SKIP')
 
 pkgver() {
