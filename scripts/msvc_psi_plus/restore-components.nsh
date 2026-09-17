@@ -1,96 +1,190 @@
-; Shared component restoration list for the Psi+ NSIS installer.
-; Include this file after all plugin and dictionary sections have been declared.
+; Shared component state list for the Psi+ NSIS installer.
+; This file is included after all sections have been declared.
+
+!macro SAVE_ALL_PLUGIN_COMPONENTS
+  !insertmacro SAVE_COMPONENT "attentionplugin" ${SEC_PLUGIN_attentionplugin}
+  !insertmacro SAVE_COMPONENT "autoreplyplugin" ${SEC_PLUGIN_autoreplyplugin}
+  !insertmacro SAVE_COMPONENT "battleshipgameplugin" ${SEC_PLUGIN_battleshipgameplugin}
+  !insertmacro SAVE_COMPONENT "birthdayreminderplugin" ${SEC_PLUGIN_birthdayreminderplugin}
+  !insertmacro SAVE_COMPONENT "chessplugin" ${SEC_PLUGIN_chessplugin}
+  !insertmacro SAVE_COMPONENT "cleanerplugin" ${SEC_PLUGIN_cleanerplugin}
+  !insertmacro SAVE_COMPONENT "clientswitcherplugin" ${SEC_PLUGIN_clientswitcherplugin}
+  !insertmacro SAVE_COMPONENT "conferenceloggerplugin" ${SEC_PLUGIN_conferenceloggerplugin}
+  !insertmacro SAVE_COMPONENT "contentdownloaderplugin" ${SEC_PLUGIN_contentdownloaderplugin}
+  !insertmacro SAVE_COMPONENT "enummessagesplugin" ${SEC_PLUGIN_enummessagesplugin}
+  !insertmacro SAVE_COMPONENT "extendedmenuplugin" ${SEC_PLUGIN_extendedmenuplugin}
+  !insertmacro SAVE_COMPONENT "extendedoptionsplugin" ${SEC_PLUGIN_extendedoptionsplugin}
+  !insertmacro SAVE_COMPONENT "gomokugameplugin" ${SEC_PLUGIN_gomokugameplugin}
+  !insertmacro SAVE_COMPONENT "historykeeperplugin" ${SEC_PLUGIN_historykeeperplugin}
+  !insertmacro SAVE_COMPONENT "imageplugin" ${SEC_PLUGIN_imageplugin}
+  !insertmacro SAVE_COMPONENT "imagepreviewplugin" ${SEC_PLUGIN_imagepreviewplugin}
+  !insertmacro SAVE_COMPONENT "jabberdiskplugin" ${SEC_PLUGIN_jabberdiskplugin}
+  !insertmacro SAVE_COMPONENT "juickplugin" ${SEC_PLUGIN_juickplugin}
+  !insertmacro SAVE_COMPONENT "mediaplugin" ${SEC_PLUGIN_mediaplugin}
+  !insertmacro SAVE_COMPONENT "messagefilterplugin" ${SEC_PLUGIN_messagefilterplugin}
+  !insertmacro SAVE_COMPONENT "noughtsandcrossesplugin" ${SEC_PLUGIN_noughtsandcrossesplugin}
+  !insertmacro SAVE_COMPONENT "openpgpplugin" ${SEC_PLUGIN_openpgpplugin}
+  !insertmacro SAVE_COMPONENT "otrplugin" ${SEC_PLUGIN_otrplugin}
+  !insertmacro SAVE_COMPONENT "pepchangenotifyplugin" ${SEC_PLUGIN_pepchangenotifyplugin}
+  !insertmacro SAVE_COMPONENT "qipxstatusesplugin" ${SEC_PLUGIN_qipxstatusesplugin}
+  !insertmacro SAVE_COMPONENT "redirectorplugin" ${SEC_PLUGIN_redirectorplugin}
+  !insertmacro SAVE_COMPONENT "skinsplugin" ${SEC_PLUGIN_skinsplugin}
+  !insertmacro SAVE_COMPONENT "stopspamplugin" ${SEC_PLUGIN_stopspamplugin}
+  !insertmacro SAVE_COMPONENT "storagenotesplugin" ${SEC_PLUGIN_storagenotesplugin}
+  !insertmacro SAVE_COMPONENT "translateplugin" ${SEC_PLUGIN_translateplugin}
+  !insertmacro SAVE_COMPONENT "videostatusplugin" ${SEC_PLUGIN_videostatusplugin}
+  !insertmacro SAVE_COMPONENT "watcherplugin" ${SEC_PLUGIN_watcherplugin}
+!macroend
 
 !macro RESTORE_ALL_PLUGIN_COMPONENTS
-  !insertmacro RESTORE_COMPONENT attentionplugin
-  !insertmacro RESTORE_COMPONENT autoreplyplugin
-  !insertmacro RESTORE_COMPONENT battleshipgameplugin
-  !insertmacro RESTORE_COMPONENT birthdayreminderplugin
-  !insertmacro RESTORE_COMPONENT chessplugin
-  !insertmacro RESTORE_COMPONENT cleanerplugin
-  !insertmacro RESTORE_COMPONENT clientswitcherplugin
-  !insertmacro RESTORE_COMPONENT conferenceloggerplugin
-  !insertmacro RESTORE_COMPONENT contentdownloaderplugin
-  !insertmacro RESTORE_COMPONENT enummessagesplugin
-  !insertmacro RESTORE_COMPONENT extendedmenuplugin
-  !insertmacro RESTORE_COMPONENT extendedoptionsplugin
-  !insertmacro RESTORE_COMPONENT gomokugameplugin
-  !insertmacro RESTORE_COMPONENT historykeeperplugin
-  !insertmacro RESTORE_COMPONENT imageplugin
-  !insertmacro RESTORE_COMPONENT imagepreviewplugin
-  !insertmacro RESTORE_COMPONENT jabberdiskplugin
-  !insertmacro RESTORE_COMPONENT juickplugin
-  !insertmacro RESTORE_COMPONENT mediaplugin
-  !insertmacro RESTORE_COMPONENT messagefilterplugin
-  !insertmacro RESTORE_COMPONENT noughtsandcrossesplugin
-  !insertmacro RESTORE_COMPONENT openpgpplugin
-  !insertmacro RESTORE_COMPONENT otrplugin
-  !insertmacro RESTORE_COMPONENT pepchangenotifyplugin
-  !insertmacro RESTORE_COMPONENT qipxstatusesplugin
-  !insertmacro RESTORE_COMPONENT redirectorplugin
-  !insertmacro RESTORE_COMPONENT skinsplugin
-  !insertmacro RESTORE_COMPONENT stopspamplugin
-  !insertmacro RESTORE_COMPONENT storagenotesplugin
-  !insertmacro RESTORE_COMPONENT translateplugin
-  !insertmacro RESTORE_COMPONENT videostatusplugin
-  !insertmacro RESTORE_COMPONENT watcherplugin
+  !insertmacro RESTORE_COMPONENT "attentionplugin" ${SEC_PLUGIN_attentionplugin}
+  !insertmacro RESTORE_COMPONENT "autoreplyplugin" ${SEC_PLUGIN_autoreplyplugin}
+  !insertmacro RESTORE_COMPONENT "battleshipgameplugin" ${SEC_PLUGIN_battleshipgameplugin}
+  !insertmacro RESTORE_COMPONENT "birthdayreminderplugin" ${SEC_PLUGIN_birthdayreminderplugin}
+  !insertmacro RESTORE_COMPONENT "chessplugin" ${SEC_PLUGIN_chessplugin}
+  !insertmacro RESTORE_COMPONENT "cleanerplugin" ${SEC_PLUGIN_cleanerplugin}
+  !insertmacro RESTORE_COMPONENT "clientswitcherplugin" ${SEC_PLUGIN_clientswitcherplugin}
+  !insertmacro RESTORE_COMPONENT "conferenceloggerplugin" ${SEC_PLUGIN_conferenceloggerplugin}
+  !insertmacro RESTORE_COMPONENT "contentdownloaderplugin" ${SEC_PLUGIN_contentdownloaderplugin}
+  !insertmacro RESTORE_COMPONENT "enummessagesplugin" ${SEC_PLUGIN_enummessagesplugin}
+  !insertmacro RESTORE_COMPONENT "extendedmenuplugin" ${SEC_PLUGIN_extendedmenuplugin}
+  !insertmacro RESTORE_COMPONENT "extendedoptionsplugin" ${SEC_PLUGIN_extendedoptionsplugin}
+  !insertmacro RESTORE_COMPONENT "gomokugameplugin" ${SEC_PLUGIN_gomokugameplugin}
+  !insertmacro RESTORE_COMPONENT "historykeeperplugin" ${SEC_PLUGIN_historykeeperplugin}
+  !insertmacro RESTORE_COMPONENT "imageplugin" ${SEC_PLUGIN_imageplugin}
+  !insertmacro RESTORE_COMPONENT "imagepreviewplugin" ${SEC_PLUGIN_imagepreviewplugin}
+  !insertmacro RESTORE_COMPONENT "jabberdiskplugin" ${SEC_PLUGIN_jabberdiskplugin}
+  !insertmacro RESTORE_COMPONENT "juickplugin" ${SEC_PLUGIN_juickplugin}
+  !insertmacro RESTORE_COMPONENT "mediaplugin" ${SEC_PLUGIN_mediaplugin}
+  !insertmacro RESTORE_COMPONENT "messagefilterplugin" ${SEC_PLUGIN_messagefilterplugin}
+  !insertmacro RESTORE_COMPONENT "noughtsandcrossesplugin" ${SEC_PLUGIN_noughtsandcrossesplugin}
+  !insertmacro RESTORE_COMPONENT "openpgpplugin" ${SEC_PLUGIN_openpgpplugin}
+  !insertmacro RESTORE_COMPONENT "otrplugin" ${SEC_PLUGIN_otrplugin}
+  !insertmacro RESTORE_COMPONENT "pepchangenotifyplugin" ${SEC_PLUGIN_pepchangenotifyplugin}
+  !insertmacro RESTORE_COMPONENT "qipxstatusesplugin" ${SEC_PLUGIN_qipxstatusesplugin}
+  !insertmacro RESTORE_COMPONENT "redirectorplugin" ${SEC_PLUGIN_redirectorplugin}
+  !insertmacro RESTORE_COMPONENT "skinsplugin" ${SEC_PLUGIN_skinsplugin}
+  !insertmacro RESTORE_COMPONENT "stopspamplugin" ${SEC_PLUGIN_stopspamplugin}
+  !insertmacro RESTORE_COMPONENT "storagenotesplugin" ${SEC_PLUGIN_storagenotesplugin}
+  !insertmacro RESTORE_COMPONENT "translateplugin" ${SEC_PLUGIN_translateplugin}
+  !insertmacro RESTORE_COMPONENT "videostatusplugin" ${SEC_PLUGIN_videostatusplugin}
+  !insertmacro RESTORE_COMPONENT "watcherplugin" ${SEC_PLUGIN_watcherplugin}
+!macroend
+
+!macro SAVE_ALL_DICTIONARY_COMPONENTS
+  !insertmacro SAVE_COMPONENT "af_ZA" ${SEC_DICT_af_ZA}
+  !insertmacro SAVE_COMPONENT "an_ES" ${SEC_DICT_an_ES}
+  !insertmacro SAVE_COMPONENT "ar" ${SEC_DICT_ar}
+  !insertmacro SAVE_COMPONENT "be_BY" ${SEC_DICT_be_BY}
+  !insertmacro SAVE_COMPONENT "bg_BG" ${SEC_DICT_bg_BG}
+  !insertmacro SAVE_COMPONENT "bn_BD" ${SEC_DICT_bn_BD}
+  !insertmacro SAVE_COMPONENT "br_FR" ${SEC_DICT_br_FR}
+  !insertmacro SAVE_COMPONENT "bs_BA" ${SEC_DICT_bs_BA}
+  !insertmacro SAVE_COMPONENT "cs_CZ" ${SEC_DICT_cs_CZ}
+  !insertmacro SAVE_COMPONENT "da_DK" ${SEC_DICT_da_DK}
+  !insertmacro SAVE_COMPONENT "de_AT_frami" ${SEC_DICT_de_AT_frami}
+  !insertmacro SAVE_COMPONENT "de_CH_frami" ${SEC_DICT_de_CH_frami}
+  !insertmacro SAVE_COMPONENT "de_DE_frami" ${SEC_DICT_de_DE_frami}
+  !insertmacro SAVE_COMPONENT "el_GR" ${SEC_DICT_el_GR}
+  !insertmacro SAVE_COMPONENT "en_AU" ${SEC_DICT_en_AU}
+  !insertmacro SAVE_COMPONENT "en_CA" ${SEC_DICT_en_CA}
+  !insertmacro SAVE_COMPONENT "en_GB" ${SEC_DICT_en_GB}
+  !insertmacro SAVE_COMPONENT "en_US" ${SEC_DICT_en_US}
+  !insertmacro SAVE_COMPONENT "en_ZA" ${SEC_DICT_en_ZA}
+  !insertmacro SAVE_COMPONENT "es_ANY" ${SEC_DICT_es_ANY}
+  !insertmacro SAVE_COMPONENT "et_EE" ${SEC_DICT_et_EE}
+  !insertmacro SAVE_COMPONENT "fr" ${SEC_DICT_fr}
+  !insertmacro SAVE_COMPONENT "gl_ES" ${SEC_DICT_gl_ES}
+  !insertmacro SAVE_COMPONENT "gu_IN" ${SEC_DICT_gu_IN}
+  !insertmacro SAVE_COMPONENT "he_IL" ${SEC_DICT_he_IL}
+  !insertmacro SAVE_COMPONENT "hi_IN" ${SEC_DICT_hi_IN}
+  !insertmacro SAVE_COMPONENT "hr_HR" ${SEC_DICT_hr_HR}
+  !insertmacro SAVE_COMPONENT "hu_HU" ${SEC_DICT_hu_HU}
+  !insertmacro SAVE_COMPONENT "is_dic" ${SEC_DICT_is_dic}
+  !insertmacro SAVE_COMPONENT "it_IT" ${SEC_DICT_it_IT}
+  !insertmacro SAVE_COMPONENT "kmr_Latn" ${SEC_DICT_kmr_Latn}
+  !insertmacro SAVE_COMPONENT "lo_LA" ${SEC_DICT_lo_LA}
+  !insertmacro SAVE_COMPONENT "lt" ${SEC_DICT_lt}
+  !insertmacro SAVE_COMPONENT "lv_LV" ${SEC_DICT_lv_LV}
+  !insertmacro SAVE_COMPONENT "nb_NO" ${SEC_DICT_nb_NO}
+  !insertmacro SAVE_COMPONENT "ne_NP" ${SEC_DICT_ne_NP}
+  !insertmacro SAVE_COMPONENT "nl_NL" ${SEC_DICT_nl_NL}
+  !insertmacro SAVE_COMPONENT "nn_NO" ${SEC_DICT_nn_NO}
+  !insertmacro SAVE_COMPONENT "oc_FR" ${SEC_DICT_oc_FR}
+  !insertmacro SAVE_COMPONENT "pl_PL" ${SEC_DICT_pl_PL}
+  !insertmacro SAVE_COMPONENT "pt_BR" ${SEC_DICT_pt_BR}
+  !insertmacro SAVE_COMPONENT "pt_PT" ${SEC_DICT_pt_PT}
+  !insertmacro SAVE_COMPONENT "ro_RO" ${SEC_DICT_ro_RO}
+  !insertmacro SAVE_COMPONENT "ru_RU" ${SEC_DICT_ru_RU}
+  !insertmacro SAVE_COMPONENT "si_LK" ${SEC_DICT_si_LK}
+  !insertmacro SAVE_COMPONENT "sk_SK" ${SEC_DICT_sk_SK}
+  !insertmacro SAVE_COMPONENT "sl_SI" ${SEC_DICT_sl_SI}
+  !insertmacro SAVE_COMPONENT "sr_Latn" ${SEC_DICT_sr_Latn}
+  !insertmacro SAVE_COMPONENT "sr" ${SEC_DICT_sr}
+  !insertmacro SAVE_COMPONENT "sv_FI" ${SEC_DICT_sv_FI}
+  !insertmacro SAVE_COMPONENT "sv_SE" ${SEC_DICT_sv_SE}
+  !insertmacro SAVE_COMPONENT "sw_TZ" ${SEC_DICT_sw_TZ}
+  !insertmacro SAVE_COMPONENT "te_IN" ${SEC_DICT_te_IN}
+  !insertmacro SAVE_COMPONENT "th_TH" ${SEC_DICT_th_TH}
+  !insertmacro SAVE_COMPONENT "uk_UA" ${SEC_DICT_uk_UA}
+  !insertmacro SAVE_COMPONENT "vi_VN" ${SEC_DICT_vi_VN}
 !macroend
 
 !macro RESTORE_ALL_DICTIONARY_COMPONENTS
-  !insertmacro RESTORE_DICT af_ZA
-  !insertmacro RESTORE_DICT an_ES
-  !insertmacro RESTORE_DICT ar
-  !insertmacro RESTORE_DICT be_BY
-  !insertmacro RESTORE_DICT bg_BG
-  !insertmacro RESTORE_DICT bn_BD
-  !insertmacro RESTORE_DICT br_FR
-  !insertmacro RESTORE_DICT bs_BA
-  !insertmacro RESTORE_DICT cs_CZ
-  !insertmacro RESTORE_DICT da_DK
-  !insertmacro RESTORE_DICT de_AT_frami
-  !insertmacro RESTORE_DICT de_CH_frami
-  !insertmacro RESTORE_DICT de_DE_frami
-  !insertmacro RESTORE_DICT el_GR
-  !insertmacro RESTORE_DICT en_AU
-  !insertmacro RESTORE_DICT en_CA
-  !insertmacro RESTORE_DICT en_GB
-  !insertmacro RESTORE_DICT en_US
-  !insertmacro RESTORE_DICT en_ZA
-  !insertmacro RESTORE_DICT es_ANY
-  !insertmacro RESTORE_DICT et_EE
-  !insertmacro RESTORE_DICT fr
-  !insertmacro RESTORE_DICT gl_ES
-  !insertmacro RESTORE_DICT gu_IN
-  !insertmacro RESTORE_DICT he_IL
-  !insertmacro RESTORE_DICT hi_IN
-  !insertmacro RESTORE_DICT hr_HR
-  !insertmacro RESTORE_DICT hu_HU
-  !insertmacro RESTORE_DICT is_dic
-  !insertmacro RESTORE_DICT it_IT
-  !insertmacro RESTORE_DICT kmr_Latn
-  !insertmacro RESTORE_DICT lo_LA
-  !insertmacro RESTORE_DICT lt
-  !insertmacro RESTORE_DICT lv_LV
-  !insertmacro RESTORE_DICT nb_NO
-  !insertmacro RESTORE_DICT ne_NP
-  !insertmacro RESTORE_DICT nl_NL
-  !insertmacro RESTORE_DICT nn_NO
-  !insertmacro RESTORE_DICT oc_FR
-  !insertmacro RESTORE_DICT pl_PL
-  !insertmacro RESTORE_DICT pt_BR
-  !insertmacro RESTORE_DICT pt_PT
-  !insertmacro RESTORE_DICT ro_RO
-  !insertmacro RESTORE_DICT ru_RU
-  !insertmacro RESTORE_DICT si_LK
-  !insertmacro RESTORE_DICT sk_SK
-  !insertmacro RESTORE_DICT sl_SI
-  !insertmacro RESTORE_DICT sr_Latn
-  !insertmacro RESTORE_DICT sr
-  !insertmacro RESTORE_DICT sv_FI
-  !insertmacro RESTORE_DICT sv_SE
-  !insertmacro RESTORE_DICT sw_TZ
-  !insertmacro RESTORE_DICT te_IN
-  !insertmacro RESTORE_DICT th_TH
-  !insertmacro RESTORE_DICT uk_UA
-  !insertmacro RESTORE_DICT vi_VN
+  !insertmacro RESTORE_COMPONENT "af_ZA" ${SEC_DICT_af_ZA}
+  !insertmacro RESTORE_COMPONENT "an_ES" ${SEC_DICT_an_ES}
+  !insertmacro RESTORE_COMPONENT "ar" ${SEC_DICT_ar}
+  !insertmacro RESTORE_COMPONENT "be_BY" ${SEC_DICT_be_BY}
+  !insertmacro RESTORE_COMPONENT "bg_BG" ${SEC_DICT_bg_BG}
+  !insertmacro RESTORE_COMPONENT "bn_BD" ${SEC_DICT_bn_BD}
+  !insertmacro RESTORE_COMPONENT "br_FR" ${SEC_DICT_br_FR}
+  !insertmacro RESTORE_COMPONENT "bs_BA" ${SEC_DICT_bs_BA}
+  !insertmacro RESTORE_COMPONENT "cs_CZ" ${SEC_DICT_cs_CZ}
+  !insertmacro RESTORE_COMPONENT "da_DK" ${SEC_DICT_da_DK}
+  !insertmacro RESTORE_COMPONENT "de_AT_frami" ${SEC_DICT_de_AT_frami}
+  !insertmacro RESTORE_COMPONENT "de_CH_frami" ${SEC_DICT_de_CH_frami}
+  !insertmacro RESTORE_COMPONENT "de_DE_frami" ${SEC_DICT_de_DE_frami}
+  !insertmacro RESTORE_COMPONENT "el_GR" ${SEC_DICT_el_GR}
+  !insertmacro RESTORE_COMPONENT "en_AU" ${SEC_DICT_en_AU}
+  !insertmacro RESTORE_COMPONENT "en_CA" ${SEC_DICT_en_CA}
+  !insertmacro RESTORE_COMPONENT "en_GB" ${SEC_DICT_en_GB}
+  !insertmacro RESTORE_COMPONENT "en_US" ${SEC_DICT_en_US}
+  !insertmacro RESTORE_COMPONENT "en_ZA" ${SEC_DICT_en_ZA}
+  !insertmacro RESTORE_COMPONENT "es_ANY" ${SEC_DICT_es_ANY}
+  !insertmacro RESTORE_COMPONENT "et_EE" ${SEC_DICT_et_EE}
+  !insertmacro RESTORE_COMPONENT "fr" ${SEC_DICT_fr}
+  !insertmacro RESTORE_COMPONENT "gl_ES" ${SEC_DICT_gl_ES}
+  !insertmacro RESTORE_COMPONENT "gu_IN" ${SEC_DICT_gu_IN}
+  !insertmacro RESTORE_COMPONENT "he_IL" ${SEC_DICT_he_IL}
+  !insertmacro RESTORE_COMPONENT "hi_IN" ${SEC_DICT_hi_IN}
+  !insertmacro RESTORE_COMPONENT "hr_HR" ${SEC_DICT_hr_HR}
+  !insertmacro RESTORE_COMPONENT "hu_HU" ${SEC_DICT_hu_HU}
+  !insertmacro RESTORE_COMPONENT "is_dic" ${SEC_DICT_is_dic}
+  !insertmacro RESTORE_COMPONENT "it_IT" ${SEC_DICT_it_IT}
+  !insertmacro RESTORE_COMPONENT "kmr_Latn" ${SEC_DICT_kmr_Latn}
+  !insertmacro RESTORE_COMPONENT "lo_LA" ${SEC_DICT_lo_LA}
+  !insertmacro RESTORE_COMPONENT "lt" ${SEC_DICT_lt}
+  !insertmacro RESTORE_COMPONENT "lv_LV" ${SEC_DICT_lv_LV}
+  !insertmacro RESTORE_COMPONENT "nb_NO" ${SEC_DICT_nb_NO}
+  !insertmacro RESTORE_COMPONENT "ne_NP" ${SEC_DICT_ne_NP}
+  !insertmacro RESTORE_COMPONENT "nl_NL" ${SEC_DICT_nl_NL}
+  !insertmacro RESTORE_COMPONENT "nn_NO" ${SEC_DICT_nn_NO}
+  !insertmacro RESTORE_COMPONENT "oc_FR" ${SEC_DICT_oc_FR}
+  !insertmacro RESTORE_COMPONENT "pl_PL" ${SEC_DICT_pl_PL}
+  !insertmacro RESTORE_COMPONENT "pt_BR" ${SEC_DICT_pt_BR}
+  !insertmacro RESTORE_COMPONENT "pt_PT" ${SEC_DICT_pt_PT}
+  !insertmacro RESTORE_COMPONENT "ro_RO" ${SEC_DICT_ro_RO}
+  !insertmacro RESTORE_COMPONENT "ru_RU" ${SEC_DICT_ru_RU}
+  !insertmacro RESTORE_COMPONENT "si_LK" ${SEC_DICT_si_LK}
+  !insertmacro RESTORE_COMPONENT "sk_SK" ${SEC_DICT_sk_SK}
+  !insertmacro RESTORE_COMPONENT "sl_SI" ${SEC_DICT_sl_SI}
+  !insertmacro RESTORE_COMPONENT "sr_Latn" ${SEC_DICT_sr_Latn}
+  !insertmacro RESTORE_COMPONENT "sr" ${SEC_DICT_sr}
+  !insertmacro RESTORE_COMPONENT "sv_FI" ${SEC_DICT_sv_FI}
+  !insertmacro RESTORE_COMPONENT "sv_SE" ${SEC_DICT_sv_SE}
+  !insertmacro RESTORE_COMPONENT "sw_TZ" ${SEC_DICT_sw_TZ}
+  !insertmacro RESTORE_COMPONENT "te_IN" ${SEC_DICT_te_IN}
+  !insertmacro RESTORE_COMPONENT "th_TH" ${SEC_DICT_th_TH}
+  !insertmacro RESTORE_COMPONENT "uk_UA" ${SEC_DICT_uk_UA}
+  !insertmacro RESTORE_COMPONENT "vi_VN" ${SEC_DICT_vi_VN}
 !macroend
