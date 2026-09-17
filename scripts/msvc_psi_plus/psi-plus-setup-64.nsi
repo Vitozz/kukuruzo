@@ -55,28 +55,36 @@ VIAddVersionKey /LANG=1033 "LegalCopyright" "© 2008-2026 Psi+ Project"
 !define MUI_FINISHPAGE_RUN_TEXT "Start Psi+"
 !define MUI_FINISHPAGE_RUN_FUNCTION LaunchPsi
 
-!insertmacro MUI_PAGE_WELCOME
-!insertmacro MUI_PAGE_LICENSE "${PSI_SRC_DIR}\COPYING"
-!insertmacro MUI_PAGE_COMPONENTS
-!insertmacro MUI_PAGE_DIRECTORY
-!define MUI_PAGE_HEADER_TEXT "Microsoft Visual C++ Redistributable"
-!define MUI_PAGE_HEADER_SUBTEXT "Checking the required runtime component"
-Page custom VCRedistPageCreate VCRedistPageLeave
-!undef MUI_PAGE_HEADER_TEXT
-!undef MUI_PAGE_HEADER_SUBTEXT
-!define MUI_PAGE_HEADER_TEXT "Psi+ installation summary"
-!define MUI_PAGE_HEADER_SUBTEXT "Review the selected installation options"
-Page custom SummaryPageCreate SummaryPageLeave
-!undef MUI_PAGE_HEADER_TEXT
-!undef MUI_PAGE_HEADER_SUBTEXT
-!insertmacro MUI_PAGE_INSTFILES
-!insertmacro MUI_PAGE_FINISH
-!insertmacro MUI_UNPAGE_CONFIRM
-!insertmacro MUI_UNPAGE_INSTFILES
 !insertmacro MUI_LANGUAGE English
 !insertmacro MUI_LANGUAGE Russian
 !insertmacro MUI_LANGUAGE French
 !insertmacro MUI_LANGUAGE Ukrainian
+!insertmacro MUI_LANGUAGE German
+
+!include "lang\psi-plus-l10n.nsh"
+
+!insertmacro MUI_PAGE_LANGUAGE
+!insertmacro MUI_PAGE_WELCOME
+!insertmacro MUI_PAGE_LICENSE "${PSI_SRC_DIR}\COPYING"
+!insertmacro MUI_PAGE_COMPONENTS
+!insertmacro MUI_PAGE_DIRECTORY
+
+!define MUI_PAGE_HEADER_TEXT "$(STR_VC_PAGE_TITLE)"
+!define MUI_PAGE_HEADER_SUBTEXT "$(STR_VC_PAGE_SUBTITLE)"
+Page custom VCRedistPageCreate VCRedistPageLeave
+!undef MUI_PAGE_HEADER_TEXT
+!undef MUI_PAGE_HEADER_SUBTEXT
+
+!define MUI_PAGE_HEADER_TEXT "$(STR_SUMMARY_PAGE_TITLE)"
+!define MUI_PAGE_HEADER_SUBTEXT "$(STR_SUMMARY_PAGE_SUBTITLE)"
+Page custom SummaryPageCreate SummaryPageLeave
+!undef MUI_PAGE_HEADER_TEXT
+!undef MUI_PAGE_HEADER_SUBTEXT
+
+!insertmacro MUI_PAGE_INSTFILES
+!insertmacro MUI_PAGE_FINISH
+!insertmacro MUI_UNPAGE_CONFIRM
+!insertmacro MUI_UNPAGE_INSTFILES
 
 Var PreviousUninstaller
 Var PreviousVersion
@@ -303,7 +311,7 @@ SectionEnd
 Function .onInit
   StrCpy $SelectedExecutable "psi-plus.exe"
   ${IfNot} ${RunningX64}
-    MessageBox MB_ICONSTOP "This installer requires 64-bit Windows."
+    MessageBox MB_ICONSTOP "$(STR_NON_64BIT_SYSTEM)"
     Abort
   ${EndIf}
   Call FindPreviousInstallation
@@ -351,7 +359,7 @@ FunctionEnd
 
 Function HandlePreviousInstallation
   MessageBox MB_ICONINFORMATION|MB_OKCANCEL \
-    "An installed Psi+ version $PreviousVersion was found.$\r$\n$\r$\nThe existing version will be removed before installing the new version." \
+    "$(STR_PREVIOUS_VERSION_FOUND)" \
     IDOK ContinueUpgrade IDCANCEL AbortUpgrade
 AbortUpgrade:
   Abort
@@ -359,7 +367,7 @@ ContinueUpgrade:
   Call CheckRunningPsi
   ExecWait '$PreviousUninstaller /SILENT /NORESTART /SUPPRESSMSGBOXES' $0
   ${If} $0 != 0
-    MessageBox MB_ICONSTOP "The previous Psi+ version could not be removed."
+    MessageBox MB_ICONSTOP "$(STR_PREVIOUS_REMOVE_FAILED)"
     Abort
   ${EndIf}
   Call RestorePreviousState
@@ -385,7 +393,7 @@ Function CheckRunningPsi
     Return
   ${EndIf}
   MessageBox MB_ICONQUESTION|MB_YESNO \
-    "Psi+ is currently running.$\r$\n$\r$\nClose Psi+ before continuing?" \
+    "$(STR_PSI_RUNNING)" \
     IDYES ClosePsi IDNO AbortClosePsi
 AbortClosePsi:
   Abort
@@ -396,8 +404,7 @@ ClosePsi:
   Sleep 1000
   Call IsPsiRunning
   ${If} $0 != 0
-    MessageBox MB_ICONSTOP \
-      "Psi+ is still running.$\r$\n$\r$\nClose it manually and restart the installer."
+    MessageBox MB_ICONSTOP "$(STR_PSI_STILL_RUNNING)"
     Abort
   ${EndIf}
 FunctionEnd
@@ -418,7 +425,6 @@ Function RestorePreviousState
   Call RestoreComponentState
 FunctionEnd
 
-; The shared file contains the complete plugin and dictionary lists.
 !include "restore-components.nsh"
 
 Function RestoreComponentState
@@ -437,16 +443,13 @@ Function VCRedistPageCreate
   ${If} $0 == error
     Abort
   ${EndIf}
-  ${NSD_CreateLabel} 0 0 100% 100u \
-    "Checking Microsoft Visual C++ Redistributable for x64..."
+  ${NSD_CreateLabel} 0 0 100% 100u "$(STR_VC_CHECKING)"
   Pop $hVCRedistLabel
   Call CheckVCRedist
   ${If} $NeedVCRedist == 1
-    ${NSD_SetText} $hVCRedistLabel \
-      "Microsoft Visual C++ Redistributable x64 is missing or outdated.$\r$\nIt will be downloaded from the official Microsoft URL."
+    ${NSD_SetText} $hVCRedistLabel "$(STR_VC_MISSING)"
   ${Else}
-    ${NSD_SetText} $hVCRedistLabel \
-      "Microsoft Visual C++ Redistributable x64 is already installed with a suitable version.$\r$\nNo download is required."
+    ${NSD_SetText} $hVCRedistLabel "$(STR_VC_PRESENT)"
   ${EndIf}
   nsDialogs::Show
 FunctionEnd
@@ -484,12 +487,10 @@ Function SummaryPageCreate
   ${If} $0 == error
     Abort
   ${EndIf}
-  ${NSD_CreateText} 0 0 100% 190u \
-    "Psi+ ${APP_VERSION}$\r$\nInstall directory: $INSTDIR$\r$\n$\r$\nThe selected Psi+ components, plugins and Hunspell dictionaries will be installed."
+  ${NSD_CreateText} 0 0 100% 190u "$(STR_SUMMARY_TEXT)"
   Pop $hSummaryText
   ${If} $NeedVCRedist == 1
-    ${NSD_SetText} $hSummaryText \
-      "Psi+ ${APP_VERSION}$\r$\nInstall directory: $INSTDIR$\r$\n$\r$\nMicrosoft Visual C++ Redistributable x64 will be downloaded from the official Microsoft URL and installed silently."
+    ${NSD_SetText} $hSummaryText "$(STR_SUMMARY_WITH_VC)"
   ${EndIf}
   nsDialogs::Show
 FunctionEnd
@@ -502,12 +503,12 @@ Function DownloadAndInstallVCRedist
   inetc::get /caption "Downloading Microsoft Visual C++ Redistributable" /canceltext "Cancel" "${VC_URL}" "$PLUGINSDIR\vc_redist.x64.exe"
   Pop $0
   ${If} $0 != "OK"
-    MessageBox MB_ICONSTOP "Could not download Microsoft Visual C++ Redistributable.$\r$\n$\r$\nError: $0"
+    MessageBox MB_ICONSTOP "$(STR_VC_DOWNLOAD_FAILED)"
     Abort
   ${EndIf}
   ExecWait '"$PLUGINSDIR\vc_redist.x64.exe" /install /quiet /norestart' $0
   ${If} $0 != 0
-    MessageBox MB_ICONSTOP "Microsoft Visual C++ Redistributable installation failed. Exit code: $0"
+    MessageBox MB_ICONSTOP "$(STR_VC_INSTALL_FAILED)"
     Abort
   ${EndIf}
 FunctionEnd
