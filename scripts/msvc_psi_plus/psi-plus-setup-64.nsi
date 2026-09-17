@@ -31,7 +31,8 @@ ${StrStr}
 !define INSTALL_REGKEY "Software\Psi+\Installer"
 !define UNINSTALL_REGKEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP_ID}_is1"
 
-!getdllversion "${WORK_DIR}\psi-plus.exe" APP_VERSION
+!getdllversion "${WORK_DIR}\psi-plus.exe" APP_VERSION_
+!define APP_VERSION "${APP_VERSION_1}.${APP_VERSION_2}.${APP_VERSION_3}.${APP_VERSION_4}"
 
 Name "Psi+"
 Caption "Psi+ x64 Setup"
@@ -43,6 +44,8 @@ ShowInstDetails show
 ShowUninstDetails show
 
 VIProductVersion "${APP_VERSION}"
+VIAddVersionKey /LANG=1033 "ProductVersion" "${APP_VERSION}"
+VIAddVersionKey /LANG=1033 "FileVersion" "${APP_VERSION}"
 VIAddVersionKey /LANG=1033 "ProductName" "Psi+"
 VIAddVersionKey /LANG=1033 "CompanyName" "Psi+ Project"
 VIAddVersionKey /LANG=1033 "FileDescription" "Psi+ x64 installer"
@@ -90,25 +93,25 @@ Section /o "Psi+ WebEngine" SEC_BIN64W
   SectionIn 1 2 3
   SetOutPath "$INSTDIR"
   File "${WORK_DIR}\psi-plus-webengine.exe"
-  File /r "${WORK_DIR}\webengine64\*.*"
+  File /r /x ".*" "${WORK_DIR}\webengine64\*.*"
 SectionEnd
 
 Section "Psi+ common files" SEC_COMMON
   SectionIn 1 2 3 RO
   SetOutPath "$INSTDIR\certs"
-  File /nonfatal /r "${PSI_SRC_DIR}\certs\*.*"
+  File /nonfatal /r /x ".*" "${PSI_SRC_DIR}\certs\*.*"
   SetOutPath "$INSTDIR\iconsets\roster"
-  File /nonfatal "${WORK_DIR}\iconsets\roster\*.jisp"
+  File /nonfatal /x ".*" "${WORK_DIR}\iconsets\roster\*.jisp"
   SetOutPath "$INSTDIR\sound"
-  File /nonfatal /r "${WORK_DIR}\sound\*.*"
+  File /nonfatal /r /x ".*" "${WORK_DIR}\sound\*.*"
   SetOutPath "$INSTDIR"
-  File /nonfatal /r /x iconsets /x sound /x "skins\mac" "${RES_DIR}\*.*"
+  File /nonfatal /r /x iconsets /x sound /x "skins\mac" /x ".*" "${RES_DIR}\*.*"
   File /nonfatal "${WORK_DIR}\client_icons.txt"
   File /nonfatal /oname=CHANGELOG.TXT "${PSI_SRC_DIR}\CHANGELOG"
   SetOutPath "$INSTDIR\translations"
-  File /nonfatal /r "${WORK_DIR}\translations\*.*"
+  File /nonfatal /r /x ".*" "${WORK_DIR}\translations\*.*"
   SetOutPath "$INSTDIR"
-  File /nonfatal /r "${WORK_DIR}\lib64\*.*"
+  File /nonfatal /r /x ".*" "${WORK_DIR}\lib64\*.*"
   File /nonfatal "${PSI_SRC_DIR}\COPYING"
   File "${COMMON_DIR}\README.txt"
 SectionEnd
@@ -389,14 +392,14 @@ FunctionEnd
 !macro RESTORE_COMPONENT name
   ${StrStr} $0 $PreviousComponents "${name}"
   ${If} $0 != ""
-    SectionSetFlags ${SEC_PLUGIN_${name}} ${SECTION_SELECTED}
+    SectionSetFlags ${SEC_PLUGIN_${name}} ${SF_SELECTED}
   ${EndIf}
 !macroend
 
 !macro RESTORE_DICT name
   ${StrStr} $0 $PreviousComponents "dicts\\${name}"
   ${If} $0 != ""
-    SectionSetFlags ${SEC_DICT_${name}} ${SECTION_SELECTED}
+    SectionSetFlags ${SEC_DICT_${name}} ${SF_SELECTED}
   ${EndIf}
 !macroend
 
@@ -407,12 +410,12 @@ Function RestoreComponentState
   ReadINIStr $PreviousComponents "${STATE_FILE}" "${STATE_SECTION}" "SelectedComponents"
   ${StrStr} $1 $PreviousComponents "bin64w"
   ${If} $1 != ""
-    SectionSetFlags ${SEC_BIN64W} ${SECTION_SELECTED}
+    SectionSetFlags ${SEC_BIN64W} ${SF_SELECTED}
     SectionSetFlags ${SEC_BIN64} 0
   ${Else}
     ${StrStr} $1 $PreviousComponents "bin64"
     ${If} $1 != ""
-      SectionSetFlags ${SEC_BIN64} ${SECTION_SELECTED}
+      SectionSetFlags ${SEC_BIN64} ${SF_SELECTED}
       SectionSetFlags ${SEC_BIN64W} 0
     ${EndIf}
   ${EndIf}
@@ -442,24 +445,44 @@ FunctionEnd
 
 Function CheckVCRedist
   StrCpy $NeedVCRedist 1
+
   SetRegView 64
-  ReadRegDWORD $0 HKLM "SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\x64" "Major"
-  ${If} ${Errors}
-    Return
-  ${EndIf}
-  ReadRegDWORD $1 HKLM "SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\x64" "Minor"
-  ReadRegDWORD $2 HKLM "SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\x64" "Bld"
-  ${If} $0 > 14
-    StrCpy $NeedVCRedist 0
-  ${ElseIf} $0 == 14
-    ${If} $1 > 42
-      StrCpy $NeedVCRedist 0
-    ${ElseIf} $1 == 42
-      ${If} $2 >= 34433
+  ClearErrors
+
+  ReadRegDWORD $0 HKLM \
+    "SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\x64" \
+    "Installed"
+
+  ${IfNot} ${Errors}
+    ${If} $0 == 1
+      ReadRegDWORD $1 HKLM \
+        "SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\x64" \
+        "Major"
+
+      ReadRegDWORD $2 HKLM \
+        "SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\x64" \
+        "Minor"
+
+      ReadRegDWORD $3 HKLM \
+        "SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\x64" \
+        "Bld"
+
+      ; Минимально допустимая версия: 14.40.0.
+      ${If} $1 > 14
         StrCpy $NeedVCRedist 0
+      ${ElseIf} $1 == 14
+        ${If} $2 > 40
+          StrCpy $NeedVCRedist 0
+        ${ElseIf} $2 == 40
+          ${If} $3 >= 0
+            StrCpy $NeedVCRedist 0
+          ${EndIf}
+        ${EndIf}
       ${EndIf}
     ${EndIf}
   ${EndIf}
+
+  SetRegView 32
 FunctionEnd
 
 Function SummaryPageCreate
@@ -510,9 +533,6 @@ Function .onInstSuccess
   Delete "${STATE_FILE}"
 FunctionEnd
 Function .onInstFailed
-  Delete "${STATE_FILE}"
-FunctionEnd
-Function .onUserAbort
   Delete "${STATE_FILE}"
 FunctionEnd
 
