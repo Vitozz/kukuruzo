@@ -55,6 +55,28 @@ VIAddVersionKey /LANG=1033 "LegalCopyright" "© 2008-2026 Psi+ Project"
 !define MUI_FINISHPAGE_RUN_TEXT "Start Psi+"
 !define MUI_FINISHPAGE_RUN_FUNCTION LaunchPsi
 
+!insertmacro MUI_PAGE_WELCOME
+!insertmacro MUI_PAGE_LICENSE "${PSI_SRC_DIR}\COPYING"
+!insertmacro MUI_PAGE_COMPONENTS
+!insertmacro MUI_PAGE_DIRECTORY
+
+;!define MUI_PAGE_HEADER_TEXT "$(STR_VC_PAGE_TITLE)"
+;!define MUI_PAGE_HEADER_SUBTEXT "$(STR_VC_PAGE_SUBTITLE)"
+Page custom VCRedistPageCreate VCRedistPageLeave
+;!undef MUI_PAGE_HEADER_TEXT
+;!undef MUI_PAGE_HEADER_SUBTEXT
+
+;!define MUI_PAGE_HEADER_TEXT "$(STR_SUMMARY_PAGE_TITLE)"
+;!define MUI_PAGE_HEADER_SUBTEXT "$(STR_SUMMARY_PAGE_SUBTITLE)"
+Page custom SummaryPageCreate SummaryPageLeave
+;!undef MUI_PAGE_HEADER_TEXT
+;!undef MUI_PAGE_HEADER_SUBTEXT
+
+!insertmacro MUI_PAGE_INSTFILES
+!insertmacro MUI_PAGE_FINISH
+!insertmacro MUI_UNPAGE_CONFIRM
+!insertmacro MUI_UNPAGE_INSTFILES
+
 !insertmacro MUI_LANGUAGE English
 !insertmacro MUI_LANGUAGE Russian
 !insertmacro MUI_LANGUAGE French
@@ -62,29 +84,6 @@ VIAddVersionKey /LANG=1033 "LegalCopyright" "© 2008-2026 Psi+ Project"
 !insertmacro MUI_LANGUAGE German
 
 !include "lang\psi-plus-l10n.nsh"
-
-!insertmacro MUI_PAGE_LANGUAGE
-!insertmacro MUI_PAGE_WELCOME
-!insertmacro MUI_PAGE_LICENSE "${PSI_SRC_DIR}\COPYING"
-!insertmacro MUI_PAGE_COMPONENTS
-!insertmacro MUI_PAGE_DIRECTORY
-
-!define MUI_PAGE_HEADER_TEXT "$(STR_VC_PAGE_TITLE)"
-!define MUI_PAGE_HEADER_SUBTEXT "$(STR_VC_PAGE_SUBTITLE)"
-Page custom VCRedistPageCreate VCRedistPageLeave
-!undef MUI_PAGE_HEADER_TEXT
-!undef MUI_PAGE_HEADER_SUBTEXT
-
-!define MUI_PAGE_HEADER_TEXT "$(STR_SUMMARY_PAGE_TITLE)"
-!define MUI_PAGE_HEADER_SUBTEXT "$(STR_SUMMARY_PAGE_SUBTITLE)"
-Page custom SummaryPageCreate SummaryPageLeave
-!undef MUI_PAGE_HEADER_TEXT
-!undef MUI_PAGE_HEADER_SUBTEXT
-
-!insertmacro MUI_PAGE_INSTFILES
-!insertmacro MUI_PAGE_FINISH
-!insertmacro MUI_UNPAGE_CONFIRM
-!insertmacro MUI_UNPAGE_INSTFILES
 
 Var PreviousUninstaller
 Var PreviousVersion
@@ -314,6 +313,10 @@ Function .onInit
     MessageBox MB_ICONSTOP "$(STR_NON_64BIT_SYSTEM)"
     Abort
   ${EndIf}
+
+  ; Show the language selection dialog.
+  !insertmacro MUI_LANGDLL_DISPLAY
+
   Call FindPreviousInstallation
   ${If} $PreviousUninstaller != ""
     Call HandlePreviousInstallation
@@ -365,7 +368,7 @@ AbortUpgrade:
   Abort
 ContinueUpgrade:
   Call CheckRunningPsi
-  ExecWait '$PreviousUninstaller /SILENT /NORESTART /SUPPRESSMSGBOXES' $0
+  ExecWait '$PreviousUninstaller /VERYSILENT /NORESTART /SUPPRESSMSGBOXES /NOCANCEL' $0
   ${If} $0 != 0
     MessageBox MB_ICONSTOP "$(STR_PREVIOUS_REMOVE_FAILED)"
     Abort
@@ -409,10 +412,6 @@ ClosePsi:
   ${EndIf}
 FunctionEnd
 
-Function SavePreviousState
-  ; Component state is stored by the current installer in SaveInstallerState.
-FunctionEnd
-
 Function RestorePreviousState
   ReadINIStr $0 "${STATE_FILE}" "${STATE_SECTION}" "InstallDir"
   ${If} $0 != ""
@@ -440,17 +439,27 @@ FunctionEnd
 Function VCRedistPageCreate
   nsDialogs::Create 1018
   Pop $0
+
   ${If} $0 == error
     Abort
   ${EndIf}
-  ${NSD_CreateLabel} 0 0 100% 100u "$(STR_VC_CHECKING)"
+
+  !insertmacro MUI_HEADER_TEXT \
+    "$(STR_VC_PAGE_TITLE)" \
+    "$(STR_VC_PAGE_SUBTITLE)"
+
+  ${NSD_CreateLabel} 0 0 100% 100u \
+    "$(STR_VC_CHECKING)"
   Pop $hVCRedistLabel
+
   Call CheckVCRedist
+
   ${If} $NeedVCRedist == 1
     ${NSD_SetText} $hVCRedistLabel "$(STR_VC_MISSING)"
   ${Else}
     ${NSD_SetText} $hVCRedistLabel "$(STR_VC_PRESENT)"
   ${EndIf}
+
   nsDialogs::Show
 FunctionEnd
 
@@ -484,14 +493,20 @@ FunctionEnd
 Function SummaryPageCreate
   nsDialogs::Create 1018
   Pop $0
+
   ${If} $0 == error
     Abort
   ${EndIf}
-  ${NSD_CreateText} 0 0 100% 190u "$(STR_SUMMARY_TEXT)"
+
+  !insertmacro MUI_HEADER_TEXT \
+    "Psi+ installation summary" \
+    "Review the selected installation options"
+
+  ${NSD_CreateText} 0 0 100% 190u \
+    "TEST TEXT$\r$\nSecond line"
+
   Pop $hSummaryText
-  ${If} $NeedVCRedist == 1
-    ${NSD_SetText} $hSummaryText "$(STR_SUMMARY_WITH_VC)"
-  ${EndIf}
+
   nsDialogs::Show
 FunctionEnd
 
@@ -550,8 +565,55 @@ Function LaunchPsi
   ${EndIf}
 FunctionEnd
 
+Function un.IsPsiRunning
+  StrCpy $0 0
+
+  nsProcess::_FindProcess "psi-plus.exe"
+  Pop $1
+  ${If} $1 == 0
+    StrCpy $0 1
+  ${EndIf}
+
+  nsProcess::_FindProcess "psi-plus-webengine.exe"
+  Pop $1
+  ${If} $1 == 0
+    StrCpy $0 1
+  ${EndIf}
+FunctionEnd
+
+
+Function un.CheckRunningPsi
+  Call un.IsPsiRunning
+
+  ${If} $0 == 0
+    Return
+  ${EndIf}
+
+  MessageBox MB_ICONQUESTION|MB_YESNO \
+    "$(STR_PSI_RUNNING)" \
+    IDYES un.ClosePsi IDNO un.AbortClosePsi
+
+un.AbortClosePsi:
+  Abort
+
+un.ClosePsi:
+  DetailPrint "Closing Psi+ processes..."
+
+  ExecWait '"$SYSDIR\taskkill.exe" /F /T /IM psi-plus.exe' $1
+  ExecWait '"$SYSDIR\taskkill.exe" /F /T /IM psi-plus-webengine.exe' $1
+
+  Sleep 1000
+
+  Call un.IsPsiRunning
+
+  ${If} $0 != 0
+    MessageBox MB_ICONSTOP "$(STR_PSI_STILL_RUNNING)"
+    Abort
+  ${EndIf}
+FunctionEnd
+
 Function un.onInit
-  Call CheckRunningPsi
+  Call un.CheckRunningPsi
 FunctionEnd
 
 Section "Uninstall"
