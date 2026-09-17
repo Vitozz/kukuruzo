@@ -5,8 +5,6 @@ RequestExecutionLevel user
 !include LogicLib.nsh
 !include x64.nsh
 !include nsDialogs.nsh
-!include StrFunc.nsh
-${StrStr}
 
 !ifndef WORK_DIR
   !define WORK_DIR "C:\build\Installer"
@@ -26,9 +24,8 @@ ${StrStr}
 
 !define APP_ID "{751DD547-F64F-44D8-8304-5643E71D409B}"
 !define VC_URL "https://aka.ms/vs/17/release/vc_redist.x64.exe"
-!define STATE_FILE "$TEMP\psi-plus-upgrade.ini"
+!define STATE_FILE "$APPDATA\Psi+\installer-state.ini"
 !define STATE_SECTION "PreviousInstallation"
-!define INSTALL_REGKEY "Software\Psi+\Installer"
 !define UNINSTALL_REGKEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP_ID}_is1"
 
 !getdllversion "${WORK_DIR}\psi-plus.exe" APP_VERSION_
@@ -62,8 +59,16 @@ VIAddVersionKey /LANG=1033 "LegalCopyright" "© 2008-2026 Psi+ Project"
 !insertmacro MUI_PAGE_LICENSE "${PSI_SRC_DIR}\COPYING"
 !insertmacro MUI_PAGE_COMPONENTS
 !insertmacro MUI_PAGE_DIRECTORY
+!define MUI_PAGE_HEADER_TEXT "Microsoft Visual C++ Redistributable"
+!define MUI_PAGE_HEADER_SUBTEXT "Checking the required runtime component"
 Page custom VCRedistPageCreate VCRedistPageLeave
+!undef MUI_PAGE_HEADER_TEXT
+!undef MUI_PAGE_HEADER_SUBTEXT
+!define MUI_PAGE_HEADER_TEXT "Psi+ installation summary"
+!define MUI_PAGE_HEADER_SUBTEXT "Review the selected installation options"
 Page custom SummaryPageCreate SummaryPageLeave
+!undef MUI_PAGE_HEADER_TEXT
+!undef MUI_PAGE_HEADER_SUBTEXT
 !insertmacro MUI_PAGE_INSTFILES
 !insertmacro MUI_PAGE_FINISH
 !insertmacro MUI_UNPAGE_CONFIRM
@@ -77,11 +82,29 @@ Var PreviousUninstaller
 Var PreviousVersion
 Var PreviousInstallDir
 Var PreviousHive
-Var PreviousComponents
 Var NeedVCRedist
 Var SelectedExecutable
 Var hVCRedistLabel
 Var hSummaryText
+
+!macro SAVE_COMPONENT key section
+  SectionGetFlags ${section} $0
+  IntOp $0 $0 & ${SF_SELECTED}
+  ${If} $0 != 0
+    WriteINIStr "${STATE_FILE}" "${STATE_SECTION}" "Component.${key}" "1"
+  ${Else}
+    WriteINIStr "${STATE_FILE}" "${STATE_SECTION}" "Component.${key}" "0"
+  ${EndIf}
+!macroend
+
+!macro RESTORE_COMPONENT key section
+  ReadINIStr $0 "${STATE_FILE}" "${STATE_SECTION}" "Component.${key}"
+  ${If} $0 == "1"
+    SectionSetFlags ${section} ${SF_SELECTED}
+  ${ElseIf} $0 == "0"
+    SectionSetFlags ${section} 0
+  ${EndIf}
+!macroend
 
 Section /o "Psi+" SEC_BIN64
   SectionIn 1 2 3
@@ -174,67 +197,67 @@ SectionEnd
 SectionGroup /e "Spell check dictionaries" SEC_DICTS
 !insertmacro DICT_SECTION af_ZA "Afrikaans"
 !insertmacro DICT_SECTION an_ES "Aragonese"
-!insertmacro DICT_SECTION ar "عربي"
-!insertmacro DICT_SECTION be_BY "Беларуская мова"
-!insertmacro DICT_SECTION bg_BG "Български"
+!insertmacro DICT_SECTION ar "Arabic"
+!insertmacro DICT_SECTION be_BY "Belarusian"
+!insertmacro DICT_SECTION bg_BG "Bulgarian"
 !insertmacro DICT_SECTION bn_BD "Bengali"
-!insertmacro DICT_SECTION br_FR "Brezhoneg"
-!insertmacro DICT_SECTION bs_BA "Bosanski"
-!insertmacro DICT_SECTION cs_CZ "Čeština"
-!insertmacro DICT_SECTION da_DK "Dansk"
-!insertmacro DICT_SECTION de_AT_frami "Deutsch (Österreich)"
-!insertmacro DICT_SECTION de_CH_frami "Deutsch (Schweiz)"
-!insertmacro DICT_SECTION de_DE_frami "Deutsch (Deutschland)"
-!insertmacro DICT_SECTION el_GR "Ελληνικά"
+!insertmacro DICT_SECTION br_FR "Breton"
+!insertmacro DICT_SECTION bs_BA "Bosnian"
+!insertmacro DICT_SECTION cs_CZ "Czech"
+!insertmacro DICT_SECTION da_DK "Danish"
+!insertmacro DICT_SECTION de_AT_frami "German (Austria)"
+!insertmacro DICT_SECTION de_CH_frami "German (Switzerland)"
+!insertmacro DICT_SECTION de_DE_frami "German (Germany)"
+!insertmacro DICT_SECTION el_GR "Greek"
 !insertmacro DICT_SECTION en_AU "English (Australia)"
 !insertmacro DICT_SECTION en_CA "English (Canada)"
 !insertmacro DICT_SECTION en_GB "English (United Kingdom)"
 !insertmacro DICT_SECTION en_US "English (United States)"
 !insertmacro DICT_SECTION en_ZA "English (South Africa)"
-!insertmacro DICT_SECTION es_ANY "Español"
-!insertmacro DICT_SECTION et_EE "Eesti keel"
-!insertmacro DICT_SECTION fr "Français"
-!insertmacro DICT_SECTION gl_ES "Galego"
-!insertmacro DICT_SECTION gu_IN "Gujarati (India)"
-!insertmacro DICT_SECTION he_IL "עברית"
+!insertmacro DICT_SECTION es_ANY "Spanish"
+!insertmacro DICT_SECTION et_EE "Estonian"
+!insertmacro DICT_SECTION fr "French"
+!insertmacro DICT_SECTION gl_ES "Galician"
+!insertmacro DICT_SECTION gu_IN "Gujarati"
+!insertmacro DICT_SECTION he_IL "Hebrew"
 !insertmacro DICT_SECTION hi_IN "Hindi"
-!insertmacro DICT_SECTION hr_HR "Hrvatski"
-!insertmacro DICT_SECTION hu_HU "Magyar"
-Section /o "Íslenska" SEC_DICT_is_dic
+!insertmacro DICT_SECTION hr_HR "Croatian"
+!insertmacro DICT_SECTION hu_HU "Hungarian"
+Section /o "Icelandic" SEC_DICT_is_dic
   SetOutPath "$INSTDIR\myspell\dicts"
   File /nonfatal /oname=is.aff "${COMMON_DIR}\myspell\dicts\is.aff"
   File /nonfatal /oname=is.dic "${COMMON_DIR}\myspell\dicts\is.dic"
 SectionEnd
-!insertmacro DICT_SECTION it_IT "Italiano"
+!insertmacro DICT_SECTION it_IT "Italian"
 !insertmacro DICT_SECTION kmr_Latn "Kurdish (Latin)"
 !insertmacro DICT_SECTION lo_LA "Lao"
-!insertmacro DICT_SECTION lt "Lietuvių kalba"
-!insertmacro DICT_SECTION lv_LV "Latviešu"
-!insertmacro DICT_SECTION nb_NO "Norsk (Bokmål)"
+!insertmacro DICT_SECTION lt "Lithuanian"
+!insertmacro DICT_SECTION lv_LV "Latvian"
+!insertmacro DICT_SECTION nb_NO "Norwegian (Bokmål)"
 !insertmacro DICT_SECTION ne_NP "Nepali"
-!insertmacro DICT_SECTION nl_NL "Nederlands"
-!insertmacro DICT_SECTION nn_NO "Norsk (Nynorsk)"
+!insertmacro DICT_SECTION nl_NL "Dutch"
+!insertmacro DICT_SECTION nn_NO "Norwegian (Nynorsk)"
 !insertmacro DICT_SECTION oc_FR "Occitan"
-!insertmacro DICT_SECTION pl_PL "Polski"
-!insertmacro DICT_SECTION pt_BR "Português do Brasil"
-!insertmacro DICT_SECTION pt_PT "Português de Portugal"
-!insertmacro DICT_SECTION ro_RO "Română"
-!insertmacro DICT_SECTION ru_RU "Русский"
+!insertmacro DICT_SECTION pl_PL "Polish"
+!insertmacro DICT_SECTION pt_BR "Portuguese (Brazil)"
+!insertmacro DICT_SECTION pt_PT "Portuguese (Portugal)"
+!insertmacro DICT_SECTION ro_RO "Romanian"
+!insertmacro DICT_SECTION ru_RU "Russian"
 !insertmacro DICT_SECTION si_LK "Sinhala"
-!insertmacro DICT_SECTION sk_SK "Slovenčina"
-!insertmacro DICT_SECTION sl_SI "Slovenščina"
-Section /o "Српски (Latin)" SEC_DICT_sr_Latn
+!insertmacro DICT_SECTION sk_SK "Slovak"
+!insertmacro DICT_SECTION sl_SI "Slovenian"
+Section /o "Serbian (Latin)" SEC_DICT_sr_Latn
   SetOutPath "$INSTDIR\myspell\dicts"
   File /nonfatal "${COMMON_DIR}\myspell\dicts\sr-Latn.*"
 SectionEnd
-!insertmacro DICT_SECTION sr "Српски"
-!insertmacro DICT_SECTION sv_FI "Svenska (Finland)"
-!insertmacro DICT_SECTION sv_SE "Svenska (Sverige)"
-!insertmacro DICT_SECTION sw_TZ "Kiswahili (Tanzania)"
-!insertmacro DICT_SECTION te_IN "Telugu (India)"
+!insertmacro DICT_SECTION sr "Serbian"
+!insertmacro DICT_SECTION sv_FI "Swedish (Finland)"
+!insertmacro DICT_SECTION sv_SE "Swedish (Sweden)"
+!insertmacro DICT_SECTION sw_TZ "Swahili (Tanzania)"
+!insertmacro DICT_SECTION te_IN "Telugu"
 !insertmacro DICT_SECTION th_TH "Thai"
-!insertmacro DICT_SECTION uk_UA "Українська"
-!insertmacro DICT_SECTION vi_VN "Tiếng Việt"
+!insertmacro DICT_SECTION uk_UA "Ukrainian"
+!insertmacro DICT_SECTION vi_VN "Vietnamese"
 SectionGroupEnd
 
 Section "Create desktop shortcut" SEC_DESKTOP
@@ -278,11 +301,11 @@ Section "-Installer metadata"
 SectionEnd
 
 Function .onInit
+  StrCpy $SelectedExecutable "psi-plus.exe"
   ${IfNot} ${RunningX64}
     MessageBox MB_ICONSTOP "This installer requires 64-bit Windows."
     Abort
   ${EndIf}
-  Delete "${STATE_FILE}"
   Call FindPreviousInstallation
   ${If} $PreviousUninstaller != ""
     Call HandlePreviousInstallation
@@ -327,11 +350,13 @@ Function FindPreviousInstallation
 FunctionEnd
 
 Function HandlePreviousInstallation
-  MessageBox MB_ICONINFORMATION|MB_OKCANCEL "An installed Psi+ version $PreviousVersion was found.$\r$\n$\r$\nClick OK to continue. The existing version will be removed before installing the new version." IDOK ContinueUpgrade
+  MessageBox MB_ICONINFORMATION|MB_OKCANCEL \
+    "An installed Psi+ version $PreviousVersion was found.$\r$\n$\r$\nThe existing version will be removed before installing the new version." \
+    IDOK ContinueUpgrade IDCANCEL AbortUpgrade
+AbortUpgrade:
   Abort
 ContinueUpgrade:
   Call CheckRunningPsi
-  Call SavePreviousState
   ExecWait '$PreviousUninstaller /SILENT /NORESTART /SUPPRESSMSGBOXES' $0
   ${If} $0 != 0
     MessageBox MB_ICONSTOP "The previous Psi+ version could not be removed."
@@ -340,45 +365,45 @@ ContinueUpgrade:
   Call RestorePreviousState
 FunctionEnd
 
-Function CheckRunningPsi
+Function IsPsiRunning
+  StrCpy $0 0
   nsProcess::_FindProcess "psi-plus.exe"
-  Pop $0
-  ${If} $0 == 0
-    MessageBox MB_ICONQUESTION|MB_YESNO "Psi+ is currently running. Close it before continuing?" IDYES ClosePsi
-    Abort
+  Pop $1
+  ${If} $1 == 0
+    StrCpy $0 1
   ${EndIf}
   nsProcess::_FindProcess "psi-plus-webengine.exe"
-  Pop $0
-  ${If} $0 == 0
-    MessageBox MB_ICONQUESTION|MB_YESNO "Psi+ WebEngine is currently running. Close it before continuing?" IDYES ClosePsi
-    Abort
+  Pop $1
+  ${If} $1 == 0
+    StrCpy $0 1
   ${EndIf}
-  Return
-ClosePsi:
-  ExecWait '"$SYSDIR\taskkill.exe" /F /IM psi-plus.exe' $0
-  ExecWait '"$SYSDIR\taskkill.exe" /F /IM psi-plus-webengine.exe' $0
-  Sleep 500
-  nsProcess::_FindProcess "psi-plus.exe"
-  Pop $0
+FunctionEnd
+
+Function CheckRunningPsi
+  Call IsPsiRunning
   ${If} $0 == 0
-    MessageBox MB_ICONSTOP "Psi+ is still running. Close it manually and restart the installer."
+    Return
+  ${EndIf}
+  MessageBox MB_ICONQUESTION|MB_YESNO \
+    "Psi+ is currently running.$\r$\n$\r$\nClose Psi+ before continuing?" \
+    IDYES ClosePsi IDNO AbortClosePsi
+AbortClosePsi:
+  Abort
+ClosePsi:
+  DetailPrint "Closing Psi+ processes..."
+  ExecWait '"$SYSDIR\taskkill.exe" /F /T /IM psi-plus.exe' $1
+  ExecWait '"$SYSDIR\taskkill.exe" /F /T /IM psi-plus-webengine.exe' $1
+  Sleep 1000
+  Call IsPsiRunning
+  ${If} $0 != 0
+    MessageBox MB_ICONSTOP \
+      "Psi+ is still running.$\r$\n$\r$\nClose it manually and restart the installer."
     Abort
   ${EndIf}
 FunctionEnd
 
 Function SavePreviousState
-  WriteINIStr "${STATE_FILE}" "${STATE_SECTION}" "InstallDir" "$PreviousInstallDir"
-  ${If} $PreviousHive == "HKCU"
-    ReadRegStr $1 HKCU "${UNINSTALL_REGKEY}" "Inno Setup: Selected Components"
-    WriteINIStr "${STATE_FILE}" "${STATE_SECTION}" "SelectedComponents" "$1"
-    ReadRegStr $1 HKCU "${UNINSTALL_REGKEY}" "Inno Setup: Selected Tasks"
-    WriteINIStr "${STATE_FILE}" "${STATE_SECTION}" "SelectedTasks" "$1"
-  ${Else}
-    ReadRegStr $1 HKLM "${UNINSTALL_REGKEY}" "Inno Setup: Selected Components"
-    WriteINIStr "${STATE_FILE}" "${STATE_SECTION}" "SelectedComponents" "$1"
-    ReadRegStr $1 HKLM "${UNINSTALL_REGKEY}" "Inno Setup: Selected Tasks"
-    WriteINIStr "${STATE_FILE}" "${STATE_SECTION}" "SelectedTasks" "$1"
-  ${EndIf}
+  ; Component state is stored by the current installer in SaveInstallerState.
 FunctionEnd
 
 Function RestorePreviousState
@@ -386,39 +411,22 @@ Function RestorePreviousState
   ${If} $0 != ""
     StrCpy $INSTDIR $0
   ${EndIf}
+  ReadINIStr $SelectedExecutable "${STATE_FILE}" "${STATE_SECTION}" "Executable"
+  ${If} $SelectedExecutable == ""
+    StrCpy $SelectedExecutable "psi-plus.exe"
+  ${EndIf}
   Call RestoreComponentState
 FunctionEnd
-
-!macro RESTORE_COMPONENT name
-  ${StrStr} $0 $PreviousComponents "${name}"
-  ${If} $0 != ""
-    SectionSetFlags ${SEC_PLUGIN_${name}} ${SF_SELECTED}
-  ${EndIf}
-!macroend
-
-!macro RESTORE_DICT name
-  ${StrStr} $0 $PreviousComponents "dicts\\${name}"
-  ${If} $0 != ""
-    SectionSetFlags ${SEC_DICT_${name}} ${SF_SELECTED}
-  ${EndIf}
-!macroend
 
 ; The shared file contains the complete plugin and dictionary lists.
 !include "restore-components.nsh"
 
 Function RestoreComponentState
-  ReadINIStr $PreviousComponents "${STATE_FILE}" "${STATE_SECTION}" "SelectedComponents"
-  ${StrStr} $1 $PreviousComponents "bin64w"
-  ${If} $1 != ""
-    SectionSetFlags ${SEC_BIN64W} ${SF_SELECTED}
-    SectionSetFlags ${SEC_BIN64} 0
-  ${Else}
-    ${StrStr} $1 $PreviousComponents "bin64"
-    ${If} $1 != ""
-      SectionSetFlags ${SEC_BIN64} ${SF_SELECTED}
-      SectionSetFlags ${SEC_BIN64W} 0
-    ${EndIf}
-  ${EndIf}
+  !insertmacro RESTORE_COMPONENT "bin64" ${SEC_BIN64}
+  !insertmacro RESTORE_COMPONENT "bin64w" ${SEC_BIN64W}
+  !insertmacro RESTORE_COMPONENT "desktop" ${SEC_DESKTOP}
+  !insertmacro RESTORE_COMPONENT "uninstall-icon" ${SEC_UNINSTALL_ICON}
+  !insertmacro RESTORE_COMPONENT "xmpp" ${SEC_XMPP}
   !insertmacro RESTORE_ALL_PLUGIN_COMPONENTS
   !insertmacro RESTORE_ALL_DICTIONARY_COMPONENTS
 FunctionEnd
@@ -429,13 +437,16 @@ Function VCRedistPageCreate
   ${If} $0 == error
     Abort
   ${EndIf}
-  ${NSD_CreateLabel} 0 0 100% 100u "Checking Microsoft Visual C++ Redistributable for x64..."
+  ${NSD_CreateLabel} 0 0 100% 100u \
+    "Checking Microsoft Visual C++ Redistributable for x64..."
   Pop $hVCRedistLabel
   Call CheckVCRedist
   ${If} $NeedVCRedist == 1
-    ${NSD_SetText} $hVCRedistLabel "Microsoft Visual C++ Redistributable x64 is missing or outdated. It will be downloaded from the official Microsoft URL."
+    ${NSD_SetText} $hVCRedistLabel \
+      "Microsoft Visual C++ Redistributable x64 is missing or outdated.$\r$\nIt will be downloaded from the official Microsoft URL."
   ${Else}
-    ${NSD_SetText} $hVCRedistLabel "Microsoft Visual C++ Redistributable x64 is already installed with a suitable version. No download is required."
+    ${NSD_SetText} $hVCRedistLabel \
+      "Microsoft Visual C++ Redistributable x64 is already installed with a suitable version.$\r$\nNo download is required."
   ${EndIf}
   nsDialogs::Show
 FunctionEnd
@@ -445,53 +456,40 @@ FunctionEnd
 
 Function CheckVCRedist
   StrCpy $NeedVCRedist 1
-
   SetRegView 64
   ClearErrors
-
-  ReadRegDWORD $0 HKLM \
-    "SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\x64" \
-    "Installed"
-
+  ReadRegDWORD $0 HKLM "SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\x64" "Installed"
   ${IfNot} ${Errors}
     ${If} $0 == 1
-      ReadRegDWORD $1 HKLM \
-        "SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\x64" \
-        "Major"
-
-      ReadRegDWORD $2 HKLM \
-        "SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\x64" \
-        "Minor"
-
-      ReadRegDWORD $3 HKLM \
-        "SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\x64" \
-        "Bld"
-
-      ; Минимально допустимая версия: 14.40.0.
+      ReadRegDWORD $1 HKLM "SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\x64" "Major"
+      ReadRegDWORD $2 HKLM "SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\x64" "Minor"
+      ReadRegDWORD $3 HKLM "SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\x64" "Bld"
       ${If} $1 > 14
         StrCpy $NeedVCRedist 0
       ${ElseIf} $1 == 14
         ${If} $2 > 40
           StrCpy $NeedVCRedist 0
         ${ElseIf} $2 == 40
-          ${If} $3 >= 0
-            StrCpy $NeedVCRedist 0
-          ${EndIf}
+          StrCpy $NeedVCRedist 0
         ${EndIf}
       ${EndIf}
     ${EndIf}
   ${EndIf}
-
   SetRegView 32
 FunctionEnd
 
 Function SummaryPageCreate
   nsDialogs::Create 1018
   Pop $0
-  ${NSD_CreateText} 0 0 100% 190u "Psi+ ${APP_VERSION}$\r$\nInstall directory: $INSTDIR$\r$\n$\r$\nThe selected Psi+ components, plugins and Hunspell dictionaries will be installed."
+  ${If} $0 == error
+    Abort
+  ${EndIf}
+  ${NSD_CreateText} 0 0 100% 190u \
+    "Psi+ ${APP_VERSION}$\r$\nInstall directory: $INSTDIR$\r$\n$\r$\nThe selected Psi+ components, plugins and Hunspell dictionaries will be installed."
   Pop $hSummaryText
   ${If} $NeedVCRedist == 1
-    ${NSD_SetText} $hSummaryText "Psi+ ${APP_VERSION}$\r$\nInstall directory: $INSTDIR$\r$\n$\r$\nMicrosoft Visual C++ Redistributable x64 will be downloaded from the official Microsoft URL and installed.$\r$\n$\r$\nThe selected files, plugins and Hunspell dictionaries will then be installed."
+    ${NSD_SetText} $hSummaryText \
+      "Psi+ ${APP_VERSION}$\r$\nInstall directory: $INSTDIR$\r$\n$\r$\nMicrosoft Visual C++ Redistributable x64 will be downloaded from the official Microsoft URL and installed silently."
   ${EndIf}
   nsDialogs::Show
 FunctionEnd
@@ -515,8 +513,16 @@ Function DownloadAndInstallVCRedist
 FunctionEnd
 
 Function SaveInstallerState
-  WriteRegStr HKCU "${INSTALL_REGKEY}" "InstallDir" "$INSTDIR"
-  WriteRegStr HKCU "${INSTALL_REGKEY}" "Executable" "$SelectedExecutable"
+  CreateDirectory "$APPDATA\Psi+"
+  WriteINIStr "${STATE_FILE}" "${STATE_SECTION}" "InstallDir" "$INSTDIR"
+  WriteINIStr "${STATE_FILE}" "${STATE_SECTION}" "Executable" "$SelectedExecutable"
+  !insertmacro SAVE_COMPONENT "bin64" ${SEC_BIN64}
+  !insertmacro SAVE_COMPONENT "bin64w" ${SEC_BIN64W}
+  !insertmacro SAVE_COMPONENT "desktop" ${SEC_DESKTOP}
+  !insertmacro SAVE_COMPONENT "uninstall-icon" ${SEC_UNINSTALL_ICON}
+  !insertmacro SAVE_COMPONENT "xmpp" ${SEC_XMPP}
+  !insertmacro SAVE_ALL_PLUGIN_COMPONENTS
+  !insertmacro SAVE_ALL_DICTIONARY_COMPONENTS
 FunctionEnd
 
 Function .onSelChange
@@ -530,10 +536,9 @@ Function .onSelChange
 FunctionEnd
 
 Function .onInstSuccess
-  Delete "${STATE_FILE}"
 FunctionEnd
+
 Function .onInstFailed
-  Delete "${STATE_FILE}"
 FunctionEnd
 
 Function LaunchPsi
@@ -545,16 +550,7 @@ Function LaunchPsi
 FunctionEnd
 
 Function un.onInit
-  nsProcess::_FindProcess "psi-plus.exe"
-  Pop $0
-  ${If} $0 == 0
-    ExecWait '"$SYSDIR\taskkill.exe" /F /IM psi-plus.exe' $1
-  ${EndIf}
-  nsProcess::_FindProcess "psi-plus-webengine.exe"
-  Pop $0
-  ${If} $0 == 0
-    ExecWait '"$SYSDIR\taskkill.exe" /F /IM psi-plus-webengine.exe' $1
-  ${EndIf}
+  Call CheckRunningPsi
 FunctionEnd
 
 Section "Uninstall"
@@ -564,6 +560,5 @@ Section "Uninstall"
   DeleteRegKey HKCR "xmpp"
   DeleteRegKey HKCU "${UNINSTALL_REGKEY}"
   DeleteRegKey HKLM "${UNINSTALL_REGKEY}"
-  DeleteRegKey HKCU "${INSTALL_REGKEY}"
   RMDir /r "$INSTDIR"
 SectionEnd
