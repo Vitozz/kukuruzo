@@ -9,8 +9,6 @@ RequestExecutionLevel user
 !include StrFunc.nsh
 ${StrStr}
 
-; Build-time overrides, for example:
-; makensis /DWORK_DIR=C:\build\Installer /DRES_DIR=C:\build\resources psi-plus-setup-64.nsi
 !ifndef WORK_DIR
   !define WORK_DIR "C:\build\Installer"
 !endif
@@ -85,13 +83,11 @@ Var PreviousInstallDir
 Var PreviousHive
 Var NeedVCRedist
 Var VCRedistChecked
-Var VCRedistDownloaded
 Var SelectedExecutable
 Var hVCRedistLabel
 Var hSummary
 Var hSummaryText
 
-; Every file remains wildcard-based. The script only defines selectable groups.
 Section /o "Psi+" SEC_BIN64
   SectionIn 1 2 3
   SetOutPath "$INSTDIR"
@@ -102,7 +98,6 @@ Section /o "Psi+ WebEngine" SEC_BIN64W
   SectionIn 1 2 3
   SetOutPath "$INSTDIR"
   File "${WORK_DIR}\psi-plus-webengine.exe"
-  SetOutPath "$INSTDIR"
   File /r "${WORK_DIR}\webengine64\*.*"
 SectionEnd
 
@@ -126,14 +121,12 @@ Section "Psi+ common files" SEC_COMMON
   File "${COMMON_DIR}\README.txt"
 SectionEnd
 
-; This section runs first and is deliberately hidden from the component tree.
 Section "-Visual C++ Redistributable" SEC_VC
   ${If} $NeedVCRedist == 1
     Call DownloadAndInstallVCRedist
   ${EndIf}
 SectionEnd
 
-; NSIS parameterized blocks must be declared with !macro, not !define.
 !macro PLUGIN_SECTION name text
 Section /o "${text}" SEC_PLUGIN_${name}
   SetOutPath "$INSTDIR\plugins"
@@ -306,26 +299,45 @@ FunctionEnd
 Function FindPreviousInstallation
   StrCpy $PreviousUninstaller ""
   StrCpy $PreviousHive ""
+
   SetRegView 64
   ReadRegStr $PreviousUninstaller HKCU "${UNINSTALL_REGKEY}" "UninstallString"
-  StrCpy $PreviousHive HKCU
-  ${If} $PreviousUninstaller == ""
+  ${If} $PreviousUninstaller != ""
+    StrCpy $PreviousHive "HKCU"
+  ${Else}
     ReadRegStr $PreviousUninstaller HKLM "${UNINSTALL_REGKEY}" "UninstallString"
-    StrCpy $PreviousHive HKLM
+    ${If} $PreviousUninstaller != ""
+      StrCpy $PreviousHive "HKLM"
+    ${EndIf}
   ${EndIf}
+
   SetRegView 32
   ${If} $PreviousUninstaller == ""
     ReadRegStr $PreviousUninstaller HKCU "${UNINSTALL_REGKEY}" "UninstallString"
-    StrCpy $PreviousHive HKCU
+    ${If} $PreviousUninstaller != ""
+      StrCpy $PreviousHive "HKCU"
+    ${Else}
+      ReadRegStr $PreviousUninstaller HKLM "${UNINSTALL_REGKEY}" "UninstallString"
+      ${If} $PreviousUninstaller != ""
+        StrCpy $PreviousHive "HKLM"
+      ${EndIf}
+    ${EndIf}
   ${EndIf}
-  ${If} $PreviousUninstaller == ""
-    ReadRegStr $PreviousUninstaller HKLM "${UNINSTALL_REGKEY}" "UninstallString"
-    StrCpy $PreviousHive HKLM
+
+  ${If} $PreviousUninstaller != ""
+    Call ReadPreviousInstallationMetadata
   ${EndIf}
   SetRegView 64
-  ${If} $PreviousUninstaller != ""
-    ReadRegStr $PreviousVersion ${PreviousHive} "${UNINSTALL_REGKEY}" "DisplayVersion"
-    ReadRegStr $PreviousInstallDir ${PreviousHive} "${UNINSTALL_REGKEY}" "InstallLocation"
+FunctionEnd
+
+; ReadRegStr takes a literal root key. A variable cannot be used as HKCU/HKLM.
+Function ReadPreviousInstallationMetadata
+  ${If} $PreviousHive == "HKCU"
+    ReadRegStr $PreviousVersion HKCU "${UNINSTALL_REGKEY}" "DisplayVersion"
+    ReadRegStr $PreviousInstallDir HKCU "${UNINSTALL_REGKEY}" "InstallLocation"
+  ${ElseIf} $PreviousHive == "HKLM"
+    ReadRegStr $PreviousVersion HKLM "${UNINSTALL_REGKEY}" "DisplayVersion"
+    ReadRegStr $PreviousInstallDir HKLM "${UNINSTALL_REGKEY}" "InstallLocation"
   ${EndIf}
 FunctionEnd
 
@@ -370,13 +382,18 @@ ClosePsi:
 FunctionEnd
 
 Function SavePreviousState
-  SetRegView 64
-  ReadRegStr $0 ${PreviousHive} "${UNINSTALL_REGKEY}" "InstallLocation"
-  WriteINIStr "${STATE_FILE}" "${STATE_SECTION}" "InstallDir" "$0"
-  ReadRegStr $1 ${PreviousHive} "${UNINSTALL_REGKEY}" "Inno Setup: Selected Components"
-  WriteINIStr "${STATE_FILE}" "${STATE_SECTION}" "SelectedComponents" "$1"
-  ReadRegStr $1 ${PreviousHive} "${UNINSTALL_REGKEY}" "Inno Setup: Selected Tasks"
-  WriteINIStr "${STATE_FILE}" "${STATE_SECTION}" "SelectedTasks" "$1"
+  WriteINIStr "${STATE_FILE}" "${STATE_SECTION}" "InstallDir" "$PreviousInstallDir"
+  ${If} $PreviousHive == "HKCU"
+    ReadRegStr $1 HKCU "${UNINSTALL_REGKEY}" "Inno Setup: Selected Components"
+    WriteINIStr "${STATE_FILE}" "${STATE_SECTION}" "SelectedComponents" "$1"
+    ReadRegStr $1 HKCU "${UNINSTALL_REGKEY}" "Inno Setup: Selected Tasks"
+    WriteINIStr "${STATE_FILE}" "${STATE_SECTION}" "SelectedTasks" "$1"
+  ${ElseIf} $PreviousHive == "HKLM"
+    ReadRegStr $1 HKLM "${UNINSTALL_REGKEY}" "Inno Setup: Selected Components"
+    WriteINIStr "${STATE_FILE}" "${STATE_SECTION}" "SelectedComponents" "$1"
+    ReadRegStr $1 HKLM "${UNINSTALL_REGKEY}" "Inno Setup: Selected Tasks"
+    WriteINIStr "${STATE_FILE}" "${STATE_SECTION}" "SelectedTasks" "$1"
+  ${EndIf}
 FunctionEnd
 
 Function RestorePreviousState
@@ -435,7 +452,9 @@ Function VCRedistPageCreate
   Pop $hVCRedistLabel
   Call CheckVCRedist
   ${If} $NeedVCRedist == 1
-    ${NSD_SetText} $hVCRedistLabel "Microsoft Visual C++ Redistributable x64 is missing or older than the required version (14.42.34433.0).$\r$\n$\r$\nThe official package will be downloaded from https://aka.ms/vs/17/release/vc_redist.x64.exe"
+    ${NSD_SetText} $hVCRedistLabel "Microsoft Visual C++ Redistributable x64 is missing or older than the required version (14.42.34433.0).$$
+$$
+The official package will be downloaded from https://aka.ms/vs/17/release/vc_redist.x64.exe"
   ${Else}
     ${NSD_SetText} $hVCRedistLabel "Microsoft Visual C++ Redistributable x64 is already installed with a suitable version. No download is required."
   ${EndIf}
@@ -552,13 +571,9 @@ Section "Uninstall"
   Delete "$SMPROGRAMS\Psi+ (x64)\Psi+ (x64).lnk"
   Delete "$SMPROGRAMS\Psi+ (x64)\Uninstall Psi+.lnk"
   RMDir "$SMPROGRAMS\Psi+ (x64)"
-
-  ; Delete only registry data created by this installer.
-  ; Application settings and QtKeychain data are intentionally preserved.
   DeleteRegKey HKCR "xmpp"
   DeleteRegKey HKCU "${UNINSTALL_REGKEY}"
   DeleteRegKey HKLM "${UNINSTALL_REGKEY}"
   DeleteRegKey HKCU "${INSTALL_REGKEY}"
-
   RMDir /r "$INSTDIR"
 SectionEnd
