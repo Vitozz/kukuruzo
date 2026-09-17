@@ -68,7 +68,7 @@ Page custom VCRedistPageCreate VCRedistPageLeave
 
 ;!define MUI_PAGE_HEADER_TEXT "$(STR_SUMMARY_PAGE_TITLE)"
 ;!define MUI_PAGE_HEADER_SUBTEXT "$(STR_SUMMARY_PAGE_SUBTITLE)"
-Page custom SummaryPageCreate SummaryPageLeave
+;Page custom SummaryPageCreate SummaryPageLeave
 ;!undef MUI_PAGE_HEADER_TEXT
 ;!undef MUI_PAGE_HEADER_SUBTEXT
 
@@ -92,7 +92,7 @@ Var PreviousHive
 Var NeedVCRedist
 Var SelectedExecutable
 Var hVCRedistLabel
-Var hSummaryText
+;Var hSummaryText
 
 !macro SAVE_COMPONENT key section
   SectionGetFlags ${section} $0
@@ -379,14 +379,16 @@ FunctionEnd
 Function IsPsiRunning
   StrCpy $0 0
   nsProcess::_FindProcess "psi-plus.exe"
-  Pop $1
-  ${If} $1 == 0
+  Pop $R0
+  ${If} $R0 == 0
     StrCpy $0 1
+    Pop $R0
   ${EndIf}
   nsProcess::_FindProcess "psi-plus-webengine.exe"
-  Pop $1
-  ${If} $1 == 0
+  Pop $R0
+  ${If} $R0 == 0
     StrCpy $0 1
+    Pop $R0
   ${EndIf}
 FunctionEnd
 
@@ -490,28 +492,22 @@ Function CheckVCRedist
   SetRegView 32
 FunctionEnd
 
-Function SummaryPageCreate
-  nsDialogs::Create 1018
-  Pop $0
+;Function SummaryPageCreate
+;  nsDialogs::Create 1018
+;  Pop $0
+;  ${If} $0 == error
+;    Abort
+;  ${EndIf}
+;  ${NSD_CreateText} 0 0 100% 190u "$(STR_SUMMARY_TEXT)"
+;  Pop $hSummaryText
+;  ${If} $NeedVCRedist == 1
+;    ${NSD_SetText} $hSummaryText "$(STR_SUMMARY_WITH_VC)"
+;  ${EndIf}
+;  nsDialogs::Show
+;FunctionEnd
 
-  ${If} $0 == error
-    Abort
-  ${EndIf}
-
-  !insertmacro MUI_HEADER_TEXT \
-    "Psi+ installation summary" \
-    "Review the selected installation options"
-
-  ${NSD_CreateText} 0 0 100% 190u \
-    "TEST TEXT$\r$\nSecond line"
-
-  Pop $hSummaryText
-
-  nsDialogs::Show
-FunctionEnd
-
-Function SummaryPageLeave
-FunctionEnd
+;Function SummaryPageLeave
+;FunctionEnd
 
 Function DownloadAndInstallVCRedist
   DetailPrint "Downloading Microsoft Visual C++ Redistributable..."
@@ -569,15 +565,17 @@ Function un.IsPsiRunning
   StrCpy $0 0
 
   nsProcess::_FindProcess "psi-plus.exe"
-  Pop $1
-  ${If} $1 == 0
+  Pop $R0
+  ${If} $R0 == 0
     StrCpy $0 1
+    Pop $R0
   ${EndIf}
 
   nsProcess::_FindProcess "psi-plus-webengine.exe"
-  Pop $1
-  ${If} $1 == 0
+  Pop $R0
+  ${If} $R0 == 0
     StrCpy $0 1
+    Pop $R0
   ${EndIf}
 FunctionEnd
 
