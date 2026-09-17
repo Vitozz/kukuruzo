@@ -5,7 +5,6 @@ RequestExecutionLevel user
 !include LogicLib.nsh
 !include x64.nsh
 !include nsDialogs.nsh
-!include WinVer.nsh
 !include StrFunc.nsh
 ${StrStr}
 
@@ -27,9 +26,6 @@ ${StrStr}
 
 !define APP_ID "{751DD547-F64F-44D8-8304-5643E71D409B}"
 !define VC_URL "https://aka.ms/vs/17/release/vc_redist.x64.exe"
-!define VC_MAJOR 14
-!define VC_MINOR 42
-!define VC_BUILD 34433
 !define STATE_FILE "$TEMP\psi-plus-upgrade.ini"
 !define STATE_SECTION "PreviousInstallation"
 !define INSTALL_REGKEY "Software\Psi+\Installer"
@@ -42,7 +38,6 @@ Caption "Psi+ x64 Setup"
 OutFile "${WORK_DIR}\out\psi-plus-${APP_VERSION}-x64-setup.exe"
 InstallDir "$LOCALAPPDATA\Psi-plus"
 InstallDirRegKey HKCU "${UNINSTALL_REGKEY}" "InstallLocation"
-InstallDirRegKey HKLM "${UNINSTALL_REGKEY}" "InstallLocation"
 BrandingText "Psi+ Project"
 ShowInstDetails show
 ShowUninstDetails show
@@ -68,10 +63,8 @@ Page custom VCRedistPageCreate VCRedistPageLeave
 Page custom SummaryPageCreate SummaryPageLeave
 !insertmacro MUI_PAGE_INSTFILES
 !insertmacro MUI_PAGE_FINISH
-
 !insertmacro MUI_UNPAGE_CONFIRM
 !insertmacro MUI_UNPAGE_INSTFILES
-
 !insertmacro MUI_LANGUAGE English
 !insertmacro MUI_LANGUAGE Russian
 !insertmacro MUI_LANGUAGE French
@@ -81,11 +74,10 @@ Var PreviousUninstaller
 Var PreviousVersion
 Var PreviousInstallDir
 Var PreviousHive
+Var PreviousComponents
 Var NeedVCRedist
-Var VCRedistChecked
 Var SelectedExecutable
 Var hVCRedistLabel
-Var hSummary
 Var hSummaryText
 
 Section /o "Psi+" SEC_BIN64
@@ -153,6 +145,7 @@ SectionGroup /e "Plugins" SEC_PLUGINS
 !insertmacro PLUGIN_SECTION imagepreviewplugin "Image Preview plugin"
 !insertmacro PLUGIN_SECTION jabberdiskplugin "Jabber Disk plugin"
 !insertmacro PLUGIN_SECTION juickplugin "Juick plugin"
+!insertmacro PLUGIN_SECTION mediaplugin "PsiMedia plugin"
 !insertmacro PLUGIN_SECTION messagefilterplugin "Message Filter plugin"
 !insertmacro PLUGIN_SECTION noughtsandcrossesplugin "Noughts And Crosses plugin"
 !insertmacro PLUGIN_SECTION openpgpplugin "OpenPGP plugin"
@@ -212,10 +205,7 @@ SectionEnd
 !insertmacro DICT_SECTION it_IT "Italiano"
 !insertmacro DICT_SECTION kmr_Latn "Kurdish (Latin)"
 !insertmacro DICT_SECTION lo_LA "Lao"
-Section /o "Lietuvių kalba" SEC_DICT_lt
-  SetOutPath "$INSTDIR\myspell\dicts"
-  File /nonfatal "${COMMON_DIR}\myspell\dicts\lt.*"
-SectionEnd
+!insertmacro DICT_SECTION lt "Lietuvių kalba"
 !insertmacro DICT_SECTION lv_LV "Latviešu"
 !insertmacro DICT_SECTION nb_NO "Norsk (Bokmål)"
 !insertmacro DICT_SECTION ne_NP "Nepali"
@@ -299,7 +289,6 @@ FunctionEnd
 Function FindPreviousInstallation
   StrCpy $PreviousUninstaller ""
   StrCpy $PreviousHive ""
-
   SetRegView 64
   ReadRegStr $PreviousUninstaller HKCU "${UNINSTALL_REGKEY}" "UninstallString"
   ${If} $PreviousUninstaller != ""
@@ -310,7 +299,6 @@ Function FindPreviousInstallation
       StrCpy $PreviousHive "HKLM"
     ${EndIf}
   ${EndIf}
-
   SetRegView 32
   ${If} $PreviousUninstaller == ""
     ReadRegStr $PreviousUninstaller HKCU "${UNINSTALL_REGKEY}" "UninstallString"
@@ -323,22 +311,16 @@ Function FindPreviousInstallation
       ${EndIf}
     ${EndIf}
   ${EndIf}
-
   ${If} $PreviousUninstaller != ""
-    Call ReadPreviousInstallationMetadata
+    ${If} $PreviousHive == "HKCU"
+      ReadRegStr $PreviousVersion HKCU "${UNINSTALL_REGKEY}" "DisplayVersion"
+      ReadRegStr $PreviousInstallDir HKCU "${UNINSTALL_REGKEY}" "InstallLocation"
+    ${Else}
+      ReadRegStr $PreviousVersion HKLM "${UNINSTALL_REGKEY}" "DisplayVersion"
+      ReadRegStr $PreviousInstallDir HKLM "${UNINSTALL_REGKEY}" "InstallLocation"
+    ${EndIf}
   ${EndIf}
   SetRegView 64
-FunctionEnd
-
-; ReadRegStr takes a literal root key. A variable cannot be used as HKCU/HKLM.
-Function ReadPreviousInstallationMetadata
-  ${If} $PreviousHive == "HKCU"
-    ReadRegStr $PreviousVersion HKCU "${UNINSTALL_REGKEY}" "DisplayVersion"
-    ReadRegStr $PreviousInstallDir HKCU "${UNINSTALL_REGKEY}" "InstallLocation"
-  ${ElseIf} $PreviousHive == "HKLM"
-    ReadRegStr $PreviousVersion HKLM "${UNINSTALL_REGKEY}" "DisplayVersion"
-    ReadRegStr $PreviousInstallDir HKLM "${UNINSTALL_REGKEY}" "InstallLocation"
-  ${EndIf}
 FunctionEnd
 
 Function HandlePreviousInstallation
@@ -356,13 +338,13 @@ ContinueUpgrade:
 FunctionEnd
 
 Function CheckRunningPsi
-  nsProcess::FindProcess "psi-plus.exe"
+  nsProcess::_FindProcess "psi-plus.exe"
   Pop $0
   ${If} $0 == 0
     MessageBox MB_ICONQUESTION|MB_YESNO "Psi+ is currently running. Close it before continuing?" IDYES ClosePsi
     Abort
   ${EndIf}
-  nsProcess::FindProcess "psi-plus-webengine.exe"
+  nsProcess::_FindProcess "psi-plus-webengine.exe"
   Pop $0
   ${If} $0 == 0
     MessageBox MB_ICONQUESTION|MB_YESNO "Psi+ WebEngine is currently running. Close it before continuing?" IDYES ClosePsi
@@ -370,10 +352,10 @@ Function CheckRunningPsi
   ${EndIf}
   Return
 ClosePsi:
-  ExecWait 'taskkill.exe /F /IM psi-plus.exe' $0
-  ExecWait 'taskkill.exe /F /IM psi-plus-webengine.exe' $0
+  ExecWait '"$SYSDIR\taskkill.exe" /F /IM psi-plus.exe' $0
+  ExecWait '"$SYSDIR\taskkill.exe" /F /IM psi-plus-webengine.exe' $0
   Sleep 500
-  nsProcess::FindProcess "psi-plus.exe"
+  nsProcess::_FindProcess "psi-plus.exe"
   Pop $0
   ${If} $0 == 0
     MessageBox MB_ICONSTOP "Psi+ is still running. Close it manually and restart the installer."
@@ -388,7 +370,7 @@ Function SavePreviousState
     WriteINIStr "${STATE_FILE}" "${STATE_SECTION}" "SelectedComponents" "$1"
     ReadRegStr $1 HKCU "${UNINSTALL_REGKEY}" "Inno Setup: Selected Tasks"
     WriteINIStr "${STATE_FILE}" "${STATE_SECTION}" "SelectedTasks" "$1"
-  ${ElseIf} $PreviousHive == "HKLM"
+  ${Else}
     ReadRegStr $1 HKLM "${UNINSTALL_REGKEY}" "Inno Setup: Selected Components"
     WriteINIStr "${STATE_FILE}" "${STATE_SECTION}" "SelectedComponents" "$1"
     ReadRegStr $1 HKLM "${UNINSTALL_REGKEY}" "Inno Setup: Selected Tasks"
@@ -418,6 +400,9 @@ FunctionEnd
   ${EndIf}
 !macroend
 
+; The shared file contains the complete plugin and dictionary lists.
+!include "restore-components.nsh"
+
 Function RestoreComponentState
   ReadINIStr $PreviousComponents "${STATE_FILE}" "${STATE_SECTION}" "SelectedComponents"
   ${StrStr} $1 $PreviousComponents "bin64w"
@@ -431,15 +416,8 @@ Function RestoreComponentState
       SectionSetFlags ${SEC_BIN64W} 0
     ${EndIf}
   ${EndIf}
-  !insertmacro RESTORE_COMPONENT attentionplugin
-  !insertmacro RESTORE_COMPONENT autoreplyplugin
-  !insertmacro RESTORE_COMPONENT openpgpplugin
-  !insertmacro RESTORE_COMPONENT otrplugin
-  !insertmacro RESTORE_COMPONENT translateplugin
-  !insertmacro RESTORE_COMPONENT videostatusplugin
-  !insertmacro RESTORE_DICT en_US
-  !insertmacro RESTORE_DICT ru_RU
-  !insertmacro RESTORE_DICT uk_UA
+  !insertmacro RESTORE_ALL_PLUGIN_COMPONENTS
+  !insertmacro RESTORE_ALL_DICTIONARY_COMPONENTS
 FunctionEnd
 
 Function VCRedistPageCreate
@@ -452,9 +430,7 @@ Function VCRedistPageCreate
   Pop $hVCRedistLabel
   Call CheckVCRedist
   ${If} $NeedVCRedist == 1
-    ${NSD_SetText} $hVCRedistLabel "Microsoft Visual C++ Redistributable x64 is missing or older than the required version (14.42.34433.0).$$
-$$
-The official package will be downloaded from https://aka.ms/vs/17/release/vc_redist.x64.exe"
+    ${NSD_SetText} $hVCRedistLabel "Microsoft Visual C++ Redistributable x64 is missing or outdated. It will be downloaded from the official Microsoft URL."
   ${Else}
     ${NSD_SetText} $hVCRedistLabel "Microsoft Visual C++ Redistributable x64 is already installed with a suitable version. No download is required."
   ${EndIf}
@@ -462,7 +438,6 @@ The official package will be downloaded from https://aka.ms/vs/17/release/vc_red
 FunctionEnd
 
 Function VCRedistPageLeave
-  StrCpy $VCRedistChecked 1
 FunctionEnd
 
 Function CheckVCRedist
@@ -474,14 +449,13 @@ Function CheckVCRedist
   ${EndIf}
   ReadRegDWORD $1 HKLM "SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\x64" "Minor"
   ReadRegDWORD $2 HKLM "SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\x64" "Bld"
-  ReadRegDWORD $3 HKLM "SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\x64" "RBld"
-  ${If} $0 > ${VC_MAJOR}
+  ${If} $0 > 14
     StrCpy $NeedVCRedist 0
-  ${ElseIf} $0 == ${VC_MAJOR}
-    ${If} $1 > ${VC_MINOR}
+  ${ElseIf} $0 == 14
+    ${If} $1 > 42
       StrCpy $NeedVCRedist 0
-    ${ElseIf} $1 == ${VC_MINOR}
-      ${If} $2 >= ${VC_BUILD}
+    ${ElseIf} $1 == 42
+      ${If} $2 >= 34433
         StrCpy $NeedVCRedist 0
       ${EndIf}
     ${EndIf}
@@ -491,9 +465,7 @@ FunctionEnd
 Function SummaryPageCreate
   nsDialogs::Create 1018
   Pop $0
-  ${NSD_CreateLabel} 0 0 100% 30u "The following will be installed:"
-  Pop $hSummary
-  ${NSD_CreateText} 0 35u 100% 150u "Psi+ ${APP_VERSION}$\r$\nInstall directory: $INSTDIR$\r$\nSelected components will be copied from wildcard-based build directories.$\r$\n$\r$\nThe selected Psi+ components, plugins and Hunspell dictionaries will be installed."
+  ${NSD_CreateText} 0 0 100% 190u "Psi+ ${APP_VERSION}$\r$\nInstall directory: $INSTDIR$\r$\n$\r$\nThe selected Psi+ components, plugins and Hunspell dictionaries will be installed."
   Pop $hSummaryText
   ${If} $NeedVCRedist == 1
     ${NSD_SetText} $hSummaryText "Psi+ ${APP_VERSION}$\r$\nInstall directory: $INSTDIR$\r$\n$\r$\nMicrosoft Visual C++ Redistributable x64 will be downloaded from the official Microsoft URL and installed.$\r$\n$\r$\nThe selected files, plugins and Hunspell dictionaries will then be installed."
@@ -512,7 +484,6 @@ Function DownloadAndInstallVCRedist
     MessageBox MB_ICONSTOP "Could not download Microsoft Visual C++ Redistributable.$\r$\n$\r$\nError: $0"
     Abort
   ${EndIf}
-  DetailPrint "Installing Microsoft Visual C++ Redistributable..."
   ExecWait '"$PLUGINSDIR\vc_redist.x64.exe" /install /quiet /norestart' $0
   ${If} $0 != 0
     MessageBox MB_ICONSTOP "Microsoft Visual C++ Redistributable installation failed. Exit code: $0"
@@ -554,21 +525,20 @@ Function LaunchPsi
 FunctionEnd
 
 Function un.onInit
-  nsProcess::FindProcess "psi-plus.exe"
+  nsProcess::_FindProcess "psi-plus.exe"
   Pop $0
   ${If} $0 == 0
-    ExecWait 'taskkill.exe /F /IM psi-plus.exe' $1
+    ExecWait '"$SYSDIR\taskkill.exe" /F /IM psi-plus.exe' $1
   ${EndIf}
-  nsProcess::FindProcess "psi-plus-webengine.exe"
+  nsProcess::_FindProcess "psi-plus-webengine.exe"
   Pop $0
   ${If} $0 == 0
-    ExecWait 'taskkill.exe /F /IM psi-plus-webengine.exe' $1
+    ExecWait '"$SYSDIR\taskkill.exe" /F /IM psi-plus-webengine.exe' $1
   ${EndIf}
 FunctionEnd
 
 Section "Uninstall"
   Delete "$DESKTOP\Psi+ (x64).lnk"
-  Delete "$SMPROGRAMS\Psi+ (x64)\Psi+ (x64).lnk"
   Delete "$SMPROGRAMS\Psi+ (x64)\Uninstall Psi+.lnk"
   RMDir "$SMPROGRAMS\Psi+ (x64)"
   DeleteRegKey HKCR "xmpp"
