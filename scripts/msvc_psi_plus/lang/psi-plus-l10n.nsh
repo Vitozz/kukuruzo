@@ -50,30 +50,6 @@ LangString STR_VC_PRESENT ${LANG_FRENCH} "Une version compatible de Microsoft Vi
 LangString STR_VC_PRESENT ${LANG_UKRAINIAN} "Сумісна версія Microsoft Visual C++ Redistributable x64 вже встановлена.$\r$\nЗавантаження не потрібне."
 LangString STR_VC_PRESENT ${LANG_GERMAN} "Eine geeignete Version von Microsoft Visual C++ Redistributable x64 ist bereits installiert.$\r$\nEs ist kein Download erforderlich."
 
-LangString STR_SUMMARY_PAGE_TITLE ${LANG_ENGLISH} "Psi+ installation summary"
-LangString STR_SUMMARY_PAGE_TITLE ${LANG_RUSSIAN} "Сведения об установке Psi+"
-LangString STR_SUMMARY_PAGE_TITLE ${LANG_FRENCH} "Résumé de l'installation de Psi+"
-LangString STR_SUMMARY_PAGE_TITLE ${LANG_UKRAINIAN} "Підсумок встановлення Psi+"
-LangString STR_SUMMARY_PAGE_TITLE ${LANG_GERMAN} "Zusammenfassung der Psi+-Installation"
-
-LangString STR_SUMMARY_PAGE_SUBTITLE ${LANG_ENGLISH} "Review the selected installation options"
-LangString STR_SUMMARY_PAGE_SUBTITLE ${LANG_RUSSIAN} "Проверьте выбранные параметры установки"
-LangString STR_SUMMARY_PAGE_SUBTITLE ${LANG_FRENCH} "Vérifiez les options d'installation sélectionnées"
-LangString STR_SUMMARY_PAGE_SUBTITLE ${LANG_UKRAINIAN} "Перевірте вибрані параметри встановлення"
-LangString STR_SUMMARY_PAGE_SUBTITLE ${LANG_GERMAN} "Überprüfen Sie die ausgewählten Installationsoptionen"
-
-LangString STR_SUMMARY_TEXT ${LANG_ENGLISH} "Psi+ ${APP_VERSION}$\r$\nInstall directory: $INSTDIR$\r$\n$\r$\nThe selected Psi+ components, plugins and Hunspell dictionaries will be installed."
-LangString STR_SUMMARY_TEXT ${LANG_RUSSIAN} "Psi+ ${APP_VERSION}$\r$\nКаталог установки: $INSTDIR$\r$\n$\r$\nБудут установлены выбранные компоненты Psi+, плагины и словари Hunspell."
-LangString STR_SUMMARY_TEXT ${LANG_FRENCH} "Psi+ ${APP_VERSION}$\r$\nDossier d'installation : $INSTDIR$\r$\n$\r$\nLes composants Psi+, les plugins et les dictionnaires Hunspell sélectionnés seront installés."
-LangString STR_SUMMARY_TEXT ${LANG_UKRAINIAN} "Psi+ ${APP_VERSION}$\r$\nКаталог встановлення: $INSTDIR$\r$\n$\r$\nБуде встановлено вибрані компоненти Psi+, плагіни та словники Hunspell."
-LangString STR_SUMMARY_TEXT ${LANG_GERMAN} "Psi+ ${APP_VERSION}$\r$\nInstallationsverzeichnis: $INSTDIR$\r$\n$\r$\nDie ausgewählten Psi+-Komponenten, Plugins und Hunspell-Wörterbücher werden installiert."
-
-LangString STR_SUMMARY_WITH_VC ${LANG_ENGLISH} "Psi+ ${APP_VERSION}$\r$\nInstall directory: $INSTDIR$\r$\n$\r$\nMicrosoft Visual C++ Redistributable x64 will be downloaded from the official Microsoft URL and installed silently."
-LangString STR_SUMMARY_WITH_VC ${LANG_RUSSIAN} "Psi+ ${APP_VERSION}$\r$\nКаталог установки: $INSTDIR$\r$\n$\r$\nMicrosoft Visual C++ Redistributable x64 будет загружен с официального сайта Microsoft и установлен в тихом режиме."
-LangString STR_SUMMARY_WITH_VC ${LANG_FRENCH} "Psi+ ${APP_VERSION}$\r$\nDossier d'installation : $INSTDIR$\r$\n$\r$\nMicrosoft Visual C++ Redistributable x64 sera téléchargé depuis le site officiel de Microsoft et installé silencieusement."
-LangString STR_SUMMARY_WITH_VC ${LANG_UKRAINIAN} "Psi+ ${APP_VERSION}$\r$\nКаталог встановлення: $INSTDIR$\r$\n$\r$\nMicrosoft Visual C++ Redistributable x64 буде завантажено з офіційного сайту Microsoft і встановлено в тихому режимі."
-LangString STR_SUMMARY_WITH_VC ${LANG_GERMAN} "Psi+ ${APP_VERSION}$\r$\nInstallationsverzeichnis: $INSTDIR$\r$\n$\r$\nMicrosoft Visual C++ Redistributable x64 wird von der offiziellen Microsoft-Website heruntergeladen und im Hintergrund installiert."
-
 LangString STR_PREVIOUS_VERSION_FOUND ${LANG_ENGLISH} "An installed Psi+ version $PreviousVersion was found.$\r$\n$\r$\nThe existing version will be removed before installing the new version."
 LangString STR_PREVIOUS_VERSION_FOUND ${LANG_RUSSIAN} "Обнаружена установленная версия Psi+ $PreviousVersion.$\r$\n$\r$\nПеред установкой новой версии текущая версия будет удалена."
 LangString STR_PREVIOUS_VERSION_FOUND ${LANG_FRENCH} "Une version installée de Psi+ ($PreviousVersion) a été trouvée.$\r$\n$\r$\nLa version existante sera supprimée avant l'installation de la nouvelle version."
