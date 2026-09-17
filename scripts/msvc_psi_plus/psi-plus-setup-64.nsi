@@ -133,8 +133,14 @@ Section "-Visual C++ Redistributable" SEC_VC
   ${EndIf}
 SectionEnd
 
-!define PLUGIN_SECTION(name, text) \
-Section /o "${text}" SEC_PLUGIN_${name}\n  SetOutPath "$INSTDIR\plugins"\n  File /nonfatal "${PLUGINS_DIR}\${name}.dll"\nSectionEnd
+; NSIS parameterized blocks must be declared with !macro, not !define.
+!macro PLUGIN_SECTION name text
+Section /o "${text}" SEC_PLUGIN_${name}
+  SetOutPath "$INSTDIR\plugins"
+  File /nonfatal "${PLUGINS_DIR}\${name}.dll"
+SectionEnd
+!macroend
+
 SectionGroup /e "Plugins" SEC_PLUGINS
 !insertmacro PLUGIN_SECTION attentionplugin "Attention plugin"
 !insertmacro PLUGIN_SECTION autoreplyplugin "Auto Reply plugin"
@@ -168,10 +174,14 @@ SectionGroup /e "Plugins" SEC_PLUGINS
 !insertmacro PLUGIN_SECTION videostatusplugin "Video Status Changer plugin"
 !insertmacro PLUGIN_SECTION watcherplugin "Watcher plugin"
 SectionGroupEnd
-!undef PLUGIN_SECTION
 
-!define DICT_SECTION(name, text) \
-Section /o "${text}" SEC_DICT_${name}\n  SetOutPath "$INSTDIR\myspell\dicts"\n  File /nonfatal "${COMMON_DIR}\myspell\dicts\${name}.*"\nSectionEnd
+!macro DICT_SECTION name text
+Section /o "${text}" SEC_DICT_${name}
+  SetOutPath "$INSTDIR\myspell\dicts"
+  File /nonfatal "${COMMON_DIR}\myspell\dicts\${name}.*"
+SectionEnd
+!macroend
+
 SectionGroup /e "Spell check dictionaries" SEC_DICTS
 !insertmacro DICT_SECTION af_ZA "Afrikaans"
 !insertmacro DICT_SECTION an_ES "Aragonese"
@@ -240,7 +250,6 @@ SectionEnd
 !insertmacro DICT_SECTION uk_UA "Українська"
 !insertmacro DICT_SECTION vi_VN "Tiếng Việt"
 SectionGroupEnd
-!undef DICT_SECTION
 
 Section "Create desktop shortcut" SEC_DESKTOP
   ${If} ${SectionIsSelected} ${SEC_BIN64}
@@ -321,9 +330,7 @@ Function FindPreviousInstallation
 FunctionEnd
 
 Function HandlePreviousInstallation
-  MessageBox MB_ICONINFORMATION|MB_OKCANCEL \
-    "An installed Psi+ version $PreviousVersion was found.$\r$\n$\r$\nClick OK to continue. The existing version will be removed before installing the new version." \
-    IDOK ContinueUpgrade
+  MessageBox MB_ICONINFORMATION|MB_OKCANCEL "An installed Psi+ version $PreviousVersion was found.$\r$\n$\r$\nClick OK to continue. The existing version will be removed before installing the new version." IDOK ContinueUpgrade
   Abort
 ContinueUpgrade:
   Call CheckRunningPsi
@@ -366,7 +373,6 @@ Function SavePreviousState
   SetRegView 64
   ReadRegStr $0 ${PreviousHive} "${UNINSTALL_REGKEY}" "InstallLocation"
   WriteINIStr "${STATE_FILE}" "${STATE_SECTION}" "InstallDir" "$0"
-  ReadRegStr $0 ${PreviousHive} "${UNINSTALL_REGKEY}" "${APP_ID}"
   ReadRegStr $1 ${PreviousHive} "${UNINSTALL_REGKEY}" "Inno Setup: Selected Components"
   WriteINIStr "${STATE_FILE}" "${STATE_SECTION}" "SelectedComponents" "$1"
   ReadRegStr $1 ${PreviousHive} "${UNINSTALL_REGKEY}" "Inno Setup: Selected Tasks"
@@ -378,21 +384,25 @@ Function RestorePreviousState
   ${If} $0 != ""
     StrCpy $INSTDIR $0
   ${EndIf}
-  ReadINIStr $0 "${STATE_FILE}" "${STATE_SECTION}" "SelectedComponents"
-  WriteINIStr "${STATE_FILE}" "${STATE_SECTION}" "SelectedComponents" "$0"
-  ReadINIStr $1 "${STATE_FILE}" "${STATE_SECTION}" "SelectedTasks"
-  WriteINIStr "${STATE_FILE}" "${STATE_SECTION}" "SelectedTasks" "$1"
-  ; The old Inno values are parsed by RestoreComponentState below.
   Call RestoreComponentState
 FunctionEnd
 
-!define RESTORE_COMPONENT(name) \
-  ${StrStr} $0 $PreviousComponents "${name}"\n  ${If} $0 != ""\n    SectionSetFlags ${SEC_PLUGIN_${name}} ${SECTION_SELECTED}\n  ${EndIf}
-!define RESTORE_DICT(name) \
-  ${StrStr} $0 $PreviousComponents "dicts\\${name}"\n  ${If} $0 != ""\n    SectionSetFlags ${SEC_DICT_${name}} ${SECTION_SELECTED}\n  ${EndIf}
+!macro RESTORE_COMPONENT name
+  ${StrStr} $0 $PreviousComponents "${name}"
+  ${If} $0 != ""
+    SectionSetFlags ${SEC_PLUGIN_${name}} ${SECTION_SELECTED}
+  ${EndIf}
+!macroend
+
+!macro RESTORE_DICT name
+  ${StrStr} $0 $PreviousComponents "dicts\\${name}"
+  ${If} $0 != ""
+    SectionSetFlags ${SEC_DICT_${name}} ${SECTION_SELECTED}
+  ${EndIf}
+!macroend
+
 Function RestoreComponentState
   ReadINIStr $PreviousComponents "${STATE_FILE}" "${STATE_SECTION}" "SelectedComponents"
-  ReadINIStr $0 "${STATE_FILE}" "${STATE_SECTION}" "SelectedTasks"
   ${StrStr} $1 $PreviousComponents "bin64w"
   ${If} $1 != ""
     SectionSetFlags ${SEC_BIN64W} ${SECTION_SELECTED}
@@ -404,18 +414,16 @@ Function RestoreComponentState
       SectionSetFlags ${SEC_BIN64W} 0
     ${EndIf}
   ${EndIf}
-  ${RESTORE_COMPONENT(attentionplugin)}
-  ${RESTORE_COMPONENT(autoreplyplugin)}
-  ${RESTORE_COMPONENT(openpgpplugin)}
-  ${RESTORE_COMPONENT(otrplugin)}
-  ${RESTORE_COMPONENT(translateplugin)}
-  ${RESTORE_COMPONENT(videostatusplugin)}
-  ${RESTORE_DICT(en_US)}
-  ${RESTORE_DICT(ru_RU)}
-  ${RESTORE_DICT(uk_UA)}
+  !insertmacro RESTORE_COMPONENT attentionplugin
+  !insertmacro RESTORE_COMPONENT autoreplyplugin
+  !insertmacro RESTORE_COMPONENT openpgpplugin
+  !insertmacro RESTORE_COMPONENT otrplugin
+  !insertmacro RESTORE_COMPONENT translateplugin
+  !insertmacro RESTORE_COMPONENT videostatusplugin
+  !insertmacro RESTORE_DICT en_US
+  !insertmacro RESTORE_DICT ru_RU
+  !insertmacro RESTORE_DICT uk_UA
 FunctionEnd
-!undef RESTORE_COMPONENT
-!undef RESTORE_DICT
 
 Function VCRedistPageCreate
   nsDialogs::Create 1018
@@ -427,7 +435,7 @@ Function VCRedistPageCreate
   Pop $hVCRedistLabel
   Call CheckVCRedist
   ${If} $NeedVCRedist == 1
-    ${NSD_SetText} $hVCRedistLabel "Microsoft Visual C++ Redistributable x64 is missing or older than the required version (14.42.34433.0).$$\n$$\nThe official package will be downloaded from:${NSD_SetText}"
+    ${NSD_SetText} $hVCRedistLabel "Microsoft Visual C++ Redistributable x64 is missing or older than the required version (14.42.34433.0).$\r$\n$\r$\nThe official package will be downloaded from https://aka.ms/vs/17/release/vc_redist.x64.exe"
   ${Else}
     ${NSD_SetText} $hVCRedistLabel "Microsoft Visual C++ Redistributable x64 is already installed with a suitable version. No download is required."
   ${EndIf}
@@ -454,9 +462,7 @@ Function CheckVCRedist
     ${If} $1 > ${VC_MINOR}
       StrCpy $NeedVCRedist 0
     ${ElseIf} $1 == ${VC_MINOR}
-      ${If} $2 > ${VC_BUILD}
-        StrCpy $NeedVCRedist 0
-      ${ElseIf} $2 == ${VC_BUILD}
+      ${If} $2 >= ${VC_BUILD}
         StrCpy $NeedVCRedist 0
       ${EndIf}
     ${EndIf}
@@ -468,7 +474,7 @@ Function SummaryPageCreate
   Pop $0
   ${NSD_CreateLabel} 0 0 100% 30u "The following will be installed:"
   Pop $hSummary
-  ${NSD_CreateText} 0 35u 100% 150u "Psi+ ${APP_VERSION}$\r$\nInstall directory: $INSTDIR$\r$\nSelected components will be copied from wildcard-based build directories.$\r$\n$\r$\n$(^Name): installation"
+  ${NSD_CreateText} 0 35u 100% 150u "Psi+ ${APP_VERSION}$\r$\nInstall directory: $INSTDIR$\r$\nSelected components will be copied from wildcard-based build directories.$\r$\n$\r$\nThe selected Psi+ components, plugins and Hunspell dictionaries will be installed."
   Pop $hSummaryText
   ${If} $NeedVCRedist == 1
     ${NSD_SetText} $hSummaryText "Psi+ ${APP_VERSION}$\r$\nInstall directory: $INSTDIR$\r$\n$\r$\nMicrosoft Visual C++ Redistributable x64 will be downloaded from the official Microsoft URL and installed.$\r$\n$\r$\nThe selected files, plugins and Hunspell dictionaries will then be installed."
