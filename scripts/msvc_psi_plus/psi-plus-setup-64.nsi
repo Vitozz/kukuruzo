@@ -38,7 +38,7 @@ InstallDir "$LOCALAPPDATA\Psi-plus"
 InstallDirRegKey HKCU "${UNINSTALL_REGKEY}" "InstallLocation"
 BrandingText "Psi+ Project"
 ShowInstDetails show
-ShowUninstDetails show
+ShowUninstDetails hide
 
 VIProductVersion "${APP_VERSION}"
 VIAddVersionKey /LANG=1033 "ProductVersion" "${APP_VERSION}"
