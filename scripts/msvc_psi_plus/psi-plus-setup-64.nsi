@@ -38,7 +38,7 @@ InstallDir "$LOCALAPPDATA\Psi-plus"
 InstallDirRegKey HKCU "${UNINSTALL_REGKEY}" "InstallLocation"
 BrandingText "Psi+ Project"
 ShowInstDetails show
-ShowUninstDetails show
+ShowUninstDetails hide
 
 VIProductVersion "${APP_VERSION}"
 VIAddVersionKey /LANG=1033 "ProductVersion" "${APP_VERSION}"
@@ -57,20 +57,21 @@ VIAddVersionKey /LANG=1033 "LegalCopyright" "© 2008-2026 Psi+ Project"
 
 !insertmacro MUI_PAGE_WELCOME
 !insertmacro MUI_PAGE_LICENSE "${PSI_SRC_DIR}\COPYING"
+
+Var StartMenuFolder
+
+!define INSTALL_REGKEY "Software\Psi+\Installer"
+
+!define MUI_STARTMENUPAGE_DEFAULTFOLDER "Psi+"
+!define MUI_STARTMENUPAGE_REGISTRY_ROOT HKCU
+!define MUI_STARTMENUPAGE_REGISTRY_KEY "${INSTALL_REGKEY}"
+!define MUI_STARTMENUPAGE_REGISTRY_VALUENAME "Start Menu Folder"
+
 !insertmacro MUI_PAGE_COMPONENTS
 !insertmacro MUI_PAGE_DIRECTORY
+!insertmacro MUI_PAGE_STARTMENU Application $StartMenuFolder
 
-;!define MUI_PAGE_HEADER_TEXT "$(STR_VC_PAGE_TITLE)"
-;!define MUI_PAGE_HEADER_SUBTEXT "$(STR_VC_PAGE_SUBTITLE)"
 Page custom VCRedistPageCreate VCRedistPageLeave
-;!undef MUI_PAGE_HEADER_TEXT
-;!undef MUI_PAGE_HEADER_SUBTEXT
-
-;!define MUI_PAGE_HEADER_TEXT "$(STR_SUMMARY_PAGE_TITLE)"
-;!define MUI_PAGE_HEADER_SUBTEXT "$(STR_SUMMARY_PAGE_SUBTITLE)"
-;Page custom SummaryPageCreate SummaryPageLeave
-;!undef MUI_PAGE_HEADER_TEXT
-;!undef MUI_PAGE_HEADER_SUBTEXT
 
 !insertmacro MUI_PAGE_INSTFILES
 !insertmacro MUI_PAGE_FINISH
@@ -92,7 +93,7 @@ Var PreviousHive
 Var NeedVCRedist
 Var SelectedExecutable
 Var hVCRedistLabel
-;Var hSummaryText
+Var BinarySelectionChanging
 
 !macro SAVE_COMPONENT key section
   SectionGetFlags ${section} $0
@@ -120,11 +121,17 @@ Section /o "Psi+" SEC_BIN64
 SectionEnd
 
 Section /o "Psi+ WebEngine" SEC_BIN64W
-  SectionIn 1 2 3
+  ;SectionIn 1 2 3
   SetOutPath "$INSTDIR"
   File "${WORK_DIR}\psi-plus-webengine.exe"
   File /r /x ".*" "${WORK_DIR}\webengine64\*.*"
 SectionEnd
+
+Function SetDefaultBinaryComponent
+  SectionSetFlags ${SEC_BIN64} ${SF_SELECTED}
+  SectionSetFlags ${SEC_BIN64W} 0
+  StrCpy $SelectedExecutable "psi-plus.exe"
+FunctionEnd
 
 Section "Psi+ common files" SEC_COMMON
   SectionIn 1 2 3 RO
@@ -267,18 +274,63 @@ SectionEnd
 !insertmacro DICT_SECTION vi_VN "Vietnamese"
 SectionGroupEnd
 
-Section "Create desktop shortcut" SEC_DESKTOP
+Section /o "Create desktop shortcut" SEC_DESKTOP
+  SectionIn 1 2 3
+
   ${If} ${SectionIsSelected} ${SEC_BIN64}
-    CreateShortCut "$DESKTOP\Psi+ (x64).lnk" "$INSTDIR\psi-plus.exe" "" "$INSTDIR\psi-plus.exe"
+    CreateShortCut \
+      "$DESKTOP\Psi+.lnk" \
+      "$INSTDIR\psi-plus.exe" \
+      "" \
+      "$INSTDIR\psi-plus.exe"
+
   ${ElseIf} ${SectionIsSelected} ${SEC_BIN64W}
-    CreateShortCut "$DESKTOP\Psi+ (x64).lnk" "$INSTDIR\psi-plus-webengine.exe" "" "$INSTDIR\psi-plus-webengine.exe"
+    CreateShortCut \
+      "$DESKTOP\Psi+.lnk" \
+      "$INSTDIR\psi-plus-webengine.exe" \
+      "" \
+      "$INSTDIR\psi-plus-webengine.exe"
   ${EndIf}
 SectionEnd
 
-Section /o "Create uninstall icon in Program Group" SEC_UNINSTALL_ICON
-  CreateDirectory "$SMPROGRAMS\Psi+ (x64)"
-  CreateShortCut "$SMPROGRAMS\Psi+ (x64)\Uninstall Psi+.lnk" "$INSTDIR\uninstall.exe"
+Section /o "Create Start Menu shortcut" SEC_STARTMENU
+  SectionIn 1 2 3
+
+  !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
+
+    CreateDirectory "$SMPROGRAMS\$StartMenuFolder"
+
+    ${If} ${SectionIsSelected} ${SEC_BIN64}
+      CreateShortCut \
+        "$SMPROGRAMS\$StartMenuFolder\Psi+.lnk" \
+        "$INSTDIR\psi-plus.exe" \
+        "" \
+        "$INSTDIR\psi-plus.exe"
+
+    ${ElseIf} ${SectionIsSelected} ${SEC_BIN64W}
+      CreateShortCut \
+        "$SMPROGRAMS\$StartMenuFolder\Psi+.lnk" \
+        "$INSTDIR\psi-plus-webengine.exe" \
+        "" \
+        "$INSTDIR\psi-plus-webengine.exe"
+    ${EndIf}
+
+  !insertmacro MUI_STARTMENU_WRITE_END
 SectionEnd
+
+Section /o "Create uninstall shortcut in Start Menu" SEC_UNINSTALL_ICON
+  SectionIn 1 2 3
+
+  !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
+
+    CreateDirectory "$SMPROGRAMS\$StartMenuFolder"
+    CreateShortCut \
+      "$SMPROGRAMS\$StartMenuFolder\Uninstall Psi+.lnk" \
+      "$INSTDIR\uninstall.exe"
+
+  !insertmacro MUI_STARTMENU_WRITE_END
+SectionEnd
+
 
 Section "Create XMPP registry entry" SEC_XMPP
   ${If} ${SectionIsSelected} ${SEC_BIN64}
@@ -314,6 +366,7 @@ Function .onInit
     Abort
   ${EndIf}
 
+  Call SetDefaultBinaryComponent
   ; Show the language selection dialog.
   !insertmacro MUI_LANGDLL_DISPLAY
 
@@ -432,10 +485,26 @@ Function RestoreComponentState
   !insertmacro RESTORE_COMPONENT "bin64" ${SEC_BIN64}
   !insertmacro RESTORE_COMPONENT "bin64w" ${SEC_BIN64W}
   !insertmacro RESTORE_COMPONENT "desktop" ${SEC_DESKTOP}
+  !insertmacro RESTORE_COMPONENT "startmenu" ${SEC_STARTMENU}
   !insertmacro RESTORE_COMPONENT "uninstall-icon" ${SEC_UNINSTALL_ICON}
   !insertmacro RESTORE_COMPONENT "xmpp" ${SEC_XMPP}
   !insertmacro RESTORE_ALL_PLUGIN_COMPONENTS
   !insertmacro RESTORE_ALL_DICTIONARY_COMPONENTS
+    ; Ensure that exactly one executable variant is selected.
+  ${If} ${SectionIsSelected} ${SEC_BIN64W}
+    SectionSetFlags ${SEC_BIN64} 0
+    StrCpy $SelectedExecutable "psi-plus-webengine.exe"
+
+  ${ElseIf} ${SectionIsSelected} ${SEC_BIN64}
+    SectionSetFlags ${SEC_BIN64W} 0
+    StrCpy $SelectedExecutable "psi-plus.exe"
+
+  ${Else}
+    ; No executable variant was restored.
+    SectionSetFlags ${SEC_BIN64} ${SF_SELECTED}
+    SectionSetFlags ${SEC_BIN64W} 0
+    StrCpy $SelectedExecutable "psi-plus.exe"
+  ${EndIf}
 FunctionEnd
 
 Function VCRedistPageCreate
@@ -492,23 +561,6 @@ Function CheckVCRedist
   SetRegView 32
 FunctionEnd
 
-;Function SummaryPageCreate
-;  nsDialogs::Create 1018
-;  Pop $0
-;  ${If} $0 == error
-;    Abort
-;  ${EndIf}
-;  ${NSD_CreateText} 0 0 100% 190u "$(STR_SUMMARY_TEXT)"
-;  Pop $hSummaryText
-;  ${If} $NeedVCRedist == 1
-;    ${NSD_SetText} $hSummaryText "$(STR_SUMMARY_WITH_VC)"
-;  ${EndIf}
-;  nsDialogs::Show
-;FunctionEnd
-
-;Function SummaryPageLeave
-;FunctionEnd
-
 Function DownloadAndInstallVCRedist
   DetailPrint "Downloading Microsoft Visual C++ Redistributable..."
   inetc::get /caption "Downloading Microsoft Visual C++ Redistributable" /canceltext "Cancel" "${VC_URL}" "$PLUGINSDIR\vc_redist.x64.exe"
@@ -531,6 +583,7 @@ Function SaveInstallerState
   !insertmacro SAVE_COMPONENT "bin64" ${SEC_BIN64}
   !insertmacro SAVE_COMPONENT "bin64w" ${SEC_BIN64W}
   !insertmacro SAVE_COMPONENT "desktop" ${SEC_DESKTOP}
+  !insertmacro SAVE_COMPONENT "startmenu" ${SEC_STARTMENU}
   !insertmacro SAVE_COMPONENT "uninstall-icon" ${SEC_UNINSTALL_ICON}
   !insertmacro SAVE_COMPONENT "xmpp" ${SEC_XMPP}
   !insertmacro SAVE_ALL_PLUGIN_COMPONENTS
@@ -615,11 +668,13 @@ Function un.onInit
 FunctionEnd
 
 Section "Uninstall"
-  Delete "$DESKTOP\Psi+ (x64).lnk"
-  Delete "$SMPROGRAMS\Psi+ (x64)\Uninstall Psi+.lnk"
-  RMDir "$SMPROGRAMS\Psi+ (x64)"
+  Delete "$DESKTOP\Psi+.lnk"
+  Delete "$SMPROGRAMS\$StartMenuFolder\Psi+.lnk"
+  Delete "$SMPROGRAMS\Psi+\Uninstall Psi+.lnk"
+  RMDir "$SMPROGRAMS\Psi+"
   DeleteRegKey HKCR "xmpp"
   DeleteRegKey HKCU "${UNINSTALL_REGKEY}"
   DeleteRegKey HKLM "${UNINSTALL_REGKEY}"
+  DeleteRegKey HKCU "${INSTALL_REGKEY}"
   RMDir /r "$INSTDIR"
 SectionEnd
