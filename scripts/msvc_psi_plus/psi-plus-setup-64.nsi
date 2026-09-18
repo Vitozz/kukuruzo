@@ -57,20 +57,23 @@ VIAddVersionKey /LANG=1033 "LegalCopyright" "© 2008-2026 Psi+ Project"
 
 !insertmacro MUI_PAGE_WELCOME
 !insertmacro MUI_PAGE_LICENSE "${PSI_SRC_DIR}\COPYING"
+
+
+Var StartMenuFolder
+
+!define INSTALL_REGKEY "Software\Psi+\Installer"
+
+!define MUI_STARTMENUPAGE_DEFAULTFOLDER "Psi+"
+!define MUI_STARTMENUPAGE_REGISTRY_ROOT HKCU
+!define MUI_STARTMENUPAGE_REGISTRY_KEY "${INSTALL_REGKEY}"
+!define MUI_STARTMENUPAGE_REGISTRY_VALUENAME "Start Menu Folder"
+
 !insertmacro MUI_PAGE_COMPONENTS
 !insertmacro MUI_PAGE_DIRECTORY
 
-!define MUI_PAGE_HEADER_TEXT "$(STR_VC_PAGE_TITLE)"
-!define MUI_PAGE_HEADER_SUBTEXT "$(STR_VC_PAGE_SUBTITLE)"
-Page custom VCRedistPageCreate VCRedistPageLeave
-!undef MUI_PAGE_HEADER_TEXT
-!undef MUI_PAGE_HEADER_SUBTEXT
+!insertmacro MUI_PAGE_STARTMENU Application $StartMenuFolder
 
-!define MUI_PAGE_HEADER_TEXT "$(STR_SUMMARY_PAGE_TITLE)"
-!define MUI_PAGE_HEADER_SUBTEXT "$(STR_SUMMARY_PAGE_SUBTITLE)"
-Page custom SummaryPageCreate SummaryPageLeave
-!undef MUI_PAGE_HEADER_TEXT
-!undef MUI_PAGE_HEADER_SUBTEXT
+Page custom VCRedistPageCreate VCRedistPageLeave
 
 !insertmacro MUI_PAGE_INSTFILES
 !insertmacro MUI_PAGE_FINISH
@@ -92,7 +95,6 @@ Var PreviousHive
 Var NeedVCRedist
 Var SelectedExecutable
 Var hVCRedistLabel
-Var hSummaryText
 
 ; Save the selected state for each installer section so it can be restored later.
 !macro SAVE_COMPONENT key section
@@ -269,17 +271,51 @@ SectionEnd
 !insertmacro DICT_SECTION vi_VN "Vietnamese"
 SectionGroupEnd
 
-Section "Create desktop shortcut" SEC_DESKTOP
+Section /o "Create desktop shortcut" SEC_DESKTOP
+  SectionIn 1 2 3
   ${If} ${SectionIsSelected} ${SEC_BIN64}
-    CreateShortCut "$DESKTOP\Psi+ (x64).lnk" "$INSTDIR\psi-plus.exe" "" "$INSTDIR\psi-plus.exe"
+    CreateShortCut "$DESKTOP\Psi+.lnk" "$INSTDIR\psi-plus.exe" "" "$INSTDIR\psi-plus.exe"
   ${ElseIf} ${SectionIsSelected} ${SEC_BIN64W}
-    CreateShortCut "$DESKTOP\Psi+ (x64).lnk" "$INSTDIR\psi-plus-webengine.exe" "" "$INSTDIR\psi-plus-webengine.exe"
+    CreateShortCut "$DESKTOP\Psi+.lnk" "$INSTDIR\psi-plus-webengine.exe" "" "$INSTDIR\psi-plus-webengine.exe"
   ${EndIf}
 SectionEnd
 
-Section /o "Create uninstall icon in Program Group" SEC_UNINSTALL_ICON
-  CreateDirectory "$SMPROGRAMS\Psi+ (x64)"
-  CreateShortCut "$SMPROGRAMS\Psi+ (x64)\Uninstall Psi+.lnk" "$INSTDIR\uninstall.exe"
+Section /o "Create Start Menu shortcut" SEC_STARTMENU
+  SectionIn 1 2 3
+
+  !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
+
+    CreateDirectory "$SMPROGRAMS\$StartMenuFolder"
+
+    ${If} ${SectionIsSelected} ${SEC_BIN64}
+      CreateShortCut \
+        "$SMPROGRAMS\$StartMenuFolder\Psi+.lnk" \
+        "$INSTDIR\psi-plus.exe" \
+        "" \
+        "$INSTDIR\psi-plus.exe"
+
+    ${ElseIf} ${SectionIsSelected} ${SEC_BIN64W}
+      CreateShortCut \
+        "$SMPROGRAMS\$StartMenuFolder\Psi+.lnk" \
+        "$INSTDIR\psi-plus-webengine.exe" \
+        "" \
+        "$INSTDIR\psi-plus-webengine.exe"
+    ${EndIf}
+
+  !insertmacro MUI_STARTMENU_WRITE_END
+SectionEnd
+
+Section /o "Create uninstall shortcut in Start Menu" SEC_UNINSTALL_ICON
+  SectionIn 1 2 3
+
+  !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
+
+    CreateDirectory "$SMPROGRAMS\$StartMenuFolder"
+    CreateShortCut \
+      "$SMPROGRAMS\$StartMenuFolder\Uninstall Psi+.lnk" \
+      "$INSTDIR\uninstall.exe"
+
+  !insertmacro MUI_STARTMENU_WRITE_END
 SectionEnd
 
 Section "Create XMPP registry entry" SEC_XMPP
@@ -434,6 +470,7 @@ Function RestorePreviousState
   ${If} $SelectedExecutable == ""
     StrCpy $SelectedExecutable "psi-plus.exe"
   ${EndIf}
+  !insertmacro MUI_STARTMENU_GETFOLDER Application $StartMenuFolder
   Call RestoreComponentState
 FunctionEnd
 
@@ -444,6 +481,7 @@ Function RestoreComponentState
   !insertmacro RESTORE_COMPONENT "bin64" ${SEC_BIN64}
   !insertmacro RESTORE_COMPONENT "bin64w" ${SEC_BIN64W}
   !insertmacro RESTORE_COMPONENT "desktop" ${SEC_DESKTOP}
+  !insertmacro RESTORE_COMPONENT "startmenu" ${SEC_STARTMENU}
   !insertmacro RESTORE_COMPONENT "uninstall-icon" ${SEC_UNINSTALL_ICON}
   !insertmacro RESTORE_COMPONENT "xmpp" ${SEC_XMPP}
   !insertmacro RESTORE_ALL_PLUGIN_COMPONENTS
@@ -509,25 +547,6 @@ Function CheckVCRedist
   SetRegView 32
 FunctionEnd
 
-; Display the installer summary before the files are copied.
-Function SummaryPageCreate
-  nsDialogs::Create 1018
-  Pop $0
-  ${If} $0 == error
-    Abort
-  ${EndIf}
-  ${NSD_CreateText} 0 0 100% 190u "$(STR_SUMMARY_TEXT)"
-  Pop $hSummaryText
-  ${If} $NeedVCRedist == 1
-    ${NSD_SetText} $hSummaryText "$(STR_SUMMARY_WITH_VC)"
-  ${EndIf}
-  nsDialogs::Show
-FunctionEnd
-
-; Placeholder for page cleanup after leaving the summary page.
-Function SummaryPageLeave
-FunctionEnd
-
 ; Download and install the required Microsoft VC++ runtime package.
 Function DownloadAndInstallVCRedist
   DetailPrint "Downloading Microsoft Visual C++ Redistributable..."
@@ -552,6 +571,7 @@ Function SaveInstallerState
   !insertmacro SAVE_COMPONENT "bin64" ${SEC_BIN64}
   !insertmacro SAVE_COMPONENT "bin64w" ${SEC_BIN64W}
   !insertmacro SAVE_COMPONENT "desktop" ${SEC_DESKTOP}
+  !insertmacro SAVE_COMPONENT "startmenu" ${SEC_STARTMENU}
   !insertmacro SAVE_COMPONENT "uninstall-icon" ${SEC_UNINSTALL_ICON}
   !insertmacro SAVE_COMPONENT "xmpp" ${SEC_XMPP}
   !insertmacro SAVE_ALL_PLUGIN_COMPONENTS
@@ -631,14 +651,21 @@ FunctionEnd
 ; Initialize the uninstaller and stop running Psi+ processes before removing it.
 Function un.onInit
   Call un.CheckRunningPsi
+  !insertmacro MUI_STARTMENU_GETFOLDER Application $StartMenuFolder
 FunctionEnd
 
 Section "Uninstall"
-  Delete "$DESKTOP\Psi+ (x64).lnk"
+  Delete "$DESKTOP\Psi+.lnk"
+  ${If} $StartMenuFolder != ""
+  ${AndIf} ${FileExists} "$SMPROGRAMS\$StartMenuFolder\Psi+.lnk"
+    Delete "$SMPROGRAMS\$StartMenuFolder\Psi+.lnk"
+    RMDir "$SMPROGRAMS\$StartMenuFolder"
+  ${EndIf}
   Delete "$SMPROGRAMS\Psi+ (x64)\Uninstall Psi+.lnk"
-  RMDir "$SMPROGRAMS\Psi+ (x64)"
+  RMDir "$SMPROGRAMS\Psi+"
   DeleteRegKey HKCR "xmpp"
   DeleteRegKey HKCU "${UNINSTALL_REGKEY}"
   DeleteRegKey HKLM "${UNINSTALL_REGKEY}"
+  DeleteRegKey HKCU "${INSTALL_REGKEY}"
   RMDir /r "$INSTDIR"
 SectionEnd
