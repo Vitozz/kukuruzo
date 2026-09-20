@@ -1,5 +1,6 @@
 Unicode true
 RequestExecutionLevel user
+SetCompressor /SOLID lzma
 
 !include MUI2.nsh
 !include LogicLib.nsh
