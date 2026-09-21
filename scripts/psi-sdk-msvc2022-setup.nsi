@@ -3,14 +3,11 @@ RequestExecutionLevel admin
 ManifestSupportedOS win7
 SetCompressor /SOLID lzma
 SetDatablockOptimize on
+SetOverwrite on
 
 !include MUI2.nsh
 !include LogicLib.nsh
 !include WinVer.nsh
-!include StrFunc.nsh
-
-!insertmacro StrStr
-!insertmacro StrRep
 
 !ifndef WORK_DIR
   !define WORK_DIR "C:\build"
@@ -33,6 +30,7 @@ SetDatablockOptimize on
 !define ENV_NAME "PSI_SDK_MSVC_WIN64"
 !define PATH_NAME "Path"
 !define INSTALL_DEFAULT "C:\PsiSDK_MSVC"
+!define PATH_ENTRIES "$INSTDIR\bin;$INSTDIR\lib;$INSTDIR\include"
 
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
 Caption "${PRODUCT_NAME} Setup"
@@ -68,19 +66,28 @@ VIAddVersionKey /LANG=1033 "LegalCopyright" "${PRODUCT_PUBLISHER}"
 
 !insertmacro MUI_LANGUAGE "Russian"
 !insertmacro MUI_LANGUAGE "English"
+!insertmacro MUI_LANGUAGE "Ukrainian"
 
 Var PreviousUninstaller
 Var PreviousVersion
 Var PreviousInstallDir
 Var PreviousHive
-Var PathValue
 Var PathOldValue
 Var PathNewValue
-Var PathPart
-Var PathFound
 
 Function .onInit
   SetRegView 64
+  ; Все компоненты и обе опции изменения реестра выбраны по умолчанию.
+  SectionSetFlags ${SEC_HUNSPELL} ${SF_SELECTED}
+  SectionSetFlags ${SEC_OPENSSL} ${SF_SELECTED}
+  SectionSetFlags ${SEC_PROTOBUF} ${SF_SELECTED}
+  SectionSetFlags ${SEC_QCA} ${SF_SELECTED}
+  SectionSetFlags ${SEC_QTKEYCHAIN} ${SF_SELECTED}
+  SectionSetFlags ${SEC_SRTP} ${SF_SELECTED}
+  SectionSetFlags ${SEC_ZLIB} ${SF_SELECTED}
+  SectionSetFlags ${SEC_ENV} ${SF_SELECTED}
+  SectionSetFlags ${SEC_PATH} ${SF_SELECTED}
+
   Call FindPreviousInstallation
   ${If} $PreviousUninstaller != ""
     Call HandlePreviousInstallation
@@ -102,7 +109,9 @@ FunctionEnd
 
 Function HandlePreviousInstallation
   MessageBox MB_ICONEXCLAMATION|MB_YESNO|MB_DEFBUTTON2 \
-    "Обнаружена установленная версия ${PRODUCT_NAME} ($PreviousVersion).$\r$\n$\r$\nПеред установкой новой версии необходимо удалить предыдущую. Удалить её автоматически сейчас?" \
+    "Обнаружена установленная версия ${PRODUCT_NAME} ($PreviousVersion).$$
+$$
+Перед установкой новой версии необходимо удалить предыдущую. Удалить её автоматически сейчас?" \
     IDYES RemovePrevious IDCANCEL CancelUpgrade
 CancelUpgrade:
   Abort
@@ -123,46 +132,44 @@ FunctionEnd
 SectionGroup /e "Компоненты SDK"
 Section "Hunspell" SEC_HUNSPELL
   SetOutPath "$INSTDIR"
-  File /nonfatal /r "${SDK_DIR}\hunspell\*.*"
+  File /r /nonfatal "${SDK_DIR}\hunspell\*.*"
 SectionEnd
 
 Section "OpenSSL" SEC_OPENSSL
   SetOutPath "$INSTDIR"
-  File /nonfatal /r "${SDK_DIR}\openssl\*.*"
+  File /r /nonfatal "${SDK_DIR}\openssl\*.*"
 SectionEnd
 
 Section "Protobuf" SEC_PROTOBUF
   SetOutPath "$INSTDIR"
-  File /nonfatal /r "${SDK_DIR}\protobuf\*.*"
+  File /r /nonfatal "${SDK_DIR}\protobuf\*.*"
 SectionEnd
 
 Section "QCA" SEC_QCA
   SetOutPath "$INSTDIR"
-  File /nonfatal /r "${SDK_DIR}\qca\*.*"
+  File /r /nonfatal "${SDK_DIR}\qca\*.*"
 SectionEnd
 
 Section "QtKeychain" SEC_QTKEYCHAIN
   SetOutPath "$INSTDIR"
-  File /nonfatal /r "${SDK_DIR}\qtkeychain\*.*"
+  File /r /nonfatal "${SDK_DIR}\qtkeychain\*.*"
 SectionEnd
 
 Section "SRTP" SEC_SRTP
   SetOutPath "$INSTDIR"
-  File /nonfatal /r "${SDK_DIR}\srtp\*.*"
+  File /r /nonfatal "${SDK_DIR}\srtp\*.*"
 SectionEnd
 
 Section "zlib" SEC_ZLIB
   SetOutPath "$INSTDIR"
-  File /nonfatal /r "${SDK_DIR}\zlib\*.*"
+  File /r /nonfatal "${SDK_DIR}\zlib\*.*"
 SectionEnd
 SectionGroupEnd
 
 Section /o "Добавить PSI_SDK_MSVC_WIN64 в переменные среды" SEC_ENV
-  ; Выполняется в секции PostInstall, чтобы использовать выбранный путь установки.
 SectionEnd
 
-Section /o "Добавить путь установки в PATH" SEC_PATH
-  ; Выполняется в секции PostInstall, чтобы использовать выбранный путь установки.
+Section /o "Добавить bin, lib и include в PATH" SEC_PATH
 SectionEnd
 
 Section -PostInstall
@@ -179,8 +186,8 @@ Section -PostInstall
   WriteRegStr HKLM "${UNINSTALL_REGKEY}" "InstallLocation" "$INSTDIR"
   WriteRegStr HKLM "${UNINSTALL_REGKEY}" "UninstallString" "$INSTDIR\uninstall.exe"
   WriteRegStr HKLM "${UNINSTALL_REGKEY}" "DisplayIcon" "$INSTDIR\uninstall.exe"
-  WriteDWORD HKLM "${UNINSTALL_REGKEY}" "NoModify" 1
-  WriteDWORD HKLM "${UNINSTALL_REGKEY}" "NoRepair" 1
+  WriteRegDWORD HKLM "${UNINSTALL_REGKEY}" "NoModify" 1
+  WriteRegDWORD HKLM "${UNINSTALL_REGKEY}" "NoRepair" 1
 
   SectionGetFlags ${SEC_ENV} $0
   IntOp $0 $0 & ${SF_SELECTED}
@@ -195,18 +202,18 @@ Section -PostInstall
   ${If} $0 != 0
     ReadRegStr $PathOldValue HKLM "${ENVIRONMENT_REGKEY}" "${PATH_NAME}"
     WriteRegStr HKLM "${PRODUCT_REGKEY}" "OriginalPath" "$PathOldValue"
-    StrCpy $PathValue "$INSTDIR"
+    WriteRegStr HKLM "${UNINSTALL_REGKEY}" "OriginalPath" "$PathOldValue"
     ${If} $PathOldValue == ""
-      StrCpy $PathNewValue "$PathValue"
+      StrCpy $PathNewValue "${PATH_ENTRIES}"
     ${Else}
-      StrCpy $PathNewValue "$PathOldValue;$PathValue"
+      StrCpy $PathNewValue "$PathOldValue;${PATH_ENTRIES}"
     ${EndIf}
+    ; REG_EXPAND_SZ сохраняет стандартный тип системной переменной PATH.
     WriteRegExpandStr HKLM "${ENVIRONMENT_REGKEY}" "${PATH_NAME}" "$PathNewValue"
-    WriteRegStr HKLM "${PRODUCT_REGKEY}" "PathAdded" "$PathValue"
-    WriteRegStr HKLM "${UNINSTALL_REGKEY}" "PathAdded" "$PathValue"
+    WriteRegStr HKLM "${PRODUCT_REGKEY}" "PathAdded" "${PATH_ENTRIES}"
+    WriteRegStr HKLM "${UNINSTALL_REGKEY}" "PathAdded" "${PATH_ENTRIES}"
   ${EndIf}
 
-  ; Broadcast the environment change. A reboot is still recommended by the finish page.
   SendMessage ${HWND_BROADCAST} ${WM_SETTINGCHANGE} 0 "STR:Environment" /TIMEOUT=5000
 SectionEnd
 
@@ -216,19 +223,16 @@ FunctionEnd
 
 Section Uninstall
   SetRegView 64
+
   ReadRegStr $0 HKLM "${UNINSTALL_REGKEY}" "EnvironmentVariable"
   ${If} $0 != ""
     DeleteRegValue HKLM "${ENVIRONMENT_REGKEY}" "$0"
   ${EndIf}
 
-  ReadRegStr $PathValue HKLM "${UNINSTALL_REGKEY}" "PathAdded"
-  ${If} $PathValue != ""
-    ; Restore the PATH captured immediately before installation.
-    ReadRegStr $PathOldValue HKLM "${PRODUCT_REGKEY}" "OriginalPath"
-    ${If} ${Errors}
-      ; Fallback for installations created by an older script.
-      ReadRegStr $PathOldValue HKLM "${UNINSTALL_REGKEY}" "OriginalPath"
-    ${EndIf}
+  ; Восстанавливаем PATH ровно в состояние до установки SDK.
+  ReadRegStr $PathOldValue HKLM "${PRODUCT_REGKEY}" "OriginalPath"
+  ReadRegStr $0 HKLM "${UNINSTALL_REGKEY}" "PathAdded"
+  ${If} $0 != ""
     WriteRegExpandStr HKLM "${ENVIRONMENT_REGKEY}" "${PATH_NAME}" "$PathOldValue"
   ${EndIf}
 
