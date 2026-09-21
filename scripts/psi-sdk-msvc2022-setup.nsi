@@ -1,4 +1,4 @@
-﻿Unicode true
+Unicode true
 RequestExecutionLevel admin
 ManifestSupportedOS win7
 SetCompressor /SOLID lzma
@@ -53,8 +53,8 @@ VIAddVersionKey /LANG=1033 "LegalCopyright" "${PRODUCT_PUBLISHER}"
 !define MUI_ICON "${NSISDIR}\Contrib\Graphics\Icons\modern-install.ico"
 !define MUI_UNICON "${NSISDIR}\Contrib\Graphics\Icons\modern-uninstall.ico"
 !define MUI_FINISHPAGE_NOAUTOCLOSE
-!define MUI_FINISHPAGE_TITLE "Установка завершена"
-!define MUI_FINISHPAGE_TEXT "${PRODUCT_NAME} установлен в $INSTDIR. Для применения переменных окружения рекомендуется перезагрузить Windows."
+!define MUI_FINISHPAGE_TITLE "Installation finished"
+!define MUI_FINISHPAGE_TEXT "${PRODUCT_NAME} is installed in $INSTDIR. To activate Environment variables we need to reboot Windows."
 
 !insertmacro MUI_PAGE_WELCOME
 !insertmacro MUI_PAGE_DIRECTORY
@@ -74,6 +74,42 @@ Var PreviousInstallDir
 Var PreviousHive
 Var PathOldValue
 Var PathNewValue
+
+SectionGroup /e "SDK Components"
+Section "Hunspell" SEC_HUNSPELL
+  SetOutPath "$INSTDIR"
+  File /nonfatal /r "${SDK_DIR}\hunspell\*.*"
+SectionEnd
+Section "OpenSSL" SEC_OPENSSL
+  SetOutPath "$INSTDIR"
+  File /nonfatal /r "${SDK_DIR}\openssl\*.*"
+SectionEnd
+Section "Protobuf" SEC_PROTOBUF
+  SetOutPath "$INSTDIR"
+  File /nonfatal /r "${SDK_DIR}\protobuf\*.*"
+SectionEnd
+Section "QCA" SEC_QCA
+  SetOutPath "$INSTDIR"
+  File /nonfatal /r "${SDK_DIR}\qca\*.*"
+SectionEnd
+Section "QtKeychain" SEC_QTKEYCHAIN
+  SetOutPath "$INSTDIR"
+  File /nonfatal /r "${SDK_DIR}\qtkeychain\*.*"
+SectionEnd
+Section "SRTP" SEC_SRTP
+  SetOutPath "$INSTDIR"
+  File /nonfatal /r "${SDK_DIR}\srtp\*.*"
+SectionEnd
+Section "zlib" SEC_ZLIB
+  SetOutPath "$INSTDIR"
+  File /nonfatal /r "${SDK_DIR}\zlib\*.*"
+SectionEnd
+SectionGroupEnd
+
+Section /o "Add PSI_SDK_MSVC_WIN64 Environment Variable" SEC_ENV
+SectionEnd
+Section /o "Add ${INSTDIR} to PATH" SEC_PATH
+SectionEnd
 
 Function .onInit
   SetRegView 64
@@ -106,60 +142,22 @@ Function FindPreviousInstallation
 FunctionEnd
 
 Function HandlePreviousInstallation
-  MessageBox MB_ICONEXCLAMATION|MB_YESNO|MB_DEFBUTTON2 "Обнаружена установленная версия ${PRODUCT_NAME} ($PreviousVersion).$$
-$$
-Перед установкой новой версии необходимо удалить предыдущую. Удалить её автоматически сейчас?" IDYES RemovePrevious IDCANCEL CancelUpgrade
+  MessageBox MB_ICONEXCLAMATION|MB_YESNO|MB_DEFBUTTON2 "An older version installation found ${PRODUCT_NAME} ($PreviousVersion). Before install new version you need to delete installed version. Delete it now?" IDYES RemovePrevious IDCANCEL CancelUpgrade
 CancelUpgrade:
   Abort
 RemovePrevious:
   ${If} ${FileExists} "$PreviousUninstaller"
-    DetailPrint "Удаление предыдущей версии..."
+    DetailPrint "Removing previous version..."
     ExecWait '"$PreviousUninstaller" /S' $0
     ${If} $0 != 0
-      MessageBox MB_ICONSTOP|MB_OK "Не удалось удалить предыдущую версию (код $0). Установка отменена."
+      MessageBox MB_ICONSTOP|MB_OK "Can't delete previous version (code $0). Installation cancelled."
       Abort
     ${EndIf}
   ${Else}
-    MessageBox MB_ICONSTOP|MB_OK "Файл деинсталлятора предыдущей версии не найден. Установка отменена."
+    MessageBox MB_ICONSTOP|MB_OK "No previous uninstall file found. Installation cancelled."
     Abort
   ${EndIf}
 FunctionEnd
-
-SectionGroup /e "Компоненты SDK"
-Section "Hunspell" SEC_HUNSPELL
-  SetOutPath "$INSTDIR"
-  File /r /nonfatal "${SDK_DIR}\hunspell\*.*"
-SectionEnd
-Section "OpenSSL" SEC_OPENSSL
-  SetOutPath "$INSTDIR"
-  File /r /nonfatal "${SDK_DIR}\openssl\*.*"
-SectionEnd
-Section "Protobuf" SEC_PROTOBUF
-  SetOutPath "$INSTDIR"
-  File /r /nonfatal "${SDK_DIR}\protobuf\*.*"
-SectionEnd
-Section "QCA" SEC_QCA
-  SetOutPath "$INSTDIR"
-  File /r /nonfatal "${SDK_DIR}\qca\*.*"
-SectionEnd
-Section "QtKeychain" SEC_QTKEYCHAIN
-  SetOutPath "$INSTDIR"
-  File /r /nonfatal "${SDK_DIR}\qtkeychain\*.*"
-SectionEnd
-Section "SRTP" SEC_SRTP
-  SetOutPath "$INSTDIR"
-  File /r /nonfatal "${SDK_DIR}\srtp\*.*"
-SectionEnd
-Section "zlib" SEC_ZLIB
-  SetOutPath "$INSTDIR"
-  File /r /nonfatal "${SDK_DIR}\zlib\*.*"
-SectionEnd
-SectionGroupEnd
-
-Section /o "Добавить PSI_SDK_MSVC_WIN64 в переменные среды" SEC_ENV
-SectionEnd
-Section /o "Добавить bin, lib и include в PATH" SEC_PATH
-SectionEnd
 
 Section -PostInstall
   WriteUninstaller "$INSTDIR\uninstall.exe"
