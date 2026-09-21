@@ -1,4 +1,4 @@
-Unicode true
+﻿Unicode true
 RequestExecutionLevel admin
 ManifestSupportedOS win7
 SetCompressor /SOLID lzma
@@ -77,7 +77,6 @@ Var PathNewValue
 
 Function .onInit
   SetRegView 64
-  ; Все компоненты и обе опции изменения реестра выбраны по умолчанию.
   SectionSetFlags ${SEC_HUNSPELL} ${SF_SELECTED}
   SectionSetFlags ${SEC_OPENSSL} ${SF_SELECTED}
   SectionSetFlags ${SEC_PROTOBUF} ${SF_SELECTED}
@@ -87,7 +86,6 @@ Function .onInit
   SectionSetFlags ${SEC_ZLIB} ${SF_SELECTED}
   SectionSetFlags ${SEC_ENV} ${SF_SELECTED}
   SectionSetFlags ${SEC_PATH} ${SF_SELECTED}
-
   Call FindPreviousInstallation
   ${If} $PreviousUninstaller != ""
     Call HandlePreviousInstallation
@@ -108,11 +106,9 @@ Function FindPreviousInstallation
 FunctionEnd
 
 Function HandlePreviousInstallation
-  MessageBox MB_ICONEXCLAMATION|MB_YESNO|MB_DEFBUTTON2 \
-    "Обнаружена установленная версия ${PRODUCT_NAME} ($PreviousVersion).$$
+  MessageBox MB_ICONEXCLAMATION|MB_YESNO|MB_DEFBUTTON2 "Обнаружена установленная версия ${PRODUCT_NAME} ($PreviousVersion).$$
 $$
-Перед установкой новой версии необходимо удалить предыдущую. Удалить её автоматически сейчас?" \
-    IDYES RemovePrevious IDCANCEL CancelUpgrade
+Перед установкой новой версии необходимо удалить предыдущую. Удалить её автоматически сейчас?" IDYES RemovePrevious IDCANCEL CancelUpgrade
 CancelUpgrade:
   Abort
 RemovePrevious:
@@ -134,32 +130,26 @@ Section "Hunspell" SEC_HUNSPELL
   SetOutPath "$INSTDIR"
   File /r /nonfatal "${SDK_DIR}\hunspell\*.*"
 SectionEnd
-
 Section "OpenSSL" SEC_OPENSSL
   SetOutPath "$INSTDIR"
   File /r /nonfatal "${SDK_DIR}\openssl\*.*"
 SectionEnd
-
 Section "Protobuf" SEC_PROTOBUF
   SetOutPath "$INSTDIR"
   File /r /nonfatal "${SDK_DIR}\protobuf\*.*"
 SectionEnd
-
 Section "QCA" SEC_QCA
   SetOutPath "$INSTDIR"
   File /r /nonfatal "${SDK_DIR}\qca\*.*"
 SectionEnd
-
 Section "QtKeychain" SEC_QTKEYCHAIN
   SetOutPath "$INSTDIR"
   File /r /nonfatal "${SDK_DIR}\qtkeychain\*.*"
 SectionEnd
-
 Section "SRTP" SEC_SRTP
   SetOutPath "$INSTDIR"
   File /r /nonfatal "${SDK_DIR}\srtp\*.*"
 SectionEnd
-
 Section "zlib" SEC_ZLIB
   SetOutPath "$INSTDIR"
   File /r /nonfatal "${SDK_DIR}\zlib\*.*"
@@ -168,17 +158,14 @@ SectionGroupEnd
 
 Section /o "Добавить PSI_SDK_MSVC_WIN64 в переменные среды" SEC_ENV
 SectionEnd
-
 Section /o "Добавить bin, lib и include в PATH" SEC_PATH
 SectionEnd
 
 Section -PostInstall
   WriteUninstaller "$INSTDIR\uninstall.exe"
-
   WriteRegStr HKLM "${PRODUCT_REGKEY}" "InstallLocation" "$INSTDIR"
   WriteRegStr HKLM "${PRODUCT_REGKEY}" "Version" "${PRODUCT_VERSION}"
   WriteRegStr HKLM "${PRODUCT_REGKEY}" "Publisher" "${PRODUCT_PUBLISHER}"
-
   WriteRegStr HKLM "${UNINSTALL_REGKEY}" "DisplayName" "${PRODUCT_NAME}"
   WriteRegStr HKLM "${UNINSTALL_REGKEY}" "DisplayVersion" "${PRODUCT_VERSION}"
   WriteRegStr HKLM "${UNINSTALL_REGKEY}" "Publisher" "${PRODUCT_PUBLISHER}"
@@ -208,12 +195,10 @@ Section -PostInstall
     ${Else}
       StrCpy $PathNewValue "$PathOldValue;${PATH_ENTRIES}"
     ${EndIf}
-    ; REG_EXPAND_SZ сохраняет стандартный тип системной переменной PATH.
     WriteRegExpandStr HKLM "${ENVIRONMENT_REGKEY}" "${PATH_NAME}" "$PathNewValue"
     WriteRegStr HKLM "${PRODUCT_REGKEY}" "PathAdded" "${PATH_ENTRIES}"
     WriteRegStr HKLM "${UNINSTALL_REGKEY}" "PathAdded" "${PATH_ENTRIES}"
   ${EndIf}
-
   SendMessage ${HWND_BROADCAST} ${WM_SETTINGCHANGE} 0 "STR:Environment" /TIMEOUT=5000
 SectionEnd
 
@@ -223,19 +208,15 @@ FunctionEnd
 
 Section Uninstall
   SetRegView 64
-
   ReadRegStr $0 HKLM "${UNINSTALL_REGKEY}" "EnvironmentVariable"
   ${If} $0 != ""
     DeleteRegValue HKLM "${ENVIRONMENT_REGKEY}" "$0"
   ${EndIf}
-
-  ; Восстанавливаем PATH ровно в состояние до установки SDK.
   ReadRegStr $PathOldValue HKLM "${PRODUCT_REGKEY}" "OriginalPath"
   ReadRegStr $0 HKLM "${UNINSTALL_REGKEY}" "PathAdded"
   ${If} $0 != ""
     WriteRegExpandStr HKLM "${ENVIRONMENT_REGKEY}" "${PATH_NAME}" "$PathOldValue"
   ${EndIf}
-
   DeleteRegKey HKLM "${UNINSTALL_REGKEY}"
   DeleteRegKey HKLM "${PRODUCT_REGKEY}"
   RMDir /r "$INSTDIR"
