@@ -198,7 +198,10 @@ Section -PostInstall
     WriteRegStr HKLM "${PRODUCT_REGKEY}" "PathAdded" "${PATH_ENTRIES}"
     WriteRegStr HKLM "${UNINSTALL_REGKEY}" "PathAdded" "${PATH_ENTRIES}"
   ${EndIf}
+
   SendMessage ${HWND_BROADCAST} ${WM_SETTINGCHANGE} 0 "STR:Environment" /TIMEOUT=5000
+  ; Make the reboot checkbox visible on the finish page even when no file was locked.
+  SetRebootFlag true
 SectionEnd
 
 Function un.onInit
