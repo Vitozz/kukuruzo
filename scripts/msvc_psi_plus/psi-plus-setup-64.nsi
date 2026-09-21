@@ -35,7 +35,7 @@ SetCompressor /SOLID lzma
 Name "Psi+"
 Caption "Psi+ x64 Setup"
 OutFile "${WORK_DIR}\out\psi-plus-${APP_VERSION}-x64-setup.exe"
-InstallDir "$LOCALAPPDATA\Psi-plus"
+InstallDir "$LOCALAPPDATA\Programs\Psi-plus"
 InstallDirRegKey HKCU "${UNINSTALL_REGKEY}" "InstallLocation"
 BrandingText "Psi+ Project"
 ShowInstDetails show
@@ -68,6 +68,10 @@ Var StartMenuFolder
 !define MUI_STARTMENUPAGE_REGISTRY_ROOT HKCU
 !define MUI_STARTMENUPAGE_REGISTRY_KEY "${INSTALL_REGKEY}"
 !define MUI_STARTMENUPAGE_REGISTRY_VALUENAME "Start Menu Folder"
+
+!ifndef PSIMEDIA_DIR
+  !define PSIMEDIA_DIR "${WORK_DIR}\psimedia"
+!endif
 
 !insertmacro MUI_PAGE_COMPONENTS
 !insertmacro MUI_PAGE_DIRECTORY
@@ -161,7 +165,13 @@ SectionEnd
 Section /o "${text}" SEC_PLUGIN_${name}
   SetOutPath "$INSTDIR\plugins"
   File /nonfatal "${PLUGINS_DIR}\${name}.dll"
+  !if "${name}" == "mediaplugin"
+    ; Структура подпапок psimedia сохраняется
+    SetOutPath "$INSTDIR"
+    File /r /x ".*" "${PSIMEDIA_DIR}\*.*"
+  !endif
 SectionEnd
+
 !macroend
 
 SectionGroup /e "Plugins" SEC_PLUGINS
