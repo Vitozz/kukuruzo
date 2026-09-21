@@ -1,4 +1,4 @@
-Unicode true
+﻿Unicode true
 RequestExecutionLevel admin
 ManifestSupportedOS win7
 SetCompressor /SOLID lzma
@@ -53,8 +53,11 @@ VIAddVersionKey /LANG=1033 "LegalCopyright" "${PRODUCT_PUBLISHER}"
 !define MUI_ICON "${NSISDIR}\Contrib\Graphics\Icons\modern-install.ico"
 !define MUI_UNICON "${NSISDIR}\Contrib\Graphics\Icons\modern-uninstall.ico"
 !define MUI_FINISHPAGE_NOAUTOCLOSE
-!define MUI_FINISHPAGE_TITLE "Installation finished"
-!define MUI_FINISHPAGE_TEXT "${PRODUCT_NAME} is installed in $INSTDIR. To activate Environment variables we need to reboot Windows."
+!define MUI_FINISHPAGE_TITLE "Installation completed"
+!define MUI_FINISHPAGE_TEXT "${PRODUCT_NAME} has been installed in $INSTDIR.$\r$\n$\r$\nTo apply the environment variable changes, restart Windows."
+!define MUI_FINISHPAGE_REBOOT
+!define MUI_FINISHPAGE_REBOOT_TEXT "Restart Windows now"
+!define MUI_FINISHPAGE_REBOOT_DEFAULT
 
 !insertmacro MUI_PAGE_WELCOME
 !insertmacro MUI_PAGE_DIRECTORY
@@ -64,9 +67,7 @@ VIAddVersionKey /LANG=1033 "LegalCopyright" "${PRODUCT_PUBLISHER}"
 !insertmacro MUI_UNPAGE_CONFIRM
 !insertmacro MUI_UNPAGE_INSTFILES
 
-!insertmacro MUI_LANGUAGE "Russian"
 !insertmacro MUI_LANGUAGE "English"
-!insertmacro MUI_LANGUAGE "Ukrainian"
 
 Var PreviousUninstaller
 Var PreviousVersion
@@ -106,9 +107,9 @@ Section "zlib" SEC_ZLIB
 SectionEnd
 SectionGroupEnd
 
-Section /o "Add PSI_SDK_MSVC_WIN64 Environment Variable" SEC_ENV
+Section /o "Add the PSI_SDK_MSVC_WIN64 environment variable" SEC_ENV
 SectionEnd
-Section /o "Add ${INSTDIR} to PATH" SEC_PATH
+Section /o "Add the SDK directories to PATH" SEC_PATH
 SectionEnd
 
 Function .onInit
@@ -142,19 +143,19 @@ Function FindPreviousInstallation
 FunctionEnd
 
 Function HandlePreviousInstallation
-  MessageBox MB_ICONEXCLAMATION|MB_YESNO|MB_DEFBUTTON2 "An older version installation found ${PRODUCT_NAME} ($PreviousVersion). Before install new version you need to delete installed version. Delete it now?" IDYES RemovePrevious IDCANCEL CancelUpgrade
+  MessageBox MB_ICONEXCLAMATION|MB_YESNO|MB_DEFBUTTON2 "An existing installation of ${PRODUCT_NAME} was found (version $PreviousVersion).$\r$\n$\r$\nYou must remove the existing installation before installing a new version. Remove it automatically now?" IDYES RemovePrevious IDCANCEL CancelUpgrade
 CancelUpgrade:
   Abort
 RemovePrevious:
   ${If} ${FileExists} "$PreviousUninstaller"
-    DetailPrint "Removing previous version..."
+    DetailPrint "Removing the previous version..."
     ExecWait '"$PreviousUninstaller" /S' $0
     ${If} $0 != 0
-      MessageBox MB_ICONSTOP|MB_OK "Can't delete previous version (code $0). Installation cancelled."
+      MessageBox MB_ICONSTOP|MB_OK "The previous version could not be removed (exit code $0). Installation has been cancelled."
       Abort
     ${EndIf}
   ${Else}
-    MessageBox MB_ICONSTOP|MB_OK "No previous uninstall file found. Installation cancelled."
+    MessageBox MB_ICONSTOP|MB_OK "The previous uninstaller was not found. Installation has been cancelled."
     Abort
   ${EndIf}
 FunctionEnd
