@@ -14,17 +14,15 @@ snapshots_url="${psi_plus_prefix}/psi-plus-snapshots.git"
 psimedia_url="${psi_im_prefix}/psimedia.git"
 resources_url="${psi_im_prefix}/resources.git"
 def_prefix="/usr" #префикс для сборки пси+
-defualt_qt_ver=6
-build_psi_plus=ON
 #
 #DEFAULT OPTIONS/ОПЦИИ ПО УМОЛЧАНИЮ
 spell_flag="-DUSE_ENCHANT=OFF -DUSE_HUNSPELL=ON -DUSE_ASPELL=OFF"
 spellchek_engine="hunspell" #enchant, aspell
 chat_type="webengine" #webkit, basic, webengine
-iswebkit=""
-isoffline=0
-skip_invalid=0
+iswebkit=0
+defualt_qt_ver=6
 use_plugins="*"
+build_psi_plus="ON"
 let cpu_count=$(grep -c ^processor /proc/cpuinfo)
 devm=0
 wbkt=0
@@ -63,7 +61,7 @@ i686_mxe_prefix=${mxe_root}/usr/i686-w64-mingw32.shared
 x86_64_mxe_prefix=${mxe_root}/usr/x86_64-w64-mingw32.shared
 OLDPATH=${PATH}
 #default cmake FLAGS
-DEF_CMAKE_FLAGS="-DBUNDLED_IRIS_ALL=ON -DPSI_PLUS=${build_psi_plus} -DQT_DEFAULT_MAJOR_VERSION=${defualt_qt_ver}"
+DEF_CMAKE_FLAGS="-DIRIS_BUNDLED_USRSCTP=ON -DIRIS_BUNDLED_OMEMO_C=ON -DBUILD_TESTING=OFF"
 
 #WARNING: следующие переменные будут изменены в процессе работы скрипта автоматически
 buildpsi=${default_buildpsi} #инициализация переменной
@@ -157,11 +155,11 @@ read_options ()
     while read -r line; do
       case ${inc} in
       "0" ) iswebkit=$(echo ${line});;
-      "1" ) isoffline=$(echo ${line});;
-      "2" ) skip_invalid=$(echo ${line});;
-      "3" ) pluginlist=$(echo ${line});;
-      "4" ) spellchek_engine=$(echo ${line});;
-      "5" ) buildpsi=$(echo ${line});;
+      "1" ) defualt_qt_ver=$(echo ${line});;
+      "2" ) pluginlist=$(echo ${line});;
+      "3" ) spellchek_engine=$(echo ${line});;
+      "4" ) buildpsi=$(echo ${line});;
+      "5" ) build_psi_plus=$(echo ${line});;
       esac
       let "inc+=1"
     done < ${config_file}
@@ -193,6 +191,7 @@ update_variables ()
       spell_flag="-DUSE_ENCHANT=OFF -DUSE_HUNSPELL=OFF -DUSE_ASPELL=ON"
     fi
   fi
+  DEF_CMAKE_FLAGS="${DEF_CMAKE_FLAGS} -DPSI_PLUS=${build_psi_plus} -DQT_DEFAULT_MAJOR_VERSION=${defualt_qt_ver}"
 }
 #Выход с ошибкой
 die() { echo -e "$@"; exit 1; }
@@ -398,7 +397,7 @@ compile_psiplus ()
   else
     flags="${flags}"
   fi
-  if [ -z "${iswebkit}" ]; then
+  if [ ${iswebkit} -eq 0 ]; then
     flags="${flags} -DCHAT_TYPE=basic"
   else
     flags="${flags} -DCHAT_TYPE=${chat_type}"
@@ -433,7 +432,7 @@ install_pp_to_home ()
   prepare_builddir ${builddir}
   cd ${builddir}
   flags="${DEF_CMAKE_FLAGS} -DCMAKE_BUILD_TYPE=${DEF_CMAKE_BUILD_TYPE} -DENABLE_PLUGINS=ON -DBUILD_PSIMEDIA=ON -DBUNDLED_OMEMO_C_ALL=ON -DVERBOSE_PROGRAM_NAME=ON -DCMAKE_INSTALL_PREFIX=${home}/build/psi-plus"
-  if [ -z "${iswebkit}" ]; then
+  if [ ${iswebkit} -eq 0 ]; then
     flags="${flags} -DCHAT_TYPE=basic"
   else
     flags="${flags} -DCHAT_TYPE=${chat_type}"
@@ -460,7 +459,7 @@ build_all_psiplus ()
   prepare_builddir ${builddir}
   cd ${builddir}
   flags="${DEF_CMAKE_FLAGS} -DCMAKE_BUILD_TYPE=${DEF_CMAKE_BUILD_TYPE} -DBUILD_PLUGINS=${DEF_PLUG_LIST} -DENABLE_PLUGINS=ON -DBUILD_PSIMEDIA=ON -DBUNDLED_OMEMO_C_ALL=ON -DDEV_MODE=ON -DBUILD_DEV_PLUGINS=ON"
-  if [ -z "${iswebkit}" ]; then
+  if [ ${iswebkit} -eq 0 ]; then
     flags="${flags} -DCHAT_TYPE=basic"
   else
     flags="${flags} -DCHAT_TYPE=${chat_type}"
@@ -710,13 +709,18 @@ compile_psi_mxe()
 {
   local buildlog=${buildpsi}/build-mxe-${1}.log
   curd=$(pwd)
-  flags="-DIRIS_BUNDLED_QCA=OFF -DPSI_PLUS=${build_psi_plus} -DQT_DEFAULT_MAJOR_VERSION=5 -DDEV_MODE=ON -DVERBOSE_PROGRAM_NAME=ON"
+  flags="-DIRIS_BUNDLED_QCA=OFF -DPSI_PLUS=${build_psi_plus} -DQT_DEFAULT_MAJOR_VERSION=5 -DPRODUCTION=ON -DBUILD_TESTING=OFF -DVERBOSE_PROGRAM_NAME=ON"
   if [ ! -d "${workdir}" ]; then
     prepare_src
   fi
   prepare_builddir ${builddir}
   mxe_outd=${tmp_dir}/mxe_builds
   check_dir ${mxe_outd}
+  if [ -d "${mxe_outd}/$1" ] && [ ${devm} -ne 0 ]; then
+    cd ${mxe_outd} && rm -rf $1
+  fi
+  check_dir ${mxe_outd}/$1
+  flags="${flags} -DCMAKE_INSTALL_PREFIX=${mxe_outd}/$1"
   cd ${builddir}
   if [ "$1" == "qt5" ];then
     current_prefix=${i686_mxe_prefix}
@@ -743,20 +747,11 @@ compile_psi_mxe()
   echo &&
   #echo "Press Enter to continue..." && read tmpvar
   ${cmakecmd} --build . --target all --parallel ${cpu_count} 2>>${buildlog} || die "${red}There were errors. Open ${buildlog} to see${nocolor}"
+  ${cmakecmd} --build . --target install  2>>${buildlog} || die "${red}There were errors. Open ${buildlog} to see${nocolor}"
   if [ ${devm} -eq 1 ]; then
-    ${cmakecmd} --build . --target prepare-bin --target prepare-bin-libs -- #copy default iconsets skins and themes #copy dependencies
+    ${cmakecmd} --build . --target install-deps #install dependencies
   fi
-  if [ -d "${mxe_outd}/$1" ] && [ ${devm} -ne 0 ]; then
-    cd ${mxe_outd} && rm -rf $1
-  fi
-  check_dir ${mxe_outd}/$1
-  cp -rf ${wrkdir}/psi/*  ${mxe_outd}/$1/
-  if [ -d "${wrkdir}/psi/translations" ]; then
-    cp -a ${wrkdir}/psi/translations ${mxe_outd}/$1/
-  fi
-  if [ -d "${wrkdir}/psi/skins" ]; then
-    cp -a ${wrkdir}/psi/skins ${mxe_outd}/$1/
-  fi
+
   if [ -d "${buildpsi}/mxe_prepare" ]; then
     cp -rf ${buildpsi}/mxe_prepare/* ${mxe_outd}/$1/
   fi
@@ -799,7 +794,7 @@ archivate_all()
   wbk_suff="all-"
   mxe_outd=${tmp_dir}/mxe_builds
   out_pkg_name="${mxe_outd}/psi-plus-${wbk_suff}${psi_package_version}-$1.7z"
-  7z a -mx=9 -m0=LZMA -mmt=on -xr!*.a ${out_pkg_name} ${mxe_outd}/$1/*
+  7z a -mx=9 -m0=LZMA -mmt=${cpu_count} ${out_pkg_name} ${mxe_outd}/$1/*
   if [ -f "${out_pkg_name}" ]; then
     cp -r ${out_pkg_name} ${buildpsi}/mxe_builds/
   fi
@@ -835,32 +830,20 @@ check_deps()
 set_config ()
 {
   local use_webkit="n"
-  if [ ! -z "$iswebkit" ]; then
-    use_webkit="y"
-  else
+  if [ $iswebkit -eq 0 ]; then
     use_webkit="n"
-  fi
-  local is_offline="n"
-  if [ ${isoffline} -eq 0 ]; then
-    is_offline="n"
   else
-    is_offline="y"
-  fi
-  local skip_patches="n"
-  if [ ${skip_invalid} -eq 0 ]; then
-    skip_patches="n"
-  else
-    skip_patches="y"
+    use_webkit="y"
   fi
   local loop=1
   while [ ${loop} = 1 ];  do
     echo -e "${blue}Choose action TODO:${nocolor}
 --${pink}[1]${nocolor} - Set WebKit version to use (current: ${use_webkit})
---${pink}[2]${nocolor} - Set offline mode to use (current: ${is_offline})
---${pink}[3]${nocolor} - Skip Invalid patches (current: ${skip_patches})
---${pink}[4]${nocolor} - Set list of plugins needed to build (for all use *)
---${pink}[5]${nocolor} - Set psi+ spellcheck engine (current: ${spellchek_engine})
---${pink}[6]${nocolor} - Set psi+ sources path (current: ${buildpsi})
+--${pink}[2]${nocolor} - Set default Qt version number(current: ${defualt_qt_ver})
+--${pink}[3]${nocolor} - Set list of plugins needed to build (for all use *)
+--${pink}[4]${nocolor} - Set psi+ spellcheck engine (current: ${spellchek_engine})
+--${pink}[5]${nocolor} - Set psi+ sources path (current: ${buildpsi})
+--${pink}[6]${nocolor} - Build Psi+ (not Psi) (current: ${build_psi_plus})
 --${pink}[7]${nocolor} - Print option values
 --${pink}[0]${nocolor} - Do nothing"
     read deistvo
@@ -868,38 +851,27 @@ set_config ()
       "1" ) echo -e "Do you want use WebKit/Webengine ${pink}[y/n]${nocolor} ?"
             read variable
             if [ "$variable" == "y" ]; then
-              iswebkit="--enable-webkit"
+              iswebkit=1
               use_webkit="y"
             else
-              iswebkit=""
+              iswebkit=0
               use_webkit="n"
             fi;;
-      "2" ) echo -e "Do you want to use offline mode ${pink}[y/n]${nocolor} ?"
+      "2" ) echo -e "Do you want to set Qt6 as default (Qt5 instead) ${pink}[y/n]${nocolor} ?"
             read variable
             if [ "$variable" == "y" ]; then
-              isoffline=1
-              is_offline="y"
+              defualt_qt_ver=6
             else
-              isoffline=0
-              is_offline="n"
+              defualt_qt_ver=5
             fi;;
-      "3" ) echo -e "Do you want to skip invalid patches when patching ${pink}[y/n]${nocolor} ?"
-            read variable
-            if [ "$variable" == "y" ]; then
-              skip_invalid=1
-              skip_patches="y"
-            else
-              skip_invalid=0
-              skip_patches="n"
-            fi;;
-      "4" ) echo "Please enter plugins needed to build separated by space (* for all)"
+      "3" ) echo "Please enter plugins needed to build separated by space (* for all)"
             read variable
             if [ ! -z "$variable" ]; then
               use_plugins=${variable}
             else
               use_plugins=""
             fi;;
-      "5" ) echo -e "Please set spellcheck engine for psi+. Available values:${pink}
+      "4" ) echo -e "Please set spellcheck engine for psi+. Available values:${pink}
 hunspell
 enchant
 aspell
@@ -908,7 +880,7 @@ ${nocolor} ?"
             if [ ! -z "$variable" ]; then
               spellchek_engine=$variable
             fi;;
-      "6" ) echo "Please set psi+ sources path (absolute path, or \$HOME/path)"
+      "5" ) echo "Please set psi+ sources path (absolute path, or \$HOME/path)"
             read variable
             if [ ! -z "${variable}" ]; then
               if [ "${variable:0:5}" == "\$HOME" ]; then
@@ -919,21 +891,27 @@ ${nocolor} ?"
             else
               buildpsi=${default_buildpsi}
             fi;;
+      "6" ) echo "Do you want to build Psi+ (not Psi) ${pink}[y/n]${nocolor} ?"
+            read variable
+            if [ "$variable" == "y" ]; then
+              build_psi_plus="ON"
+            else
+              build_psi_plus="OFF"
+            fi;;
       "7" ) echo -e "${blue}==Options==${nocolor}
 ${green}WebKit${nocolor} = ${yellow}${use_webkit}${nocolor}
-${green}Offline Mode${nocolor} = ${yellow}${is_offline}${nocolor}
-${green}Skip Invalid Patches${nocolor} = ${yellow}${skip_patches}${nocolor}
+${green}Default Qt Version${nocolor} = ${yellow}${defualt_qt_ver}${nocolor}
 ${green}Plugins${nocolor} = ${yellow}${use_plugins}${nocolor}
 ${green}Spellcheck engine${nocolor} = ${yellow}${spellchek_engine}${nocolor}
 ${green}Psi+ sources path${nocolor} = ${yellow}${buildpsi}${nocolor}
+${green}Build Psi+${nocolor} = ${yellow}${build_psi_plus}${nocolor}
 ${blue}===========${nocolor}";;
       "0" ) clear
             loop=0;;
     esac
   done
   echo "$iswebkit" > ${config_file}
-  echo "$isoffline" >> ${config_file}
-  echo "$skip_invalid" >> ${config_file}
+  echo "${defualt_qt_ver}" >> ${config_file}
   if [ "$use_plugins" == "*" ]; then
     echo "all" >> ${config_file}
   else
@@ -941,6 +919,7 @@ ${blue}===========${nocolor}";;
   fi
   echo "$spellchek_engine" >> ${config_file}
   echo "$buildpsi" >> ${config_file}
+  echo "${build_psi_plus}" >> ${config_file}
   update_variables
 }
 #Вывод меню
