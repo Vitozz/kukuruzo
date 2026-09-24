@@ -123,21 +123,17 @@ fetch_url ()
 #Скачивание исходников
 fetch_all ()
 {
-  if [ $isoffline -eq 0 ]; then
-    fetch_url ${psi_url} ${upstream_src}
-    fetch_url ${psi_plus_url} ${psiplus_src}
-    fetch_url ${plugins_url} ${buildpsi}/plugins
-    fetch_url ${langs_url} ${buildpsi}/langs
-    fetch_url ${psimedia_url} ${buildpsi}/psimedia
-    fetch_url ${resources_url} ${buildpsi}/resources
-  fi
+  fetch_url ${psi_url} ${upstream_src}
+  fetch_url ${psi_plus_url} ${psiplus_src}
+  fetch_url ${plugins_url} ${buildpsi}/plugins
+  fetch_url ${langs_url} ${buildpsi}/langs
+  fetch_url ${psimedia_url} ${buildpsi}/psimedia
+  fetch_url ${resources_url} ${buildpsi}/resources
 }
 #Скачивание снапшотов
 fetch_snapshots ()
 {
-  if [ $isoffline -eq 0 ]; then
-    fetch_url ${snapshots_url} ${snapshots_src}
-  fi
+  fetch_url ${snapshots_url} ${snapshots_src}
 }
 
 #Выход
