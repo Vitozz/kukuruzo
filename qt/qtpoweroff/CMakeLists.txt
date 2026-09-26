@@ -15,12 +15,8 @@ option( INSTALL_RULES "Install polkit-rules file at Linux" OFF )
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules")
 
-if(USE_CPACK)
-    include(version)
-    include(use_cpack)
-endif()
-
 include(qtvars)
+include(GNUInstallDirs)
 
 include_directories(
     ${CMAKE_SOURCE_DIR}
@@ -82,17 +78,10 @@ if( UNIX AND NOT (APPLE OR CYGWIN) )
     add_qt_library(QT_DEPLIBS DBus)
 endif()
 if( UNIX AND NOT (APPLE OR CYGWIN) )
-    if("${CMAKE_INSTALL_PREFIX}" STREQUAL "/")
-        set(CPACK_SUFFIX "usr")
-    endif()
-    set( DATADIR_PATH ${CMAKE_INSTALL_PREFIX}${CPACK_SUFFIX}/share )
+    set( DATADIR_PATH ${CMAKE_INSTALL_DATAROOTDIR} )
     set( APPDATA_PATH ${DATADIR_PATH}/applications )
-    set( ICON_FILES
-        images/32x32.png
-        images/48x48.png
-        images/72x72.png
-        images/128x128.png
-    )
+    set( ICON_INSTALL_PREFIX ${DATADIR_PATH}/icons/hicolor)
+    set( ICON_FILES_PREFIX "images")
     set( ICON_PATH
         ${DATADIR_PATH}/${PROJECT_NAME}/images
     )
@@ -113,18 +102,22 @@ if( UNIX AND NOT (APPLE OR CYGWIN) )
         "defines.h"
     )
     target_link_libraries ( ${PROJECT_NAME} ${QT_DEPLIBS} )
-    INSTALL( TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}${CPACK_SUFFIX}/bin )
-    INSTALL( FILES ${ICON_FILES} DESTINATION ${ICON_PATH} )
-    set(PREFIX "${CMAKE_INSTALL_PREFIX}")
-    configure_file(${DESKTOP_FILES}.in "${PROJECT_BINARY_DIR}/${DESKTOP_FILES}" @ONLY)
+    set(RESOLUTIONS 16 32 48 64 128)
+    INSTALL( TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} )
+    foreach(resolution ${RESOLUTIONS})
+        unset(LOGO_NAME)
+        set(LOGO_NAME "${ICON_FILES_PREFIX}/${resolution}x${resolution}.png")
+        install(FILES ${LOGO_NAME} DESTINATION "${ICON_INSTALL_PREFIX}/${resolution}x${resolution}/apps" RENAME ${PROJECT_NAME}.png)
+    endforeach()
+    configure_file(${DESKTOP_FILES}.in "${PROJECT_BINARY_DIR}/${DESKTOP_FILES}" COPYONLY)
     INSTALL( FILES "${PROJECT_BINARY_DIR}/${DESKTOP_FILES}" DESTINATION ${APPDATA_PATH} )
-    INSTALL( FILES ${DOC_FILES} DESTINATION ${DOCS_PATH} )
+    INSTALL( FILES ${DOC_FILES} DESTINATION ${CMAKE_INSTALL_DOCDIR} )
     INSTALL( FILES ${TRS} DESTINATION ${DATADIR_PATH}/${PROJECT_NAME}/${LANG_PATH} )
     if(INSTALL_RULES)
-        INSTALL( FILES ${POLKIT_RULES} DESTINATION ${CMAKE_INSTALL_PREFIX}etc/polkit-1/rules.d )
+        INSTALL( FILES ${POLKIT_RULES} DESTINATION "/etc/polkit-1/rules.d" )
     endif()
     if(USE_CPACK AND DPKG_PATH)
-        INSTALL( FILES ${PROJECT_BINARY_DIR}/copyright DESTINATION ${DATADIR_PATH}/doc/${PROJECT_NAME} )
+        INSTALL( FILES ${PROJECT_BINARY_DIR}/copyright DESTINATION ${CMAKE_INSTALL_DOCDIR} )
     endif()
 endif()
 if( ${WIN32} )
@@ -155,4 +148,8 @@ if( ${WIN32} )
     INSTALL( FILES ${TRS} DESTINATION ${CMAKE_INSTALL_PREFIX}/${LANG_PATH} )
     INSTALL( FILES ${DOC_FILES} DESTINATION ${CMAKE_INSTALL_PREFIX} )
     INSTALL( FILES ${LICENSE_FILES} DESTINATION ${CMAKE_INSTALL_PREFIX} )
+endif()
+if(USE_CPACK)
+    include(version)
+    include(use_cpack)
 endif()

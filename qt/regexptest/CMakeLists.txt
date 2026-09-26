@@ -11,13 +11,7 @@ option( BUILD_TRANSLATIONS "Build project translations" ON )
 option( USE_CPACK "Enable CPack" OFF )
 
 include(qtvars)
-
-if(USE_CPACK)
-    include(version)
-    #CPack section start
-    include(use_cpack)
-    #CPack section end
-endif()
+include(GNUInstallDirs)
 
 include_directories(
     ${CMAKE_SOURCE_DIR}
@@ -73,11 +67,10 @@ wrap_qt_ui( UIS ${regexptest_UI} )
 add_qt_library(QT_DEPLIBS Widgets)
 
 if( UNIX AND NOT (APPLE OR CYGWIN) )
-    set( DATADIR_PATH ${CMAKE_INSTALL_PREFIX}/share )
+    set( DATADIR_PATH ${CMAKE_INSTALL_DATAROOTDIR} )
     set( APPDATA_PATH ${DATADIR_PATH}/applications )
-    set( ICON_FILES
-        icons/72x72.png
-    )
+    set( ICON_INSTALL_PREFIX ${DATADIR_PATH}/icons/hicolor)
+    set( ICON_FILES_PREFIX "icons")
     set( ICON_PATH
         ${DATADIR_PATH}/${PROJECT_NAME}/icons
     )
@@ -85,10 +78,7 @@ if( UNIX AND NOT (APPLE OR CYGWIN) )
     set( DESKTOP_FILES
         ${PROJECT_NAME}.desktop
     )
-    configure_file(${DESKTOP_FILES}.in "${PROJECT_BINARY_DIR}/${DESKTOP_FILES}" @ONLY)
-    set ( DOCS_PATH
-        ${DATADIR_PATH}/doc/${PROJECT_NAME}/html
-    )
+    configure_file(${DESKTOP_FILES}.in "${PROJECT_BINARY_DIR}/${DESKTOP_FILES}" COPYONLY)
     add_executable( ${PROJECT_NAME}
         ${regexptest_SRC}
         ${UIS}
@@ -96,13 +86,18 @@ if( UNIX AND NOT (APPLE OR CYGWIN) )
         ${TRS}
     )
     target_link_libraries ( ${PROJECT_NAME} ${QT_DEPLIBS} )
-    INSTALL( TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin )
-    INSTALL( FILES ${ICON_FILES} DESTINATION ${ICON_PATH} )
+    INSTALL( TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} )
+    set(RESOLUTIONS 16 32 48 64 128)
+    foreach(resolution ${RESOLUTIONS})
+        unset(LOGO_NAME)
+        set(LOGO_NAME "${ICON_FILES_PREFIX}/${resolution}x${resolution}.png")
+        install(FILES ${LOGO_NAME} DESTINATION "${ICON_INSTALL_PREFIX}/${resolution}x${resolution}/apps" RENAME ${PROJECT_NAME}.png)
+    endforeach()
     INSTALL( FILES "${PROJECT_BINARY_DIR}/${DESKTOP_FILES}" DESTINATION ${APPDATA_PATH} )
-    INSTALL( FILES ${DOC_FILES} DESTINATION ${DOCS_PATH} )
+    INSTALL( FILES ${DOC_FILES} DESTINATION ${CMAKE_INSTALL_DOCDIR}/html )
     INSTALL( FILES ${TRS} DESTINATION ${DATADIR_PATH}/${PROJECT_NAME}/${LANG_PATH} )
     if(USE_CPACK AND DPKG_PATH)
-        INSTALL( FILES ${PROJECT_BINARY_DIR}/copyright DESTINATION ${DATADIR_PATH}/doc/${PROJECT_NAME} )
+        INSTALL( FILES ${PROJECT_BINARY_DIR}/copyright DESTINATION ${CMAKE_INSTALL_DOCDIR} )
     endif()
 endif()
 if( WIN32 )
@@ -125,4 +120,10 @@ if( WIN32 )
     INSTALL( FILES ${TRS} DESTINATION ${CMAKE_INSTALL_PREFIX}/langs )
     INSTALL( FILES ${DOC_FILES} DESTINATION ${CMAKE_INSTALL_PREFIX}/docs )
     INSTALL( FILES ${LICENSE_FILES} DESTINATION ${CMAKE_INSTALL_PREFIX} )
+endif()
+if(USE_CPACK)
+    include(version)
+    #CPack section start
+    include(use_cpack)
+    #CPack section end
 endif()
