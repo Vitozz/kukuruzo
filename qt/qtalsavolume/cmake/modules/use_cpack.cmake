@@ -19,27 +19,24 @@ set(CPACK_RESOURCE_FILE_LICENSE "${PROJECT_SOURCE_DIR}/COPYING")
 set(CPACK_SOURCE_GENERATOR "TGZ")
 set(PACKAGE_URL "https://sourceforge.net/projects/kukuruzo/files/qtalsavolume/")
 find_program(RPMB_PATH rpmbuild DOC "Path to rpmbuild")
-find_program(DPKG_PATH dpkg DOC "Path to dpkg")
+find_program(DPKG_PATH dpkg-deb DOC "Path to dpkg")
 find_program(MAKEPKG makepkg DOC "Path to makepkg")
+find_program(CPACK_APPIMAGE_TOOL_EXECUTABLE "/home/vitaly/AppImages/appimagetool.appimage" DOC "Path to appimagetool")
+find_program(CPACK_APPIMAGE_PATCHELF_EXECUTABLE patchelf DOC "Path to patchelf")
 set(CPACK_PACKAGING_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX})
-if(NOT "${RPMB_PATH}" STREQUAL "RPMB_PATH-NOTFOUND")
-    set(CPACK_GENERATOR "RPM")
+set(_CPACK_GENERATORS)
+if(RPMB_PATH)
+    list(APPEND _CPACK_GENERATORS "RPM")
     set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}-${CPACK_PACKAGE_RELEASE}.${CMAKE_SYSTEM_PROCESSOR}")
     set(CPACK_RPM_PACKAGE_LICENSE "GPL-3")
     set(CPACK_RPM_PACKAGE_GROUP "Applications/Multimedia")
     set(CPACK_RPM_SPEC_CHANGELOG "${PROJECT_SOURCE_DIR}/ChangeLog")
     set(CPACK_RESOURCE_FILE_LICENSE "${CPACK_RESOURCE_FILE_LICENSE}")
     set(CPACK_RPM_PACKAGE_URL "${PACKAGE_URL}")
+    message(STATUS "CPack: RPM generator added")
 endif()
-if(NOT "${DPKG_PATH}" STREQUAL "DPKG_PATH-NOTFOUND")
-    set(CPACK_GENERATOR "DEB")
-    execute_process(COMMAND "LANG=en date +'%a, %d %b %Y %T %z'"
-        OUTPUT_VARIABLE BUILD_DATE
-    )
-    execute_process(COMMAND "date +'%Y'"
-        OUTPUT_VARIABLE BUILD_YEAR
-    )
-    message(STATUS "Build date: ${BUILD_DATE}")
+if(DPKG_PATH)
+    list(APPEND _CPACK_GENERATORS "DEB")
     set(CPACK_DEBIAN_PACKAGE_MAINTAINER "${PACKAGE_MAINTAINER}")
     set(CPACK_DEBIAN_PACKAGE_SECTION "sound")
     execute_process(COMMAND "${DPKG_PATH} --print-architecture"
@@ -67,7 +64,6 @@ if(NOT "${DPKG_PATH}" STREQUAL "DPKG_PATH-NOTFOUND")
         endif()
     endif()
     set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
-    set(CPACK_DEBIAN_PACKAGE_GENERATE_SHLIBS ON)
     if(NOT CPACK_DEBIAN_PACKAGE_VERSION)
         set(CPACK_DEBIAN_PACKAGE_VERSION "${CPACK_PACKAGE_VERSION}${PKG_OS_SUFFIX}${OSCODENAME}")
     endif()
@@ -81,6 +77,91 @@ if(NOT "${DPKG_PATH}" STREQUAL "DPKG_PATH-NOTFOUND")
     endif()
     configure_file(copyright.in copyright @ONLY)
     set(CPACK_RESOURCE_FILE_LICENSE "${PROJECT_BINARY_DIR}/copyright")
+    message(STATUS "CPack: DEB generator added")
+endif()
+if(CPACK_APPIMAGE_TOOL_EXECUTABLE AND CPACK_APPIMAGE_PATCHELF_EXECUTABLE)
+    list(APPEND _CPACK_GENERATORS "AppImage")
+    set(CPACK_PACKAGE_ICON "${PROJECT_NAME}.png")
+    install(CODE "
+    file(GET_RUNTIME_DEPENDENCIES
+        EXECUTABLES \"${CMAKE_BINARY_DIR}/${PROJECT_NAME}\"
+        RESOLVED_DEPENDENCIES_VAR resolved_deps
+        POST_EXCLUDE_REGEXES
+            \".*/ld-linux[^/]*\\.so.*\"
+            \".*/libc\\.so.*\"
+            \".*/libm\\.so.*\"
+            \".*/libpthread\\.so.*\"
+            \".*/libdl\\.so.*\"
+            \".*/librt\\.so.*\"
+    )
+
+    foreach(dep \${resolved_deps})
+        # copy the symlink
+        file(COPY \${dep} DESTINATION \"\${CMAKE_INSTALL_PREFIX}/lib\")
+
+        # Resolve the real path of the dependency (follows symlinks)
+        file(REAL_PATH \${dep} resolved_dep_path)
+
+        # Copy the resolved file to the destination
+        file(COPY \${resolved_dep_path} DESTINATION \"\${CMAKE_INSTALL_PREFIX}/lib\")
+    endforeach()
+")
+
+    set(QTCONF_TEXT
+"
+[Paths]
+Plugins = ${CMAKE_INSTALL_PREFIX}/lib/qt${QT_PKG_VER}/plugins
+"
+    )
+    file(WRITE "${CMAKE_BINARY_DIR}/qt.conf" "${QTCONF_TEXT}")
+    install(
+        FILES "${CMAKE_BINARY_DIR}/qt.conf"
+        DESTINATION ${CMAKE_INSTALL_BINDIR}
+    )
+    # Путь к установленным Qt-плагинам
+    execute_process(
+        COMMAND "${QT_HOST_PATH}/bin/qmake${QT_PKG_VER}" -query QT_INSTALL_PLUGINS
+        OUTPUT_VARIABLE QT_INSTALL_PLUGINS
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
+    file(GLOB QT_IMAGEFORMAT_PLUGINS
+        "${QT_INSTALL_PLUGINS}/imageformats/libq*.so"
+    )
+    file(GLOB QT_ICONENGINES_PLUGINS
+        "${QT_INSTALL_PLUGINS}/iconengines/libq*.so"
+    )
+    file(GLOB QT_PLATFORMS_PLUGINS
+        "${QT_INSTALL_PLUGINS}/platforms/libq*.so"
+    )
+    file(GLOB QT_POSITION_PLUGINS
+        "${QT_INSTALL_PLUGINS}/position/libq*.so"
+    )
+    install(
+        FILES
+        ${QT_PLATFORMS_PLUGINS}
+        DESTINATION "${CMAKE_INSTALL_LIBDIR}/qt${QT_PKG_VER}/plugins/platforms"
+    )
+    install(
+        FILES
+        ${QT_IMAGEFORMAT_PLUGINS}
+        DESTINATION "${CMAKE_INSTALL_LIBDIR}/qt${QT_PKG_VER}/plugins/imageformats"
+    )
+    install(
+        FILES
+        ${QT_POSITION_PLUGINS}
+        DESTINATION "${CMAKE_INSTALL_LIBDIR}/qt${QT_PKG_VER}/plugins/position"
+    )
+    install(
+        FILES
+        ${QT_ICONENGINES_PLUGINS}
+        DESTINATION "${CMAKE_INSTALL_LIBDIR}/qt${QT_PKG_VER}/plugins/iconengines"
+    )
+    message(STATUS "CPack: AppImage generator added")
+endif()
+if(_CPACK_GENERATORS)
+    set(CPACK_GENERATOR "${_CPACK_GENERATORS}")
+else()
+    message(WARNING "USE_CPACK flag is enabled but no generators available")
 endif()
 if(NOT "${MAKEPKG}" STREQUAL "MAKEPKG-NOTFOUND")
     if(USE_KDE AND USE_QT6)

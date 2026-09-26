@@ -1,8 +1,7 @@
 [Desktop Entry]
-Encoding=UTF-8
 Name=QtAlsaVolume
-Icon=@PREFIX@/share/qtalsavolume/icons/@PROJECT_NAME@.png
-Comment=Changes the volume of ALSA from the system tray
+Icon=qtalsavolume
+Comment=Changethes  volume of ALSA from the system tray
 Exec=qtalsavolume
 Terminal=false
 Type=Application
