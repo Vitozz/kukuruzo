@@ -88,84 +88,79 @@ else()
         set(CPACK_RESOURCE_FILE_LICENSE "${PROJECT_BINARY_DIR}/copyright")
     endif()
     if(CPACK_APPIMAGE_TOOL_EXECUTABLE AND CPACK_APPIMAGE_PATCHELF_EXECUTABLE)
-        list(APPEND _CPACK_GENERATORS "AppImage")
-        set(CPACK_PACKAGE_ICON "${PROJECT_NAME}.png")
-        install(CODE "
+        if(CMAKE_VERSION GREATER_EQUAL 4.2.0)
+            list(APPEND _CPACK_GENERATORS "AppImage")
+            set(CPACK_PACKAGE_ICON "${PROJECT_NAME}.png")
+            install(CODE "
 file(GET_RUNTIME_DEPENDENCIES
     EXECUTABLES \"${CMAKE_BINARY_DIR}/${PROJECT_NAME}\"
     RESOLVED_DEPENDENCIES_VAR resolved_deps
     POST_EXCLUDE_REGEXES
-        \".*/ld-linux[^/]*\\.so.*\"
-        \".*/libc\\.so.*\"
-        \".*/libm\\.so.*\"
-        \".*/libpthread\\.so.*\"
-        \".*/libdl\\.so.*\"
-        \".*/librt\\.so.*\"
+        \".*/ld-linux[^/]*\\\\.so.*\"
+        \".*/libc\\\\.so.*\"
+        \".*/libm\\\\.so.*\"
+        \".*/libpthread\\\\.so.*\"
+        \".*/libdl\\\\.so.*\"
+        \".*/librt\\\\.so.*\"
 )
 
 foreach(dep \${resolved_deps})
     # copy the symlink
-    file(COPY \${dep} DESTINATION \"\${CMAKE_INSTALL_PREFIX}/lib\")
+    file(INSTALL DESTINATION \"\${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}\" TYPE FILE FILES \${dep})
 
     # Resolve the real path of the dependency (follows symlinks)
     file(REAL_PATH \${dep} resolved_dep_path)
 
     # Copy the resolved file to the destination
-    file(COPY \${resolved_dep_path} DESTINATION \"\${CMAKE_INSTALL_PREFIX}/lib\")
+    file(INSTALL DESTINATION \"\${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}\" TYPE FILE FILES \${resolved_dep_path})
 endforeach()
 ")
 
-        set(QTCONF_TEXT
+            set(QTCONF_TEXT
 "
 [Paths]
 Plugins = ${CMAKE_INSTALL_PREFIX}/lib/qt${QT_PKG_VER}/plugins
 Translations = ${CMAKE_INSTALL_PREFIX}/share/${PROJECT_NAME}/languages
 "
-        )
-        file(WRITE "${CMAKE_BINARY_DIR}/qt.conf" "${QTCONF_TEXT}")
-        install(
-            FILES "${CMAKE_BINARY_DIR}/qt.conf"
-            DESTINATION ${CMAKE_INSTALL_BINDIR}
-        )
-        # Путь к установленным Qt-плагинам
-        execute_process(
-            COMMAND "${QT_HOST_PATH}/bin/qmake${QT_PKG_VER}" -query QT_INSTALL_PLUGINS
-            OUTPUT_VARIABLE QT_INSTALL_PLUGINS
-            OUTPUT_STRIP_TRAILING_WHITESPACE
-        )
-        file(GLOB QT_IMAGEFORMAT_PLUGINS
-            "${QT_INSTALL_PLUGINS}/imageformats/libq*.so"
-        )
-        file(GLOB QT_ICONENGINES_PLUGINS
-            "${QT_INSTALL_PLUGINS}/iconengines/libq*.so"
-        )
-        file(GLOB QT_PLATFORMS_PLUGINS
-            "${QT_INSTALL_PLUGINS}/platforms/libq*.so"
-        )
-        file(GLOB QT_POSITION_PLUGINS
-            "${QT_INSTALL_PLUGINS}/position/libq*.so"
-        )
-        install(
-            FILES
-            ${QT_PLATFORMS_PLUGINS}
-            DESTINATION "${CMAKE_INSTALL_LIBDIR}/qt${QT_PKG_VER}/plugins/platforms"
-        )
-        install(
-            FILES
-            ${QT_IMAGEFORMAT_PLUGINS}
-            DESTINATION "${CMAKE_INSTALL_LIBDIR}/qt${QT_PKG_VER}/plugins/imageformats"
-        )
-        install(
-            FILES
-            ${Q_POSITION_PLUGINS}
-            DESTINATION "${CMAKE_INSTALL_LIBDIR}/qt${QT_PKG_VER}/plugins/position"
-        )
-        install(
-            FILES
-            ${QT_ICONENGINES_PLUGINS}
-            DESTINATION "${CMAKE_INSTALL_LIBDIR}/qt${QT_PKG_VER}/plugins/iconengines"
-        )
-        message(STATUS "CPack: AppImage generator added")
+            )
+            file(WRITE "${CMAKE_BINARY_DIR}/qt.conf" "${QTCONF_TEXT}")
+            install(
+                FILES "${CMAKE_BINARY_DIR}/qt.conf"
+                DESTINATION ${CMAKE_INSTALL_BINDIR}
+            )
+
+            function(install_qt_plugin PLUG_TYPE_NAME PLUG_SEARCH_PATH)
+                file(GLOB _PLUGINS
+                    "${PLUG_SEARCH_PATH}/${PLUG_TYPE_NAME}/libq*.so"
+                )
+                message(STATUS "CPack: AppImage ${PLUG_TYPE_NAME} plugins added")
+                install(
+                    FILES
+                    ${_PLUGINS}
+                    DESTINATION
+                    "${CMAKE_INSTALL_LIBDIR}/qt${QT_PKG_VER}/plugins/${PLUG_TYPE_NAME}"
+                )
+                unset(_PLUGINS)
+            endfunction()
+            # Path to Qt plugins
+            execute_process(
+                COMMAND "${QT_HOST_PATH}/bin/qmake${QT_PKG_VER}" -query QT_INSTALL_PLUGINS
+                OUTPUT_VARIABLE QT_INSTALL_PLUGINS
+                OUTPUT_STRIP_TRAILING_WHITESPACE
+            )
+            if(QT_INSTALL_PLUGINS)
+                set(_QT_PLUGINS
+                    imageformats
+                    iconengines
+                    platforms
+                    position
+                )
+                foreach(plugin ${_QT_PLUGINS})
+                    install_qt_plugin("${plugin}" "${QT_INSTALL_PLUGINS}")
+                endforeach()
+            endif()
+            message(STATUS "CPack: AppImage generator added")
+        endif()
     endif()
     if(_CPACK_GENERATORS)
         set(CPACK_GENERATOR "${_CPACK_GENERATORS}")
