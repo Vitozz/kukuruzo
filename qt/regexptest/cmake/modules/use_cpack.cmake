@@ -120,7 +120,7 @@ endforeach()
 "
 [Paths]
 Plugins = ${CMAKE_INSTALL_PREFIX}/lib/qt${QT_PKG_VER}/plugins
-Translations = ${CMAKE_INSTALL_PREFIX}/share/${PROJECT_NAME}/languages
+Translations = ${CMAKE_INSTALL_PREFIX}/share/${PROJECT_NAME}/langs
 "
             )
             file(WRITE "${CMAKE_BINARY_DIR}/qt.conf" "${QTCONF_TEXT}")
@@ -134,12 +134,16 @@ Translations = ${CMAKE_INSTALL_PREFIX}/share/${PROJECT_NAME}/languages
                     "${PLUG_SEARCH_PATH}/${PLUG_TYPE_NAME}/libq*.so"
                 )
                 message(STATUS "CPack: AppImage ${PLUG_TYPE_NAME} plugins added")
-                install(
-                    FILES
-                    ${_PLUGINS}
-                    DESTINATION
-                    "${CMAKE_INSTALL_LIBDIR}/qt${QT_PKG_VER}/plugins/${PLUG_TYPE_NAME}"
-                )
+                foreach(_plugin ${_PLUGINS})
+                    if(EXISTS "${_plugin}")
+                        install(
+                            FILES
+                            "${_plugin}"
+                            DESTINATION
+                            "${CMAKE_INSTALL_LIBDIR}/qt${QT_DEFAULT_MAJOR_VERSION}/plugins/${PLUG_TYPE_NAME}"
+                        )
+                    endif()
+                endforeach()
                 unset(_PLUGINS)
             endfunction()
             # Path to Qt plugins

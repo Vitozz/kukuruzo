@@ -69,6 +69,9 @@ if(DPKG_PATH)
         endif()
     endif()
     set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
+    if(NOT USE_PULSE)
+        set(CPACK_DEBIAN_PACKAGE_CONFLICTS "${PROJECT_NAME}-pulse")
+    endif()
     if(NOT CPACK_DEBIAN_PACKAGE_VERSION)
         set(CPACK_DEBIAN_PACKAGE_VERSION "${CPACK_PACKAGE_VERSION}${PKG_OS_SUFFIX}${OSCODENAME}")
     endif()
@@ -129,12 +132,16 @@ Plugins = ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}/qt${QT_PKG_VER}/plugin
                 "${PLUG_SEARCH_PATH}/${PLUG_TYPE_NAME}/libq*.so"
             )
             message(STATUS "CPack: AppImage ${PLUG_TYPE_NAME} plugins added")
-            install(
-                FILES
-                ${_PLUGINS}
-                DESTINATION
-                "${CMAKE_INSTALL_LIBDIR}/qt${QT_PKG_VER}/plugins/${PLUG_TYPE_NAME}"
-            )
+            foreach(_plugin ${_PLUGINS})
+                if(EXISTS "${_plugin}")
+                    install(
+                        FILES
+                        "${_plugin}"
+                        DESTINATION
+                        "${CMAKE_INSTALL_LIBDIR}/qt${QT_DEFAULT_MAJOR_VERSION}/plugins/${PLUG_TYPE_NAME}"
+                    )
+                endif()
+            endforeach()
             unset(_PLUGINS)
         endfunction()
         # Путь к установленным Qt-плагинам
