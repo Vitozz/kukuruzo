@@ -10,7 +10,7 @@ depends=( 'qt@QT_PKG_VER@-base' 'qt@QT_PKG_VER@-tools' 'alsa-lib' '@KDE_DEP@' )
 optdepends=('pulseaudio: support PulseAudio'
             'pipewire-pulse: support PulseAudio using PipeWire')
 makedepends=('git' 'cmake')
-conflicts=('@CPACK_PACKAGE_NAME@' '@PROJECT_NAME@')
+conflicts=('@CPACK_PACKAGE_NAME@' '@PROJECT_NAME@-git')
 source=(git+https://github.com/Vitozz/kukuruzo)
 md5sums=('SKIP') 
 
