@@ -312,26 +312,44 @@ void PopupWindow::setPopupPosition()
     const QRect trayGeometry(trayIcon_->iconGeometery());
     QPoint      to;
     QPoint      point(trayIcon_->iconPosition());
-    Position    position;
+    Position    pos;
     const int   screenHeight = screen()->availableGeometry().height();
-    const int   screenTop    = screen()->availableGeometry().top();
-    if (!trayGeometry.isEmpty()) {
-        position = trayGeometry.top() > screenHeight / 2 ? BOTTOM : TOP;
-        to.setX(trayGeometry.left() + trayGeometry.width() / 2 - width() / 2);
-    } else {
-        position = (point.y() > screenHeight / 2) ? BOTTOM : TOP;
-        to.setX(point.x() - width() / 2);
-    }
-    switch (position) {
+    const int   screenWidth  = screen()->availableGeometry().width();
+    const int   offset       = 6;
+    int         wX, wY = 0;
+
+    bool isGeometry = !trayGeometry.isEmpty();
+    if ((!isGeometry && point.y() < screenHeight / 4) || (isGeometry && trayGeometry.top() < screenHeight / 4))
+        pos = TOP;
+    if ((!isGeometry && point.y() > screenHeight * 3 / 4) || (isGeometry && trayGeometry.top() > screenHeight * 3 / 4))
+        pos = BOTTOM;
+    if ((!isGeometry && point.x() < screenWidth / 4) || (isGeometry && trayGeometry.right() < screenWidth / 4))
+        pos = LEFT;
+    if ((!isGeometry && point.x() > screenWidth * 3 / 4) || (isGeometry && trayGeometry.right() > screenWidth * 3 / 4))
+        pos = RIGHT;
+    switch (pos) {
     case TOP:
-        to.setY(screenTop + 2);
+        wY = (isGeometry ? trayGeometry.bottom() : point.y()) + offset;
+        wX = (isGeometry ? trayGeometry.center().x() : point.x()) - (width() / 2);
         break;
     case BOTTOM:
-        to.setY(screenHeight - height() - 2);
+        wY = (isGeometry ? trayGeometry.top() : point.y()) - height() - offset;
+        wX = (isGeometry ? trayGeometry.center().x() : point.x()) - (width() / 2);
+        break;
+    case LEFT:
+        wX = (isGeometry ? trayGeometry.right() : point.x()) + offset;
+        wY = (isGeometry ? trayGeometry.center().y() : point.y()) - (height() / 2);
+        break;
+    case RIGHT:
+        wX = (isGeometry ? trayGeometry.left() : point.x()) - width() - offset;
+        wY = (isGeometry ? trayGeometry.center().y() : point.y()) - (height() / 2);
         break;
     default:
+        wX = point.x() - (width() / 2);
+        wY = screenHeight - height() - 50;
         break;
     }
+    to = { wX, wY };
 #ifdef ISDEBUG
     qDebug() << "TO = " << to;
 #endif

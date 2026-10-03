@@ -143,7 +143,8 @@ changelog="${APP_NAME} (${versuffix}) ${oscodename}; urgency=low
 
   * new upsream release
 
- -- ${Maintainer} ${data}"
+ -- ${Maintainer}  ${data}
+ "
 
 compat="10"
 control="Source: ${APP_NAME}
@@ -232,32 +233,26 @@ include /usr/share/cdbs/1/class/python-distutils.mk
 '
 
 rules_qt="#!/usr/bin/make -f
-# -*- makefile -*-
-# Sample debian/rules that uses debhelper.
-# This file was originally written by Joey Hess and Craig Small.
-# As a special exception, when this file is copied by dh-make into a
-# dh-make output file, you may use that output file without restriction.
-# This special exception was added by Craig Small in version 0.37 of dh-make.
 
-# Uncomment this to turn on verbose mode.
-#export DH_VERBOSE=1
+# export DH_VERBOSE=1
+
 config.status: configure
 	dh_testdir
 
-  
 include /usr/share/cdbs/1/rules/debhelper.mk
 include /usr/share/cdbs/1/class/cmake.mk
 
-# Add here any variable or target overrides you need.
-#QMAKE=qmake-qt4
 DEB_CMAKE_EXTRA_FLAGS += ${cmake_flags}
-CFLAGS=-O3
-CXXFLAGS=-O3
+
+CFLAGS = -O3
+CXXFLAGS = -O3
+"
+format="1.0
 "
 
 	if [ "${project}" != "pyalsavolume" ] &&\
 	[ "${project}" != "regexptest" ] &&\
-	[ "${project}" != "alsavolume" ] &&\
+	[ "${project}" != "alsavolume3" ] &&\
 	[ "${project}" != "qtalsavolume" ] &&\
 	[ "${project}" != "qtpoweroff" ]
 	then
@@ -265,7 +260,7 @@ CXXFLAGS=-O3
 		echo "${pyversions}" > pyversions
 	fi 
 	if [ "${project}" == "regexptest" ] ||\
-	[ "${project}" == "alsavolume" ] ||\
+	[ "${project}" == "alsavolume3" ] ||\
 	[ "${project}" == "qtalsavolume" ] ||\
 	[ "${project}" == "qtpoweroff" ]
 	then
@@ -283,6 +278,9 @@ CXXFLAGS=-O3
 	echo "${copyright}" > copyright
 	echo "${docs}" > docs
 	echo "${dirs}" > dirs
+	mkdir -p source
+	echo "${format}" > source/format
+	chmod u+x rules
 }
 #
 
@@ -543,7 +541,7 @@ usr/share/applications"
 build_avolume ()
 {
 	run_resloader get_avolume
-	project="alsavolume"
+	project="alsavolume3"
 	APP_NAME=${project}
 	addit="Replaces: ${project}, ${project}3, ${project}-pulse, ${project}3-pulse, ${project}-sni-pulse, ${project}3-sni-pulse, ${project}-unity-pulse, ${project}3-unity-pulse, ${project}-unity, ${project}3-unity, ${project}3-sni, ${project}-sni"
 	dirname="cppAlsaVolume"
@@ -554,24 +552,17 @@ build_avolume ()
 	cd ${debdir}
 	deps="libasound2-dev pkg-config cmake intltool gettext"
 	builddep="debhelper, cdbs, libasound2-dev, pkg-config, cmake, intltool, gettext"
-	echo -e "${blue}Enable GTK+2 support${nocolor} ${pink}[y/n(default)]${nocolor}"
-	read isgtk
-	if [ "${isgtk}" == "y" ]; then
-		cmake_flags="${cmake_flags} -DUSE_GTK3=OFF"
-		builddep="${builddep}, libgtkmm-2.4-dev"
-		deps="${deps} libgtkmm-2.4-dev"
-	else
-		APP_NAME="${APP_NAME}3"
-		builddep="${builddep}, libgtkmm-3.0-dev"
-		deps="${deps} libgtkmm-3.0-dev"
-	fi
-		echo -e "${blue}Enable Status Notifier item support${nocolor} ${pink}[y/n(default)]${nocolor}"
+	builddep="${builddep}, libgtkmm-3.0-dev"
+	deps="${deps} libgtkmm-3.0-dev"
+	echo -e "${blue}Enable Status Notifier item support${nocolor} ${pink}[y/n(default)]${nocolor}"
 	read iskde
 	if [ "${iskde}" == "y" ]; then
 		APP_NAME="${APP_NAME}-sni"
 		cmake_flags="${cmake_flags} -DUSE_SNI=ON"
 		builddep="${builddep}, libdbusmenu-gtk3-dev"
 		deps="${deps} libdbusmenu-gtk3-dev"
+	else
+		cmake_flags="${cmake_flags} -DUSE_SNI=OFF"
 	fi
 	echo -e "${blue}Enable AppIndicator support${nocolor} ${pink}[y/n(default)]${nocolor}"
 	read isapp
@@ -596,17 +587,12 @@ build_avolume ()
 	fi
 	check_deps "${deps}"
 	section="sound"
-	arch="any"	
+	arch="any"
 	depends="\${shlibs:Depends}, \${misc:Depends}"
 	description="Tray ALSA volume changer"
 	descriptionlong="Simple programm to change the volume of one of the ALSA mixers from the system tray."
-	if [ "${isgtk}" == "y" ]; then
-		descriptionlong="${descriptionlong}
- GTK2 version"
-	else
-		descriptionlong="${descriptionlong}
+	descriptionlong="${descriptionlong}
  GTK3 version"
-	fi
 	if [ "${iskde}" == "y" ]; then
 		descriptionlong="${descriptionlong}
  With KDE StatusNotifierItem support"
@@ -622,18 +608,20 @@ build_avolume ()
 	docfiles=""
 	dirs="usr/bin
 usr/share/alsavolume
-usr/share/alsavolume/icons
-usr/share/alsavolume/gladefiles
 usr/share/alsavolume/locale
 usr/share/alsavolume/locale/ru
 usr/share/alsavolume/locale/ru/LC_MESSAGES
 usr/share/alsavolume/locale/uk
 usr/share/alsavolume/locale/uk/LC_MESSAGES
-usr/share/applications"
+usr/share/applications
+usr/share/icons/hicolor/16x16/apps
+usr/share/icons/hicolor/32x32/apps
+usr/share/icons/hicolor/64x64/apps
+usr/share/icons/hicolor/48x48/apps
+usr/share/icons/hicolor/128x128/apps"
 	cd ${debdir}/debian
 	prepare_specs
 	cd ${debdir}
-	qmake
 	build_deb
 	cp -f ${builddir}/*.deb	${exitdir}/
 }
@@ -658,13 +646,18 @@ build_qtavolume ()
 	else
 		builddep="${builddep}, qttools5-dev"
 	fi
-	echo -e "${blue}Enable KDE5 support${nocolor} ${pink}[y/n(default)]${nocolor}"
+	echo -e "${blue}Enable KDE support${nocolor} ${pink}[y/n(default)]${nocolor}"
 	read iskde5
 	if [ "${iskde5}" == "y" ]; then
-		APP_NAME="${APP_NAME}5"
-		cmake_flags="${cmake_flags} -DUSE_KDE5=ON"
-		builddep="${builddep}, libkf5notifications-dev"
-		deps="${deps} libkf5notifications-dev"
+		APP_NAME="${APP_NAME}-kf6sni"
+		cmake_flags="${cmake_flags} -DUSE_KDE=ON"
+		if [ $use_qt6 -eq 1 ]; then
+			builddep="${builddep}, libkf6statusnotifieritem-dev"
+			deps="${deps} libkf6statusnotifieritem-dev"
+		else
+			builddep="${builddep}, libkf5notifications-dev"
+			deps="${deps} libkf5notifications-dev"
+		fi
 	fi
 	echo -e "${blue}Enable pulseaudio support${nocolor} ${pink}[y/n(default)]${nocolor}"
 	read ispulse
@@ -692,10 +685,13 @@ build_qtavolume ()
 	dirs="usr/bin
 usr/share/qtalsavolume
 usr/share/qtalsavolume/icons
-usr/share/qtalsavolume/icons/light
-usr/share/qtalsavolume/icons/dark
 usr/share/qtalsavolume/languages
-usr/share/applications"
+usr/share/applications
+usr/share/icons/hicolor/16x16/apps
+usr/share/icons/hicolor/32x32/apps
+usr/share/icons/hicolor/64x64/apps
+usr/share/icons/hicolor/48x48/apps
+usr/share/icons/hicolor/128x128/apps"
 	cd ${debdir}/debian
 	prepare_specs
 	cd ${debdir}
@@ -731,7 +727,12 @@ usr/share/qtpoweroff
 usr/share/qtpoweroff/images
 usr/share/qtpoweroff/languages
 usr/share/docs/qtpoweroff
-usr/share/applications"
+usr/share/applications
+usr/share/icons/hicolor/16x16/apps
+usr/share/icons/hicolor/32x32/apps
+usr/share/icons/hicolor/64x64/apps
+usr/share/icons/hicolor/48x48/apps
+usr/share/icons/hicolor/128x128/apps"
 	cd ${debdir}/debian
 	prepare_specs
 	cd ${debdir}
