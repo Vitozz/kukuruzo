@@ -119,7 +119,9 @@ if(CPACK_APPIMAGE_TOOL_EXECUTABLE AND CPACK_APPIMAGE_PATCHELF_EXECUTABLE)
         set(QTCONF_TEXT
 "
 [Paths]
-Plugins = ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}/qt${QT_PKG_VER}/plugins
+Prefix = .
+Plugins = ../${CMAKE_INSTALL_LIBDIR}/qt${QT_PKG_VER}/plugins
+Translations = ../${CMAKE_INSTALL_DATAROOTDIR}/qt${QT_PKG_VER}/languages
 "
         )
         file(WRITE "${CMAKE_BINARY_DIR}/qt.conf" "${QTCONF_TEXT}")
@@ -155,6 +157,7 @@ Plugins = ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}/qt${QT_PKG_VER}/plugin
                 imageformats
                 iconengines
                 platforms
+                platformthemes
                 position
             )
             foreach(plugin ${_QT_PLUGINS})

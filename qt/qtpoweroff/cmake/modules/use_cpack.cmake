@@ -120,8 +120,9 @@ endforeach()
             set(QTCONF_TEXT
 "
 [Paths]
-Plugins = ${CMAKE_INSTALL_PREFIX}/lib/qt${QT_PKG_VER}/plugins
-Translations = ${CMAKE_INSTALL_PREFIX}/share/${PROJECT_NAME}/languages
+Prefix = .
+Plugins = ../${CMAKE_INSTALL_LIBDIR}/qt${QT_PKG_VER}/plugins
+Translations = ../${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}/languages
 "
             )
             file(WRITE "${CMAKE_BINARY_DIR}/qt.conf" "${QTCONF_TEXT}")
@@ -157,6 +158,7 @@ Translations = ${CMAKE_INSTALL_PREFIX}/share/${PROJECT_NAME}/languages
                     imageformats
                     iconengines
                     platforms
+                    platformthemes
                     position
                 )
                 foreach(plugin ${_QT_PLUGINS})

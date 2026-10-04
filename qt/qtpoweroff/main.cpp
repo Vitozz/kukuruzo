@@ -19,6 +19,7 @@
 #include "defines.h"
 #include "mainwindow.h"
 #include <QApplication>
+#include <QLibraryInfo>
 #include <QTranslator>
 #include <QMessageBox>
 #include <QDir>
@@ -38,7 +39,12 @@ int main(int argc, char *argv[])
                                   QString("/usr/share/%1/languages").arg(APP_NAME),
                                   QString("/usr/local/share/%1/languages").arg(APP_NAME),
                                   QString("%1/.local/share/%2/languages").arg(QDir::home().absolutePath(), APP_NAME),
-                                  QString("%1/share/%2/languages").arg(QDir::currentPath().left(QDir::currentPath().lastIndexOf("/")), APP_NAME)});
+                                  QString("%1/share/%2/languages").arg(QDir::currentPath().left(QDir::currentPath().lastIndexOf("/")), APP_NAME),
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+                                  QLibraryInfo::path(QLibraryInfo::TranslationsPath)});
+#else
+                                  QLibraryInfo::location(QLibraryInfo::TranslationsPath)});
+#endif
     const QString langFile(QCoreApplication::applicationName());
     for (const QString &dir : localeDirs){
 #ifdef IS_DEBUG

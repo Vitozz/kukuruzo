@@ -19,6 +19,7 @@
 #include "regexpwindow.h"
 #include <QApplication>
 #include <QDir>
+#include <QLibraryInfo>
 #include <QLocale>
 #include <QTranslator>
 
@@ -36,7 +37,11 @@ int main(int argc, char* argv[])
     const QStringList localeDirs({ QString("%1").arg(QDir::currentPath()),
         QString("%1/langs").arg(QDir::currentPath()),
         QString("%1/langs").arg(qApp->applicationDirPath()),
-        QString("../share/%1/langs").arg(APPNAME),
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        QLibraryInfo::path(QLibraryInfo::TranslationsPath),
+#else
+        QLibraryInfo::location(QLibraryInfo::TranslationsPath),
+#endif
         QString("/usr/share/%1/langs").arg(QString(APPNAME)),
         QString("/usr/local/share/%1/langs").arg(QString(APPNAME)),
         QString("%1/.local/share/%2/langs").arg(QDir::home().absolutePath(), QString(APPNAME)) });
