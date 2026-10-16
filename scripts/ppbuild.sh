@@ -705,7 +705,7 @@ compile_psi_mxe()
 {
   local buildlog=${buildpsi}/build-mxe-${1}.log
   curd=$(pwd)
-  flags="-DIRIS_BUNDLED_QCA=OFF -DPSI_PLUS=${build_psi_plus} -DQT_DEFAULT_MAJOR_VERSION=5 -DPRODUCTION=ON -DBUILD_TESTING=OFF -DVERBOSE_PROGRAM_NAME=ON"
+  flags="-DBUNDLED_IRIS=ON -DIRIS_BUNDLED_QCA=OFF -DPSI_PLUS=${build_psi_plus} -DQT_DEFAULT_MAJOR_VERSION=5 -DPRODUCTION=ON -DBUILD_TESTING=OFF -DVERBOSE_PROGRAM_NAME=ON"
   if [ ! -d "${workdir}" ]; then
     prepare_src
   fi

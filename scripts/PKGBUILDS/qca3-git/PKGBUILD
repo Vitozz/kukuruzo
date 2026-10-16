@@ -1,0 +1,49 @@
+# Maintainer: Your Name <you@example.com>
+
+pkgname=qca3-git
+pkgver=3.0.11.r2826.g0c5e047a
+pkgrel=1
+pkgdesc='Qt Cryptographic Architecture 3 (development version)'
+arch=('x86_64')
+url='https://github.com/psi-im/qca'
+license=('LGPL-2.1-or-later')
+depends=(
+  'qt6-base'
+  'openssl'
+)
+makedepends=(
+  'git'
+  'cmake'
+  'ninja'
+)
+source=('git+https://github.com/psi-im/qca.git')
+sha256sums=('SKIP')
+
+pkgver() {
+  cd qca
+
+  local version
+  version="$(git describe --tags --abbrev=0 2>/dev/null | sed 's/^v//')"
+  [[ -n "$version" ]] || version=3.0.0
+
+  printf '%s.r%s.g%s\n' \
+    "$version" \
+    "$(git rev-list --count HEAD)" \
+    "$(git rev-parse --short HEAD)"
+}
+
+build() {
+  cmake -S qca -B build \
+    -G Ninja \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DBUILD_WITH_QT6=ON \
+    -DQCA_INSTALL_IN_QT_PREFIX=OFF \
+    -DBUILD_TESTING=OFF
+
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+}
