@@ -795,6 +795,37 @@ archivate_all()
     cp -r ${out_pkg_name} ${buildpsi}/mxe_builds/
   fi
 }
+#Create packages using CPack
+build_cpack_pkgs()
+{
+  local buildlog=${buildpsi}/build-cpack-${1}.log
+  curd=$(pwd)
+  flags="-DCMAKE_INSTALL_PREFIX=/usr -DBUNDLED_IRIS=OFF -DPSI_PLUS=${build_psi_plus} -DQT_DEFAULT_MAJOR_VERSION=${defualt_qt_ver} -DBUILD_TESTING=OFF -DVERBOSE_PROGRAM_NAME=ON -DENABLE_PLUGINS=ON -DBUILD_PSIMEDIA=ON -DBUILD_DEV_PLUGINS=ON -DUSE_CCACHE=ON -DUSE_CPACK=ON"
+  if [ ! -d "${workdir}" ]; then
+    prepare_src
+  fi
+  prepare_builddir ${builddir}
+  cpack_outd=${tmp_dir}/cpack_builds
+  check_dir ${mxe_outd}
+  cd ${builddir}
+  if [ ${iswebkit} -eq 0 ]; then
+    flags="${flags} -DCHAT_TYPE=basic"
+  else
+    flags="${flags} -DCHAT_TYPE=${chat_type}"
+  fi
+  wrkdir=${builddir}
+  check_dir ${wrkdir}
+  cd ${wrkdir}
+  echo "--Starting cmake
+  cmake ${flags} ${workdir}"
+  cmake ${flags} ${workdir} > ${buildlog} &&
+  echo &&
+  cmake --build . --target package --parallel ${cpu_count} 2>>${buildlog} || die "${red}There were errors. Open ${buildlog} to see${nocolor}"
+  cd ${curd}
+  local outdir=${buildpsi}/cpack_builds
+  check_dir ${outdir}
+  find "${builddir}" -maxdepth 1 -type f \( -name "*.deb" -o -name "*.rpm" -o -name "*.AppImage" \) -exec cp -t "${outdir}/" {} +
+}
 #Список зависимостей
 check_qt_deps()
 {
@@ -952,6 +983,7 @@ ${pink}[pw]${nocolor} - Prepare psi+ workspace (clean ${tmp_dir} dir)
 ${pink}[dp]${nocolor} - Run ${builddir}/psi/psi-plus binary under gdb debugger
 ${pink}[bp]${nocolor} - Build psi with plugins from snapshot
 ${pink}[cd]${nocolor} - Check build dependencies in Debian
+${pink}[bc]${nocolor} - Build packages using CPack
 ${red}-------------------------------------------${nocolor}
 ${blue}Press Enter to continue...${nocolor}"
   read
@@ -986,6 +1018,7 @@ choose_action ()
     "b64" ) build_x86_64_mxe;;
     "cd" ) check_qt_deps;;
     "51" ) install_pp_to_home;;
+    "bc" ) build_cpack_pkgs;;
     "0" ) quit;;
   esac
 }
