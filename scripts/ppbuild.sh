@@ -759,23 +759,25 @@ compile_psi_mxe()
 #Сборка 32х битных версий при помощи МХЕ
 build_i686_mxe()
 {
-  wbkt=1
+  #wbkt=1
   devm=1
-  compile_psi_mxe qt5
-  devm=0
   wbkt=0
   compile_psi_mxe qt5
+  #devm=0
+  #wbkt=0
+  #compile_psi_mxe qt5
   archivate_all qt5
 }
 #Сборка 64х битных версий при помощи МХЕ
 build_x86_64_mxe()
 {
-  wbkt=1
+  #wbkt=1
   devm=1
-  compile_psi_mxe qt5_64
-  devm=0
   wbkt=0
   compile_psi_mxe qt5_64
+  #devm=0
+  #wbkt=0
+  #compile_psi_mxe qt5_64
   archivate_all qt5_64
 }
 #Сборка всех возможных вариантов при помощи МХЕ
@@ -830,9 +832,15 @@ build_cpack_pkgs()
 check_qt_deps()
 {
 if [ $defualt_qt_ver -eq 5 ]; then
-	check_deps "git gcc g++ cmake libhunspell-dev libhttp-parser-dev libminizip-dev libotr5-dev libqt5svg5-dev libqt5webkit5-dev libqt5x11extras5-dev libsignal-protocol-c-dev libsm-dev libssl-dev libtidy-dev libxss-dev qt5keychain-dev qtmultimedia5-dev zlib1g-dev qtmultimedia5-dev libqt5multimedia5-plugins qtbase5-dev qttools5-dev qttools5-dev-tools pkg-config libqt5x11extras5-dev"
+  check_deps "git gcc g++ cmake libhunspell-dev libhttp-parser-dev libminizip-dev libqt5svg5-dev libqt5x11extras5-dev libsm-dev libssl-dev libxss-dev qt5keychain-dev qtmultimedia5-dev zlib1g-dev qtmultimedia5-dev libqt5multimedia5-plugins qtbase5-dev qttools5-dev qttools5-dev-tools pkg-config libqt5x11extras5-dev libgstreamer1.0-dev libgstreamer-plugins-bad1.0-dev libgstreamer-plugins-base1.0-dev ccache"
+  if [ $iswebkit -eq 1 ]; then
+    check_deps "libqt5webkit5-dev"
+  fi
 else
-	check_deps "git gcc g++ cmake libhunspell-dev libhttp-parser-dev libminizip-dev libotr5-dev qt6-svg-dev qt6-webengine-dev libsm-dev libssl-dev libtidy-dev libxss-dev qtkeychain-qt6-dev qt6-multimedia-dev zlib1g-dev qt6-base-dev qt6-image-formats-plugins qt6-l10n-tools qt6-tools-dev pkg-config  libgcrypt20-dev libgpg-error-dev libgstreamer1.0-dev libgstreamer-plugins-bad1.0-dev libgstreamer-plugins-base1.0-dev"
+  check_deps "git gcc g++ cmake libhunspell-dev libhttp-parser-dev libminizip-dev qt6-svg-dev libsm-dev libssl-dev libxss-dev qtkeychain-qt6-dev qt6-multimedia-dev zlib1g-dev qt6-base-dev qt6-image-formats-plugins qt6-l10n-tools qt6-tools-dev pkg-config libgstreamer1.0-dev libgstreamer-plugins-bad1.0-dev libgstreamer-plugins-base1.0-dev ccache"
+  if [ $iswebkit -eq 1 ]; then
+    check_deps "qt6-webengine-dev"
+  fi
 fi
 }
 #Проверка зависимостей в Ubuntu
@@ -959,6 +967,7 @@ ${pink}[3]${nocolor} - Build psi+ binary
 ${pink}[4]${nocolor} - Build psi+ plugins
 ${pink}[5]${nocolor} - Build All MXE builds
 ${pink}--[51]${nocolor} - Build complete psi+ and install to HOME
+${pink}--[52]${nocolor} - Build packages using CPack
 ${pink}[6]${nocolor} - Set ppbuild options
 ${pink}[7]${nocolor} - Prepare psi+ sources for development
 ${pink}[8]${nocolor} - Get help on additional actions
@@ -983,7 +992,6 @@ ${pink}[pw]${nocolor} - Prepare psi+ workspace (clean ${tmp_dir} dir)
 ${pink}[dp]${nocolor} - Run ${builddir}/psi/psi-plus binary under gdb debugger
 ${pink}[bp]${nocolor} - Build psi with plugins from snapshot
 ${pink}[cd]${nocolor} - Check build dependencies in Debian
-${pink}[bc]${nocolor} - Build packages using CPack
 ${red}-------------------------------------------${nocolor}
 ${blue}Press Enter to continue...${nocolor}"
   read
@@ -1018,7 +1026,7 @@ choose_action ()
     "b64" ) build_x86_64_mxe;;
     "cd" ) check_qt_deps;;
     "51" ) install_pp_to_home;;
-    "bc" ) build_cpack_pkgs;;
+    "52" ) build_cpack_pkgs;;
     "0" ) quit;;
   esac
 }
