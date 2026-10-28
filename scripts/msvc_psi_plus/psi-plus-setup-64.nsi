@@ -6,6 +6,7 @@ SetCompressor /SOLID lzma
 !include LogicLib.nsh
 !include x64.nsh
 !include nsDialogs.nsh
+!include psi-plus-l10n.nsh
 
 !ifndef WORK_DIR
   !define WORK_DIR "C:\build\Installer"
@@ -49,11 +50,13 @@ VIAddVersionKey /LANG=1033 "CompanyName" "Psi+ Project"
 VIAddVersionKey /LANG=1033 "FileDescription" "Psi+ x64 installer"
 VIAddVersionKey /LANG=1033 "LegalCopyright" "© 2008-2026 Psi+ Project"
 
+!define MUI_COMPONENTSPAGE_SMALLDESC
+
 !define MUI_ICON "${PSI_SRC_DIR}\win32\app-plus.ico"
 !define MUI_UNICON "${PSI_SRC_DIR}\win32\app-plus.ico"
 !define MUI_ABORTWARNING
 !define MUI_FINISHPAGE_RUN
-!define MUI_FINISHPAGE_RUN_TEXT "Start Psi+"
+!define MUI_FINISHPAGE_RUN_TEXT "$(STR_START_PSI_PLUS)"
 !define MUI_FINISHPAGE_RUN_FUNCTION LaunchPsi
 
 !insertmacro MUI_PAGE_WELCOME
@@ -91,8 +94,6 @@ Page custom VCRedistPageCreate VCRedistPageLeave
 !insertmacro MUI_LANGUAGE Ukrainian
 !insertmacro MUI_LANGUAGE German
 
-!include "lang\psi-plus-l10n.nsh"
-
 Var PreviousUninstaller
 Var PreviousVersion
 Var PreviousInstallDir
@@ -128,14 +129,14 @@ Section /o "Psi+" SEC_BIN64
   File "${WORK_DIR}\psi-plus.exe"
 SectionEnd
 
-Section /o "Psi+ WebEngine" SEC_BIN64W
-  SectionIn 1 2 3
-  SetOutPath "$INSTDIR"
-  File "${WORK_DIR}\psi-plus-webengine.exe"
-  File /r /x ".*" "${WORK_DIR}\webengine64\*.*"
-SectionEnd
+;Section /o "Psi+ WebEngine" SEC_BIN64W
+;  SectionIn 1 2 3
+;  SetOutPath "$INSTDIR"
+;  File "${WORK_DIR}\psi-plus-webengine.exe"
+;  File /r /x ".*" "${WORK_DIR}\webengine64\*.*"
+;SectionEnd
 
-Section "Psi+ common files" SEC_COMMON
+Section "$(STR_COMPONENTS_TITLE)" SEC_COMMON
   SectionIn 1 2 3 RO
   SetOutPath "$INSTDIR\certs"
   File /nonfatal /r /x ".*" "${PSI_SRC_DIR}\certs\*.*"
@@ -174,7 +175,7 @@ SectionEnd
 
 !macroend
 
-SectionGroup /e "Plugins" SEC_PLUGINS
+SectionGroup /e "$(STR_PLUGINS_TITLE)" SEC_PLUGINS
 !insertmacro PLUGIN_SECTION attentionplugin "Attention plugin"
 !insertmacro PLUGIN_SECTION autoreplyplugin "Auto Reply plugin"
 !insertmacro PLUGIN_SECTION battleshipgameplugin "Battleship Game plugin"
@@ -216,7 +217,7 @@ Section /o "${text}" SEC_DICT_${name}
 SectionEnd
 !macroend
 
-SectionGroup /e "Spell check dictionaries" SEC_DICTS
+SectionGroup /e "$(STR_DICTS_TITLE)" SEC_DICTS
 !insertmacro DICT_SECTION af_ZA "Afrikaans"
 !insertmacro DICT_SECTION an_ES "Aragonese"
 !insertmacro DICT_SECTION ar "Arabic"
@@ -282,16 +283,16 @@ SectionEnd
 !insertmacro DICT_SECTION vi_VN "Vietnamese"
 SectionGroupEnd
 
-Section /o "Create desktop shortcut" SEC_DESKTOP
+Section /o "$(STR_CREATE_DESKTOP_SHORTCUT_TITLE)" SEC_DESKTOP
   SectionIn 1 2 3
   ${If} ${SectionIsSelected} ${SEC_BIN64}
     CreateShortCut "$DESKTOP\Psi+.lnk" "$INSTDIR\psi-plus.exe" "" "$INSTDIR\psi-plus.exe"
-  ${ElseIf} ${SectionIsSelected} ${SEC_BIN64W}
-    CreateShortCut "$DESKTOP\Psi+.lnk" "$INSTDIR\psi-plus-webengine.exe" "" "$INSTDIR\psi-plus-webengine.exe"
+  ;${ElseIf} ${SectionIsSelected} ${SEC_BIN64W}
+   ; CreateShortCut "$DESKTOP\Psi+.lnk" "$INSTDIR\psi-plus-webengine.exe" "" "$INSTDIR\psi-plus-webengine.exe"
   ${EndIf}
 SectionEnd
 
-Section /o "Create Start Menu shortcut" SEC_STARTMENU
+Section /o "$(STR_CREATE_SMENU_SHORTCUT_TITLE)" SEC_STARTMENU
   SectionIn 1 2 3
 
   !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
@@ -304,19 +305,18 @@ Section /o "Create Start Menu shortcut" SEC_STARTMENU
         "$INSTDIR\psi-plus.exe" \
         "" \
         "$INSTDIR\psi-plus.exe"
-
-    ${ElseIf} ${SectionIsSelected} ${SEC_BIN64W}
-      CreateShortCut \
-        "$SMPROGRAMS\$StartMenuFolder\Psi+.lnk" \
-        "$INSTDIR\psi-plus-webengine.exe" \
-        "" \
-        "$INSTDIR\psi-plus-webengine.exe"
+    ;${ElseIf} ${SectionIsSelected} ${SEC_BIN64W}
+     ; CreateShortCut \
+     ;   "$SMPROGRAMS\$StartMenuFolder\Psi+.lnk" \
+     ;   "$INSTDIR\psi-plus-webengine.exe" \
+     ;   "" \
+     ;   "$INSTDIR\psi-plus-webengine.exe"
     ${EndIf}
 
   !insertmacro MUI_STARTMENU_WRITE_END
 SectionEnd
 
-Section /o "Create uninstall shortcut in Start Menu" SEC_UNINSTALL_ICON
+Section /o "$(STR_CREATE_SMENU_UNINSTALL_SHORTCUT_TITLE)" SEC_UNINSTALL_ICON
   SectionIn 1 2 3
 
   !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
@@ -329,17 +329,17 @@ Section /o "Create uninstall shortcut in Start Menu" SEC_UNINSTALL_ICON
   !insertmacro MUI_STARTMENU_WRITE_END
 SectionEnd
 
-Section "Create XMPP registry entry" SEC_XMPP
+Section "$(STR_CREATE_XMPP_REGISTRY_ENTRY_TITLE)" SEC_XMPP
   ${If} ${SectionIsSelected} ${SEC_BIN64}
     WriteRegStr HKCR "xmpp" "" "URL:XMPP Protocol"
     WriteRegStr HKCR "xmpp" "URL Protocol" ""
     WriteRegStr HKCR "xmpp\DefaultIcon" "" "$INSTDIR\psi-plus.exe"
     WriteRegStr HKCR "xmpp\shell\open\command" "" '"$INSTDIR\psi-plus.exe" "--uri=%1"'
-  ${ElseIf} ${SectionIsSelected} ${SEC_BIN64W}
-    WriteRegStr HKCR "xmpp" "" "URL:XMPP Protocol"
-    WriteRegStr HKCR "xmpp" "URL Protocol" ""
-    WriteRegStr HKCR "xmpp\DefaultIcon" "" "$INSTDIR\psi-plus-webengine.exe"
-    WriteRegStr HKCR "xmpp\shell\open\command" "" '"$INSTDIR\psi-plus-webengine.exe" "--uri=%1"'
+  ;${ElseIf} ${SectionIsSelected} ${SEC_BIN64W}
+  ;  WriteRegStr HKCR "xmpp" "" "URL:XMPP Protocol"
+  ;  WriteRegStr HKCR "xmpp" "URL Protocol" ""
+  ;  WriteRegStr HKCR "xmpp\DefaultIcon" "" "$INSTDIR\psi-plus-webengine.exe"
+  ;  WriteRegStr HKCR "xmpp\shell\open\command" "" '"$INSTDIR\psi-plus-webengine.exe" "--uri=%1"'
   ${EndIf}
 SectionEnd
 
@@ -359,7 +359,7 @@ SectionEnd
 ; Select the standard Psi+ binary by default when no saved state exists.
 Function SetDefaultBinaryComponent
   SectionSetFlags ${SEC_BIN64} ${SF_SELECTED}
-  SectionSetFlags ${SEC_BIN64W} 0
+  ;SectionSetFlags ${SEC_BIN64W} 0
   StrCpy $SelectedExecutable "psi-plus.exe"
 FunctionEnd
 
@@ -425,7 +425,7 @@ AbortUpgrade:
   Abort
 ContinueUpgrade:
   Call CheckRunningPsi
-  ExecWait '$PreviousUninstaller /VERYSILENT /NORESTART /SUPPRESSMSGBOXES /NOCANCEL' $0
+  ExecWait '$PreviousUninstaller /S /NORESTART /SUPPRESSMSGBOXES /NOCANCEL' $0
   ${If} $0 != 0
     MessageBox MB_ICONSTOP "$(STR_PREVIOUS_REMOVE_FAILED)"
     Abort
@@ -441,11 +441,11 @@ Function IsPsiRunning
   ${If} $1 == 0
     StrCpy $0 1
   ${EndIf}
-  nsProcess::_FindProcess "psi-plus-webengine.exe"
-  Pop $1
-  ${If} $1 == 0
-    StrCpy $0 1
-  ${EndIf}
+  ;nsProcess::_FindProcess "psi-plus-webengine.exe"
+  ;Pop $1
+  ;${If} $1 == 0
+  ;  StrCpy $0 1
+  ;${EndIf}
 FunctionEnd
 
 ; Prompt the user to exit Psi+ before an upgrade or uninstall can continue.
@@ -462,7 +462,7 @@ AbortClosePsi:
 ClosePsi:
   DetailPrint "Closing Psi+ processes..."
   ExecWait '"$SYSDIR\taskkill.exe" /F /T /IM psi-plus.exe' $1
-  ExecWait '"$SYSDIR\taskkill.exe" /F /T /IM psi-plus-webengine.exe' $1
+ ; ExecWait '"$SYSDIR\taskkill.exe" /F /T /IM psi-plus-webengine.exe' $1
   Sleep 1000
   Call IsPsiRunning
   ${If} $0 != 0
@@ -490,7 +490,7 @@ FunctionEnd
 ; Restore the saved component flags and ensure exactly one executable is selected.
 Function RestoreComponentState
   !insertmacro RESTORE_COMPONENT "bin64" ${SEC_BIN64}
-  !insertmacro RESTORE_COMPONENT "bin64w" ${SEC_BIN64W}
+  ;!insertmacro RESTORE_COMPONENT "bin64w" ${SEC_BIN64W}
   !insertmacro RESTORE_COMPONENT "desktop" ${SEC_DESKTOP}
   !insertmacro RESTORE_COMPONENT "startmenu" ${SEC_STARTMENU}
   !insertmacro RESTORE_COMPONENT "uninstall-icon" ${SEC_UNINSTALL_ICON}
@@ -498,17 +498,17 @@ Function RestoreComponentState
   !insertmacro RESTORE_ALL_PLUGIN_COMPONENTS
   !insertmacro RESTORE_ALL_DICTIONARY_COMPONENTS
 
-  ${If} ${SectionIsSelected} ${SEC_BIN64W}
-    SectionSetFlags ${SEC_BIN64} 0
-    StrCpy $SelectedExecutable "psi-plus-webengine.exe"
-  ${ElseIf} ${SectionIsSelected} ${SEC_BIN64}
-    SectionSetFlags ${SEC_BIN64W} 0
-    StrCpy $SelectedExecutable "psi-plus.exe"
-  ${Else}
+  ;${If} ${SectionIsSelected} ${SEC_BIN64W}
+  ;  SectionSetFlags ${SEC_BIN64} 0
+  ;  StrCpy $SelectedExecutable "psi-plus-webengine.exe"
+  ;${ElseIf} ${SectionIsSelected} ${SEC_BIN64}
+  ;  SectionSetFlags ${SEC_BIN64W} 0
+  ;  StrCpy $SelectedExecutable "psi-plus.exe"
+  ;${Else}
     SectionSetFlags ${SEC_BIN64} ${SF_SELECTED}
-    SectionSetFlags ${SEC_BIN64W} 0
+   ; SectionSetFlags ${SEC_BIN64W} 0
     StrCpy $SelectedExecutable "psi-plus.exe"
-  ${EndIf}
+  ;${EndIf}
 FunctionEnd
 
 ; Display the Visual C++ Redistributable status page before installation continues.
@@ -580,7 +580,7 @@ Function SaveInstallerState
   WriteINIStr "${STATE_FILE}" "${STATE_SECTION}" "InstallDir" "$INSTDIR"
   WriteINIStr "${STATE_FILE}" "${STATE_SECTION}" "Executable" "$SelectedExecutable"
   !insertmacro SAVE_COMPONENT "bin64" ${SEC_BIN64}
-  !insertmacro SAVE_COMPONENT "bin64w" ${SEC_BIN64W}
+  ;!insertmacro SAVE_COMPONENT "bin64w" ${SEC_BIN64W}
   !insertmacro SAVE_COMPONENT "desktop" ${SEC_DESKTOP}
   !insertmacro SAVE_COMPONENT "startmenu" ${SEC_STARTMENU}
   !insertmacro SAVE_COMPONENT "uninstall-icon" ${SEC_UNINSTALL_ICON}
@@ -591,17 +591,17 @@ FunctionEnd
 
 ; Keep the standard and WebEngine executable sections mutually exclusive.
 Function .onSelChange
-  ${If} ${SectionIsSelected} ${SEC_BIN64W}
-    SectionSetFlags ${SEC_BIN64} 0
-    StrCpy $SelectedExecutable "psi-plus-webengine.exe"
-  ${ElseIf} ${SectionIsSelected} ${SEC_BIN64}
-    SectionSetFlags ${SEC_BIN64W} 0
-    StrCpy $SelectedExecutable "psi-plus.exe"
-  ${Else}
+  ;${If} ${SectionIsSelected} ${SEC_BIN64W}
+  ;  SectionSetFlags ${SEC_BIN64} 0
+  ;  StrCpy $SelectedExecutable "psi-plus-webengine.exe"
+  ;${ElseIf} ${SectionIsSelected} ${SEC_BIN64}
+  ;  SectionSetFlags ${SEC_BIN64W} 0
+  ;  StrCpy $SelectedExecutable "psi-plus.exe"
+  ;${Else}
     SectionSetFlags ${SEC_BIN64} ${SF_SELECTED}
-    SectionSetFlags ${SEC_BIN64W} 0
+   ; SectionSetFlags ${SEC_BIN64W} 0
     StrCpy $SelectedExecutable "psi-plus.exe"
-  ${EndIf}
+  ;${EndIf}
 FunctionEnd
 
 ; Installer success callback reserved for post-install tasks.
@@ -614,11 +614,11 @@ FunctionEnd
 
 ; Launch the selected Psi+ executable after installation completes.
 Function LaunchPsi
-  ${If} $SelectedExecutable == "psi-plus-webengine.exe"
-    ExecShell open "$INSTDIR\psi-plus-webengine.exe"
-  ${Else}
+  ;${If} $SelectedExecutable == "psi-plus-webengine.exe"
+  ;  ExecShell open "$INSTDIR\psi-plus-webengine.exe"
+ ; ${Else}
     ExecShell open "$INSTDIR\psi-plus.exe"
-  ${EndIf}
+  ;${EndIf}
 FunctionEnd
 
 ; Check whether Psi+ is currently running in the uninstall context.
@@ -650,7 +650,7 @@ AbortClosePsi:
 ClosePsi:
   DetailPrint "Closing Psi+ processes..."
   ExecWait '"$SYSDIR\taskkill.exe" /F /T /IM psi-plus.exe' $1
-  ExecWait '"$SYSDIR\taskkill.exe" /F /T /IM psi-plus-webengine.exe' $1
+  ;ExecWait '"$SYSDIR\taskkill.exe" /F /T /IM psi-plus-webengine.exe' $1
   Sleep 1000
   Call un.IsPsiRunning
   ${If} $0 != 0

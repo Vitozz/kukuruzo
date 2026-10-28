@@ -33,9 +33,10 @@ $QTPREFIX = "C:\Qt"
 $QTVER = 6
 $VCVARS = "C:\MSVC2022\VC\Auxiliary\Build\vcvarsall.bat"
 $ISS_COMPIL = "C:\Program Files (x86)\Inno Setup 6\Compil32.exe"
+$NSIS_COMPIL = "C:\Program Files (x86)\NSIS\makensis.exe"
 $GITBIN_DIR = Join-Path $BUILDDIR "Git\bin"
 $GIT_EXECUTABLE = Join-Path $GITBIN_DIR "git.exe"
-$PKG_CONFIG_EXECUTABLE = "C:/gstreamer/1.0/msvc_x86_64/bin/pkg-config.exe"
+$PKG_CONFIG_EXECUTABLE = "C:/gstreamer/msvc_x86_64/bin/pkg-config.exe"
 $CCACHE_BIN_DIR = Join-Path $BUILDDIR "ccache"
 
 # ====== RELATIVE PATHS ======
@@ -74,7 +75,7 @@ $qtTemplate = "qt$QTVER"
 # ====== win64 VARIABLES ======
 $ARCHNAME = $binTemplate
 # ====== Qt win64 VARIABLES ======
-$QTVERSION = "6.11.2"
+$QTVERSION = "6.12.0"
 $QTARCH = "msvc2022_64"
 $QTDIR = Join-Path $QTPREFIX "$QTVERSION\$QTARCH"
 $DEFAULT_CMAKE_FLAGS = @("-DUSE_CCACHE=ON",
@@ -202,10 +203,10 @@ function Get-ProjectVersion {
     Write-Host "---> Detect Main project version..." -ForegroundColor Cyan
     Push-Location $RepositoryPath
     try {
-        $latestTag = (& $GIT_EXECUTABLE describe --tags --abbrev=0 2>$null).Trim()
+        $latestTag = (& $GIT_EXECUTABLE describe --tags --abbrev=0 --exclude "windows-sdk-*" 2>$null).Trim()
         if ([string]::IsNullOrWhiteSpace($latestTag)) {
-            Write-Host "Tags not found. Using 1.5 version as default" -ForegroundColor Yellow
-            $baseVersion = "1.5"
+            Write-Host "Tags not found. Using 1.6 version as default" -ForegroundColor Yellow
+            $baseVersion = "1.6"
             $revision = (& $GIT_EXECUTABLE rev-list --count HEAD).Trim()
         }
         else {
@@ -289,7 +290,7 @@ function Save-BuildVersion {
         [Parameter(Mandatory)]
         [string]$Version
     )
-    $versionFilePath = Join-Path $TargetDirectory "version.txt"
+    $versionFilePath = Join-Path $TargetDirectory "version"
     $Version | Out-File `
         -FilePath $versionFilePath `
         -Encoding utf8
@@ -382,15 +383,17 @@ function Selection {
     Write-Host "Choose start point:"
     Write-Host "-1--Build All"
     Write-Host "-2--Build only Qt$QTVER"
-    Write-Host "-3--Start only Qt$QTVER $webkitTemplate"
-    Write-Host "-4--Build only plugins"
-    Write-Host "-5--Exit"
+    #Write-Host "-3--Start only Qt$QTVER $webkitTemplate"
+    Write-Host "-3--Build only plugins"
+    Write-Host "-4--Create installer"
+    Write-Host "-0--Exit"
     $BUILD_VARIANT = Read-Host "Select 1-5 and Press Enter"
     switch ($BUILD_VARIANT) {
         "1" { BuildAll }
         "2" { BuildBasic }
-        "3" { BuildWeb }
-        "4" { BuildPlugs }
+        #"3" { BuildWeb }
+        "3" { BuildPlugs }
+        "4" { MakeInstaller }
         default { Finish }
     }
 }
@@ -400,13 +403,12 @@ function BuildAll {
     $script:ISWEBKIT = "basic"
     SetCommonVars
     MakeIt
-    $script:ISWEBKIT = "webengine"
-    Write-Host "Webengine Qt$QTVER version"
-    MakeIt
+    #$script:ISWEBKIT = "webengine"
+    #Write-Host "Webengine Qt$QTVER version"
+    #MakeIt
     Write-Host "Plugins"
     MakePlugins
-    Write-Host "Installer"
-    CreateSetup
+    MakeInstaller
 }
 
 function BuildBasic {
@@ -427,6 +429,11 @@ function BuildPlugs {
     Write-Host "Plugins"
     SetCommonVars
     MakePlugins
+}
+
+function MakeInstaller {
+    Write-Host "Installer"
+    CreateSetup
 }
 
 function Finish {
@@ -481,8 +488,8 @@ function MakeIt {
     Set-Location $BDIR
 
     $CMAKE_FLAGS = @("-DCHAT_TYPE=$ISWEBKIT",
-                   "-DBUNDLED_IRIS_ALL=ON",
-                   "-DBUNDLED_KEYCHAIN=-ON",
+                   "-DIRIS_BUNDLED_QCA=OFF",
+                   "-DBUILD_TESTING=OFF",
                    "-DVERBOSE_PROGRAM_NAME=ON")
     if ($ISWEBKIT -eq "basic") { $CMAKE_FLAGS += "-DTRANSLATIONS_DIR=`"$LANGSPATH\translations`"" }
     if ($USEDEBUG -eq "ON") { $CMAKE_FLAGS += "-DCMAKE_BUILD_TYPE=Debug" }
@@ -554,7 +561,9 @@ function CreateSetup {
     if ([string]::IsNullOrWhiteSpace($ans6)) { $ans6 = "y" }
     if ($ans6 -ne "n") {
         $INSTALLERDIR = Join-Path $BUILDDIR "Installer"
-        & "$ISS_COMPIL" /cc "$INSTALLERDIR\psi-plus-setup-64.iss"
+        Set-Location $INSTALLERDIR
+        #& "$ISS_COMPIL" /cc "$INSTALLERDIR\psi-plus-setup-64.iss"
+        & "$NSIS_COMPIL" $INSTALLERDIR\psi-plus-setup-64.nsi
     }
 }
 # User input: fetch sources
